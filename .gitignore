@@ -1,6 +1,8 @@
 
 .metadata
 RemoteSystemsTempFiles/
-src/*/.cproject
-src/*/.project
-src/*/.settings
+.cproject
+.project
+.settings
+*.d
+*.o
