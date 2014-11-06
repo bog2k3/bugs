@@ -4,20 +4,29 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../input/OperationPan.cpp 
+../Rectangle.cpp \
+../Renderer.cpp \
+../glToolkit.cpp \
+../shader.cpp 
 
 OBJS += \
-./input/OperationPan.o 
+./Rectangle.o \
+./Renderer.o \
+./glToolkit.o \
+./shader.o 
 
 CPP_DEPS += \
-./input/OperationPan.d 
+./Rectangle.d \
+./Renderer.d \
+./glToolkit.d \
+./shader.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-input/%.o: ../input/%.cpp
+%.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	g++ -std=c++0x -O2 -g -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	g++ -std=c++0x -DGLM_FORCE_RADIANS -O0 -g -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
