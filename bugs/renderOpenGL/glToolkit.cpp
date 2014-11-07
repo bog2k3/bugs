@@ -1,0 +1,223 @@
+#include "glToolkit.h"
+
+#define GLFW_DLL
+#include <GLFW/glfw3.h>
+
+#include <math.h>
+
+// Include GLM
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+using namespace glm;
+
+#include "shader.hpp"
+
+#include <iostream>
+using namespace std;
+
+GLFWwindow* window = NULL;
+GLuint MatrixLoc = 0;
+
+GLuint texIDs[1000];
+
+unsigned winWidth = 512;
+unsigned winHeight = 512;
+
+keyboardCallback keyboardCB = NULL;
+mouseButtonCallback mouseLeftCB = NULL;
+mouseButtonCallback mouseRightCB = NULL;
+
+bool lastLeftDown = false;
+bool lastRightDown = false;
+double scrollVal = 0;
+
+double gltGetMouseScroll() { return scrollVal; }
+
+void gltSetKeyboardCallback(keyboardCallback cb)
+{
+	keyboardCB = cb;
+}
+
+void mouseScroll(GLFWwindow* win,double x, double y) 
+{
+	scrollVal = y;
+}
+
+// initializes openGL an' all
+bool gltInit(unsigned windowWidth, unsigned windowHeight)
+{
+	// initialize GLFW and set-up window an' all:
+	if (!glfwInit()) {
+		cout << "FAILED glfwInit" << endl;
+		return false;
+	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+	winWidth = windowWidth;
+	winHeight = windowHeight;
+	
+	window = glfwCreateWindow(windowWidth, windowHeight, "Neural Paint", NULL, NULL);
+	if (!window) {
+		cout << "FAILED creating window" << endl;
+		return false;
+	}
+	glfwMakeContextCurrent(window);
+
+	//glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
+
+	glewExperimental = GL_TRUE;
+	if (glewInit() != GLEW_OK) {
+		cout << "FAILED glewInit" << endl;
+		return false;
+	}
+
+	/*GLfloat vertices[] = {
+		// x, y, z, u, v
+		-0.5f, +0.5f, 0.0f, 0.01f, 0.01f,
+		+0.5f, +0.5f, 0.0f, 0.99f, 0.01f,
+		-0.5f, -0.5f, 0.0f, 0.01f, 0.99f,
+		+0.5f, -0.5f, 0.0f, 0.99f, 0.99f,
+	};
+	GLuint vbuf;
+	glGenBuffers(1, &vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, vbuf);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glGenTextures(sizeof(texIDs)/sizeof(GLuint), texIDs);
+	glActiveTexture(GL_TEXTURE0);
+
+	GLuint prog = Shaders::createProgram("data/shaders/posuv.vert", nullptr, "data/shaders/uvmap.frag");
+	if (prog == 0) {
+		cout << "Could not create shader program!" << endl;
+		return false;
+	}
+
+	glUseProgram(prog);
+
+	// Get a handle for our "myTextureSampler" uniform
+	GLuint TextureLocation  = glGetUniformLocation(prog, "myTextureSampler");
+	// Set our "myTextureSampler" sampler to user Texture Unit 0
+	glUniform1i(TextureLocation, 0);
+
+	// Get a handle for our "MVP" uniform
+	MatrixLoc = glGetUniformLocation(prog, "MVP");
+	int posLoc = glGetAttribLocation(prog, "vertexPosition_modelspace");
+	int uvLoc = glGetAttribLocation(prog, "vertexUV");
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbuf);
+	glEnableVertexAttribArray(posLoc);
+	glVertexAttribPointer(
+		posLoc,             // attribute vertexPosition_modelspace
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		5*sizeof(float),	// stride
+		(void*)0            // array buffer offset
+		);
+	glEnableVertexAttribArray(uvLoc);
+	glVertexAttribPointer(
+		uvLoc,              // attribute vertexUV.
+		2,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		5*sizeof(float),	// stride
+		(void*)(3*sizeof(float))            // array buffer offset
+		);
+	*/
+
+	glfwSetScrollCallback(window, &mouseScroll);
+
+	return true;
+}
+
+// begins a frame
+void gltBegin()
+{
+	glClear(GL_COLOR_BUFFER_BIT);	// =======================================================
+}
+
+// finishes a frame and displays the result
+void gltEnd()
+{
+	glfwSwapBuffers(window);
+}
+
+// draws an image into the active cell and advances 1 cell.
+void gltDrawImg(int x, int y, unsigned width, unsigned height, GLenum format, GLenum type, const GLvoid * texData)
+{
+	// bind correct texture
+	/*glBindTexture(GL_TEXTURE_2D, texIDs[gridCell]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// Give the image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, type, texData);
+
+	int cell_x = gridCell % gridW;
+	int cell_y = gridCell / gridH;
+	float border_factor = 0.95f; // allow some border between images
+	float scaleX = 2.0f / gridW; 
+	float scaleY = 2.0f / gridH;
+	float transX = -1 + 2.0f / gridW * (cell_x+0.5f);
+	float transY = +1 - 2.0f / gridH * (cell_y+0.5f);
+
+	// glm::mat4 MVP =  glm::translate(glm::scale(mat4(1.0f), glm::vec3(scaleX*border_factor, scaleY*border_factor, 1.0f)), glm::vec3(transX, transY, 0));
+	glm::mat4 MVP =  glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(transX, transY, 0)), glm::vec3(scaleX*border_factor, scaleY*border_factor, 1.0f));
+
+	// Send our transformation to the currently bound shader, 
+	// in the "MVP" uniform
+	glUniformMatrix4fv(MatrixLoc, 1, GL_FALSE, &MVP[0][0]);
+
+	// Draw the triangle !
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+	gridCell++;
+	*/
+}
+
+bool gltCheckInput() {
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		if (keyboardCB != NULL)
+			keyboardCB(GLFW_KEY_SPACE, true);
+	}
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1)) {
+		if (!lastLeftDown) {
+			lastLeftDown = true;
+			if (mouseLeftCB != NULL) {
+				double x, y;
+				glfwGetCursorPos(window, &x, &y);
+				mouseLeftCB(x, y, glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS);
+			}
+		}
+	} else
+		lastLeftDown = false;
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2)) {
+		if (!lastRightDown) {
+			lastRightDown = true;
+			if (mouseRightCB != NULL) {
+				double x, y;
+				glfwGetCursorPos(window, &x, &y);
+				mouseRightCB(x, y, glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS);
+			}
+		}
+	} else
+		lastRightDown = false;
+
+	scrollVal = 0;
+
+	// Check if the ESC key was pressed or the window was closed
+	glfwPollEvents();
+	return glfwWindowShouldClose(window) == 0;
+}
+
+void gltSetLeftMouseButtonCallback(mouseButtonCallback cb) {
+	mouseLeftCB = cb;
+}
+
+// sets a callback to be invoked when the right mouse is clicked
+void gltSetRightMouseButtonCallback(mouseButtonCallback cb) {
+	mouseRightCB = cb;
+}

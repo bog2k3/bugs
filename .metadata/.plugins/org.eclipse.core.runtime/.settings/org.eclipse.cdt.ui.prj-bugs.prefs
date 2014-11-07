@@ -1,0 +1,3 @@
+buildConsole/keepLog=true
+buildConsole/logLocation=/mnt/docs/Work/bugs/.metadata/.plugins/org.eclipse.cdt.ui/bugs.build.log
+eclipse.preferences.version=1

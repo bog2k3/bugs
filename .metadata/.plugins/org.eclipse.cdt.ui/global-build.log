@@ -1,0 +1,113 @@
+09:01:22 **** Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/Rectangle.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/Rectangle.d" -MT"renderOpenGL/Rectangle.d" -o "renderOpenGL/Rectangle.o" "../renderOpenGL/Rectangle.cpp"
+In file included from /usr/local/include/glm/gtc/../gtc/quaternion.hpp:402:0,
+                 from /usr/local/include/glm/gtc/type_ptr.hpp:63,
+                 from ../renderOpenGL/Rectangle.cpp:15:
+/usr/local/include/glm/gtc/../gtc/quaternion.inl: In function ‘glm::detail::tquat<T, P> glm::rotate(const glm::detail::tquat<T, P>&, const T&, const glm::detail::tvec3<T, P>&)’:
+/usr/local/include/glm/gtc/../gtc/quaternion.inl:621:165: note: #pragma message: GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/../gtc/quaternion.inl: In function ‘T glm::roll(const glm::detail::tquat<T, P>&)’:
+/usr/local/include/glm/gtc/../gtc/quaternion.inl:648:151: note: #pragma message: GLM: roll function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/../gtc/quaternion.inl: In function ‘T glm::pitch(const glm::detail::tquat<T, P>&)’:
+/usr/local/include/glm/gtc/../gtc/quaternion.inl:662:152: note: #pragma message: GLM: pitch function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/../gtc/quaternion.inl: In function ‘T glm::yaw(const glm::detail::tquat<T, P>&)’:
+/usr/local/include/glm/gtc/../gtc/quaternion.inl:676:150: note: #pragma message: GLM: yaw function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/../gtc/quaternion.inl: In function ‘T glm::angle(const glm::detail::tquat<T, P>&)’:
+/usr/local/include/glm/gtc/../gtc/quaternion.inl:806:152: note: #pragma message: GLM: angle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/../gtc/quaternion.inl: In function ‘glm::detail::tquat<T, P> glm::angleAxis(const T&, const glm::detail::tvec3<T, P>&)’:
+/usr/local/include/glm/gtc/../gtc/quaternion.inl:836:168: note: #pragma message: GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+Finished building: ../renderOpenGL/Rectangle.cpp
+ 
+Building file: ../renderOpenGL/Renderer.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/Renderer.d" -MT"renderOpenGL/Renderer.d" -o "renderOpenGL/Renderer.o" "../renderOpenGL/Renderer.cpp"
+In file included from /usr/local/include/glm/gtc/matrix_transform.hpp:304:0,
+                 from ../renderOpenGL/Renderer.cpp:9:
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, P> glm::rotate(const glm::detail::tmat4x4<T, P>&, const T&, const glm::detail::tvec3<T, P>&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:58:165: note: #pragma message: GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, P> glm::rotate_slow(const glm::detail::tmat4x4<T, P>&, const T&, const glm::detail::tvec3<T, P>&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:99:170: note: #pragma message: GLM: rotate_slow function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<U, (glm::precision)0u> glm::perspective(const T&, const T&, const T&, const T&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:232:170: note: #pragma message: GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<U, (glm::precision)0u> glm::perspectiveFov(const T&, const T&, const T&, const T&, const T&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:264:173: note: #pragma message: GLM: perspectiveFov function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<U, (glm::precision)0u> glm::infinitePerspective(T, T, T)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:290:178: note: #pragma message: GLM: infinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<U, (glm::precision)0u> glm::tweakedInfinitePerspective(T, T, T, T)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:320:185: note: #pragma message: GLM: tweakedInfinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+Finished building: ../renderOpenGL/Renderer.cpp
+ 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+In file included from /usr/local/include/glm/gtc/matrix_transform.hpp:304:0,
+                 from ../renderOpenGL/glToolkit.cpp:10:
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, P> glm::rotate(const glm::detail::tmat4x4<T, P>&, const T&, const glm::detail::tvec3<T, P>&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:58:165: note: #pragma message: GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, P> glm::rotate_slow(const glm::detail::tmat4x4<T, P>&, const T&, const glm::detail::tvec3<T, P>&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:99:170: note: #pragma message: GLM: rotate_slow function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, (glm::precision)0u> glm::perspective(const T&, const T&, const T&, const T&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:232:170: note: #pragma message: GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, (glm::precision)0u> glm::perspectiveFov(const T&, const T&, const T&, const T&, const T&)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:264:173: note: #pragma message: GLM: perspectiveFov function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, (glm::precision)0u> glm::infinitePerspective(T, T, T)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:290:178: note: #pragma message: GLM: infinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+/usr/local/include/glm/gtc/matrix_transform.inl: In function ‘glm::detail::tmat4x4<T, (glm::precision)0u> glm::tweakedInfinitePerspective(T, T, T, T)’:
+/usr/local/include/glm/gtc/matrix_transform.inl:320:185: note: #pragma message: GLM: tweakedInfinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building file: ../renderOpenGL/shader.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/shader.d" -MT"renderOpenGL/shader.d" -o "renderOpenGL/shader.o" "../renderOpenGL/shader.cpp"
+Finished building: ../renderOpenGL/shader.cpp
+ 
+Building file: ../input/OperationPan.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/OperationPan.d" -MT"input/OperationPan.d" -o "input/OperationPan.o" "../input/OperationPan.cpp"
+../input/OperationPan.cpp:9:42: fatal error: ../../renderOpenGL/IRenderer.h: No such file or directory
+compilation terminated.
+make: *** [input/OperationPan.o] Error 1
+09:02:24 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/Rectangle.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/Rectangle.d" -MT"renderOpenGL/Rectangle.d" -o "renderOpenGL/Rectangle.o" "../renderOpenGL/Rectangle.cpp"
+Finished building: ../renderOpenGL/Rectangle.cpp
+ 
+Building file: ../renderOpenGL/Renderer.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/Renderer.d" -MT"renderOpenGL/Renderer.d" -o "renderOpenGL/Renderer.o" "../renderOpenGL/Renderer.cpp"
+Finished building: ../renderOpenGL/Renderer.cpp
+ 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building file: ../renderOpenGL/shader.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/shader.d" -MT"renderOpenGL/shader.d" -o "renderOpenGL/shader.o" "../renderOpenGL/shader.cpp"
+Finished building: ../renderOpenGL/shader.cpp
+ 
+Building file: ../input/OperationPan.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/OperationPan.d" -MT"input/OperationPan.d" -o "input/OperationPan.o" "../input/OperationPan.cpp"
+Finished building: ../input/OperationPan.cpp
+ 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp:3:39: fatal error: ../renderOpenGL/glToolkit.h: No such file or directory
+compilation terminated.
+make: *** [main.o] Error 1
+09:02:37 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘void onMouseLeftButton(bool)’:
+../main.cpp:12:16: error: expected primary-expression before ‘...’ token
+../main.cpp:11:13: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [main.o] Error 1

@@ -1,0 +1,12 @@
+09:02:37 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘void onMouseLeftButton(bool)’:
+../main.cpp:12:16: error: expected primary-expression before ‘...’ token
+../main.cpp:11:13: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [main.o] Error 1
+
+09:02:38 Build Finished (took 993ms)
+
