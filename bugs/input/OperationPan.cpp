@@ -6,6 +6,7 @@
  */
 
 #include "OperationPan.h"
+#include "InputEvent.h"
 #include "../renderOpenGL/IRenderer.h"
 
 OperationPan::OperationPan(IRenderer* renderer)

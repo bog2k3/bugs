@@ -111,3 +111,710 @@ g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -
 ../main.cpp:12:16: error: expected primary-expression before ‘...’ token
 ../main.cpp:11:13: warning: unused variable ‘ev’ [-Wunused-variable]
 make: *** [main.o] Error 1
+09:29:18 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+../renderOpenGL/glToolkit.cpp: In function ‘bool gltCheckInput()’:
+../renderOpenGL/glToolkit.cpp:160:7: error: ‘keyboardCB’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:164:8: error: ‘lastLeftDown’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:166:8: error: ‘mouseLeftCB’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:173:3: error: ‘lastLeftDown’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:176:8: error: ‘lastRightDown’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:178:8: error: ‘mouseRightCB’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:185:3: error: ‘lastRightDown’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:187:2: error: ‘scrollVal’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp: At global scope:
+../renderOpenGL/glToolkit.cpp:194:36: error: variable or field ‘gltSetLeftMouseButtonCallback’ declared void
+../renderOpenGL/glToolkit.cpp:194:36: error: ‘mouseButtonCallback’ was not declared in this scope
+../renderOpenGL/glToolkit.cpp:199:37: error: variable or field ‘gltSetRightMouseButtonCallback’ declared void
+../renderOpenGL/glToolkit.cpp:199:37: error: ‘mouseButtonCallback’ was not declared in this scope
+make: *** [renderOpenGL/glToolkit.o] Error 1
+09:31:23 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp:12:1: error: prototype for ‘GLFWInput::GLFWInput(GLFWwindow*)’ does not match any in class ‘GLFWInput’
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h:17:7: error: candidates are: GLFWInput::GLFWInput(const GLFWInput&)
+../input/GLFWInput.h:19:2: error:                 GLFWInput::GLFWInput()
+../input/GLFWInput.cpp: In member function ‘bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:23:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:31:37 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp:12:1: error: prototype for ‘GLFWInput::GLFWInput(GLFWwindow*)’ does not match any in class ‘GLFWInput’
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h:17:7: error: candidates are: GLFWInput::GLFWInput(const GLFWInput&)
+../input/GLFWInput.h:19:2: error:                 GLFWInput::GLFWInput()
+../input/GLFWInput.cpp: In member function ‘bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:23:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:31:44 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h:20:39: error: destructors may not have parameters
+../input/GLFWInput.cpp:12:1: error: prototype for ‘GLFWInput::GLFWInput(GLFWwindow*)’ does not match any in class ‘GLFWInput’
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h:17:7: error: candidates are: GLFWInput::GLFWInput(const GLFWInput&)
+../input/GLFWInput.h:19:2: error:                 GLFWInput::GLFWInput()
+../input/GLFWInput.cpp: In member function ‘bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:23:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:31:56 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In constructor ‘GLFWInput::GLFWInput(GLFWwindow*)’:
+../input/GLFWInput.cpp:13:13: error: expected ‘(’ before ‘,’ token
+../input/GLFWInput.cpp:15:77: error: cannot convert ‘GLFWwindow’ to ‘GLFWwindow*’ for argument ‘1’ to ‘void (* glfwSetScrollCallback(GLFWwindow*, GLFWscrollfun))(GLFWwindow*, double, double)’
+../input/GLFWInput.cpp: In member function ‘bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:23:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:32:12 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In constructor ‘GLFWInput::GLFWInput(GLFWwindow*)’:
+../input/GLFWInput.cpp:15:77: error: cannot convert ‘GLFWwindow’ to ‘GLFWwindow*’ for argument ‘1’ to ‘void (* glfwSetScrollCallback(GLFWwindow*, GLFWscrollfun))(GLFWwindow*, double, double)’
+../input/GLFWInput.cpp: In member function ‘bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:23:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:32:25 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In constructor ‘GLFWInput::GLFWInput(GLFWwindow*)’:
+../input/GLFWInput.cpp:15:76: error: cannot convert ‘std::_Bind_helper<false, void (GLFWInput::*)(GLFWwindow*, double, double), GLFWInput* const>::type {aka std::_Bind<std::_Mem_fn<void (GLFWInput::*)(GLFWwindow*, double, double)>(GLFWInput*)>}’ to ‘GLFWscrollfun {aka void (*)(GLFWwindow*, double, double)}’ for argument ‘2’ to ‘void (* glfwSetScrollCallback(GLFWwindow*, GLFWscrollfun))(GLFWwindow*, double, double)’
+../input/GLFWInput.cpp: In member function ‘bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:23:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:41:41 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h:33:29: error: ISO C++ forbids in-class initialization of non-const static member ‘GLFWInput::lastLeftDown’
+../input/GLFWInput.h:34:30: error: ISO C++ forbids in-class initialization of non-const static member ‘GLFWInput::lastRightDown’
+../input/GLFWInput.h: In static member function ‘static void GLFWInput::setListener(std::function<void(InputEvent)>)’:
+../input/GLFWInput.h:24:3: error: ‘mListener’ was not declared in this scope
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:26:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:42:04 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h: In static member function ‘static void GLFWInput::setListener(std::function<void(InputEvent)>)’:
+../input/GLFWInput.h:24:3: error: ‘mListener’ was not declared in this scope
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:26:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:42:28 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h: In static member function ‘static void GLFWInput::setListener(std::function<void(InputEvent)>)’:
+../input/GLFWInput.h:24:3: error: ‘GFLWInput’ has not been declared
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:25:14: warning: unused variable ‘ev’ [-Wunused-variable]
+make: *** [input/GLFWInput.o] Error 1
+09:42:36 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:25:14: warning: unused variable ‘ev’ [-Wunused-variable]
+Finished building: ../input/GLFWInput.cpp
+ 
+Building file: ../input/OperationPan.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/OperationPan.d" -MT"input/OperationPan.d" -o "input/OperationPan.o" "../input/OperationPan.cpp"
+../input/OperationPan.cpp: In member function ‘virtual void OperationPan::handleInput(InputEvent&)’:
+../input/OperationPan.cpp:27:12: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+../input/OperationPan.cpp:28:7: error: incomplete type ‘InputEvent’ used in nested name specifier
+../input/OperationPan.cpp:29:9: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+../input/OperationPan.cpp:29:25: error: incomplete type ‘InputEvent’ used in nested name specifier
+../input/OperationPan.cpp:34:38: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+../input/OperationPan.cpp:34:45: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+../input/OperationPan.cpp:37:7: error: incomplete type ‘InputEvent’ used in nested name specifier
+../input/OperationPan.cpp:39:38: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+../input/OperationPan.cpp:39:45: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+../input/OperationPan.cpp:41:22: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+../input/OperationPan.cpp:41:29: error: invalid use of incomplete type ‘class InputEvent’
+In file included from ../input/OperationPan.h:11:0,
+                 from ../input/OperationPan.cpp:8:
+../input/IOperation.h:11:7: error: forward declaration of ‘class InputEvent’
+make: *** [input/OperationPan.o] Error 1
+09:42:57 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/OperationPan.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/OperationPan.d" -MT"input/OperationPan.d" -o "input/OperationPan.o" "../input/OperationPan.cpp"
+Finished building: ../input/OperationPan.cpp
+ 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘void onMouseLeftButton(bool)’:
+../main.cpp:11:16: error: variable ‘InputEvent ev’ has initializer but incomplete type
+../main.cpp:11:26: error: incomplete type ‘InputEvent’ used in nested name specifier
+../main.cpp:11:54: error: incomplete type ‘InputEvent’ used in nested name specifier
+../main.cpp:12:16: error: expected primary-expression before ‘...’ token
+../main.cpp:11:13: warning: unused variable ‘ev’ [-Wunused-variable]
+../main.cpp: In function ‘int main()’:
+../main.cpp:27:23: error: ‘gltCheckInput’ was not declared in this scope
+make: *** [main.o] Error 1
+09:43:11 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp:6:24: fatal error: InputEvent.h: No such file or directory
+compilation terminated.
+make: *** [main.o] Error 1
+09:43:16 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘void onMouseLeftButton(bool)’:
+../main.cpp:13:16: error: expected primary-expression before ‘...’ token
+../main.cpp:12:13: warning: unused variable ‘ev’ [-Wunused-variable]
+../main.cpp: In function ‘int main()’:
+../main.cpp:28:23: error: ‘gltCheckInput’ was not declared in this scope
+make: *** [main.o] Error 1
+09:45:25 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+Finished building: ../main.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   
+./input/GLFWInput.o: In function `glm::detail::tvec2<float, (glm::precision)0>::tvec2()':
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:21: multiple definition of `window'
+./renderOpenGL/glToolkit.o:/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:26: first defined here
+./renderOpenGL/Rectangle.o: In function `Rectangle::initialize(IRenderer*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:34: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:35: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:36: undefined reference to `__glewGetUniformLocation'
+./renderOpenGL/Rectangle.o: In function `Rectangle::render()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:63: undefined reference to `__glewUniformMatrix4fv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:64: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:65: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:66: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:67: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:68: undefined reference to `__glewUseProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:70: undefined reference to `glDrawArrays'
+./renderOpenGL/glToolkit.o: In function `gltInit(unsigned int, unsigned int)':
+glToolkit.cpp:(.text+0x1c): undefined reference to `glfwInit'
+glToolkit.cpp:(.text+0x5a): undefined reference to `glfwWindowHint'
+glToolkit.cpp:(.text+0x69): undefined reference to `glfwWindowHint'
+glToolkit.cpp:(.text+0x98): undefined reference to `glfwCreateWindow'
+glToolkit.cpp:(.text+0xdd): undefined reference to `glfwMakeContextCurrent'
+glToolkit.cpp:(.text+0xf6): undefined reference to `glfwSetInputMode'
+glToolkit.cpp:(.text+0xfc): undefined reference to `glewExperimental'
+glToolkit.cpp:(.text+0x102): undefined reference to `glewInit'
+./renderOpenGL/glToolkit.o: In function `gltBegin()':
+glToolkit.cpp:(.text+0x143): undefined reference to `glClear'
+./renderOpenGL/glToolkit.o: In function `gltEnd()':
+glToolkit.cpp:(.text+0x158): undefined reference to `glfwSwapBuffers'
+./renderOpenGL/shader.o: In function `Shaders::createAndCompileShader(std::string const&, unsigned int)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:29: undefined reference to `__glewCreateShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:33: undefined reference to `__glewShaderSource'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:34: undefined reference to `__glewCompileShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:37: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:41: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:44: undefined reference to `__glewGetShaderInfoLog'
+./renderOpenGL/shader.o: In function `Shaders::createProgramGeom(char const*, char const*, char const*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:96: undefined reference to `__glewCreateProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:97: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:98: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:99: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:100: undefined reference to `__glewLinkProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:104: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:108: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:111: undefined reference to `__glewGetProgramInfoLog'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:120: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:121: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:122: undefined reference to `__glewDeleteShader'
+./input/GLFWInput.o: In function `GLFWInput::initialize(GLFWwindow*)':
+GLFWInput.cpp:(.text+0x13): undefined reference to `GLFWInput::window'
+GLFWInput.cpp:(.text+0x24): undefined reference to `glfwSetScrollCallback'
+./input/GLFWInput.o: In function `GLFWInput::checkInput()':
+GLFWInput.cpp:(.text+0x3b): undefined reference to `glfwPollEvents'
+GLFWInput.cpp:(.text+0x42): undefined reference to `GLFWInput::window'
+GLFWInput.cpp:(.text+0x4a): undefined reference to `glfwWindowShouldClose'
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:45:58 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:25:14: warning: unused variable ‘ev’ [-Wunused-variable]
+Finished building: ../input/GLFWInput.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   
+./input/GLFWInput.o: In function `glm::detail::tvec2<float, (glm::precision)0>::tvec2()':
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:21: multiple definition of `window'
+./renderOpenGL/glToolkit.o:/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:26: first defined here
+./renderOpenGL/Rectangle.o: In function `Rectangle::initialize(IRenderer*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:34: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:35: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:36: undefined reference to `__glewGetUniformLocation'
+./renderOpenGL/Rectangle.o: In function `Rectangle::render()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:63: undefined reference to `__glewUniformMatrix4fv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:64: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:65: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:66: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:67: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:68: undefined reference to `__glewUseProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:70: undefined reference to `glDrawArrays'
+./renderOpenGL/glToolkit.o: In function `gltInit(unsigned int, unsigned int)':
+glToolkit.cpp:(.text+0x1c): undefined reference to `glfwInit'
+glToolkit.cpp:(.text+0x5a): undefined reference to `glfwWindowHint'
+glToolkit.cpp:(.text+0x69): undefined reference to `glfwWindowHint'
+glToolkit.cpp:(.text+0x98): undefined reference to `glfwCreateWindow'
+glToolkit.cpp:(.text+0xdd): undefined reference to `glfwMakeContextCurrent'
+glToolkit.cpp:(.text+0xf6): undefined reference to `glfwSetInputMode'
+glToolkit.cpp:(.text+0xfc): undefined reference to `glewExperimental'
+glToolkit.cpp:(.text+0x102): undefined reference to `glewInit'
+./renderOpenGL/glToolkit.o: In function `gltBegin()':
+glToolkit.cpp:(.text+0x143): undefined reference to `glClear'
+./renderOpenGL/glToolkit.o: In function `gltEnd()':
+glToolkit.cpp:(.text+0x158): undefined reference to `glfwSwapBuffers'
+./renderOpenGL/shader.o: In function `Shaders::createAndCompileShader(std::string const&, unsigned int)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:29: undefined reference to `__glewCreateShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:33: undefined reference to `__glewShaderSource'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:34: undefined reference to `__glewCompileShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:37: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:41: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:44: undefined reference to `__glewGetShaderInfoLog'
+./renderOpenGL/shader.o: In function `Shaders::createProgramGeom(char const*, char const*, char const*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:96: undefined reference to `__glewCreateProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:97: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:98: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:99: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:100: undefined reference to `__glewLinkProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:104: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:108: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:111: undefined reference to `__glewGetProgramInfoLog'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:120: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:121: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:122: undefined reference to `__glewDeleteShader'
+./input/GLFWInput.o: In function `GLFWInput::initialize(GLFWwindow*)':
+GLFWInput.cpp:(.text+0x13): undefined reference to `GLFWInput::window'
+GLFWInput.cpp:(.text+0x1a): undefined reference to `GLFWInput::window'
+GLFWInput.cpp:(.text+0x27): undefined reference to `glfwSetScrollCallback'
+./input/GLFWInput.o: In function `GLFWInput::checkInput()':
+GLFWInput.cpp:(.text+0x3f): undefined reference to `glfwPollEvents'
+GLFWInput.cpp:(.text+0x46): undefined reference to `GLFWInput::window'
+GLFWInput.cpp:(.text+0x4e): undefined reference to `glfwWindowShouldClose'
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:46:26 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:25:14: warning: unused variable ‘ev’ [-Wunused-variable]
+Finished building: ../input/GLFWInput.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   
+./renderOpenGL/Rectangle.o: In function `Rectangle::initialize(IRenderer*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:34: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:35: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:36: undefined reference to `__glewGetUniformLocation'
+./renderOpenGL/Rectangle.o: In function `Rectangle::render()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:63: undefined reference to `__glewUniformMatrix4fv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:64: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:65: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:66: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:67: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:68: undefined reference to `__glewUseProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:70: undefined reference to `glDrawArrays'
+./renderOpenGL/glToolkit.o: In function `gltInit(unsigned int, unsigned int)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:34: undefined reference to `glfwInit'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:39: undefined reference to `glfwWindowHint'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:40: undefined reference to `glfwWindowHint'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:45: undefined reference to `glfwCreateWindow'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:50: undefined reference to `glfwMakeContextCurrent'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:53: undefined reference to `glfwSetInputMode'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:55: undefined reference to `glewExperimental'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:56: undefined reference to `glewInit'
+./renderOpenGL/glToolkit.o: In function `gltBegin()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:121: undefined reference to `glClear'
+./renderOpenGL/glToolkit.o: In function `gltEnd()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:127: undefined reference to `glfwSwapBuffers'
+./renderOpenGL/shader.o: In function `Shaders::createAndCompileShader(std::string const&, unsigned int)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:29: undefined reference to `__glewCreateShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:33: undefined reference to `__glewShaderSource'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:34: undefined reference to `__glewCompileShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:37: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:41: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:44: undefined reference to `__glewGetShaderInfoLog'
+./renderOpenGL/shader.o: In function `Shaders::createProgramGeom(char const*, char const*, char const*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:96: undefined reference to `__glewCreateProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:97: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:98: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:99: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:100: undefined reference to `__glewLinkProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:104: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:108: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:111: undefined reference to `__glewGetProgramInfoLog'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:120: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:121: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:122: undefined reference to `__glewDeleteShader'
+./input/GLFWInput.o: In function `GLFWInput::initialize(GLFWwindow*)':
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:21: undefined reference to `glfwSetScrollCallback'
+./input/GLFWInput.o: In function `GLFWInput::checkInput()':
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:60: undefined reference to `glfwPollEvents'
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:61: undefined reference to `glfwWindowShouldClose'
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:47:09 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/Rectangle.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/Rectangle.d" -MT"renderOpenGL/Rectangle.d" -o "renderOpenGL/Rectangle.o" "../renderOpenGL/Rectangle.cpp"
+Finished building: ../renderOpenGL/Rectangle.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   
+./renderOpenGL/Rectangle.o: In function `Rectangle::initialize(IRenderer*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:35: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:36: undefined reference to `__glewGetAttribLocation'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:37: undefined reference to `__glewGetUniformLocation'
+./renderOpenGL/Rectangle.o: In function `Rectangle::render()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:64: undefined reference to `__glewUniformMatrix4fv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:65: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:66: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:67: undefined reference to `__glewVertexAttribPointer'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:68: undefined reference to `__glewEnableVertexAttribArray'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:69: undefined reference to `__glewUseProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/Rectangle.cpp:71: undefined reference to `glDrawArrays'
+./renderOpenGL/glToolkit.o: In function `gltInit(unsigned int, unsigned int)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:34: undefined reference to `glfwInit'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:39: undefined reference to `glfwWindowHint'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:40: undefined reference to `glfwWindowHint'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:45: undefined reference to `glfwCreateWindow'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:50: undefined reference to `glfwMakeContextCurrent'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:53: undefined reference to `glfwSetInputMode'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:55: undefined reference to `glewExperimental'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:56: undefined reference to `glewInit'
+./renderOpenGL/glToolkit.o: In function `gltBegin()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:121: undefined reference to `glClear'
+./renderOpenGL/glToolkit.o: In function `gltEnd()':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/glToolkit.cpp:127: undefined reference to `glfwSwapBuffers'
+./renderOpenGL/shader.o: In function `Shaders::createAndCompileShader(std::string const&, unsigned int)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:29: undefined reference to `__glewCreateShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:33: undefined reference to `__glewShaderSource'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:34: undefined reference to `__glewCompileShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:37: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:41: undefined reference to `__glewGetShaderiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:44: undefined reference to `__glewGetShaderInfoLog'
+./renderOpenGL/shader.o: In function `Shaders::createProgramGeom(char const*, char const*, char const*)':
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:96: undefined reference to `__glewCreateProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:97: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:98: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:99: undefined reference to `__glewAttachShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:100: undefined reference to `__glewLinkProgram'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:104: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:108: undefined reference to `__glewGetProgramiv'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:111: undefined reference to `__glewGetProgramInfoLog'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:120: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:121: undefined reference to `__glewDeleteShader'
+/mnt/docs/Work/bugs/bugs/Debug/../renderOpenGL/shader.cpp:122: undefined reference to `__glewDeleteShader'
+./input/GLFWInput.o: In function `GLFWInput::initialize(GLFWwindow*)':
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:21: undefined reference to `glfwSetScrollCallback'
+./input/GLFWInput.o: In function `GLFWInput::checkInput()':
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:60: undefined reference to `glfwPollEvents'
+/mnt/docs/Work/bugs/bugs/Debug/../input/GLFWInput.cpp:61: undefined reference to `glfwWindowShouldClose'
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:48:45 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lGLFW
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: cannot find -lGLFW
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:48:55 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lGLFW3
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: cannot find -lGLFW3
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:49:23 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lglfw3
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: /usr/local/lib/libglfw3.a(x11_clipboard.c.o): undefined reference to symbol 'XConvertSelection'
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: note: 'XConvertSelection' is defined in DSO /usr/lib64/libX11.so.6 so try adding it to the linker command line
+/usr/lib64/libX11.so.6: could not read symbols: Invalid operation
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:49:48 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lglfw3 -lX11
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: /usr/local/lib/libglfw3.a(x11_init.c.o): undefined reference to symbol 'XF86VidModeQueryExtension'
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: note: 'XF86VidModeQueryExtension' is defined in DSO /usr/lib64/libXxf86vm.so.1 so try adding it to the linker command line
+/usr/lib64/libXxf86vm.so.1: could not read symbols: Invalid operation
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:50:22 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lglfw3 -lX11 -lXxf86vm
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: /usr/local/lib/libglfw3.a(glx_context.c.o): undefined reference to symbol 'pthread_key_delete@@GLIBC_2.2.5'
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: note: 'pthread_key_delete@@GLIBC_2.2.5' is defined in DSO /lib64/libpthread.so.0 so try adding it to the linker command line
+/lib64/libpthread.so.0: could not read symbols: Invalid operation
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:50:43 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lglfw3 -lX11 -lXxf86vm -lpthread
+/usr/local/lib/libglfw3.a(x11_gamma.c.o): In function `_glfwInitGammaRamp':
+x11_gamma.c:(.text+0x49): undefined reference to `XRRGetScreenResources'
+x11_gamma.c:(.text+0x6a): undefined reference to `XRRGetCrtcGammaSize'
+x11_gamma.c:(.text+0x81): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_gamma.c.o): In function `_glfwPlatformGetGammaRamp':
+x11_gamma.c:(.text+0xce): undefined reference to `XRRGetCrtcGammaSize'
+x11_gamma.c:(.text+0xf1): undefined reference to `XRRGetCrtcGamma'
+x11_gamma.c:(.text+0x17d): undefined reference to `XRRFreeGamma'
+/usr/local/lib/libglfw3.a(x11_gamma.c.o): In function `_glfwPlatformSetGammaRamp':
+x11_gamma.c:(.text+0x231): undefined reference to `XRRAllocGamma'
+x11_gamma.c:(.text+0x2cd): undefined reference to `XRRSetCrtcGamma'
+x11_gamma.c:(.text+0x2d9): undefined reference to `XRRFreeGamma'
+/usr/local/lib/libglfw3.a(x11_init.c.o): In function `initExtensions':
+x11_init.c:(.text+0x15f2): undefined reference to `XRRQueryExtension'
+x11_init.c:(.text+0x161c): undefined reference to `XRRQueryVersion'
+x11_init.c:(.text+0x16b0): undefined reference to `XIQueryVersion'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwSetVideoMode':
+x11_monitor.c:(.text+0x17a): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x19f): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x1c1): undefined reference to `XRRGetOutputInfo'
+x11_monitor.c:(.text+0x3d3): undefined reference to `XRRSetCrtcConfig'
+x11_monitor.c:(.text+0x3df): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0x3eb): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x3f7): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwRestoreVideoMode':
+x11_monitor.c:(.text+0x44c): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x471): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x4e6): undefined reference to `XRRSetCrtcConfig'
+x11_monitor.c:(.text+0x4f2): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x4fe): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetMonitors':
+x11_monitor.c:(.text+0x560): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x57d): undefined reference to `XRRGetOutputPrimary'
+x11_monitor.c:(.text+0x5d5): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x5f0): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x65f): undefined reference to `XRRGetOutputInfo'
+x11_monitor.c:(.text+0x67c): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0x688): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x71c): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0x728): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x74c): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetMonitorPos':
+x11_monitor.c:(.text+0x8d0): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x8f5): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x92d): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x939): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetVideoModes':
+x11_monitor.c:(.text+0x9db): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x9fd): undefined reference to `XRRGetOutputInfo'
+x11_monitor.c:(.text+0xb8b): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0xb97): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetVideoMode':
+x11_monitor.c:(.text+0xc6f): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0xc94): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0xce9): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0xcf5): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_window.c.o): In function `createWindow':
+x11_window.c:(.text+0x675): undefined reference to `XISelectEvents'
+x11_window.c:(.text+0x6b7): undefined reference to `XRRSelectInput'
+/usr/local/lib/libglfw3.a(x11_window.c.o): In function `processEvent':
+x11_window.c:(.text+0x16c0): undefined reference to `XRRUpdateConfiguration'
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:51:42 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lglfw3 -lX11 -lXxf86vm -lpthread -lXRandr
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: cannot find -lXRandr
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:51:59 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lglfw3 -lX11 -lXxf86vm -lpthread -lXRandR
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: cannot find -lXRandR
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:52:26 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGL -lGLEW -lglfw3 -lX11 -lXxf86vm -lpthread
+/usr/local/lib/libglfw3.a(x11_gamma.c.o): In function `_glfwInitGammaRamp':
+x11_gamma.c:(.text+0x49): undefined reference to `XRRGetScreenResources'
+x11_gamma.c:(.text+0x6a): undefined reference to `XRRGetCrtcGammaSize'
+x11_gamma.c:(.text+0x81): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_gamma.c.o): In function `_glfwPlatformGetGammaRamp':
+x11_gamma.c:(.text+0xce): undefined reference to `XRRGetCrtcGammaSize'
+x11_gamma.c:(.text+0xf1): undefined reference to `XRRGetCrtcGamma'
+x11_gamma.c:(.text+0x17d): undefined reference to `XRRFreeGamma'
+/usr/local/lib/libglfw3.a(x11_gamma.c.o): In function `_glfwPlatformSetGammaRamp':
+x11_gamma.c:(.text+0x231): undefined reference to `XRRAllocGamma'
+x11_gamma.c:(.text+0x2cd): undefined reference to `XRRSetCrtcGamma'
+x11_gamma.c:(.text+0x2d9): undefined reference to `XRRFreeGamma'
+/usr/local/lib/libglfw3.a(x11_init.c.o): In function `initExtensions':
+x11_init.c:(.text+0x15f2): undefined reference to `XRRQueryExtension'
+x11_init.c:(.text+0x161c): undefined reference to `XRRQueryVersion'
+x11_init.c:(.text+0x16b0): undefined reference to `XIQueryVersion'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwSetVideoMode':
+x11_monitor.c:(.text+0x17a): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x19f): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x1c1): undefined reference to `XRRGetOutputInfo'
+x11_monitor.c:(.text+0x3d3): undefined reference to `XRRSetCrtcConfig'
+x11_monitor.c:(.text+0x3df): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0x3eb): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x3f7): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwRestoreVideoMode':
+x11_monitor.c:(.text+0x44c): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x471): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x4e6): undefined reference to `XRRSetCrtcConfig'
+x11_monitor.c:(.text+0x4f2): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x4fe): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetMonitors':
+x11_monitor.c:(.text+0x560): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x57d): undefined reference to `XRRGetOutputPrimary'
+x11_monitor.c:(.text+0x5d5): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x5f0): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x65f): undefined reference to `XRRGetOutputInfo'
+x11_monitor.c:(.text+0x67c): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0x688): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x71c): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0x728): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x74c): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetMonitorPos':
+x11_monitor.c:(.text+0x8d0): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x8f5): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0x92d): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0x939): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetVideoModes':
+x11_monitor.c:(.text+0x9db): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0x9fd): undefined reference to `XRRGetOutputInfo'
+x11_monitor.c:(.text+0xb8b): undefined reference to `XRRFreeOutputInfo'
+x11_monitor.c:(.text+0xb97): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_monitor.c.o): In function `_glfwPlatformGetVideoMode':
+x11_monitor.c:(.text+0xc6f): undefined reference to `XRRGetScreenResources'
+x11_monitor.c:(.text+0xc94): undefined reference to `XRRGetCrtcInfo'
+x11_monitor.c:(.text+0xce9): undefined reference to `XRRFreeCrtcInfo'
+x11_monitor.c:(.text+0xcf5): undefined reference to `XRRFreeScreenResources'
+/usr/local/lib/libglfw3.a(x11_window.c.o): In function `createWindow':
+x11_window.c:(.text+0x675): undefined reference to `XISelectEvents'
+x11_window.c:(.text+0x6b7): undefined reference to `XRRSelectInput'
+/usr/local/lib/libglfw3.a(x11_window.c.o): In function `processEvent':
+x11_window.c:(.text+0x16c0): undefined reference to `XRRUpdateConfiguration'
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:53:53 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lxrandr -lxi
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: cannot find -lxrandr
+/usr/lib64/gcc/x86_64-suse-linux/4.7/../../../../x86_64-suse-linux/bin/ld: cannot find -lxi
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+09:54:22 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi
+Finished building target: bugs
+ 
+09:54:28 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+make: Nothing to be done for `all'.
+09:54:31 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+make: Nothing to be done for `all'.
+09:55:22 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi
+Finished building target: bugs
+ 

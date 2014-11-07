@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../input/GLFWInput.cpp \
 ../input/OperationPan.cpp 
 
 OBJS += \
+./input/GLFWInput.o \
 ./input/OperationPan.o 
 
 CPP_DEPS += \
+./input/GLFWInput.d \
 ./input/OperationPan.d 
 
 

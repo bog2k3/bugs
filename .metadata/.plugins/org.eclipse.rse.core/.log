@@ -1,4 +1,4 @@
-Fri Nov 07 08:57:14 EET 2014
+Fri Nov 07 09:06:17 EET 2014
 ERROR org.eclipse.rse.core  Unexpected Exception
 java.net.UnknownHostException: bogPC: bogPC
 	at java.net.InetAddress.getLocalHost(InetAddress.java:1473)
@@ -33,39 +33,4 @@ Caused by: java.net.UnknownHostException: bogPC
 	at java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1293)
 	at java.net.InetAddress.getLocalHost(InetAddress.java:1469)
 	... 25 more
---------------------------------------------
-Fri Nov 07 08:57:14 EET 2014
-ERROR org.eclipse.rse.core  Unexpected Exception
-java.net.UnknownHostException: bogPC: bogPC
-	at java.net.InetAddress.getLocalHost(InetAddress.java:1473)
-	at org.eclipse.rse.core.RSECorePlugin.getLocalMachineName(RSECorePlugin.java:265)
-	at org.eclipse.rse.core.RSEPreferencesManager.getDefaultPrivateSystemProfileName(RSEPreferencesManager.java:358)
-	at org.eclipse.rse.internal.core.model.SystemProfileManager.ensureDefaultPrivateProfile(SystemProfileManager.java:477)
-	at org.eclipse.rse.internal.core.model.SystemProfileManager.getDefaultPrivateSystemProfile(SystemProfileManager.java:416)
-	at org.eclipse.rse.internal.core.RSEInitJob.run(RSEInitJob.java:207)
-	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
-Caused by: java.net.UnknownHostException: bogPC
-	at java.net.Inet4AddressImpl.lookupAllHostAddr(Native Method)
-	at java.net.InetAddress$1.lookupAllHostAddr(InetAddress.java:901)
-	at java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1293)
-	at java.net.InetAddress.getLocalHost(InetAddress.java:1469)
-	... 6 more
---------------------------------------------
-Fri Nov 07 08:57:15 EET 2014
-ERROR org.eclipse.rse.core  Unexpected Exception
-java.net.UnknownHostException: bogPC: bogPC
-	at java.net.InetAddress.getLocalHost(InetAddress.java:1473)
-	at org.eclipse.rse.core.RSECorePlugin.getLocalMachineName(RSECorePlugin.java:265)
-	at org.eclipse.rse.core.RSEPreferencesManager.getDefaultPrivateSystemProfileName(RSEPreferencesManager.java:358)
-	at org.eclipse.rse.internal.core.model.SystemProfileManager.createDefaultPrivateProfile(SystemProfileManager.java:450)
-	at org.eclipse.rse.internal.core.model.SystemProfileManager.ensureDefaultPrivateProfile(SystemProfileManager.java:501)
-	at org.eclipse.rse.internal.core.model.SystemProfileManager.getDefaultPrivateSystemProfile(SystemProfileManager.java:416)
-	at org.eclipse.rse.internal.core.RSEInitJob.run(RSEInitJob.java:207)
-	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
-Caused by: java.net.UnknownHostException: bogPC
-	at java.net.Inet4AddressImpl.lookupAllHostAddr(Native Method)
-	at java.net.InetAddress$1.lookupAllHostAddr(InetAddress.java:901)
-	at java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1293)
-	at java.net.InetAddress.getLocalHost(InetAddress.java:1469)
-	... 7 more
 --------------------------------------------

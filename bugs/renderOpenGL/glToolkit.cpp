@@ -23,24 +23,8 @@ GLuint texIDs[1000];
 unsigned winWidth = 512;
 unsigned winHeight = 512;
 
-keyboardCallback keyboardCB = NULL;
-mouseButtonCallback mouseLeftCB = NULL;
-mouseButtonCallback mouseRightCB = NULL;
-
-bool lastLeftDown = false;
-bool lastRightDown = false;
-double scrollVal = 0;
-
-double gltGetMouseScroll() { return scrollVal; }
-
-void gltSetKeyboardCallback(keyboardCallback cb)
-{
-	keyboardCB = cb;
-}
-
-void mouseScroll(GLFWwindow* win,double x, double y) 
-{
-	scrollVal = y;
+GLFWwindow* gltGetWindow() {
+	return window;
 }
 
 // initializes openGL an' all
@@ -128,8 +112,6 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight)
 		);
 	*/
 
-	glfwSetScrollCallback(window, &mouseScroll);
-
 	return true;
 }
 
@@ -175,49 +157,4 @@ void gltDrawImg(int x, int y, unsigned width, unsigned height, GLenum format, GL
 
 	gridCell++;
 	*/
-}
-
-bool gltCheckInput() {
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		if (keyboardCB != NULL)
-			keyboardCB(GLFW_KEY_SPACE, true);
-	}
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1)) {
-		if (!lastLeftDown) {
-			lastLeftDown = true;
-			if (mouseLeftCB != NULL) {
-				double x, y;
-				glfwGetCursorPos(window, &x, &y);
-				mouseLeftCB(x, y, glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS);
-			}
-		}
-	} else
-		lastLeftDown = false;
-
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2)) {
-		if (!lastRightDown) {
-			lastRightDown = true;
-			if (mouseRightCB != NULL) {
-				double x, y;
-				glfwGetCursorPos(window, &x, &y);
-				mouseRightCB(x, y, glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS);
-			}
-		}
-	} else
-		lastRightDown = false;
-
-	scrollVal = 0;
-
-	// Check if the ESC key was pressed or the window was closed
-	glfwPollEvents();
-	return glfwWindowShouldClose(window) == 0;
-}
-
-void gltSetLeftMouseButtonCallback(mouseButtonCallback cb) {
-	mouseLeftCB = cb;
-}
-
-// sets a callback to be invoked when the right mouse is clicked
-void gltSetRightMouseButtonCallback(mouseButtonCallback cb) {
-	mouseRightCB = cb;
 }
