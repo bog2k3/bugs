@@ -14,7 +14,7 @@ int main()
 {
 	std::cout << "bugs\n";
 
-	if (!gltInit(800, 600))
+	if (!gltInit(800, 600, "Bugs"))
 		return -1;
 	Renderer renderer;
 	renderer.setScreenSize(800, 600);

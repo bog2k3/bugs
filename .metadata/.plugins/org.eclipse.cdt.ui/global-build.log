@@ -1176,3 +1176,88 @@ make: Nothing to be done for 'all'.
 10:23:14 **** Incremental Build of configuration Debug for project bugs ****
 make all 
 make: Nothing to be done for 'all'.
+10:23:54 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+make: Nothing to be done for 'all'.
+10:28:21 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+make: Nothing to be done for 'all'.
+10:28:43 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi -lrt
+Finished building target: bugs
+ 
+10:29:45 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘int main()’:
+../main.cpp:17:31: error: too many arguments to function ‘bool gltInit(unsigned int, unsigned int)’
+In file included from ../main.cpp:3:0:
+../renderOpenGL/glToolkit.h:10:6: note: declared here
+subdir.mk:18: recipe for target 'main.o' failed
+make: *** [main.o] Error 1
+10:29:51 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘int main()’:
+../main.cpp:17:31: error: too many arguments to function ‘bool gltInit(unsigned int, unsigned int)’
+In file included from ../main.cpp:3:0:
+../renderOpenGL/glToolkit.h:10:6: note: declared here
+subdir.mk:18: recipe for target 'main.o' failed
+make: *** [main.o] Error 1
+10:30:06 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+In file included from ../renderOpenGL/glToolkit.cpp:1:0:
+../renderOpenGL/glToolkit.h:10:6: error: default argument missing for parameter 3 of ‘bool gltInit(unsigned int, unsigned int, char*)’
+renderOpenGL/subdir.mk:27: recipe for target 'renderOpenGL/glToolkit.o' failed
+make: *** [renderOpenGL/glToolkit.o] Error 1
+10:30:25 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+In file included from ../renderOpenGL/glToolkit.cpp:1:0:
+../renderOpenGL/glToolkit.h:10:6: error: default argument missing for parameter 3 of ‘bool gltInit(unsigned int, unsigned int, char*)’
+renderOpenGL/subdir.mk:27: recipe for target 'renderOpenGL/glToolkit.o' failed
+make: *** [renderOpenGL/glToolkit.o] Error 1
+10:30:40 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘int main()’:
+../main.cpp:17:31: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+Finished building: ../main.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi -lrt
+Finished building target: bugs
+ 
+10:31:08 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+make: Nothing to be done for 'all'.
