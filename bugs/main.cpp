@@ -6,6 +6,7 @@
 #include "input/GLFWInput.h"
 #include "input/InputEvent.h"
 #include "input/OperationPan.h"
+#include <GLFW/glfw3.h>
 #include <functional>
 
 OperationPan *opPan = nullptr;
@@ -24,11 +25,14 @@ int main()
 	opPan = new OperationPan(&renderer);
 	GLFWInput::setListener(std::bind(&OperationPan::handleInput, opPan, std::placeholders::_1));
 
-	float t = 0.f;
+	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
+		float newTime = glfwGetTime();
+		float dt = newTime - t;
+		t = newTime;
+		opPan->update(dt);
 		gltBegin();
 		Rectangle::draw(0.5f, 0.5f, 0, 1.5f, 1.5f, t, 1, 0, 0);
-		t += 0.05f;
 		renderer.render();
 		gltEnd();
 	}

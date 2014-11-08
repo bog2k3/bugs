@@ -27,6 +27,7 @@ protected:
 	bool isDragging;
 	static const unsigned nFilter = 5;
 	glm::vec2 lastDelta[nFilter];
+	float filterTimes[nFilter];
 	int lastIndex;
 	float frictionFactor;
 	glm::vec2 flySpeed;
