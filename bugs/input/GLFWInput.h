@@ -20,14 +20,14 @@ public:
 
 	// returns true if application should continue, and false if it should shut down (user closed window)
 	static bool checkInput();
-	static void setListener(std::function<void(InputEvent)> listener) {
+	static void setListener(std::function<void(InputEvent&)> listener) {
 		GLFWInput::listener = listener;
 	}
 
 private:
 	static void glfwMouseScroll(GLFWwindow* win,double x, double y);
 
-	static std::function<void(InputEvent)> listener;
+	static std::function<void(InputEvent&)> listener;
 	static GLFWwindow *window;
 
 	static bool lastLeftDown;

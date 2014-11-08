@@ -7,7 +7,7 @@
 class GLFWwindow;
 
 // initializes openGL an' all
-bool gltInit(unsigned windowWidth=512, unsigned windowHeight=512);
+bool gltInit(unsigned windowWidth=512, unsigned windowHeight=512, char* windowTitle="Untitled");
 
 // begins a frame
 void gltBegin();

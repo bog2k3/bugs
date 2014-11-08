@@ -1,0 +1,12 @@
+22:41:46 **** Incremental Build of configuration Default for project renderOpenGL ****
+make all 
+Building file: ../glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -O2 -g -Wall -c -fmessage-length=0 -MMD -MP -MF"glToolkit.d" -MT"glToolkit.d" -o "glToolkit.o" "../glToolkit.cpp"
+../glToolkit.cpp:4:23: fatal error: GLFW/glfw.h: No such file or directory
+compilation terminated.
+subdir.mk:27: recipe for target 'glToolkit.o' failed
+make: *** [glToolkit.o] Error 1
+
+22:41:46 Build Finished (took 191ms)
+

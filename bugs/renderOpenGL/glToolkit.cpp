@@ -28,7 +28,7 @@ GLFWwindow* gltGetWindow() {
 }
 
 // initializes openGL an' all
-bool gltInit(unsigned windowWidth, unsigned windowHeight)
+bool gltInit(unsigned windowWidth, unsigned windowHeight, char* windowTitle)
 {
 	// initialize GLFW and set-up window an' all:
 	if (!glfwInit()) {
@@ -36,13 +36,13 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight)
 		return false;
 	}
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
 	winWidth = windowWidth;
 	winHeight = windowHeight;
 	
-	window = glfwCreateWindow(windowWidth, windowHeight, "Neural Paint", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, windowTitle, NULL, NULL);
 	if (!window) {
 		cout << "FAILED creating window" << endl;
 		return false;
@@ -158,3 +158,4 @@ void gltDrawImg(int x, int y, unsigned width, unsigned height, GLenum format, GL
 	gridCell++;
 	*/
 }
+

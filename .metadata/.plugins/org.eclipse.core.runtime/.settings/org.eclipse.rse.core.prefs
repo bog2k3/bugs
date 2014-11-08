@@ -1,3 +1,4 @@
+activeuserprofiles=Team;bog;localhost
 eclipse.preferences.version=1
 org.eclipse.rse.systemtype.local.systemType.defaultUserId=bog
-useridperkey=bog.Local\=bog;
+useridperkey=bog.Local\=bog;localhost.Local\=bog;

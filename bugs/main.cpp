@@ -6,6 +6,7 @@
 #include "input/GLFWInput.h"
 #include "input/InputEvent.h"
 #include "input/OperationPan.h"
+#include <functional>
 
 OperationPan *opPan = nullptr;
 
@@ -13,13 +14,15 @@ int main()
 {
 	std::cout << "bugs\n";
 
-	if (!gltInit(800, 600))
+	if (!gltInit(800, 600, "Bugs"))
 		return -1;
 	Renderer renderer;
 	renderer.setScreenSize(800, 600);
 	Rectangle::initialize(&renderer);
 
 	GLFWInput::initialize(gltGetWindow());
+	opPan = new OperationPan(&renderer);
+	GLFWInput::setListener(std::bind(&OperationPan::handleInput, opPan, std::placeholders::_1));
 
 	float t = 0.f;
 	while (GLFWInput::checkInput()) {
