@@ -1158,3 +1158,21 @@ g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpe
 collect2: error: ld returned 1 exit status
 make: *** [bugs] Error 1
 makefile:46: recipe for target 'bugs' failed
+10:23:02 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi -lrt
+Finished building target: bugs
+ 
+10:23:10 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+make: Nothing to be done for 'all'.
+10:23:14 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+make: Nothing to be done for 'all'.
