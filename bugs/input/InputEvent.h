@@ -21,9 +21,10 @@ public:
 	float x, y;
 	float dx, dy, dz;
 	enum MOUSE_BUTTON {
-		MB_LEFT,
+		MB_NONE=-1,
+		MB_LEFT=0,
+		MB_RIGHT,
 		MB_MIDDLE,
-		MB_RIGHT
 	} mouseButton;
 	int key;
 

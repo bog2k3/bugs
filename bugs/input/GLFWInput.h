@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <glm/vec2.hpp>
+#include <vector>
 
 class InputEvent;
 class GLFWwindow;
@@ -26,12 +27,13 @@ public:
 
 private:
 	static void glfwMouseScroll(GLFWwindow* win,double x, double y);
+	static void glfwMouseButton(GLFWwindow* win, int button, int action, int mods);
+	static void glfwMousePos(GLFWwindow* win, double x, double y);
+	static void glfwKey(GLFWwindow* win, int key, int scancode, int action, int mods);
 
 	static std::function<void(InputEvent&)> listener;
+	static std::vector<InputEvent> eventQueue;
 	static GLFWwindow *window;
-
-	static bool lastLeftDown;
-	static bool lastRightDown;
 	static glm::vec2 lastMousePos;
 };
 

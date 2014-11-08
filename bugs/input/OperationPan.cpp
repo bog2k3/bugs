@@ -35,12 +35,25 @@ void OperationPan::handleInput(InputEvent& ev) {
 		lastDelta[lastIndex] = glm::vec2(ev.dx, ev.dy);
 		break;
 	}
+	case InputEvent::EV_MOUSE_UP: {
+		if (ev.mouseButton != InputEvent::MB_LEFT)
+			break;
+		isDragging = false;
+		break;
+	}
 	case InputEvent::EV_MOUSE_MOVED: {
+		if (!isDragging)
+			break;
 		lastIndex = (lastIndex + 1) % nFilter;
 		lastDelta[lastIndex] = glm::vec2(ev.dx, ev.dy);
 		glm::vec2 cam = pRenderer->getCameraPos();
-		cam += glm::vec2(ev.dx, ev.dy) / pRenderer->getZoomLevel();
+		cam += glm::vec2(-ev.dx, ev.dy) / pRenderer->getZoomLevel();
 		pRenderer->moveCameraTo(cam);
+		break;
+	}
+	case InputEvent::EV_MOUSE_SCROLL: {
+		float factor = ev.dz < 0 ? 0.90f : 1.10f;
+		pRenderer->setZoomLevel(pRenderer->getZoomLevel() * factor);
 		break;
 	}
 	default:

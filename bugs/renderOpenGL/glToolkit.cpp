@@ -28,7 +28,7 @@ GLFWwindow* gltGetWindow() {
 }
 
 // initializes openGL an' all
-bool gltInit(unsigned windowWidth, unsigned windowHeight, char* windowTitle)
+bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle[])
 {
 	// initialize GLFW and set-up window an' all:
 	if (!glfwInit()) {
@@ -48,9 +48,6 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, char* windowTitle)
 		return false;
 	}
 	glfwMakeContextCurrent(window);
-
-	//glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
