@@ -818,3 +818,343 @@ Invoking: Cross G++ Linker
 g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi
 Finished building target: bugs
  
+09:16:21 **** Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/Rectangle.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/Rectangle.d" -MT"renderOpenGL/Rectangle.d" -o "renderOpenGL/Rectangle.o" "../renderOpenGL/Rectangle.cpp"
+Finished building: ../renderOpenGL/Rectangle.cpp
+ 
+Building file: ../renderOpenGL/Renderer.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/Renderer.d" -MT"renderOpenGL/Renderer.d" -o "renderOpenGL/Renderer.o" "../renderOpenGL/Renderer.cpp"
+Finished building: ../renderOpenGL/Renderer.cpp
+ 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+../renderOpenGL/glToolkit.cpp:4:24: fatal error: GLFW/glfw3.h: No such file or directory
+compilation terminated.
+make: *** [renderOpenGL/glToolkit.o] Error 1
+renderOpenGL/subdir.mk:27: recipe for target 'renderOpenGL/glToolkit.o' failed
+09:48:41 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+../renderOpenGL/glToolkit.cpp:4:24: fatal error: GLFW/glfw3.h: No such file or directory
+compilation terminated.
+make: *** [renderOpenGL/glToolkit.o] Error 1
+renderOpenGL/subdir.mk:27: recipe for target 'renderOpenGL/glToolkit.o' failed
+09:49:12 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+../renderOpenGL/glToolkit.cpp:4:8: error: macro names must be identifiers
+renderOpenGL/subdir.mk:27: recipe for target 'renderOpenGL/glToolkit.o' failed
+make: *** [renderOpenGL/glToolkit.o] Error 1
+09:49:22 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/glToolkit.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/glToolkit.d" -MT"renderOpenGL/glToolkit.d" -o "renderOpenGL/glToolkit.o" "../renderOpenGL/glToolkit.cpp"
+Finished building: ../renderOpenGL/glToolkit.cpp
+ 
+Building file: ../renderOpenGL/shader.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/shader.d" -MT"renderOpenGL/shader.d" -o "renderOpenGL/shader.o" "../renderOpenGL/shader.cpp"
+In file included from ../renderOpenGL/shader.cpp:7:0:
+/usr/include/GL/glew.h:1167:24: fatal error: GL/glu.h: No such file or directory
+renderOpenGL/subdir.mk:27: recipe for target 'renderOpenGL/shader.o' failed
+compilation terminated.
+make: *** [renderOpenGL/shader.o] Error 1
+09:54:48 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/shader.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/shader.d" -MT"renderOpenGL/shader.d" -o "renderOpenGL/shader.o" "../renderOpenGL/shader.cpp"
+In file included from ../renderOpenGL/shader.cpp:8:0:
+/usr/include/GL/glew.h:1167:24: fatal error: GL/glu.h: No such file or directory
+renderOpenGL/subdir.mk:27: recipe for target 'renderOpenGL/shader.o' failed
+compilation terminated.
+make: *** [renderOpenGL/shader.o] Error 1
+09:59:45 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../renderOpenGL/shader.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"renderOpenGL/shader.d" -MT"renderOpenGL/shader.d" -o "renderOpenGL/shader.o" "../renderOpenGL/shader.cpp"
+Finished building: ../renderOpenGL/shader.cpp
+ 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp:10:24: fatal error: GLFW/glfw3.h: No such file or directory
+compilation terminated.
+make: *** [input/GLFWInput.o] Error 1
+input/subdir.mk:21: recipe for target 'input/GLFWInput.o' failed
+10:02:31 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp:10:24: fatal error: GLFW/glfw3.h: No such file or directory
+compilation terminated.
+input/subdir.mk:21: recipe for target 'input/GLFWInput.o' failed
+make: *** [input/GLFWInput.o] Error 1
+10:14:15 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:25:14: warning: unused variable ‘ev’ [-Wunused-variable]
+Finished building: ../input/GLFWInput.cpp
+ 
+Building file: ../input/OperationPan.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/OperationPan.d" -MT"input/OperationPan.d" -o "input/OperationPan.o" "../input/OperationPan.cpp"
+Finished building: ../input/OperationPan.cpp
+ 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘int main()’:
+../main.cpp:23:35: error: no matching function for call to ‘OperationPan::OperationPan(Renderer&)’
+../main.cpp:23:35: note: candidates are:
+In file included from ../main.cpp:8:0:
+../input/OperationPan.h:18:11: note: OperationPan::OperationPan(IRenderer*)
+../input/OperationPan.h:18:11: note:   no known conversion for argument 1 from ‘Renderer’ to ‘IRenderer*’
+../input/OperationPan.h:16:7: note: OperationPan::OperationPan(const OperationPan&)
+../input/OperationPan.h:16:7: note:   no known conversion for argument 1 from ‘Renderer’ to ‘const OperationPan&’
+In file included from ../renderOpenGL/IRenderer.h:13:0,
+                 from ../renderOpenGL/Renderer.h:11,
+                 from ../main.cpp:5:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional: In instantiation of ‘static void std::_Function_handler<void(_ArgTypes ...), _Functor>::_M_invoke(const std::_Any_data&, _ArgTypes ...) [with _Functor = std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*)>; _ArgTypes = {InputEvent}]’:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:2298:6:   required from ‘std::function<_Res(_ArgTypes ...)>::function(_Functor, typename std::enable_if<(! std::is_integral<_Functor>::value), std::function<_Res(_ArgTypes ...)>::_Useless>::type) [with _Functor = std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*)>; _Res = void; _ArgTypes = {InputEvent}; typename std::enable_if<(! std::is_integral<_Functor>::value), std::function<_Res(_ArgTypes ...)>::_Useless>::type = std::function<void(InputEvent)>::_Useless]’
+../main.cpp:24:69:   required from here
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1926:2: error: no match for call to ‘(std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*)>) (InputEvent)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1140:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1211:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1211:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1206:35: error: no match for call to ‘(std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan*&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1206:35: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1225:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) const [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1225:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1219:35: error: no match for call to ‘(const std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* const&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1219:35: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1239:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) volatile [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1239:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1233:35: error: no match for call to ‘(volatile std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* volatile&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1233:35: note:   candidate expects 2 arguments, 1 provided
+subdir.mk:18: recipe for target 'main.o' failed
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1253:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) const volatile [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1253:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1247:35: error: no match for call to ‘(const volatile std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* const volatile&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1247:35: note:   candidate expects 2 arguments, 1 provided
+make: *** [main.o] Error 1
+10:15:29 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+In file included from ../renderOpenGL/IRenderer.h:13:0,
+                 from ../renderOpenGL/Renderer.h:11,
+                 from ../main.cpp:5:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional: In instantiation of ‘static void std::_Function_handler<void(_ArgTypes ...), _Functor>::_M_invoke(const std::_Any_data&, _ArgTypes ...) [with _Functor = std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*)>; _ArgTypes = {InputEvent}]’:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:2298:6:   required from ‘std::function<_Res(_ArgTypes ...)>::function(_Functor, typename std::enable_if<(! std::is_integral<_Functor>::value), std::function<_Res(_ArgTypes ...)>::_Useless>::type) [with _Functor = std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*)>; _Res = void; _ArgTypes = {InputEvent}; typename std::enable_if<(! std::is_integral<_Functor>::value), std::function<_Res(_ArgTypes ...)>::_Useless>::type = std::function<void(InputEvent)>::_Useless]’
+../main.cpp:25:69:   required from here
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1926:2: error: no match for call to ‘(std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*)>) (InputEvent)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1140:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1211:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1211:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1206:35: error: no match for call to ‘(std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan*&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+subdir.mk:18: recipe for target 'main.o' failed
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1206:35: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1225:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) const [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1225:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1219:35: error: no match for call to ‘(const std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* const&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1219:35: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1239:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) volatile [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1239:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1233:35: error: no match for call to ‘(volatile std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* volatile&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1233:35: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1253:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) const volatile [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1253:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1247:35: error: no match for call to ‘(const volatile std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* const volatile&)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   candidate expects 2 arguments, 1 provided
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1247:35: note:   candidate expects 2 arguments, 1 provided
+make: *** [main.o] Error 1
+10:18:28 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+In file included from ../renderOpenGL/IRenderer.h:13:0,
+                 from ../renderOpenGL/Renderer.h:11,
+                 from ../main.cpp:5:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional: In instantiation of ‘static void std::_Function_handler<void(_ArgTypes ...), _Functor>::_M_invoke(const std::_Any_data&, _ArgTypes ...) [with _Functor = std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*, std::_Placeholder<1>)>; _ArgTypes = {InputEvent}]’:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:2298:6:   required from ‘std::function<_Res(_ArgTypes ...)>::function(_Functor, typename std::enable_if<(! std::is_integral<_Functor>::value), std::function<_Res(_ArgTypes ...)>::_Useless>::type) [with _Functor = std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*, std::_Placeholder<1>)>; _Res = void; _ArgTypes = {InputEvent}; typename std::enable_if<(! std::is_integral<_Functor>::value), std::function<_Res(_ArgTypes ...)>::_Useless>::type = std::function<void(InputEvent)>::_Useless]’
+../main.cpp:25:92:   required from here
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1926:2: error: no match for call to ‘(std::_Bind<std::_Mem_fn<void (OperationPan::*)(InputEvent&)>(OperationPan*, std::_Placeholder<1>)>) (InputEvent)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1140:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1211:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*, std::_Placeholder<1>}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1211:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1206:35: error: no match for call to ‘(std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan*&, InputEvent)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   no known conversion for argument 1 from ‘OperationPan*’ to ‘OperationPan&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   no known conversion for argument 2 from ‘InputEvent’ to ‘InputEvent&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1206:35: note:   cannot convert ‘std::_Mu<std::_Placeholder<1>, false, true>().std::_Mu<_Arg, false, true>::operator()<std::tuple<InputEvent> >((*(const volatile std::_Placeholder<1>*)std::declval<std::_Placeholder<1>&>()), (* & std::declval<std::tuple<InputEvent>&>()))’ (type ‘InputEvent’) to type ‘InputEvent&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1225:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) const [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*, std::_Placeholder<1>}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1225:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1219:35: error: no match for call to ‘(const std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* const&, InputEvent)’
+subdir.mk:18: recipe for target 'main.o' failed
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   no known conversion for argument 1 from ‘OperationPan* const’ to ‘OperationPan&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   no known conversion for argument 2 from ‘InputEvent’ to ‘InputEvent&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1219:35: note:   cannot convert ‘std::_Mu<std::_Placeholder<1>, false, true>().std::_Mu<_Arg, false, true>::operator()<std::tuple<InputEvent> >((*(const volatile std::_Placeholder<1>*)std::declval<const std::_Placeholder<1>&>()), (* & std::declval<std::tuple<InputEvent>&>()))’ (type ‘InputEvent’) to type ‘InputEvent&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1239:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) volatile [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*, std::_Placeholder<1>}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1239:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1233:35: error: no match for call to ‘(volatile std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* volatile&, InputEvent)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   no known conversion for argument 1 from ‘OperationPan* volatile’ to ‘OperationPan&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   no known conversion for argument 2 from ‘InputEvent’ to ‘InputEvent&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1233:35: note:   cannot convert ‘std::_Mu<std::_Placeholder<1>, false, true>().std::_Mu<_Arg, false, true>::operator()<std::tuple<InputEvent> >((*(const volatile std::_Placeholder<1>*)std::declval<volatile std::_Placeholder<1>&>()), (* & std::declval<std::tuple<InputEvent>&>()))’ (type ‘InputEvent’) to type ‘InputEvent&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1253:2: note: template<class ... _Args, class _Result> _Result std::_Bind<_Functor(_Bound_args ...)>::operator()(_Args&& ...) const volatile [with _Args = {_Args ...}; _Result = _Result; _Functor = std::_Mem_fn<void (OperationPan::*)(InputEvent&)>; _Bound_args = {OperationPan*, std::_Placeholder<1>}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1253:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1247:35: error: no match for call to ‘(const volatile std::_Mem_fn<void (OperationPan::*)(InputEvent&)>) (OperationPan* const volatile&, InputEvent)’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:525:11: note: candidates are:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class&, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:548:7: note:   no known conversion for argument 1 from ‘OperationPan* const volatile’ to ‘OperationPan&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note: _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Class*, _ArgTypes ...) const [with _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:553:7: note:   no known conversion for argument 2 from ‘InputEvent’ to ‘InputEvent&’
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note: template<class _Tp> _Res std::_Mem_fn<_Res (_Class::*)(_ArgTypes ...)>::operator()(_Tp&, _ArgTypes ...) const [with _Tp = _Tp; _Res = void; _Class = OperationPan; _ArgTypes = {InputEvent&}]
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:559:2: note:   template argument deduction/substitution failed:
+/usr/lib/gcc/i586-mandriva-linux-gnu/4.7.2/../../../../include/c++/4.7.2/functional:1247:35: note:   cannot convert ‘std::_Mu<std::_Placeholder<1>, false, true>().std::_Mu<_Arg, false, true>::operator()<std::tuple<InputEvent> >((* & std::declval<const volatile std::_Placeholder<1>&>()), (* & std::declval<std::tuple<InputEvent>&>()))’ (type ‘InputEvent’) to type ‘InputEvent&’
+make: *** [main.o] Error 1
+10:19:04 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp:12:44: error: conflicting declaration ‘std::function<void(InputEvent)> GLFWInput::listener’
+In file included from ../input/GLFWInput.cpp:8:0:
+../input/GLFWInput.h:30:42: error: ‘GLFWInput::listener’ has a previous declaration as ‘std::function<void(InputEvent&)> GLFWInput::listener’
+../input/GLFWInput.cpp:12:44: error: declaration of ‘std::function<void(InputEvent&)> GLFWInput::listener’ outside of class is not definition [-fpermissive]
+../input/GLFWInput.cpp:12:55: error: ‘GLFWInput::listener’ cannot be initialized by a non-constant expression when being declared
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:25:14: warning: unused variable ‘ev’ [-Wunused-variable]
+input/subdir.mk:21: recipe for target 'input/GLFWInput.o' failed
+make: *** [input/GLFWInput.o] Error 1
+10:19:32 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building file: ../input/GLFWInput.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"input/GLFWInput.d" -MT"input/GLFWInput.d" -o "input/GLFWInput.o" "../input/GLFWInput.cpp"
+../input/GLFWInput.cpp: In static member function ‘static bool GLFWInput::checkInput()’:
+../input/GLFWInput.cpp:25:14: warning: unused variable ‘ev’ [-Wunused-variable]
+Finished building: ../input/GLFWInput.cpp
+ 
+Building file: ../main.cpp
+Invoking: Cross G++ Compiler
+g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+Finished building: ../main.cpp
+ 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi
+/usr/bin/ld: /usr/local/lib/libglfw3.a(x11_time.c.o): undefined reference to symbol 'clock_gettime@@GLIBC_2.2'
+/lib/librt.so.1: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+makefile:46: recipe for target 'bugs' failed
+make: *** [bugs] Error 1
+10:20:42 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi -lc
+/usr/bin/ld: /usr/local/lib/libglfw3.a(x11_time.c.o): undefined reference to symbol 'clock_gettime@@GLIBC_2.2'
+/lib/librt.so.1: error adding symbols: DSO missing from command line
+makefile:46: recipe for target 'bugs' failed
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+10:21:37 **** Incremental Build of configuration Debug for project bugs ****
+make all 
+Building target: bugs
+Invoking: Cross G++ Linker
+g++  -o "bugs"  ./renderOpenGL/Rectangle.o ./renderOpenGL/Renderer.o ./renderOpenGL/glToolkit.o ./renderOpenGL/shader.o  ./input/GLFWInput.o ./input/OperationPan.o  ./main.o   -lGLEW -lglfw3 -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi -lrt
+./main.o: In function `main':
+/home/alex/bog_bugs/bugs/Debug/../main.cpp:17: undefined reference to `gltInit(unsigned int, unsigned int)'
+/home/alex/bog_bugs/bugs/Debug/../main.cpp:23: undefined reference to `gltGetWindow()'
+/home/alex/bog_bugs/bugs/Debug/../main.cpp:29: undefined reference to `gltBegin()'
+/home/alex/bog_bugs/bugs/Debug/../main.cpp:33: undefined reference to `gltEnd()'
+collect2: error: ld returned 1 exit status
+make: *** [bugs] Error 1
+makefile:46: recipe for target 'bugs' failed

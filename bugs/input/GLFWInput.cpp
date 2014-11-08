@@ -9,7 +9,7 @@
 #include "InputEvent.h"
 #include <GLFW/glfw3.h>
 
-std::function<void(InputEvent)> GLFWInput::listener = nullptr;
+std::function<void(InputEvent&)> GLFWInput::listener = nullptr;
 GLFWwindow* GLFWInput::window = nullptr;
 bool GLFWInput::lastLeftDown = false;
 bool GLFWInput::lastRightDown = false;

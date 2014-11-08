@@ -1,6 +1,7 @@
 #include "glToolkit.h"
 
 #define GLFW_DLL
+#ifdef UNDEFINED_0
 #include <GLFW/glfw3.h>
 
 #include <math.h>
@@ -158,3 +159,5 @@ void gltDrawImg(int x, int y, unsigned width, unsigned height, GLenum format, GL
 	gridCell++;
 	*/
 }
+
+#endif // 0
