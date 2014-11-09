@@ -9,7 +9,10 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include renderOpenGL/subdir.mk
+-include math/subdir.mk
+-include input/operations/subdir.mk
 -include input/subdir.mk
+-include BSP/subdir.mk
 -include subdir.mk
 -include objects.mk
 

@@ -9,6 +9,7 @@
 #define INPUT_OPERATIONPAN_H_
 
 #include "IOperation.h"
+#include "InputEvent.h"
 #include <glm/vec2.hpp>
 
 class IRenderer;
@@ -31,6 +32,7 @@ protected:
 	int lastIndex;
 	float frictionFactor;
 	glm::vec2 flySpeed;
+	InputEvent::MOUSE_BUTTON boundButton;
 };
 
 #endif /* INPUT_OPERATIONPAN_H_ */

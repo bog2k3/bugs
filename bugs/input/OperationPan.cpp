@@ -19,6 +19,7 @@ OperationPan::OperationPan(IRenderer* renderer)
 	, lastIndex(0)
 	, frictionFactor(1.1)
 	, flySpeed()
+	, boundButton(InputEvent::MB_RIGHT)
 {
 }
 
@@ -29,7 +30,7 @@ OperationPan::~OperationPan() {
 void OperationPan::handleInput(InputEvent& ev) {
 	switch (ev.type) {
 	case InputEvent::EV_MOUSE_DOWN: {
-		if (ev.mouseButton != InputEvent::MB_LEFT)
+		if (ev.mouseButton != boundButton)
 			break;
 		isDragging = true;
 		isFlyActive = false;
@@ -39,7 +40,7 @@ void OperationPan::handleInput(InputEvent& ev) {
 		break;
 	}
 	case InputEvent::EV_MOUSE_UP: {
-		if (ev.mouseButton != InputEvent::MB_LEFT)
+		if (ev.mouseButton != boundButton)
 			break;
 		isDragging = false;
 		isFlyActive = true;

@@ -58,6 +58,19 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.533773289.1302518681" name="/" resourcePath="renderOpenGL/OSD">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.53907415" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug" unusedChildren="">
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1716653127" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler.210489976"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.430946202" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1655992387"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1597999925" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker.1145393794"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.164422602" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker.1212993048"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1353003093" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver.1433005827"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.845186562" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler.932980754"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="renderOpenGL/OSD" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -117,6 +130,19 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.release.2051184442.157078316" name="/" resourcePath="renderOpenGL/OSD">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.release.562026661" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.release" unusedChildren="">
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1424381788" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler.423479064"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1787990532" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1368337113"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1076288893" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker.358463881"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1885100727" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker.1011816539"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1925299029" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver.367003732"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.482070582" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler.1964180630"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="renderOpenGL/OSD" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
