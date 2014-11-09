@@ -6,12 +6,13 @@
  */
 
 #include "OperationPan.h"
-#include "InputEvent.h"
-#include "../renderOpenGL/IRenderer.h"
+#include "OperationContext.h"
+#include "../../renderOpenGL/Viewport.h"
+#include "../../renderOpenGL/Camera.h"
 #include <GLFW/glfw3.h>
 
-OperationPan::OperationPan(IRenderer* renderer)
-	: pRenderer(renderer)
+OperationPan::OperationPan()
+	: pContext(nullptr)
 	, isFlyActive(false)
 	, isDragging(false)
 	, lastDelta{}
@@ -27,7 +28,20 @@ OperationPan::~OperationPan() {
 	// TODO Auto-generated destructor stub
 }
 
-void OperationPan::handleInput(InputEvent& ev) {
+void OperationPan::enter(const OperationContext* pContext) {
+	this->pContext = pContext;
+}
+void OperationPan::leave() {
+	this->pContext = nullptr;
+}
+void OperationPan::activate() {
+}
+void OperationPan::deactivate() {
+	isFlyActive = false;
+	isDragging = false;
+}
+
+void OperationPan::handleInputEvent(InputEvent& ev) {
 	switch (ev.type) {
 	case InputEvent::EV_MOUSE_DOWN: {
 		if (ev.mouseButton != boundButton)
@@ -52,7 +66,7 @@ void OperationPan::handleInput(InputEvent& ev) {
 			if (filterTimes[i] < minTime)
 				minTime = filterTimes[i];
 		}
-		flySpeed /= (glfwGetTime()- minTime) * pRenderer->getZoomLevel() * 2;
+		flySpeed /= (glfwGetTime()- minTime) * pContext->pViewport->getCamera()->getZoomLevel() * 2;
 		flySpeed.x *= -1;
 		break;
 	}
@@ -62,12 +76,12 @@ void OperationPan::handleInput(InputEvent& ev) {
 		lastIndex = (lastIndex + 1) % nFilter;
 		lastDelta[lastIndex] = glm::vec2(ev.dx, ev.dy);
 		filterTimes[lastIndex] = glfwGetTime();
-		pRenderer->moveCamera(glm::vec2(-ev.dx, ev.dy) / pRenderer->getZoomLevel());
+		pContext->pViewport->getCamera()->move(glm::vec2(-ev.dx, ev.dy) / pContext->pViewport->getCamera()->getZoomLevel());
 		break;
 	}
 	case InputEvent::EV_MOUSE_SCROLL: {
 		float factor = ev.dz < 0 ? 0.90f : 1.10f;
-		pRenderer->setZoomLevel(pRenderer->getZoomLevel() * factor);
+		pContext->pViewport->getCamera()->setZoomLevel(pContext->pViewport->getCamera()->getZoomLevel() * factor);
 		break;
 	}
 	default:
@@ -77,9 +91,9 @@ void OperationPan::handleInput(InputEvent& ev) {
 
 void OperationPan::update(float dt) {
 	if (isFlyActive) {
-		pRenderer->moveCamera(flySpeed * dt);
+		pContext->pViewport->getCamera()->move(flySpeed * dt);
 		flySpeed /= frictionFactor;
-		if (flySpeed.length() * pRenderer->getZoomLevel() < 5) // less than 5 screen pixels per second, then stop
+		if (flySpeed.length() * pContext->pViewport->getCamera()->getZoomLevel() < 5) // less than 5 screen pixels per second, then stop
 			isFlyActive = false;
 	}
 }

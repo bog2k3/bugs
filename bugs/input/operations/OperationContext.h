@@ -5,15 +5,16 @@ class Viewport;
 class LifeApp;
 class BSPTree;
 class OperationsStack;
-class IViewport;
+class Viewport;
 
-struct OperationContext
+class OperationContext
 {
+public:
 	BSPTree* pBSPTree;
-	IViewport* pViewport;
+	Viewport* pViewport;
 	OperationsStack* pStack;
 
-	OperationContext(IViewport* pViewport, BSPTree* pBSPTree, OperationsStack* pStack)
+	OperationContext(Viewport* pViewport, BSPTree* pBSPTree, OperationsStack* pStack)
 		: pBSPTree(pBSPTree)
 		, pViewport(pViewport)
 		, pStack(pStack) {

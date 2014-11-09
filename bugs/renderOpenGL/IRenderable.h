@@ -12,6 +12,7 @@ class Viewport;
 
 class IRenderable {
 public:
+	virtual ~IRenderable() {}
 	/*
 	 * This is called on the object at each frame, for each active viewport.
 	 */

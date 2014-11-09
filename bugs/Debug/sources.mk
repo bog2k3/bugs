@@ -28,5 +28,4 @@ math \
 . \
 input/operations \
 input \
-BSP \
 

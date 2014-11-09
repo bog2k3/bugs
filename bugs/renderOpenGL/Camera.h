@@ -20,8 +20,8 @@ public:
 
 	const glm::mat4& getMatViewProj() const { return matViewProj; }
 
-	double getZoomLevel() { return zoomLevel; }
-	void setZoomLevel(double zoom);
+	float getZoomLevel() { return zoomLevel; }
+	void setZoomLevel(float zoom);
 	void move(glm::vec2 delta);
 	void moveTo(glm::vec2 where);
 	glm::vec2 getPos() { return cameraPos; }

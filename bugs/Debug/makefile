@@ -12,7 +12,6 @@ RM := rm -rf
 -include math/subdir.mk
 -include input/operations/subdir.mk
 -include input/subdir.mk
--include BSP/subdir.mk
 -include subdir.mk
 -include objects.mk
 

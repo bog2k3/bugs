@@ -31,6 +31,11 @@ Rectangle::Rectangle(Renderer* renderer)
 	indexColor = glGetAttribLocation(shaderProgram, "vColor");
 	indexMatViewProj = glGetUniformLocation(shaderProgram, "mViewProj");
 }
+
+Rectangle::~Rectangle() {
+	glDeleteProgram(shaderProgram);
+}
+
 void Rectangle::draw(float center_x, float center_y, float z, float width, float height, float rotation,
 		float red, float green, float blue) {
 	s_rectangle s;
@@ -55,6 +60,7 @@ void Rectangle::draw(float center_x, float center_y, float z, float width, float
 	// top-left again:
 	buffer.push_back(buffer[buffer.size()-4]);
 }
+
 void Rectangle::render(Viewport* vp) {
 	glUniformMatrix4fv(indexMatViewProj, 1, GL_FALSE, glm::value_ptr(vp->getCamera()->getMatViewProj()));
 	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_rectangle), &buffer[0].pos);
@@ -64,5 +70,8 @@ void Rectangle::render(Viewport* vp) {
 	glUseProgram(shaderProgram);
 
 	glDrawArrays(GL_LINE_STRIP, 0, buffer.size());
+}
+
+void Rectangle::purgeRenderQueue() {
 	buffer.clear();
 }

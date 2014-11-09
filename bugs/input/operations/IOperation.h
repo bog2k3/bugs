@@ -30,4 +30,7 @@ public:
 	// handled by the application layer; return true if the event was handled or false
 	// to pass it through to the next operation on the stack
 	virtual bool command(int cmd, long param) { return false; }
+
+	// this is called only when the operation is active, on a per-frame basis
+	virtual void update(float dt) {}
 };

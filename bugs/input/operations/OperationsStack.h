@@ -1,37 +1,35 @@
 #pragma once
 
-#include "OperationContext.h"
+#include <vector>
+#include <memory>
 
 class Viewport;
-
+class OperationContext;
 class IOperation;
+class InputEvent;
 class BSPTree;
 
 class OperationsStack
 {
 public:
-	OperationsStack(OperationContext &context);
+	OperationsStack(Viewport* pViewport, BSPTree* pBSPTree);
 	~OperationsStack();
 
 	// pushes a new operation onto the stack; the new operation will become active
-	void pushOperation(IOperation *pOperation);
+	void pushOperation(std::unique_ptr<IOperation> pOperation);
 	// swaps the top operation with a new one; the old one will be deleted
-	void swapTopOperation(IOperation *pNewOperation);
+	void swapTopOperation(std::unique_ptr<IOperation> pNewOperation);
 	// returns a pointer to the top operation
-	inline IOperation* getTopOperation() { return m_stack.back(); }
+	inline IOperation* getTopOperation() { return m_stack.back().get(); }
 	// removes and deletes the top operation; the operation below will become active
 	void removeTopOperation();
 
-	bool mouseWheel(int x, int y, float zDelta, int fwKeys);
-	bool mouseMoved( int x, int y, int deltaX, int deltaY, bool leftBtnDown, bool rightBtnDown, int fwKeys );
-	bool mouseDown(MouseButton button, int x, int y, int fwKeys);
-	bool mouseUp(MouseButton button, int x, int y, int fwKeys);
-	bool keyDown(int vKeyCode);
-	bool keyUp(int vKeyCode);
-	bool command(int cmd, LPARAM lParam);
+	void handleInputEvent(InputEvent &ev);
+	bool command(int cmd, long param);
+	void update(float dt);
 
 protected:
-	OperationContext m_context;
+	OperationContext *m_context;
 
-	vector<IOperation*> m_stack;
+	std::vector<std::unique_ptr<IOperation>> m_stack;
 };

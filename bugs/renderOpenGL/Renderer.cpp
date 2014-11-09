@@ -22,6 +22,10 @@ void Renderer::registerRenderable(IRenderable* r) {
 	renderComponents.push_back(r);
 }
 
+void Renderer::addViewport(Viewport* vp) {
+	viewports.push_back(vp);
+}
+
 void Renderer::render() {
 	for (auto vp : viewports) {
 		if (!vp->isEnabled())

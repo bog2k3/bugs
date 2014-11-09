@@ -9,21 +9,25 @@
 #define INPUT_OPERATIONPAN_H_
 
 #include "IOperation.h"
-#include "InputEvent.h"
+#include "../InputEvent.h"
 #include <glm/vec2.hpp>
 
-class IRenderer;
+class OperationContext;
 
 class OperationPan: public IOperation {
 public:
-	explicit OperationPan(IRenderer* renderer);
+	OperationPan();
 	virtual ~OperationPan();
 
-	virtual void handleInput(InputEvent& ev);
+	virtual void enter(const OperationContext* pContext);
+	virtual void leave();
+	virtual void activate();
+	virtual void deactivate();
+	virtual void handleInputEvent(InputEvent& ev);
 	virtual void update(float dt);
 
 protected:
-	IRenderer* pRenderer;
+	const OperationContext* pContext;
 	bool isFlyActive;
 	bool isDragging;
 	static const unsigned nFilter = 5;

@@ -9,13 +9,18 @@
 #include "Viewport.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(Viewport* vp) : pViewport(vp) {
+Camera::Camera(Viewport* vp)
+	: pViewport(vp)
+	, matViewProj(1)
+	, zoomLevel(100)
+	, cameraPos(0)
+{
 }
 
 Camera::~Camera() {
 }
 
-void Camera::setZoomLevel(double zoom) {
+void Camera::setZoomLevel(float zoom) {
 	zoomLevel = zoom;
 	updateViewProj();
 }

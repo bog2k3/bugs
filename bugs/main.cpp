@@ -3,9 +3,11 @@
 #include "renderOpenGL/glToolkit.h"
 #include "renderOpenGL/Rectangle.h"
 #include "renderOpenGL/Renderer.h"
+#include "renderOpenGL/Viewport.h"
 #include "input/GLFWInput.h"
 #include "input/InputEvent.h"
-#include "input/OperationPan.h"
+#include "input/operations/OperationsStack.h"
+#include "input/operations/OperationPan.h"
 #include <GLFW/glfw3.h>
 #include <functional>
 
@@ -17,22 +19,28 @@ int main()
 
 	if (!gltInit(800, 600, "Bugs"))
 		return -1;
+
 	Renderer renderer;
-	renderer.setScreenSize(800, 600);
-	Rectangle::initialize(&renderer);
+	Viewport vp1(0, 0, 800, 600);
+	renderer.addViewport(&vp1);
+
+	Rectangle* rc = new Rectangle(&renderer);
+	renderer.registerRenderable(rc);
 
 	GLFWInput::initialize(gltGetWindow());
-	opPan = new OperationPan(&renderer);
-	GLFWInput::setListener(std::bind(&OperationPan::handleInput, opPan, std::placeholders::_1));
+	OperationsStack opStack(&vp1, nullptr);
+	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan()));
+
+	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
 		float newTime = glfwGetTime();
 		float dt = newTime - t;
 		t = newTime;
-		opPan->update(dt);
+		opStack.update(dt);
 		gltBegin();
-		Rectangle::draw(0.5f, 0.5f, 0, 1.5f, 1.5f, t, 1, 0, 0);
+		rc->draw(0.5f, 0.5f, 0, 1.5f, 1.5f, t, 1, 0, 0);
 		renderer.render();
 		gltEnd();
 	}
