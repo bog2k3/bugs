@@ -2,3 +2,7 @@
 RemoteSystemsTempFiles/
 *.d
 *.o
+*/Debug
+*/.cproject
+*/.project
+

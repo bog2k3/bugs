@@ -15,6 +15,7 @@ Camera::Camera(Viewport* vp)
 	, zoomLevel(100)
 	, cameraPos(0)
 {
+	updateViewProj();
 }
 
 Camera::~Camera() {
