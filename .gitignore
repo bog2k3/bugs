@@ -1,5 +1,6 @@
 .metadata
 RemoteSystemsTempFiles/
+Debug/
 **/Debug/**
 **/.cproject
 **/.project
