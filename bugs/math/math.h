@@ -11,8 +11,9 @@ template<typename T> inline void xchg(T &x1, T &x2) { T aux = x1; x1 = x2; x2 = 
 
 inline glm::vec2 getNormalVector(glm::vec2 v) { return glm::vec2(-v.y, v.x); }
 
-struct Circle
+class Circle
 {
+public:
 	glm::vec2 vCenter;
 	float Radius;
 
@@ -33,8 +34,9 @@ struct Circle
 
 /// represents an arbitrary axis that separates the world into two sub-spaces (+ and -)
 /// the axis is always normalized
-struct Axis
+class Axis
 {
+public:
 	/* the axis equation coefficients;
 	 * the axis equation is:
 	 *	a*x + b*y + c = N;
@@ -94,8 +96,9 @@ struct Axis
 };
 
 /// represents an axis aligned box
-struct AlignedBox
+class AlignedBox
 {
+public:
 	glm::vec2 bottomLeft;
 	glm::vec2 topRight;
 
@@ -122,8 +125,9 @@ struct AlignedBox
 };
 
 /// represents an arbitrary box which does not need to be aligned to the world axis.
-struct ArbitraryBox
+class ArbitraryBox
 {
+public:
 	~ArbitraryBox();
 
 	// promotes an AlignedBox to an ArbitraryBox

@@ -11,8 +11,6 @@
 #include <GLFW/glfw3.h>
 #include <functional>
 
-OperationPan *opPan = nullptr;
-
 int main()
 {
 	std::cout << "bugs\n";
@@ -40,10 +38,11 @@ int main()
 		t = newTime;
 		opStack.update(dt);
 		gltBegin();
-		rc->draw(0.5f, 0.5f, 0, 1.5f, 1.5f, t, 1, 0, 0);
 		renderer.render();
 		gltEnd();
 	}
+
+	delete rc;
 
 	return 0;
 }

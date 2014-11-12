@@ -3,7 +3,7 @@
 #include "../InputEvent.h"
 
 class OperationsStack;
-struct OperationContext;
+class OperationContext;
 
 class IOperation
 {

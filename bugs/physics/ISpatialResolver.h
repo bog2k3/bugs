@@ -2,7 +2,7 @@
 
 #include <vector>
 
-struct Circle;
+class Circle;
 class RigidBody;
 
 class ISpatialResolver

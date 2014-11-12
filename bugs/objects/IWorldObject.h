@@ -12,7 +12,8 @@
 class Rectangle;
 // end render objects
 
-struct ObjectRenderContext {
+class ObjectRenderContext {
+public:
 	Rectangle* rectangle;
 };
 
