@@ -10,28 +10,43 @@
 
 #include "../math/math.h"
 #include <glm/vec2.hpp>
+#include <glm/mat3x2.hpp>
 
 class RigidBody {
 public:
 	virtual ~RigidBody() {}
 
 	// returns the smallest world-aligned bounding box completely containing the object
-	virtual AlignedBox getAlignedBoundingBox() = 0;
+	virtual AlignedBox getAlignedBoundingBox() const = 0;
 
 	// returns the smallest object-aligned bounding box completely containing the object
-	virtual ArbitraryBox getOrientedBoundingBox() = 0;
+	virtual ArbitraryBox getOrientedBoundingBox() const = 0;
 
 	// returns the world position of the object's center of weight
-	virtual glm::vec2 getPosition() = 0;
+	glm::vec2 getPosition() const { return position; }
 
 	// returns the world velocity of the object
-	virtual glm::vec2 getVelocity() = 0;
+	glm::vec2 getVelocity() const { return velocity; }
 
 	// returns the rotation of the object (around center of weight)
-	virtual float getRotation() = 0;
+	float getRotation() const { return rotation; }
 
 	// returns the angular velocity of the object (rotation happens around center of weight)
-	virtual float getAngularVelocity() = 0;
+	float getAngularVelocity() const { return angularVelocity; }
+
+	glm::vec2 localToWorld(glm::vec2 local) const;
+
+private:
+	friend class PhysicsEngine;
+	glm::vec2 position;
+	glm::vec2 velocity;
+	float rotation;
+	float angularVelocity;
+	glm::vec2 resultantForce;
+	float resultantAngularMomentum;
+
+	glm::mat3x2 matLocalToWorld;
+	void updateMatrix(bool rotation, bool translation);
 };
 
 #endif /* PHYSICS_RIGIDBODY_H_ */

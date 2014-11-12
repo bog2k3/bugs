@@ -6,13 +6,8 @@
  */
 
 #include "AttachPoint.h"
+#include "RigidBody.h"
 
-AttachPoint::AttachPoint() {
-	// TODO Auto-generated constructor stub
-
+glm::vec2 AttachPoint::getWorldPos() const {
+	return pObject->localToWorld(offset);
 }
-
-AttachPoint::~AttachPoint() {
-	// TODO Auto-generated destructor stub
-}
-

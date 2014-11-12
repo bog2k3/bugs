@@ -7,12 +7,15 @@
 
 #include "Spring.h"
 
-Spring::Spring() {
-	// TODO Auto-generated constructor stub
-
+Spring::Spring(AttachPoint a1, AttachPoint a2, float k, float initialLength)
+	: a1(a1), a2(a2), k(k), initialLength(initialLength)
+{
 }
 
 Spring::~Spring() {
-	// TODO Auto-generated destructor stub
 }
 
+float Spring::getForce() {
+	float dx = (a2.getWorldPos() - a1.getWorldPos()).length() - initialLength;
+	return k * dx;
+}

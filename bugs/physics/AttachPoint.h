@@ -14,10 +14,14 @@ class RigidBody;
 
 class AttachPoint {
 public:
-	RigidBody* pObject;
-	glm::vec2 offset;
+	const RigidBody* pObject;
+	const glm::vec2 offset;
 
-	AttachPoint();
+	AttachPoint(RigidBody* pObject, glm::vec2 offset)
+		: pObject(pObject), offset(offset) {
+	}
+
+	glm::vec2 getWorldPos() const;
 };
 
 #endif /* PHYSICS_ATTACHPOINT_H_ */
