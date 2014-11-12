@@ -25,6 +25,7 @@ C_UPPER_DEPS :=
 SUBDIRS := \
 renderOpenGL \
 physics \
+objects/body-parts \
 math \
 . \
 input/operations \

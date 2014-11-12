@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include renderOpenGL/subdir.mk
 -include physics/subdir.mk
+-include objects/body-parts/subdir.mk
 -include math/subdir.mk
 -include input/operations/subdir.mk
 -include input/subdir.mk
