@@ -14,6 +14,7 @@
 
 class RigidBody {
 public:
+	RigidBody(float mass, glm::vec2 position, float rotation, glm::vec2 initialVelocity, float initialAngularVelocity);
 	virtual ~RigidBody() {}
 
 	// returns the smallest world-aligned bounding box completely containing the object
@@ -21,6 +22,9 @@ public:
 
 	// returns the smallest object-aligned bounding box completely containing the object
 	virtual ArbitraryBox getOrientedBoundingBox() const = 0;
+
+	// returns the mass of the body
+	float getMass() const { return mass; }
 
 	// returns the world position of the object's center of weight
 	glm::vec2 getPosition() const { return position; }
@@ -38,6 +42,7 @@ public:
 
 private:
 	friend class PhysicsEngine;
+	float mass;
 	glm::vec2 position;
 	glm::vec2 velocity;
 	float rotation;

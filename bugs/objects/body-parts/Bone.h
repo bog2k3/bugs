@@ -9,11 +9,18 @@
 #define OBJECTS_BODY_PARTS_BONE_H_
 
 #include "../../physics/RigidBody.h"
+#include"../IWorldObject.h"
 
-class Bone: public RigidBody {
+class Bone: public RigidBody, public IWorldObject {
 public:
-	Bone();
+	Bone(glm::vec2 position, float rotation, float density, glm::vec2 size, glm::vec2 initialVelocity, float initialAngularVelocity);
 	virtual ~Bone();
+
+	virtual void draw(ObjectRenderContext*);
+
+protected:
+	float density;
+	glm::vec2 size;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */
