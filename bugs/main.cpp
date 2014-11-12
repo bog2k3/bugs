@@ -9,6 +9,8 @@
 #include "input/operations/OperationsStack.h"
 #include "input/operations/OperationPan.h"
 #include "objects/body-parts/Bone.h"
+#include "objects/MouseObject.h"
+#include "physics/Spring.h"
 #include "World.h"
 #include <GLFW/glfw3.h>
 #include <functional>
@@ -40,6 +42,13 @@ int main()
 	Bone b = Bone(glm::vec2(0, 0), 0, 1.f, glm::vec2(1, 0.3f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 
+	MouseObject mouse;
+	Spring s(
+			AttachPoint(&b, glm::vec2(0)),
+			AttachPoint(&mouse, glm::vec2(0)),
+			1.f, // k
+			1.f // initialLength
+			);
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {

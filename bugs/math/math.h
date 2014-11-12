@@ -103,7 +103,7 @@ public:
 	glm::vec2 topRight;
 
 	inline AlignedBox(): bottomLeft(), topRight() { }
-	inline AlignedBox(glm::vec2& vBottomLeft, glm::vec2& vTopRight): bottomLeft(vBottomLeft), topRight(vTopRight) { }
+	inline AlignedBox(glm::vec2 vBottomLeft, glm::vec2 vTopRight): bottomLeft(vBottomLeft), topRight(vTopRight) { }
 	inline AlignedBox(float x1, float y1, float x2, float y2): bottomLeft(x1,y1), topRight(x2,y2) { }
 	inline AlignedBox(AlignedBox const& orig): bottomLeft(orig.bottomLeft), topRight(orig.topRight) { }
 

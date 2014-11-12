@@ -43,6 +43,10 @@ public:
 
 	glm::vec2 localToWorld(glm::vec2 local) const;
 
+	void teleport(glm::vec2 where);
+
+	bool isFixed;
+
 private:
 	friend class Physics;
 	float mass;
@@ -54,7 +58,7 @@ private:
 	float resultantTorque;
 
 	glm::mat3x2 matLocalToWorld;
-	void updateMatrix(bool rotation, bool translation);
+	void updateMatrix();
 };
 
 #endif /* PHYSICS_RIGIDBODY_H_ */

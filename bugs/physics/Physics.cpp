@@ -55,6 +55,11 @@ void Physics::updateAndApplySpringForces() {
 
 void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
 	for (RigidBody* body : rigidBodies) {
+		if (body->isFixed) {
+			body->velocity = vec2(0);
+			body->angularVelocity = 0;
+			continue;
+		}
 		vec2 acceleration = body->resultantForce / body->mass;
 		body->velocity += acceleration * dt;
 		float angularAcceleration = body->resultantTorque / body->getMomentOfInertia();
@@ -70,6 +75,7 @@ void Physics::moveAndCheckCollisions(float dt) {
 	for (RigidBody* body : rigidBodies) {
 		body->position += body->velocity * dt;
 		body->rotation += body->angularVelocity * dt;
+		body->updateMatrix();
 	}
 }
 
