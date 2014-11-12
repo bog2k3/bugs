@@ -20,12 +20,23 @@ void World::retrieveObjectsInCircle(Circle const &circle, std::vector<RigidBody*
 
 }
 
-void setRenderContext(ObjectRenderContext ctxt) {
+void World::retrieveObjects(std::vector<RigidBody*> &outVector) {
 
 }
-void update(float dt) {
+
+void World::retrieveObjects(std::vector<Spring*> &outVector) {
 
 }
-void draw() {
 
+void World::update(float dt) {
+}
+
+void World::draw() {
+	for (auto obj : objects) {
+		obj->draw(&renderContext);
+	}
+}
+
+void World::addObject(IWorldObject* obj) {
+	objects.push_back(obj);
 }

@@ -21,3 +21,15 @@ Bone::~Bone() {
 void Bone::draw(ObjectRenderContext* ctx) {
 	ctx->rectangle->draw(getPosition().x, getPosition().y, 0, size.x, size.y, getRotation(), 0, 1, 0);
 }
+
+AlignedBox Bone::getAlignedBoundingBox() const {
+	return AlignedBox(0,0,0,0);
+}
+ArbitraryBox Bone::getOrientedBoundingBox() const {
+	return ArbitraryBox::empty(getPosition());
+}
+
+float Bone::getMomentOfInertia() const {
+	// moment of inertia for a rectangular object:
+	return 1.f/12.f * getMass() * (size.x*size.x + size.y*size.y);
+}

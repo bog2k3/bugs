@@ -23,6 +23,9 @@ public:
 	// returns the smallest object-aligned bounding box completely containing the object
 	virtual ArbitraryBox getOrientedBoundingBox() const = 0;
 
+	// return the moment of inertia for the body
+	virtual float getMomentOfInertia() const = 0;
+
 	// returns the mass of the body
 	float getMass() const { return mass; }
 
@@ -41,14 +44,14 @@ public:
 	glm::vec2 localToWorld(glm::vec2 local) const;
 
 private:
-	friend class PhysicsEngine;
+	friend class Physics;
 	float mass;
 	glm::vec2 position;
 	glm::vec2 velocity;
 	float rotation;
 	float angularVelocity;
 	glm::vec2 resultantForce;
-	float resultantAngularMomentum;
+	float resultantTorque;
 
 	glm::mat3x2 matLocalToWorld;
 	void updateMatrix(bool rotation, bool translation);

@@ -34,8 +34,8 @@ void Viewport::setScale(double scale)
 
 void Viewport::setArea(int vpX, int vpY, int vpW, int vpH)
 {
-	int oldW = viewportArea.z;
-	int oldH = viewportArea.w;
+	// int oldW = viewportArea.z;
+	// int oldH = viewportArea.w;
 	viewportArea = vec4(vpX, vpY, vpW, vpH);
 
 	// refreshOSDLayout(oldW, oldH);

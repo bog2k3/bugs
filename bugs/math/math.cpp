@@ -115,3 +115,8 @@ ArbitraryBox::~ArbitraryBox()
 	for (int i=0; i<4; ++i)
 		delete axes[i];
 }
+
+float cross2D(const glm::vec2 &v1, const glm::vec2 &v2)
+{
+    return (v1.x*v2.y) - (v1.y*v2.x);
+}

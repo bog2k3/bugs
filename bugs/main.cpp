@@ -8,6 +8,8 @@
 #include "input/InputEvent.h"
 #include "input/operations/OperationsStack.h"
 #include "input/operations/OperationPan.h"
+#include "objects/body-parts/Bone.h"
+#include "World.h"
 #include <GLFW/glfw3.h>
 #include <functional>
 
@@ -22,8 +24,9 @@ int main()
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
 
-	Rectangle* rc = new Rectangle(&renderer);
-	renderer.registerRenderable(rc);
+	ObjectRenderContext renderContext;
+	renderContext.rectangle = new Rectangle(&renderer);
+	renderer.registerRenderable(renderContext.rectangle);
 
 	GLFWInput::initialize(gltGetWindow());
 	OperationsStack opStack(&vp1, nullptr);
@@ -31,18 +34,32 @@ int main()
 
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 
+	World wld;
+	wld.setRenderContext(renderContext);
+
+	Bone b = Bone(glm::vec2(0, 0), 0, 1.f, glm::vec2(1, 0.3f), glm::vec2(0), 0.f);
+	wld.addObject(&b);
+
+
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
 		float newTime = glfwGetTime();
 		float dt = newTime - t;
 		t = newTime;
+
 		opStack.update(dt);
+		wld.update(dt);
+
+		// draw builds the render queue
+		wld.draw();
+
+		// now we do the actual openGL render (which is independent of our world)
 		gltBegin();
 		renderer.render();
 		gltEnd();
 	}
 
-	delete rc;
+	delete renderContext.rectangle;
 
 	return 0;
 }

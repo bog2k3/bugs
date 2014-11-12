@@ -49,7 +49,7 @@ all: bugs
 bugs: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	g++ -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -o "bugs" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++  -o "bugs" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

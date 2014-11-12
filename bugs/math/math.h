@@ -158,3 +158,5 @@ protected:
 
 	ArbitraryBox(glm::vec2 vertices[4]);
 };
+
+float cross2D(const glm::vec2 &v1, const glm::vec2 &v2);

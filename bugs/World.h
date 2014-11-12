@@ -18,10 +18,14 @@ public:
 	virtual ~World();
 
 	void retrieveObjectsInCircle(Circle const &circle, std::vector<RigidBody*> &outVector);
+	void retrieveObjects(std::vector<RigidBody*> &outVector);
+	void retrieveObjects(std::vector<Spring*> &outVector);
 
-	void setRenderContext(ObjectRenderContext ctxt);
+	void setRenderContext(ObjectRenderContext ctxt) { renderContext = ctxt; }
 	void update(float dt);
 	void draw();
+
+	void addObject(IWorldObject* obj);
 
 protected:
 	std::vector<IWorldObject*> objects;

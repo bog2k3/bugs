@@ -10,7 +10,7 @@ notes.txt
 			- unghi minim si maxim de rotatie pentru capatul mobil
 		3 - resorturi (ligamente, tendoane etc)
 			- ambele capete fixate pe cate un RigidBody
-			- punctele de fixare au unghiuri de insertie a fortei (intre -pi/2,+pi/2, 0 inseamna perpendicular)
+			 // - punctele de fixare au unghiuri de insertie a fortei (intre -pi/2,+pi/2, 0 inseamna perpendicular)
 		4 - gripper
 			- cand e fixat actioneaza ca un resort
      

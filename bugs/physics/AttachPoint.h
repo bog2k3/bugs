@@ -14,8 +14,8 @@ class RigidBody;
 
 class AttachPoint {
 public:
-	const RigidBody* pObject;
-	const glm::vec2 offset;
+	RigidBody* const pObject;
+	glm::vec2 const offset;
 
 	AttachPoint(RigidBody* pObject, glm::vec2 offset)
 		: pObject(pObject), offset(offset) {
