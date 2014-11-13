@@ -17,6 +17,7 @@ public:
 
 	virtual AlignedBox getAlignedBoundingBox() const;
 	virtual ArbitraryBox getOrientedBoundingBox() const;
+	virtual AlignedBox getLocalBoundingBox() const;
 	virtual float getMomentOfInertia() const { return 1; }
 };
 

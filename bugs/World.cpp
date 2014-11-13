@@ -37,6 +37,6 @@ void World::draw() {
 	}
 }
 
-void World::addObject(IWorldObject* obj) {
+void World::addObject(WorldObject* obj) {
 	objects.push_back(obj);
 }

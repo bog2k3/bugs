@@ -7,29 +7,14 @@
 
 #include "Bone.h"
 #include "../../renderOpenGL/Rectangle.h"
+#include "BonePhysicsComponent.h"
 
 Bone::Bone(glm::vec2 position, float rotation, float density, glm::vec2 size, glm::vec2 initialVelocity, float initialAngularVelocity)
-	: RigidBody(size.x*size.y*density, position, rotation, initialVelocity, initialAngularVelocity)
+	: WorldObject(new BonePhysicsComponent(size.x*size.y*density, position, rotation, size, initialVelocity, initialAngularVelocity))
 	, density(density)
 	, size(size)
 {
 }
 
 Bone::~Bone() {
-}
-
-void Bone::draw(ObjectRenderContext* ctx) {
-	ctx->rectangle->draw(getPosition().x, getPosition().y, 0, size.x, size.y, getRotation(), 0, 1, 0);
-}
-
-AlignedBox Bone::getAlignedBoundingBox() const {
-	return AlignedBox(0,0,0,0);
-}
-ArbitraryBox Bone::getOrientedBoundingBox() const {
-	return ArbitraryBox::empty(getPosition());
-}
-
-float Bone::getMomentOfInertia() const {
-	// moment of inertia for a rectangular object:
-	return 1.f/12.f * getMass() * (size.x*size.x + size.y*size.y);
 }

@@ -23,6 +23,9 @@ public:
 	// returns the smallest object-aligned bounding box completely containing the object
 	virtual ArbitraryBox getOrientedBoundingBox() const = 0;
 
+	// returns the smallest bounding box in object's space
+	virtual AlignedBox getLocalBoundingBox() const = 0;
+
 	// return the moment of inertia for the body
 	virtual float getMomentOfInertia() const = 0;
 

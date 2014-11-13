@@ -122,6 +122,9 @@ public:
 	}
 
 	bool intersectsCircle(Circle const &circle) const;
+
+	inline glm::vec2 getCenter() { return (bottomLeft + topRight) * 0.5f; }
+	inline glm::vec2 getSize() { return topRight - bottomLeft; }
 };
 
 /// represents an arbitrary box which does not need to be aligned to the world axis.
@@ -130,8 +133,8 @@ class ArbitraryBox
 public:
 	~ArbitraryBox();
 
-	// promotes an AlignedBox to an ArbitraryBox
-	static ArbitraryBox fromAlignedBox(AlignedBox const &box);
+	// promotes an AlignedBox to an ArbitraryBox, by rotating it around its center
+	static ArbitraryBox fromAlignedBox(AlignedBox const &box, float rotation);
 
 	// creates an ArbitraryBox from a direction (representing the bottom axis direction),
 	// a point (representing the bottom-left corner of the box) and the size of the box along the

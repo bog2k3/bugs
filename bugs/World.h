@@ -9,8 +9,8 @@
 #define WORLD_H_
 
 #include "physics/ISpatialResolver.h"
-#include "objects/IWorldObject.h"
 #include <vector>
+#include "objects/WorldObject.h"
 
 class World : public ISpatialResolver {
 public:
@@ -25,10 +25,10 @@ public:
 	void update(float dt);
 	void draw();
 
-	void addObject(IWorldObject* obj);
+	void addObject(WorldObject* obj);
 
 protected:
-	std::vector<IWorldObject*> objects;
+	std::vector<WorldObject*> objects;
 	ObjectRenderContext renderContext;
 };
 

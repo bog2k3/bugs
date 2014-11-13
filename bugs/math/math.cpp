@@ -85,8 +85,9 @@ ArbitraryBox::ArbitraryBox(vec2 vertices[4])
 	axes[3] = new Axis(Axis::fromPoints(vertices[3], vertices[0]));
 }
 
-ArbitraryBox ArbitraryBox::fromAlignedBox(AlignedBox const &box)
+ArbitraryBox ArbitraryBox::fromAlignedBox(AlignedBox const &box, float rotation)
 {
+	//TODO must fix this to take rotation into account
 	vec2 verts[4] = {
 		box.bottomLeft,
 		vec2(box.topRight.x, box.bottomLeft.y),

@@ -26,3 +26,6 @@ AlignedBox MouseObject::getAlignedBoundingBox() const {
 ArbitraryBox MouseObject::getOrientedBoundingBox() const {
 	return ArbitraryBox::empty(getPosition());
 }
+AlignedBox MouseObject::getLocalBoundingBox() const {
+	return AlignedBox();
+}
