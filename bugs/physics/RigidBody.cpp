@@ -29,9 +29,7 @@ void RigidBody::updateMatrix() {
 	matLocalToWorld[2][1] = position.y;
 }
 
-#include <iostream>
 void RigidBody::teleport(glm::vec2 where) {
-	std::cout << "teleport " << where.x << " " << where.y << "\n";
 	position = where;
 	updateMatrix();
 }

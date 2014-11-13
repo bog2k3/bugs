@@ -48,7 +48,7 @@ int main()
 
 	MouseObject mouse;
 	Spring s(
-			AttachPoint(b.getRigidBody(), glm::vec2(0)),
+			AttachPoint(b.getRigidBody(), glm::vec2(0.2f, -0.15f)),
 			AttachPoint(&mouse, glm::vec2(0)),
 			1.f, // k
 			1.f // initialLength
