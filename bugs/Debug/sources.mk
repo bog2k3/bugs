@@ -26,6 +26,7 @@ SUBDIRS := \
 renderOpenGL \
 physics \
 objects/body-parts \
+objects \
 math \
 . \
 input/operations \

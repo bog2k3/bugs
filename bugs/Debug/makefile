@@ -11,6 +11,7 @@ RM := rm -rf
 -include renderOpenGL/subdir.mk
 -include physics/subdir.mk
 -include objects/body-parts/subdir.mk
+-include objects/subdir.mk
 -include math/subdir.mk
 -include input/operations/subdir.mk
 -include input/subdir.mk
@@ -49,7 +50,7 @@ all: bugs
 bugs: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	g++  -o "bugs" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -o "bugs" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
