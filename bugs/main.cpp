@@ -8,9 +8,11 @@
 #include "input/InputEvent.h"
 #include "input/operations/OperationsStack.h"
 #include "input/operations/OperationPan.h"
+#include "input/operations/OperationSpring.h"
 #include "objects/body-parts/Bone.h"
 #include "objects/MouseObject.h"
 #include "physics/Spring.h"
+#include "physics/Physics.h"
 #include "World.h"
 #include <GLFW/glfw3.h>
 #include <functional>
@@ -32,12 +34,14 @@ int main()
 
 	GLFWInput::initialize(gltGetWindow());
 	OperationsStack opStack(&vp1, nullptr);
-	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan()));
+	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 
 	World wld;
 	wld.setRenderContext(renderContext);
+
+	Physics physics(&wld);
 
 	Bone b = Bone(glm::vec2(0, 0), 0, 1.f, glm::vec2(1, 0.3f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
@@ -49,6 +53,9 @@ int main()
 			1.f, // k
 			1.f // initialLength
 			);
+	wld.addObject(new WorldObject(&s));
+
+	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
@@ -57,7 +64,9 @@ int main()
 		t = newTime;
 
 		opStack.update(dt);
-		wld.update(dt);
+		wld.updatePrePhysics(dt);
+		physics.update(dt);
+		wld.updatePostPhysics(dt);
 
 		// draw builds the render queue
 		wld.draw();

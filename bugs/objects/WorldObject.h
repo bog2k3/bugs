@@ -34,8 +34,9 @@ public:
 
 	virtual void draw(ObjectRenderContext* ctx);
 
-	virtual RigidBody* getRigidBody() { return rigidBody; }
-	virtual Spring* getSpring() { return spring; }
+	virtual RigidBody* getRigidBody() const { return rigidBody; }
+	virtual Spring* getSpring() const { return spring; }
+	WorldObjectType getType() const { return type; }
 
 protected:
 	WorldObjectType const type;

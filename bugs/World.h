@@ -10,6 +10,7 @@
 
 #include "physics/ISpatialResolver.h"
 #include <vector>
+#include <list>
 #include "objects/WorldObject.h"
 
 class World : public ISpatialResolver {
@@ -22,13 +23,16 @@ public:
 	void retrieveObjects(std::vector<Spring*> &outVector);
 
 	void setRenderContext(ObjectRenderContext ctxt) { renderContext = ctxt; }
-	void update(float dt);
+	void updatePrePhysics(float dt);
+	void updatePostPhysics(float dt);
 	void draw();
 
 	void addObject(WorldObject* obj);
 
 protected:
-	std::vector<WorldObject*> objects;
+	std::list<WorldObject*> objects;
+	std::vector<RigidBody*> rigidBodiesCache;
+	std::vector<Spring*> springsCache;
 	ObjectRenderContext renderContext;
 };
 
