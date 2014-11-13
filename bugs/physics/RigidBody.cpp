@@ -9,6 +9,7 @@
 
 RigidBody::RigidBody(float mass, glm::vec2 position, float rotation, glm::vec2 initialVelocity, float initialAngularVelocity)
 	: isFixed(false), mass(mass), position(position), velocity(initialVelocity), rotation(rotation), angularVelocity(initialAngularVelocity)
+	, matLocalToWorld(1)
 {
 	updateMatrix();
 }
@@ -28,7 +29,9 @@ void RigidBody::updateMatrix() {
 	matLocalToWorld[2][1] = position.y;
 }
 
+#include <iostream>
 void RigidBody::teleport(glm::vec2 where) {
+	std::cout << "teleport " << where.x << " " << where.y << "\n";
 	position = where;
 	updateMatrix();
 }

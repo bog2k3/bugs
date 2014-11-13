@@ -23,12 +23,12 @@ void World::retrieveObjectsInCircle(Circle const &circle, std::vector<RigidBody*
 
 void World::retrieveObjects(std::vector<RigidBody*> &outVector) {
 	outVector.reserve(outVector.size() + rigidBodiesCache.size());
-	std::copy(rigidBodiesCache.begin(), rigidBodiesCache.end(), outVector.end());
+	outVector.insert(outVector.end(), rigidBodiesCache.begin(), rigidBodiesCache.end());
 }
 
 void World::retrieveObjects(std::vector<Spring*> &outVector) {
 	outVector.reserve(outVector.size() + springsCache.size());
-	std::copy(springsCache.begin(), springsCache.end(), outVector.end());
+	outVector.insert(outVector.end(), springsCache.begin(), springsCache.end());
 }
 
 void World::updatePrePhysics(float dt) {

@@ -27,16 +27,16 @@ void OperationSpring::leave() {
 	pContext = nullptr;
 }
 
-void OperationSpring::activate() {
+void OperationSpring::getFocus() {
 }
 
-void OperationSpring::deactivate() {
+void OperationSpring::loseFocus() {
 }
 
 void OperationSpring::handleInputEvent(InputEvent& ev) {
 	switch (ev.type) {
 	case InputEvent::EV_MOUSE_MOVED: {
-		mouse->teleport(pContext->pViewport->project(glm::vec2(ev.x, ev.y)));
+		mouse->teleport(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y)));
 		break;
 	}
 	default:

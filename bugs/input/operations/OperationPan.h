@@ -21,8 +21,8 @@ public:
 
 	virtual void enter(const OperationContext* pContext);
 	virtual void leave();
-	virtual void activate();
-	virtual void deactivate();
+	virtual void getFocus();
+	virtual void loseFocus();
 	virtual void handleInputEvent(InputEvent& ev);
 	virtual void update(float dt);
 

@@ -34,7 +34,7 @@ bool AlignedBox::intersectsCircle(Circle const &circle) const
 			? bottomLeft.x : topRight.x;
 		cornerY = (circle.vCenter.y < bottomLeft.y)
 			? bottomLeft.y : topRight.y;
-		return (vec2(cornerX,cornerY)-circle.vCenter).length() <= circle.Radius;
+		return glm::distance(vec2(cornerX,cornerY), circle.vCenter) <= circle.Radius;
 	}
 }
 

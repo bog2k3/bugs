@@ -17,12 +17,11 @@ public:
 	// called once when this operation is about to be removed from the stack
 	virtual void leave()=0;
 
-	// called when the operation has become active (top of stack)
-	virtual void activate()=0;
+	// called when the operation has got focus (top of stack)
+	virtual void getFocus()=0;
 
-	// called before operation becomes inactive (another operation is pushed onto the stack
-	// on top of this)
-	virtual void deactivate()=0;
+	// called before operation loses focus (another operation is pushed onto the stack on top of this)
+	virtual void loseFocus()=0;
 
 	virtual void handleInputEvent(InputEvent &event)=0;
 

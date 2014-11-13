@@ -19,20 +19,20 @@ OperationsStack::~OperationsStack()
 void OperationsStack::pushOperation(std::unique_ptr<IOperation> pOperation)
 {
 	if (m_stack.size() > 0)
-		m_stack.back()->deactivate();
+		m_stack.back()->loseFocus();
 
 	IOperation* ptrOp = pOperation.get();
 	m_stack.push_back(std::move(pOperation));
 	ptrOp->enter(m_context);
 
 	if (ptrOp == m_stack.back().get()) // if the operation pushed another one during enter, skip activate
-		ptrOp->activate();
+		ptrOp->getFocus();
 }
 
 void OperationsStack::swapTopOperation(std::unique_ptr<IOperation> pNewOperation)
 {
 	assert(m_stack.size() > 0);
-	m_stack.back()->deactivate();
+	m_stack.back()->loseFocus();
 	m_stack.back()->leave();
 
 	IOperation* ptrOp = pNewOperation.get();
@@ -40,18 +40,18 @@ void OperationsStack::swapTopOperation(std::unique_ptr<IOperation> pNewOperation
 	ptrOp->enter(m_context);
 
 	if (ptrOp == m_stack.back().get()) // if the operation pushed another one during enter, skip activate
-		ptrOp->activate();
+		ptrOp->getFocus();
 }
 
 void OperationsStack::removeTopOperation()
 {
 	assert(m_stack.size() > 0);
-	m_stack.back()->deactivate();
+	m_stack.back()->loseFocus();
 	m_stack.back()->leave();
 	m_stack.pop_back();
 
 	if (m_stack.size() > 0)
-		m_stack.back()->activate();
+		m_stack.back()->getFocus();
 }
 
 void OperationsStack::handleInputEvent(InputEvent &ev)
@@ -71,6 +71,6 @@ bool OperationsStack::command(int cmd, long param)
 	return handled;
 }
 void OperationsStack::update(float dt) {
-	if (m_stack.size() > 0)
-		getTopOperation()->update(dt);
+	for (unsigned i=0; i<m_stack.size(); i++)
+		m_stack[i]->update(dt);
 }

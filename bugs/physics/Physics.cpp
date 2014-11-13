@@ -88,12 +88,17 @@ void Physics::applyForceToObject(RigidBody* obj, vec2 localOffset, vec2 force) {
 	// localOffset is in obj's local space
 	// force is in world space
 
-	// get the normal axis in world space
-	vec2 normalAxis = rotate(normalize(localOffset), obj->getRotation());
-	vec2 normalForce = normalAxis * dot(normalAxis, force);
-	vec2 tangentForce = force - normalForce;
-	float tangentForceSign = cross2D(normalAxis, tangentForce) > 0 ? +1 : -1;
+	if (eqEps(localOffset.x, 0) && eqEps(localOffset.y, 0)) {
+		// force acting on the center of weight
+		obj->resultantForce += force;
+	} else {
+		// eccentric force; get the normal axis in world space
+		vec2 normalAxis = rotate(normalize(localOffset), obj->getRotation());
+		vec2 normalForce = normalAxis * dot(normalAxis, force);
+		vec2 tangentForce = force - normalForce;
+		float tangentForceSign = cross2D(normalAxis, tangentForce) > 0 ? +1 : -1;
 
-	obj->resultantForce += normalForce;
-	obj->resultantTorque += tangentForce.length() * tangentForceSign * localOffset.length();
+		obj->resultantForce += normalForce;
+		obj->resultantTorque += length(tangentForce) * tangentForceSign * length(localOffset);
+	}
 }

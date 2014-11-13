@@ -230,7 +230,7 @@ namespace lifeApplication
 		if (clicked && button == MOUSE_LEFTBTN) {
 			Vector2 v2(x,y);
 			pContext->pViewport->unproject(&v2);
-			double length = (v2-vFirstEnd).length();
+			double length = glm::length(v2-vFirstEnd);
 			pContext->pStack->swapTopOperation(new ResortAttachEnd(2, pFirstObject, vFirstEnd, length));
 			return true;
 		} else

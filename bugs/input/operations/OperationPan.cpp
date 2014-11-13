@@ -10,6 +10,7 @@
 #include "../../renderOpenGL/Viewport.h"
 #include "../../renderOpenGL/Camera.h"
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 OperationPan::OperationPan(InputEvent::MOUSE_BUTTON assignedButton)
 	: pContext(nullptr)
@@ -34,9 +35,9 @@ void OperationPan::enter(const OperationContext* pContext) {
 void OperationPan::leave() {
 	this->pContext = nullptr;
 }
-void OperationPan::activate() {
+void OperationPan::getFocus() {
 }
-void OperationPan::deactivate() {
+void OperationPan::loseFocus() {
 	isFlyActive = false;
 	isDragging = false;
 }
@@ -93,7 +94,7 @@ void OperationPan::update(float dt) {
 	if (isFlyActive) {
 		pContext->pViewport->getCamera()->move(flySpeed * dt);
 		flySpeed /= frictionFactor;
-		if (flySpeed.length() * pContext->pViewport->getCamera()->getZoomLevel() < 5) // less than 5 screen pixels per second, then stop
+		if (glm::length(flySpeed) * pContext->pViewport->getCamera()->getZoomLevel() < 5) // less than 5 screen pixels per second, then stop
 			isFlyActive = false;
 	}
 }
