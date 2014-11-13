@@ -8,6 +8,7 @@
 #include "input/InputEvent.h"
 #include "input/operations/OperationsStack.h"
 #include "input/operations/OperationPan.h"
+#include "input/operations/OperationSpring.h"
 #include "objects/body-parts/Bone.h"
 #include "objects/MouseObject.h"
 #include "physics/Spring.h"
@@ -33,7 +34,7 @@ int main()
 
 	GLFWInput::initialize(gltGetWindow());
 	OperationsStack opStack(&vp1, nullptr);
-	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan()));
+	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 
@@ -52,6 +53,9 @@ int main()
 			1.f, // k
 			1.f // initialLength
 			);
+	wld.addObject(new WorldObject(&s));
+
+	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {

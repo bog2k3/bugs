@@ -16,7 +16,7 @@ class OperationContext;
 
 class OperationPan: public IOperation {
 public:
-	OperationPan();
+	OperationPan(InputEvent::MOUSE_BUTTON assignedButton);
 	virtual ~OperationPan();
 
 	virtual void enter(const OperationContext* pContext);

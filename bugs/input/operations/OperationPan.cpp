@@ -11,7 +11,7 @@
 #include "../../renderOpenGL/Camera.h"
 #include <GLFW/glfw3.h>
 
-OperationPan::OperationPan()
+OperationPan::OperationPan(InputEvent::MOUSE_BUTTON assignedButton)
 	: pContext(nullptr)
 	, isFlyActive(false)
 	, isDragging(false)
@@ -20,7 +20,7 @@ OperationPan::OperationPan()
 	, lastIndex(0)
 	, frictionFactor(1.1)
 	, flySpeed()
-	, boundButton(InputEvent::MB_RIGHT)
+	, boundButton(assignedButton)
 {
 }
 
