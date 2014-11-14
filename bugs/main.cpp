@@ -45,7 +45,7 @@ int main()
 	wld.addObject(&b);
 
 	MouseObject mouse;
-	Spring s(
+	/*Spring s(
 			AttachPoint(b.getRigidBody(),
 				glm::vec2(0.5f, 0.15f)
 			),
@@ -53,7 +53,7 @@ int main()
 			10.f, // k
 			0.1f // initialLength
 			);
-	wld.addObject(new WorldObject(&s));
+	wld.addObject(new WorldObject(&s));*/
 
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
 

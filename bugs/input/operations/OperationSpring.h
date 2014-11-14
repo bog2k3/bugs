@@ -28,6 +28,7 @@ protected:
 	MouseObject* mouse;
 	const OperationContext* pContext;
 	InputEvent::MOUSE_BUTTON boundButton;
+	bool isActive;
 };
 
 #endif /* INPUT_OPERATIONS_OPERATIONSPRING_H_ */
