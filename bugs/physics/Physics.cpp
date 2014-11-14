@@ -62,10 +62,8 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
 		}
 		vec2 acceleration = body->resultantForce / body->mass;
 		body->velocity += acceleration * dt;
-		LOG("torque : " << body->resultantTorque);
 		float angularAcceleration = body->resultantTorque / body->getMomentOfInertia();
 		body->angularVelocity += angularAcceleration * dt;
-		LOG("omega : " << body->angularVelocity);
 
 		// clear accumulation variables:
 		body->resultantForce = vec2(0);
@@ -80,7 +78,7 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	// 1. linear friction
 	// Ff = fCoeff * obj->getMass() * (1 + speedCoeff * sqr(speed))
 	// af = Ff / mass
-	float fCoeff = 0.1f; // miu, should be surface-dependent
+	float fCoeff = 0.2f; // miu, should be surface-dependent
 	float speedCoeff = 0.1f; // how much speed counts
 	float speed = length(obj->getVelocity());
 
@@ -93,7 +91,7 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	// 2. angular friction
 	// Ffa = fCoeff * mass * (1 + angCoeff * sqr(w))
 	// wf = Ffa / I
-	float angCoeff = 0.1f; // how much rotation counts
+	float angCoeff = 0.02f; // how much rotation counts
 	float wf = fCoeff * obj->mass * (1 + angCoeff * sqr(obj->angularVelocity)) / obj->getMomentOfInertia() * dt;
 	if (wf > abs(obj->angularVelocity))
 		obj->angularVelocity = 0;
@@ -105,7 +103,6 @@ void Physics::moveAndCheckCollisions(float dt) {
 	for (RigidBody* body : rigidBodies) {
 		body->position += body->velocity * dt;
 		body->rotation += body->angularVelocity * dt;
-		LOG("Rotation : "<<body->rotation);
 		body->updateMatrix();
 	}
 }

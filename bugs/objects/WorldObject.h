@@ -9,7 +9,8 @@
 #define OBJECTS_WORLDOBJECT_H_
 
 // render objects:
-class Rectangle;
+class Shape2D;
+class Viewport;
 // end render objects
 
 class RigidBody;
@@ -17,7 +18,16 @@ class Spring;
 
 class ObjectRenderContext {
 public:
-	Rectangle* rectangle;
+	Shape2D* shape;
+	Viewport* viewport;
+
+	ObjectRenderContext(Shape2D* shape, Viewport* vp)
+		: shape(shape), viewport(vp) {
+	}
+
+	ObjectRenderContext()
+		: shape(nullptr), viewport(nullptr) {
+	}
 };
 
 enum WorldObjectType {

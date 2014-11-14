@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "renderOpenGL/glToolkit.h"
-#include "renderOpenGL/Rectangle.h"
+#include "renderOpenGL/Shape2D.h"
 #include "renderOpenGL/Renderer.h"
 #include "renderOpenGL/Viewport.h"
 #include "input/GLFWInput.h"
@@ -28,9 +28,7 @@ int main()
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
 
-	ObjectRenderContext renderContext;
-	renderContext.rectangle = new Rectangle(&renderer);
-	renderer.registerRenderable(renderContext.rectangle);
+	ObjectRenderContext renderContext(new Shape2D(&renderer), &vp1);
 
 	GLFWInput::initialize(gltGetWindow());
 	OperationsStack opStack(&vp1, nullptr);
@@ -43,18 +41,17 @@ int main()
 
 	Physics physics(&wld);
 
-	Bone b = Bone(glm::vec2(0, 0), 0, 1.f, glm::vec2(1, 0.3f), glm::vec2(0), 0.f);
+	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(1, 0.3f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 
 	MouseObject mouse;
 	Spring s(
 			AttachPoint(b.getRigidBody(),
-				// glm::vec2(0)
 				glm::vec2(0.5f, 0.15f)
 			),
 			AttachPoint(&mouse, glm::vec2(0)),
-			1.f, // k
-			1.f // initialLength
+			10.f, // k
+			0.1f // initialLength
 			);
 	wld.addObject(new WorldObject(&s));
 
@@ -80,7 +77,7 @@ int main()
 		gltEnd();
 	}
 
-	delete renderContext.rectangle;
+	delete renderContext.shape;
 
 	return 0;
 }

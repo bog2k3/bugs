@@ -5,18 +5,18 @@
 
 class Shaders {
 public:
-	static GLuint loadVertexShader(const char* path);
-	static GLuint loadGeometryShader(const char* path);
-	static GLuint loadFragmentShader(const char* path);
-	static GLuint createProgram(const char* vertex_file_path, const char* fragment_file_path);
-	static GLuint createProgramGeom(const char* vertex_file_path, const char* geom_file_path,
+	static unsigned loadVertexShader(const char* path);
+	static unsigned loadGeometryShader(const char* path);
+	static unsigned loadFragmentShader(const char* path);
+	static unsigned createProgram(const char* vertex_file_path, const char* fragment_file_path);
+	static unsigned createProgramGeom(const char* vertex_file_path, const char* geom_file_path,
 			const char* fragment_file_path);
 
 private:
 	Shaders() {
 	}
 	static std::string readShaderFile(const char* path);
-	static GLuint createAndCompileShader(std::string const &code, GLuint shaderType);
+	static unsigned createAndCompileShader(std::string const &code, unsigned shaderType);
 };
 
 #endif
