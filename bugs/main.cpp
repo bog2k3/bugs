@@ -51,7 +51,7 @@ int main()
 			),
 			AttachPoint(&mouse, glm::vec2(0)),
 			10.f, // k
-			0.1f // initialLength
+			0.01f // initialLength
 			);
 	wld.addObject(new WorldObject(&s));*/
 

@@ -5,7 +5,7 @@
  *      Author: bogdan
  */
 
-#include <renderOpenGL/Shape2D.h>
+#include "Shape2D.h"
 
 #include "Renderer.h"
 #include "Viewport.h"

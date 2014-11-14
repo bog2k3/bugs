@@ -8,7 +8,7 @@
 #include "WorldObject.h"
 #include "../math/math.h"
 #include "../renderOpenGL/Shape2D.h"
-#include "../renderOpenGL/viewport.h"
+#include "../renderOpenGL/Viewport.h"
 #include "../renderOpenGL/Camera.h"
 #include "../physics/RigidBody.h"
 #include "../physics/Spring.h"
