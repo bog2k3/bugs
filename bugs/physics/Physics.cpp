@@ -62,8 +62,10 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
 		}
 		vec2 acceleration = body->resultantForce / body->mass;
 		body->velocity += acceleration * dt;
+		LOG("torque : " << body->resultantTorque);
 		float angularAcceleration = body->resultantTorque / body->getMomentOfInertia();
-		// body->angularVelocity += angularAcceleration * dt;
+		body->angularVelocity += angularAcceleration * dt;
+		LOG("omega : " << body->angularVelocity);
 
 		// clear accumulation variables:
 		body->resultantForce = vec2(0);
@@ -92,17 +94,18 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	// Ffa = fCoeff * mass * (1 + angCoeff * sqr(w))
 	// wf = Ffa / I
 	float angCoeff = 0.1f; // how much rotation counts
-	float wf = fCoeff * obj->mass * (1 + angCoeff * sqr(obj->angularVelocity)) * dt;
-	if (wf > obj->angularVelocity)
+	float wf = fCoeff * obj->mass * (1 + angCoeff * sqr(obj->angularVelocity)) / obj->getMomentOfInertia() * dt;
+	if (wf > abs(obj->angularVelocity))
 		obj->angularVelocity = 0;
 	else
-		obj->angularVelocity -= wf;
+		obj->angularVelocity -= wf * sign(obj->angularVelocity);
 }
 
 void Physics::moveAndCheckCollisions(float dt) {
 	for (RigidBody* body : rigidBodies) {
 		body->position += body->velocity * dt;
 		body->rotation += body->angularVelocity * dt;
+		LOG("Rotation : "<<body->rotation);
 		body->updateMatrix();
 	}
 }
@@ -121,7 +124,7 @@ void Physics::applyForceToObject(RigidBody* obj, vec2 localOffset, vec2 force) {
 		obj->resultantForce += force;
 	} else {
 		// eccentric force; get the normal axis in world space
-		vec2 normalAxis = rotate(normalize(localOffset), obj->getRotation());
+		vec2 normalAxis = rotate(normalize(localOffset), obj->rotation);
 		vec2 normalForce = normalAxis * dot(normalAxis, force);
 		vec2 tangentForce = force - normalForce;
 		float tangentForceSign = cross2D(normalAxis, tangentForce) > 0 ? +1 : -1;
