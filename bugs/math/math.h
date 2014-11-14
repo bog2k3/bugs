@@ -11,7 +11,7 @@ template<typename T> inline void xchg(T &x1, T &x2) { T aux = x1; x1 = x2; x2 = 
 
 inline glm::vec2 getNormalVector(glm::vec2 v) { return glm::vec2(-v.y, v.x); }
 
-inline float eqEps(float f1, float f2) { return abs(f1 - f2) < EPS; }
+inline float eqEps(float f1, float f2) { return glm::abs(f1 - f2) < EPS; }
 
 class Circle
 {

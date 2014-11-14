@@ -29,6 +29,7 @@ private:
 	void updateAndApplyAccelerationsAndVelocities(float dt);
 	void moveAndCheckCollisions(float dt);
 	void applyForceToObject(RigidBody* obj, glm::vec2 localOffset, glm::vec2 force);
+	void applyFriction(RigidBody* obj, float dt);
 };
 
 #endif /* PHYSICS_PHYSICS_H_ */
