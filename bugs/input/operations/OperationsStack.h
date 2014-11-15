@@ -7,12 +7,13 @@ class Viewport;
 class OperationContext;
 class IOperation;
 class InputEvent;
-class BSPTree;
+class IOperationSpatialLocator;
+class IWorldManager;
 
 class OperationsStack
 {
 public:
-	OperationsStack(Viewport* pViewport, BSPTree* pBSPTree);
+	OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, IWorldManager* wldManager);
 	~OperationsStack();
 
 	// pushes a new operation onto the stack; the new operation will become active

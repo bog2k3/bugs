@@ -20,6 +20,10 @@ glm::vec2 RigidBody::localToWorld(glm::vec2 local) const {
 	return matLocalToWorld * glm::vec3(local, 1);
 }
 
+glm::vec2 RigidBody::worldToLocal(glm::vec2 wld) const {
+	return glm::rotate(wld - position, -rotation);
+}
+
 void RigidBody::updateMatrix() {
 	float cosT = cos(rotation);
 	float sinT = sin(rotation);

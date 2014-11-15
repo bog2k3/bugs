@@ -11,6 +11,7 @@
 #include "IOperation.h"
 
 class MouseObject;
+class WorldObject;
 
 class OperationSpring: public IOperation {
 public:
@@ -26,6 +27,7 @@ public:
 
 protected:
 	MouseObject* mouse;
+	WorldObject* springObj;
 	const OperationContext* pContext;
 	InputEvent::MOUSE_BUTTON boundButton;
 	bool isActive;

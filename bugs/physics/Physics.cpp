@@ -6,15 +6,15 @@
  */
 
 #include "Physics.h"
-#include "ISpatialResolver.h"
 #include "RigidBody.h"
 #include "Spring.h"
 #include <glm/gtx/rotate_vector.hpp>
-#include "../math/math.h"
+#include "../math/math2D.h"
+#include "IPhysicsSpatialResolver.h"
 
 using namespace glm;
 
-Physics::Physics(ISpatialResolver* resolver)
+Physics::Physics(IPhysicsSpatialResolver* resolver)
 	: spatialResolver(resolver)
 {
 }
@@ -91,8 +91,11 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	// 2. angular friction
 	// Ffa = fCoeff * mass * (1 + angCoeff * sqr(w))
 	// wf = Ffa / I
-	float angCoeff = 0.02f; // how much rotation counts
-	float wf = fCoeff * obj->mass * (1 + angCoeff * sqr(obj->angularVelocity)) / obj->getMomentOfInertia() * dt;
+	float angCoeff = 0.12f; // how much rotation counts
+	float miuRot = 2 / (3 * sqrtf(PI)) * fCoeff;
+	// float wf = fCoeff * obj->mass * (1 + angCoeff * sqr(obj->angularVelocity)) /*/ obj->getMomentOfInertia()*/ * dt;
+	float frictionTorque = miuRot * obj->mass * sqrtf(obj->getSurface());
+	float wf = frictionTorque / obj->getMomentOfInertia() * dt;
 	if (wf > abs(obj->angularVelocity))
 		obj->angularVelocity = 0;
 	else

@@ -1,6 +1,5 @@
-#include "math.h"
-
 #include <algorithm>
+#include "math2D.h"
 
 using namespace glm;
 

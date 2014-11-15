@@ -11,18 +11,18 @@
 #include <vector>
 #include <glm/vec2.hpp>
 
-class ISpatialResolver;
+class IPhysicsSpatialResolver;
 class RigidBody;
 
 class Physics {
 public:
-	Physics(ISpatialResolver* resolver);
+	Physics(IPhysicsSpatialResolver* resolver);
 	virtual ~Physics();
 
 	void update(float dt);
 
 private:
-	ISpatialResolver* spatialResolver;
+	IPhysicsSpatialResolver* spatialResolver;
 	std::vector<RigidBody*> rigidBodies;
 
 	void updateAndApplySpringForces();

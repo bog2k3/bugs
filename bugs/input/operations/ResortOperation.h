@@ -1,6 +1,6 @@
 #pragma once
+#include "../../math/math2D.h"
 #include "IOperation.h"
-#include "../math/math.h"
 
 namespace Render { class Rectangle; class Line; };
 

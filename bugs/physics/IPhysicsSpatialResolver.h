@@ -6,9 +6,9 @@ class Circle;
 class RigidBody;
 class Spring;
 
-class ISpatialResolver {
+class IPhysicsSpatialResolver {
 public:
-	virtual ~ISpatialResolver(){}
+	virtual ~IPhysicsSpatialResolver(){}
 
 	// must return the objects that are partially or completely inside the specified circle
 	// the objects should be appended to the vector, without interfering with its current contents.

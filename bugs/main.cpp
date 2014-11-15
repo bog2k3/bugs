@@ -27,24 +27,23 @@ int main()
 	Renderer renderer;
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
-
 	ObjectRenderContext renderContext(new Shape2D(&renderer), &vp1);
-
-	GLFWInput::initialize(gltGetWindow());
-	OperationsStack opStack(&vp1, nullptr);
-	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
-
-	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 
 	World wld;
 	wld.setRenderContext(renderContext);
 
 	Physics physics(&wld);
 
+	OperationsStack opStack(&vp1, &wld, &wld);
+	GLFWInput::initialize(gltGetWindow());
+	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
+	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
+	MouseObject mouse;
+	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
+
 	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(1, 0.3f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 
-	MouseObject mouse;
 	/*Spring s(
 			AttachPoint(b.getRigidBody(),
 				glm::vec2(0.5f, 0.15f)
@@ -54,8 +53,6 @@ int main()
 			0.01f // initialLength
 			);
 	wld.addObject(new WorldObject(&s));*/
-
-	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {

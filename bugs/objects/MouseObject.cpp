@@ -6,7 +6,7 @@
  */
 
 #include "MouseObject.h"
-#include "../math/math.h"
+#include "../math/math2D.h"
 #include <glm/vec2.hpp>
 using namespace glm;
 

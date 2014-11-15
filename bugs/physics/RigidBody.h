@@ -8,9 +8,9 @@
 #ifndef PHYSICS_RIGIDBODY_H_
 #define PHYSICS_RIGIDBODY_H_
 
-#include "../math/math.h"
 #include <glm/vec2.hpp>
 #include <glm/mat3x2.hpp>
+#include "../math/math2D.h"
 
 class RigidBody {
 public:
@@ -45,6 +45,7 @@ public:
 	float getAngularVelocity() const { return angularVelocity; }
 
 	glm::vec2 localToWorld(glm::vec2 local) const;
+	glm::vec2 worldToLocal(glm::vec2 wld) const;
 
 	void teleport(glm::vec2 where);
 

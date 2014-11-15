@@ -2,21 +2,23 @@
 
 class Viewport;
 
-class LifeApp;
-class BSPTree;
 class OperationsStack;
 class Viewport;
+class IOperationSpatialLocator;
+class IWorldManager;
 
 class OperationContext
 {
 public:
-	BSPTree* pBSPTree;
 	Viewport* pViewport;
 	OperationsStack* pStack;
+	IOperationSpatialLocator* locator;
+	IWorldManager* worldManager;
 
-	OperationContext(Viewport* pViewport, BSPTree* pBSPTree, OperationsStack* pStack)
-		: pBSPTree(pBSPTree)
-		, pViewport(pViewport)
-		, pStack(pStack) {
+	OperationContext(Viewport* pViewport, OperationsStack* pStack, IOperationSpatialLocator* locator, IWorldManager* worldManager)
+		: pViewport(pViewport)
+		, pStack(pStack)
+		, locator(locator)
+		, worldManager(worldManager) {
 	}
 };

@@ -6,7 +6,8 @@
  */
 
 #include "WorldObject.h"
-#include "../math/math.h"
+
+#include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/Viewport.h"
 #include "../renderOpenGL/Camera.h"
