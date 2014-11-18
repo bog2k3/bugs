@@ -78,23 +78,25 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	// 1. linear friction
 	// Ff = fCoeff * obj->getMass() * (1 + speedCoeff * sqr(speed))
 	// af = Ff / mass
-	float fCoeff = 0.2f; // miu, should be surface-dependent
+	float miu = 0.2f; // miu, should be surface-dependent
 	float speedCoeff = 0.1f; // how much speed counts
 	float speed = length(obj->getVelocity());
 
-	float frictionAccel = fCoeff * (1 + speedCoeff * sqr(speed)) * dt;
+	float frictionAccel = miu * (1 + speedCoeff * sqr(speed)) * dt;
 	if (frictionAccel > speed)
 		obj->velocity = vec2(0);
 	else
 		obj->velocity *= 1 - frictionAccel / speed;
 
 	// 2. angular friction
-	// Ffa = fCoeff * mass * (1 + angCoeff * sqr(w))
-	// wf = Ffa / I
-	float angCoeff = 0.12f; // how much rotation counts
-	float miuRot = 2 / (3 * sqrtf(PI)) * fCoeff;
-	// float wf = fCoeff * obj->mass * (1 + angCoeff * sqr(obj->angularVelocity)) /*/ obj->getMomentOfInertia()*/ * dt;
-	float frictionTorque = miuRot * obj->mass * sqrtf(obj->getSurface());
+	// dFfw = u*p*(1+a*w^2*r^2) dr dphi (approximate shape by an ellipse, where R(phi) = sqrt(1/(cos^2(phi)/a^2 + sin^2(phi)/b^2))
+	// tauF = integral on obj's surface of dFfw * r, r < [0, R(phi)], phi < [0, 2*pi]
+	// tauF = pi/16 * u * m * (16 + alpha * w^2 ( width^2 + height^2))
+	// wf = tauF / I
+	float angCoeff = 0.12f; // (alpha) how much rotation counts
+	float w = obj->angularVelocity;
+	glm::vec2 objSize = obj->getLocalBoundingBox().getSize();
+	float frictionTorque /*tau*/ = miu * obj->mass * PI/16 * (16 + angCoeff * sqr(w)*(sqr(objSize.x)+sqr(objSize.y)));
 	float wf = frictionTorque / obj->getMomentOfInertia() * dt;
 	if (wf > abs(obj->angularVelocity))
 		obj->angularVelocity = 0;
