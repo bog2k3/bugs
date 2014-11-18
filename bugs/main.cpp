@@ -41,7 +41,7 @@ int main()
 	MouseObject mouse;
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
 
-	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(1, 0.3f), glm::vec2(0), 0.f);
+	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(3, 0.3f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 
 	/*Spring s(

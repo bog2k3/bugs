@@ -93,10 +93,10 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	// tauF = integral on obj's surface of dFfw * r, r < [0, R(phi)], phi < [0, 2*pi]
 	// tauF = pi/16 * u * m * (16 + alpha * w^2 ( width^2 + height^2))
 	// wf = tauF / I
-	float angCoeff = 0.12f; // (alpha) how much rotation counts
 	float w = obj->angularVelocity;
 	glm::vec2 objSize = obj->getLocalBoundingBox().getSize();
-	float frictionTorque /*tau*/ = miu * obj->mass * PI/16 * (16 + angCoeff * sqr(w)*(sqr(objSize.x)+sqr(objSize.y)));
+	float frictionTorque /*tau*/ = miu * obj->mass * PI/16 * (16 + speedCoeff * sqr(w)*(sqr(objSize.x)+sqr(objSize.y)));
+	frictionTorque *= 1.f/8; // magic number
 	float wf = frictionTorque / obj->getMomentOfInertia() * dt;
 	if (wf > abs(obj->angularVelocity))
 		obj->angularVelocity = 0;

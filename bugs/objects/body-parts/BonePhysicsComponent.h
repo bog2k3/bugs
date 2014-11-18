@@ -21,15 +21,17 @@ public:
 
 	virtual float getMomentOfInertia() const {
 		// moment of inertia for a rectangular object:
-		return 1.f/12.f * getMass() * (size.x*size.x + size.y*size.y);
+		return momentOfInertia;
 	}
 
 	BonePhysicsComponent(float mass, glm::vec2 position, float rotation, glm::vec2 size,
 						 glm::vec2 initialVelocity, float initialAngularVelocity)
 		: RigidBody(mass, position, rotation, initialVelocity, initialAngularVelocity)
-		, size(size) {
+		, size(size)
+		, momentOfInertia(1.f/12.f * mass * (size.x*size.x + size.y*size.y)) {
 	}
 
 protected:
 	glm::vec2 size;
+	float momentOfInertia;
 };
