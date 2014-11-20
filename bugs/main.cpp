@@ -41,18 +41,8 @@ int main()
 	MouseObject mouse;
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
 
-	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(3, 0.3f), glm::vec2(0), 0.f);
+	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(0.5, 0.3f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
-
-	/*Spring s(
-			AttachPoint(b.getRigidBody(),
-				glm::vec2(0.5f, 0.15f)
-			),
-			AttachPoint(&mouse, glm::vec2(0)),
-			10.f, // k
-			0.01f // initialLength
-			);
-	wld.addObject(new WorldObject(&s));*/
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {

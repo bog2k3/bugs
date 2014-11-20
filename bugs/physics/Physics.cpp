@@ -75,33 +75,60 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
 }
 
 void Physics::applyFriction(RigidBody* obj, float dt) {
-	// 1. linear friction
-	// Ff = fCoeff * obj->getMass() * (1 + speedCoeff * sqr(speed))
-	// af = Ff / mass
-	float miu = 0.2f; // miu, should be surface-dependent
-	float speedCoeff = 0.1f; // how much speed counts
-	float speed = length(obj->getVelocity());
-
-	float frictionAccel = miu * (1 + speedCoeff * sqr(speed)) * dt;
-	if (frictionAccel > speed)
-		obj->velocity = vec2(0);
-	else
-		obj->velocity *= 1 - frictionAccel / speed;
-
-	// 2. angular friction
-	// dFfw = u*p*(1+a*w^2*r^2) dr dphi (approximate shape by an ellipse, where R(phi) = sqrt(1/(cos^2(phi)/a^2 + sin^2(phi)/b^2))
-	// tauF = integral on obj's surface of dFfw * r, r < [0, R(phi)], phi < [0, 2*pi]
-	// tauF = pi/16 * u * m * (16 + alpha * w^2 ( width^2 + height^2))
-	// wf = tauF / I
+	/* definitions:
+	 * 		miu - friction coefficient
+	 * 		alpha - speed-dependency coefficient for friction
+	 * 		m - object's mass
+	 * 		v - object's linear speed
+	 * 		Ff - linear friction force
+	 * 		w - object's angular speed
+	 * 		tau - torque of rotational friction force
+	 * 		I - body's moment of inertia
+	 * 		E - total energy of object (translational + rotational)
+	 * 		Q - energy lost by object in unit of time because of total friction
+	 * 		gamma - ratio between initial and final speed and angular speed
+	 *
+	 * 	formulas:
+	 * 		miu - (miu1 + miu2)/2     "surface dependent on both surfaces in contact"
+	 * 		alpha - should somehow be surface dependent, but we'll set it constant for now
+	 * 		Ff = miu*m*(1 + alpha*v^2)
+	 * 		tau = pi/16*miu*m*(16 + alpha*w^2*(width^2+height^2))		"width and height belong to object in question"
+	 * 		E = (m*v^2 + I*w^2) / 2		"total energy = kinetic (linear) energy + rotational energy"
+	 * 		Q = (Pf + Pfw) * dt, where Pf is the "power of friction force" and Pfw is the "power of rotational friction force"
+	 * 			Pf = the amount of linear kinetic energy deduced in unit of time by the friction force
+	 * 			Pfw = amount of rotational kinetic energy deduced in unit of time by the rotational friction
+	 *
+	 * 			Pf = Ff * v
+	 * 			Pfw = tau * w
+	 * 		thus:
+	 * 			Q = miu*m*((1+alpha*v^2)*v + pi/16*(16+alpha*w^2*(width^2+height^2)*w)) * dt
+	 * 		gamma^2 = 1 - Q/E
+	 *
+	 * 	finally:
+	 * 		if gamma <= 0 then:
+	 * 			v <- 0
+	 * 			w <- 0
+	 * 		else:
+	 * 			v <- gamma * v
+	 * 			w <- gamma * w
+	 */
+	float miu = 0.2f; // should be surface-dependent
+	float alpha = 0.1f; // speed-dependency coefficient
+	float m = obj->mass;
+	float v = length(obj->velocity);
 	float w = obj->angularVelocity;
+	float I = obj->getMomentOfInertia();
+	float E = 0.5f * (m * sqr(v) + I * sqr(w));
+	if (E == 0)
+		return;
 	glm::vec2 objSize = obj->getLocalBoundingBox().getSize();
-	float frictionTorque /*tau*/ = miu * obj->mass * PI/16 * (16 + speedCoeff * sqr(w)*(sqr(objSize.x)+sqr(objSize.y)));
-	frictionTorque *= 1.f/8; // magic number
-	float wf = frictionTorque / obj->getMomentOfInertia() * dt;
-	if (wf > abs(obj->angularVelocity))
-		obj->angularVelocity = 0;
-	else
-		obj->angularVelocity -= wf * sign(obj->angularVelocity);
+
+	float Ff = miu * m * (1 + alpha * sqr(v));
+	float tau = PI/16 * miu * m * (16 + alpha*sqr(w)*(sqr(objSize.x) + sqr(objSize.y)));
+	float Q = (Ff * v + tau * abs(w)) * dt;
+	float gamma = Q > E ? 0 : sqrt(1 - Q/E);
+	obj->velocity *= gamma;
+	obj->angularVelocity *= gamma;
 }
 
 void Physics::moveAndCheckCollisions(float dt) {
