@@ -132,6 +132,7 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 }
 
 void Physics::moveAndCheckCollisions(float dt) {
+	// http://www.myphysicslab.com/collision.html
 	for (RigidBody* body : rigidBodies) {
 		body->position += body->velocity * dt;
 		body->rotation += body->angularVelocity * dt;
@@ -140,25 +141,10 @@ void Physics::moveAndCheckCollisions(float dt) {
 }
 
 void Physics::applyForceToObject(RigidBody* obj, vec2 localOffset, vec2 force) {
-	// the force is split into a tangent and normal vectors by the axis from the force's application point
-	// to the receiver's center of weight.
-	// the tangent vector will manifest as an angular momentum;
-	// the normal vector will manifest as a linear acceleration
-
 	// localOffset is in obj's local space
 	// force is in world space
+	obj->resultantForce += force;
 
-	if (eqEps(localOffset.x, 0) && eqEps(localOffset.y, 0)) {
-		// force acting on the center of weight
-		obj->resultantForce += force;
-	} else {
-		// eccentric force; get the normal axis in world space
-		vec2 normalAxis = rotate(normalize(localOffset), obj->rotation);
-		vec2 normalForce = normalAxis * dot(normalAxis, force);
-		vec2 tangentForce = force - normalForce;
-		float tangentForceSign = cross2D(normalAxis, tangentForce) > 0 ? +1 : -1;
-
-		obj->resultantForce += normalForce;
-		obj->resultantTorque += length(tangentForce) * tangentForceSign * length(localOffset);
-	}
+	vec2 rotatedOffset = rotate(localOffset, obj->rotation);
+	obj->resultantTorque += cross2D(rotatedOffset, force);
 }
