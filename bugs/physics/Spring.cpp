@@ -16,6 +16,15 @@ Spring::Spring(AttachPoint a1, AttachPoint a2, float k, float initialLength)
 Spring::~Spring() {
 }
 
+float Spring::getDelta() {
+	glm::vec2 distance = a2.getWorldPos() - a1.getWorldPos();
+	float len = glm::length(distance);
+	if (len <= initialLength)
+		return 0;
+	else
+		return len - initialLength;
+}
+
 glm::vec2 Spring::getForce() {
 	glm::vec2 distance = a2.getWorldPos() - a1.getWorldPos();
 	float len = glm::length(distance);

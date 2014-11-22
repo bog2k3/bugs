@@ -23,6 +23,7 @@ public:
 
 	// returns the force vector, oriented from attachment point #1 towards #2
 	glm::vec2 getForce();
+	float getDelta();
 };
 
 #endif /* PHYSICS_SPRING_H_ */

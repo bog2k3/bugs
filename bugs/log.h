@@ -14,7 +14,7 @@
 
 #include <iostream>
 #define LOG(X) std::cout << X << std::endl;
-#define ERROR(X) std::cerr << X << std::endl;
+#define ERROR(X) std::cerr << "[ERROR] " << X << std::endl;
 
 #else
 #define LOG(X)

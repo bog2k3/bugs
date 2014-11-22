@@ -16,6 +16,9 @@ using namespace glm;
 
 Physics::Physics(IPhysicsSpatialResolver* resolver)
 	: spatialResolver(resolver)
+	, frameTranslationalEnergy(0)
+	, frameRotationalEnergy(0)
+	, frameElasticPotentialEnergy(0)
 {
 }
 
@@ -23,37 +26,44 @@ Physics::~Physics() {
 	// TODO Auto-generated destructor stub
 }
 
-void Physics::update(float dt) {
+void Physics::update(float dt, bool computeEnergy) {
+	if (computeEnergy) {
+		frameTranslationalEnergy = 0;
+		frameRotationalEnergy = 0;
+		frameElasticPotentialEnergy = 0;
+	}
 	// step 1:
 	// compute forces in all springs and accumulate these forces to the rigid bodies they're attached to
-	updateAndApplySpringForces();
+	updateAndApplySpringForces(computeEnergy);
 
 	rigidBodies.clear();
 	spatialResolver->retrieveObjects(rigidBodies);
 
 	// step 2:
 	// Apply forces, compute accelerations, apply accelerations, update velocities (linear and angular)
-	updateAndApplyAccelerationsAndVelocities(dt);
+	updateAndApplyAccelerationsAndVelocities(dt, computeEnergy);
 
 	// step 3:
 	// apply velocities, move objects and check for collisions
 	moveAndCheckCollisions(dt);
 }
 
-void Physics::updateAndApplySpringForces() {
+void Physics::updateAndApplySpringForces(bool computeEnergy) {
 	std::vector<Spring*> springs;
 	spatialResolver->retrieveObjects(springs);
 	for (Spring* s : springs) {
 		vec2 force = s->getForce();
 		if (force.x == 0 && force.y == 0)
 			continue;
+		if (computeEnergy)
+			frameElasticPotentialEnergy += length(force) * s->getDelta();
 		// apply force to s' first attachment point as it is, and to the second reversed.
 		applyForceToObject(s->a1.pObject, s->a1.offset, force);
 		applyForceToObject(s->a2.pObject, s->a2.offset, -force);
 	}
 }
 
-void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
+void Physics::updateAndApplyAccelerationsAndVelocities(float dt, bool computeEnergy) {
 	for (RigidBody* body : rigidBodies) {
 		if (body->isFixed) {
 			body->velocity = vec2(0);
@@ -71,6 +81,11 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
 
 		// apply friction:
 		applyFriction(body, dt);
+
+		if (computeEnergy) {
+			frameTranslationalEnergy += body->mass * sqr(length(body->velocity)) * 0.5f;
+			frameRotationalEnergy += body->getMomentOfInertia() * sqr(body->angularVelocity) * 0.5f;
+		}
 	}
 }
 

@@ -2,6 +2,7 @@
 
 #include "renderOpenGL/glToolkit.h"
 #include "renderOpenGL/Shape2D.h"
+#include "renderOpenGL/Text.h"
 #include "renderOpenGL/Renderer.h"
 #include "renderOpenGL/Viewport.h"
 #include "input/GLFWInput.h"
@@ -15,7 +16,9 @@
 #include "physics/Physics.h"
 #include "World.h"
 #include <GLFW/glfw3.h>
+
 #include <functional>
+#include <sstream>
 
 int main()
 {
@@ -28,6 +31,7 @@ int main()
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
 	ObjectRenderContext renderContext(new Shape2D(&renderer), &vp1);
+	GLText::initialize("data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ');
 
 	World wld;
 	wld.setRenderContext(renderContext);
@@ -60,7 +64,7 @@ int main()
 
 		opStack.update(dt);
 		wld.updatePrePhysics(dt);
-		physics.update(dt);
+		physics.update(dt, true);
 		wld.updatePostPhysics(dt);
 
 		// draw builds the render queue
@@ -69,6 +73,9 @@ int main()
 		// now we do the actual openGL render (which is independent of our world)
 		gltBegin();
 		renderer.render();
+		std::stringstream ss;
+		ss << "E(trans) = " << physics.getTranslationalEnergy() << ";  E(rot) = " << physics.getRotationalEnergy();
+		GLText::print(ss.str().c_str(), 20, 20, 16);
 		gltEnd();
 	}
 

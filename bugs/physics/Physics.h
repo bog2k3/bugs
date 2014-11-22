@@ -19,14 +19,22 @@ public:
 	Physics(IPhysicsSpatialResolver* resolver);
 	virtual ~Physics();
 
-	void update(float dt);
+	void update(float dt, bool computeEnergy=false);
+
+	float getTranslationalEnergy() { return frameTranslationalEnergy; }
+	float getRotationalEnergy() { return frameRotationalEnergy; }
+	float getElasticPotentialEnergy() { return frameElasticPotentialEnergy; }
 
 private:
 	IPhysicsSpatialResolver* spatialResolver;
 	std::vector<RigidBody*> rigidBodies;
 
-	void updateAndApplySpringForces();
-	void updateAndApplyAccelerationsAndVelocities(float dt);
+	float frameTranslationalEnergy;
+	float frameRotationalEnergy;
+	float frameElasticPotentialEnergy;
+
+	void updateAndApplySpringForces(bool computeEnergy);
+	void updateAndApplyAccelerationsAndVelocities(float dt, bool computeEnergy);
 	void moveAndCheckCollisions(float dt);
 	void applyForceToObject(RigidBody* obj, glm::vec2 localOffset, glm::vec2 force);
 	void applyFriction(RigidBody* obj, float dt);
