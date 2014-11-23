@@ -33,7 +33,7 @@ private:
 	float frameRotationalEnergy;
 	float frameElasticPotentialEnergy;
 
-	void updateAndApplySpringForces(bool computeEnergy);
+	void updateAndApplySpringForces(float dt, bool computeEnergy);
 	void updateAndApplyAccelerationsAndVelocities(float dt, bool computeEnergy);
 	void moveAndCheckCollisions(float dt);
 	void applyForceToObject(RigidBody* obj, glm::vec2 localOffset, glm::vec2 force);

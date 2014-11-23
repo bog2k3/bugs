@@ -9,8 +9,16 @@
 #include "glm/gtx/rotate_vector.hpp"
 
 RigidBody::RigidBody(float mass, glm::vec2 position, float rotation, glm::vec2 initialVelocity, float initialAngularVelocity)
-	: isFixed(false), mass(mass), position(position), velocity(initialVelocity), rotation(rotation), angularVelocity(initialAngularVelocity)
-	, resultantForce(0), resultantTorque(0)
+	: isFixed(false)
+	, mass(mass)
+	, position(position)
+	, velocity(initialVelocity)
+	, prevVelocity(initialVelocity)
+	, rotation(rotation)
+	, angularVelocity(initialAngularVelocity)
+	, prevAngularVelocity(initialAngularVelocity)
+	, resultantForce(0)
+	, resultantTorque(0)
 	, matLocalToWorld(1)
 {
 	updateMatrix();

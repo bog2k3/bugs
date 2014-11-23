@@ -17,19 +17,25 @@ using namespace glm;
 #include "shader.hpp"
 #include "TextureLoader.h"
 
-unsigned int Text2DTextureID;              // Texture containing the font
-unsigned int Text2DVertexBufferID;         // Buffer containing the vertices
-unsigned int Text2DUVBufferID;             //                       UVs
-unsigned int Text2DShaderID;               // Program used to disaply the text
-unsigned int vertexPosition_screenspaceID; // Location of the program's "vertexPosition_screenspace" attribute
-unsigned int vertexUVID;                   // Location of the program's "vertexUV" attribute
-unsigned int Text2DUniformID;              // Location of the program's texture attribute
+unsigned Text2DTextureID;              // Texture containing the font
+unsigned Text2DVertexBufferID;         // Buffer containing the vertices
+unsigned Text2DUVBufferID;             //                       UVs
+unsigned Text2DShaderID;               // Program used to disaply the text
+unsigned vertexPosition_screenspaceID; // Location of the program's "vertexPosition_screenspace" attribute
+unsigned vertexUVID;                   // Location of the program's "vertexUV" attribute
+unsigned viewportHalfSizeID;
+unsigned Text2DUniformID;              // Location of the program's texture attribute
 int rows, cols, first_char;
+float cellRatio; // cellWeight / cellHidth
 
 void GLText::initialize(const char * texturePath, int rows_, int cols_, char firstChar_) {
 	rows = rows_, cols = cols_, first_char = firstChar_;
+	cellRatio = (float)rows/cols;
 	// Initialize texture
 	Text2DTextureID = TextureLoader::loadFromPNG(texturePath, nullptr, nullptr);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Text2DTextureID);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Initialize VBO
 	glGenBuffers(1, &Text2DVertexBufferID);
@@ -43,21 +49,36 @@ void GLText::initialize(const char * texturePath, int rows_, int cols_, char fir
 	vertexUVID = glGetAttribLocation(Text2DShaderID, "vertexUV");
 
 	// Initialize uniforms' IDs
+	viewportHalfSizeID = glGetUniformLocation(Text2DShaderID, "viewportHalfSize");
 	Text2DUniformID = glGetUniformLocation( Text2DShaderID, "myTextureSampler" );
 }
 
 void GLText::print(const std::string text, int x, int y, int size) {
 	unsigned int length = text.length();
+	float xSize = size*cellRatio;
 
 	// Fill buffers
 	std::vector<glm::vec2> vertices;
 	std::vector<glm::vec2> UVs;
-	for ( unsigned int i=0 ; i<length ; i++ ){
+	int initialX = x;
+	for ( unsigned int i=0 ; i<length ; i++ ) {
+		char character = text[i];
+		if (character == '\t') {
+			x += 4 * xSize;
+			continue;
+		}
+		if (character == '\n') {
+			y -= size * 0.75f;
+			x = initialX;
+			continue;
+		}
 
-		glm::vec2 vertex_up_left    = glm::vec2( x+i*size     , y+size );
-		glm::vec2 vertex_up_right   = glm::vec2( x+i*size+size, y+size );
-		glm::vec2 vertex_down_right = glm::vec2( x+i*size+size, y      );
-		glm::vec2 vertex_down_left  = glm::vec2( x+i*size     , y      );
+		glm::vec2 vertex_up_left    = glm::vec2(x      , y+size );
+		glm::vec2 vertex_up_right   = glm::vec2(x+xSize, y+size );
+		glm::vec2 vertex_down_right = glm::vec2(x+xSize, y      );
+		glm::vec2 vertex_down_left  = glm::vec2(x      , y      );
+
+		x += xSize;
 
 		vertices.push_back(vertex_up_left   );
 		vertices.push_back(vertex_down_left );
@@ -67,7 +88,6 @@ void GLText::print(const std::string text, int x, int y, int size) {
 		vertices.push_back(vertex_up_right);
 		vertices.push_back(vertex_down_left);
 
-		char character = text[i];
 		float uv_x = ((character - first_char) % cols) / (float)cols;
 		float uv_y = 1.f - ((character - first_char) / cols) / (float)rows;
 
@@ -94,8 +114,13 @@ void GLText::print(const std::string text, int x, int y, int size) {
 	// Bind texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Text2DTextureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Set our "myTextureSampler" sampler to user Texture Unit 0
 	glUniform1i(Text2DUniformID, 0);
+
+	vec2 halfVP(400,300);
+	glUniform2fv(viewportHalfSizeID, 1, &halfVP[0]);
 
 	// 1rst attribute buffer : vertices
 	glEnableVertexAttribArray(vertexPosition_screenspaceID);

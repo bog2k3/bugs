@@ -62,10 +62,12 @@ int main()
 		float dt = newTime - t;
 		t = newTime;
 
-		opStack.update(dt);
-		wld.updatePrePhysics(dt);
-		physics.update(dt, true);
-		wld.updatePostPhysics(dt);
+		if (dt > 0) {
+			opStack.update(dt);
+			wld.updatePrePhysics(dt);
+			physics.update(dt, true);
+			wld.updatePostPhysics(dt);
+		}
 
 		// draw builds the render queue
 		wld.draw();
@@ -74,7 +76,9 @@ int main()
 		gltBegin();
 		renderer.render();
 		std::stringstream ss;
-		ss << "E(trans) = " << physics.getTranslationalEnergy() << ";  E(rot) = " << physics.getRotationalEnergy();
+		ss << "E(trans) = " << physics.getTranslationalEnergy() << "\tE(rot) = " << physics.getRotationalEnergy()
+				<< "\tE(elast) = " << physics.getElasticPotentialEnergy()
+				<< "\nE(total) = " << physics.getTranslationalEnergy() + physics.getRotationalEnergy() + physics.getElasticPotentialEnergy();
 		GLText::print(ss.str().c_str(), 20, 20, 16);
 		gltEnd();
 	}
