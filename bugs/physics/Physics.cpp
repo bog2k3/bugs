@@ -8,9 +8,10 @@
 #include "Physics.h"
 #include "RigidBody.h"
 #include "Spring.h"
+#include "IPhysicsSpatialResolver.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include "../math/math2D.h"
-#include "IPhysicsSpatialResolver.h"
+#include "../log.h"
 
 using namespace glm;
 
@@ -87,6 +88,11 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt, bool computeEne
 			frameTranslationalEnergy += body->mass * dot(body->velocity, body->velocity) * 0.5f;
 			frameRotationalEnergy += body->getMomentOfInertia() * sqr(body->angularVelocity) * 0.5f;
 		}
+
+		static float lastNRG = 0;
+		float totalNRG = frameTranslationalEnergy + frameRotationalEnergy + frameElasticPotentialEnergy;
+		LOGLN("\t" << glm::length(body->velocity)<<"\t"<<totalNRG<<"\t"<<(totalNRG-lastNRG)/dt);
+		lastNRG = totalNRG;
 	}
 }
 
@@ -129,7 +135,7 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	 * 			w <- gamma * w
 	 */
 	float miu = 0.1f; // should be surface-dependent
-	float alpha = 0.1f; // speed-dependency coefficient
+	float alpha = 0.2f; // speed-dependency coefficient
 	float m = obj->mass;
 	float v = length(obj->velocity);
 	float w = obj->angularVelocity;

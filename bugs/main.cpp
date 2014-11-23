@@ -47,12 +47,12 @@ int main()
 
 	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(0.6, 0.3f), glm::vec2(0), 0.f);
 	Bone b1 = Bone(glm::vec2(0, -1), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
-	Spring s(AttachPoint(b.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b1.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.1f);
-	// Bone b2 = Bone(glm::vec2(0, -2), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
-	// Spring s2(AttachPoint(b1.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b2.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.1f);
+	Spring s(AttachPoint(b.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b1.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.2f);
+	Bone b2 = Bone(glm::vec2(0, -2), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
+	Spring s2(AttachPoint(b1.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b2.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.1f);
 	wld.addObject(&b);
-	//wld.addObject(&b1);
-	// wld.addObject(&b2);
+	wld.addObject(&b1);
+	//wld.addObject(&b2);
 	//wld.addObject(new WorldObject(&s));
 	// wld.addObject(new WorldObject(&s2));
 
@@ -65,7 +65,7 @@ int main()
 		if (dt > 0) {
 			opStack.update(dt);
 			wld.updatePrePhysics(dt);
-			physics.update(dt, true);
+			physics.update(0.01f, true);
 			wld.updatePostPhysics(dt);
 		}
 

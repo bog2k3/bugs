@@ -51,8 +51,8 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 					pressedObj->getRigidBody()->worldToLocal(wldClickPos)
 				),
 				AttachPoint(mouse, glm::vec2(0)),
-				100.f, // k
-				0.5f // initialLength
+				10.f, // k
+				0.0f // initialLength
 				);
 			springObj = new WorldObject(s);
 			pContext->worldManager->addObject(springObj);

@@ -13,11 +13,13 @@
 #ifdef _ENABLE_LOGGING_
 
 #include <iostream>
-#define LOG(X) std::cout << X << std::endl;
+#define LOG(X) std::cout << X;
+#define LOGLN(X) LOG(X << std::endl);
 #define ERROR(X) std::cerr << "[ERROR] " << X << std::endl;
 
 #else
 #define LOG(X)
+#define LOGLN(X)
 #define ERROR(X)
 #endif
 
