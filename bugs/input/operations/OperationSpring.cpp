@@ -52,7 +52,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 				),
 				AttachPoint(mouse, glm::vec2(0)),
 				10.f, // k
-				0.f // initialLength
+				0.0f // initialLength
 				);
 			springObj = new WorldObject(s);
 			pContext->worldManager->addObject(springObj);

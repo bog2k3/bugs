@@ -2,6 +2,7 @@
 
 #include "renderOpenGL/glToolkit.h"
 #include "renderOpenGL/Shape2D.h"
+#include "renderOpenGL/Text.h"
 #include "renderOpenGL/Renderer.h"
 #include "renderOpenGL/Viewport.h"
 #include "input/GLFWInput.h"
@@ -15,7 +16,9 @@
 #include "physics/Physics.h"
 #include "World.h"
 #include <GLFW/glfw3.h>
+
 #include <functional>
+#include <sstream>
 
 int main()
 {
@@ -28,6 +31,7 @@ int main()
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
 	ObjectRenderContext renderContext(new Shape2D(&renderer), &vp1);
+	GLText::initialize("data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ');
 
 	World wld;
 	wld.setRenderContext(renderContext);
@@ -43,12 +47,12 @@ int main()
 
 	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(0.6, 0.3f), glm::vec2(0), 0.f);
 	Bone b1 = Bone(glm::vec2(0, -1), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
-	Spring s(AttachPoint(b.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b1.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.1f);
-	// Bone b2 = Bone(glm::vec2(0, -2), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
-	// Spring s2(AttachPoint(b1.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b2.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.1f);
+	Spring s(AttachPoint(b.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b1.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.2f);
+	Bone b2 = Bone(glm::vec2(0, -2), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
+	Spring s2(AttachPoint(b1.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b2.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.1f);
 	wld.addObject(&b);
-	//wld.addObject(&b1);
-	// wld.addObject(&b2);
+	wld.addObject(&b1);
+	//wld.addObject(&b2);
 	//wld.addObject(new WorldObject(&s));
 	// wld.addObject(new WorldObject(&s2));
 
@@ -58,10 +62,12 @@ int main()
 		float dt = newTime - t;
 		t = newTime;
 
-		opStack.update(dt);
-		wld.updatePrePhysics(dt);
-		physics.update(dt);
-		wld.updatePostPhysics(dt);
+		if (dt > 0) {
+			opStack.update(dt);
+			wld.updatePrePhysics(dt);
+			physics.update(0.01f, true);
+			wld.updatePostPhysics(dt);
+		}
 
 		// draw builds the render queue
 		wld.draw();
@@ -69,6 +75,11 @@ int main()
 		// now we do the actual openGL render (which is independent of our world)
 		gltBegin();
 		renderer.render();
+		std::stringstream ss;
+		ss << "E(trans) = " << physics.getTranslationalEnergy() << "\tE(rot) = " << physics.getRotationalEnergy()
+				<< "\tE(elast) = " << physics.getElasticPotentialEnergy()
+				<< "\nE(total) = " << physics.getTranslationalEnergy() + physics.getRotationalEnergy() + physics.getElasticPotentialEnergy();
+		GLText::print(ss.str().c_str(), 20, 20, 16);
 		gltEnd();
 	}
 

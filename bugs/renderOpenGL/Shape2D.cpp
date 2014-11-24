@@ -41,12 +41,13 @@ Shape2D::~Shape2D() {
 }
 
 void Shape2D::render(Viewport* vp) {
+	glUseProgram(shaderProgram);
 	glUniformMatrix4fv(indexMatViewProj, 1, GL_FALSE, glm::value_ptr(vp->getCamera()->getMatViewProj()));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &buffer[0].pos);
 	glEnableVertexAttribArray(indexPos);
 	glVertexAttribPointer(indexColor, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &buffer[0].rgb);
 	glEnableVertexAttribArray(indexColor);
-	glUseProgram(shaderProgram);
 
 	glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 }

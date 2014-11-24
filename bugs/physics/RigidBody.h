@@ -56,11 +56,13 @@ private:
 	float mass;
 	glm::vec2 position;
 	glm::vec2 velocity;
+	glm::vec2 prevVelocity;
+	glm::vec2 acceleration;
 	float rotation;
 	float angularVelocity;
+	float prevAngularVelocity;
 	glm::vec2 resultantForce;
 	float resultantTorque;
-
 	glm::mat3x2 matLocalToWorld;
 	void updateMatrix();
 };

@@ -8,14 +8,18 @@
 #include "Physics.h"
 #include "RigidBody.h"
 #include "Spring.h"
+#include "IPhysicsSpatialResolver.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include "../math/math2D.h"
-#include "IPhysicsSpatialResolver.h"
+#include "../log.h"
 
 using namespace glm;
 
 Physics::Physics(IPhysicsSpatialResolver* resolver)
 	: spatialResolver(resolver)
+	, frameTranslationalEnergy(0)
+	, frameRotationalEnergy(0)
+	, frameElasticPotentialEnergy(0)
 {
 }
 
@@ -23,37 +27,45 @@ Physics::~Physics() {
 	// TODO Auto-generated destructor stub
 }
 
-void Physics::update(float dt) {
+void Physics::update(float dt, bool computeEnergy) {
+	if (computeEnergy) {
+		frameTranslationalEnergy = 0;
+		frameRotationalEnergy = 0;
+		frameElasticPotentialEnergy = 0;
+	}
 	// step 1:
 	// compute forces in all springs and accumulate these forces to the rigid bodies they're attached to
-	updateAndApplySpringForces();
+	updateAndApplySpringForces(dt, computeEnergy);
 
 	rigidBodies.clear();
 	spatialResolver->retrieveObjects(rigidBodies);
 
 	// step 2:
 	// Apply forces, compute accelerations, apply accelerations, update velocities (linear and angular)
-	updateAndApplyAccelerationsAndVelocities(dt);
+	updateAndApplyAccelerationsAndVelocities(dt, computeEnergy);
 
 	// step 3:
 	// apply velocities, move objects and check for collisions
 	moveAndCheckCollisions(dt);
 }
 
-void Physics::updateAndApplySpringForces() {
+void Physics::updateAndApplySpringForces(float dt, bool computeEnergy) {
 	std::vector<Spring*> springs;
 	spatialResolver->retrieveObjects(springs);
 	for (Spring* s : springs) {
+		s->update(dt);
 		vec2 force = s->getForce();
 		if (force.x == 0 && force.y == 0)
 			continue;
+		if (computeEnergy)
+			frameElasticPotentialEnergy += length(force) * s->getDelta() * 0.5f;
 		// apply force to s' first attachment point as it is, and to the second reversed.
 		applyForceToObject(s->a1.pObject, s->a1.offset, force);
 		applyForceToObject(s->a2.pObject, s->a2.offset, -force);
 	}
 }
 
-void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
+void Physics::updateAndApplyAccelerationsAndVelocities(float dt, bool computeEnergy) {
 	for (RigidBody* body : rigidBodies) {
 		if (body->isFixed) {
 			body->velocity = vec2(0);
@@ -62,6 +74,7 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
 		}
 		vec2 acceleration = body->resultantForce / body->mass;
 		body->velocity += acceleration * dt;
+		body->acceleration = acceleration;
 		float angularAcceleration = body->resultantTorque / body->getMomentOfInertia();
 		body->angularVelocity += angularAcceleration * dt;
 
@@ -70,7 +83,17 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt) {
 		body->resultantTorque = 0;
 
 		// apply friction:
-		applyFriction(body, dt);
+		// applyFriction(body, dt);
+
+		if (computeEnergy) {
+			frameTranslationalEnergy += body->mass * dot(body->velocity, body->velocity) * 0.5f;
+			frameRotationalEnergy += body->getMomentOfInertia() * sqr(body->angularVelocity) * 0.5f;
+		}
+
+		static float lastNRG = 0;
+		float totalNRG = frameTranslationalEnergy + frameRotationalEnergy + frameElasticPotentialEnergy;
+		LOGLN("\t" << glm::length(body->velocity)<<"\t"<<totalNRG<<"\t"<<(totalNRG-lastNRG)/dt);
+		lastNRG = totalNRG;
 	}
 }
 
@@ -112,8 +135,8 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 	 * 			v <- gamma * v
 	 * 			w <- gamma * w
 	 */
-	float miu = 0.2f; // should be surface-dependent
-	float alpha = 0.1f; // speed-dependency coefficient
+	float miu = 0.1f; // should be surface-dependent
+	float alpha = 0.2f; // speed-dependency coefficient
 	float m = obj->mass;
 	float v = length(obj->velocity);
 	float w = obj->angularVelocity;
@@ -133,9 +156,12 @@ void Physics::applyFriction(RigidBody* obj, float dt) {
 
 void Physics::moveAndCheckCollisions(float dt) {
 	// http://www.myphysicslab.com/collision.html
+	// http://www.d6.com/users/checker/pdfs/gdmphys3.pdf
 	for (RigidBody* body : rigidBodies) {
-		body->position += body->velocity * dt;
-		body->rotation += body->angularVelocity * dt;
+		body->position += body->prevVelocity * dt + body->acceleration * sqr(dt) * 0.5f;// (body->velocity + body->prevVelocity) * dt * 0.5f;
+		body->prevVelocity = body->velocity;
+		body->rotation += (body->angularVelocity + body->prevAngularVelocity) * dt * 0.5f;
+		body->prevAngularVelocity = body->angularVelocity;
 		body->updateMatrix();
 	}
 }
@@ -146,5 +172,5 @@ void Physics::applyForceToObject(RigidBody* obj, vec2 localOffset, vec2 force) {
 	obj->resultantForce += force;
 
 	vec2 rotatedOffset = rotate(localOffset, obj->rotation);
-	obj->resultantTorque += cross2D(rotatedOffset, force);
+	// obj->resultantTorque += cross2D(rotatedOffset, force);
 }
