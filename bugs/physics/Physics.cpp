@@ -74,6 +74,7 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt, bool computeEne
 		}
 		vec2 acceleration = body->resultantForce / body->mass;
 		body->velocity += acceleration * dt;
+		body->acceleration = acceleration;
 		float angularAcceleration = body->resultantTorque / body->getMomentOfInertia();
 		body->angularVelocity += angularAcceleration * dt;
 
@@ -82,7 +83,7 @@ void Physics::updateAndApplyAccelerationsAndVelocities(float dt, bool computeEne
 		body->resultantTorque = 0;
 
 		// apply friction:
-		applyFriction(body, dt);
+		// applyFriction(body, dt);
 
 		if (computeEnergy) {
 			frameTranslationalEnergy += body->mass * dot(body->velocity, body->velocity) * 0.5f;
@@ -157,7 +158,7 @@ void Physics::moveAndCheckCollisions(float dt) {
 	// http://www.myphysicslab.com/collision.html
 	// http://www.d6.com/users/checker/pdfs/gdmphys3.pdf
 	for (RigidBody* body : rigidBodies) {
-		body->position += (body->velocity + body->prevVelocity) * dt * 0.5f;
+		body->position += body->prevVelocity * dt + body->acceleration * sqr(dt) * 0.5f;// (body->velocity + body->prevVelocity) * dt * 0.5f;
 		body->prevVelocity = body->velocity;
 		body->rotation += (body->angularVelocity + body->prevAngularVelocity) * dt * 0.5f;
 		body->prevAngularVelocity = body->angularVelocity;
@@ -171,5 +172,5 @@ void Physics::applyForceToObject(RigidBody* obj, vec2 localOffset, vec2 force) {
 	obj->resultantForce += force;
 
 	vec2 rotatedOffset = rotate(localOffset, obj->rotation);
-	obj->resultantTorque += cross2D(rotatedOffset, force);
+	// obj->resultantTorque += cross2D(rotatedOffset, force);
 }

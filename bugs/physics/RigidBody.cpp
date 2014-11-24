@@ -14,6 +14,7 @@ RigidBody::RigidBody(float mass, glm::vec2 position, float rotation, glm::vec2 i
 	, position(position)
 	, velocity(initialVelocity)
 	, prevVelocity(initialVelocity)
+	, acceleration(0)
 	, rotation(rotation)
 	, angularVelocity(initialAngularVelocity)
 	, prevAngularVelocity(initialAngularVelocity)
