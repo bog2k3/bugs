@@ -11,13 +11,11 @@
 #include "input/operations/OperationPan.h"
 #include "input/operations/OperationSpring.h"
 #include "objects/body-parts/Bone.h"
-#include "objects/MouseObject.h"
-#include "physics/Spring.h"
-#include "physics/Physics.h"
 #include "World.h"
+#include "PhysicsDebugDraw.h"
 #include <GLFW/glfw3.h>
+#include <Box2D/Box2D.h>
 
-#include <functional>
 #include <sstream>
 
 int main()
@@ -36,25 +34,21 @@ int main()
 	World wld;
 	wld.setRenderContext(renderContext);
 
-	Physics physics(&wld);
+	b2World physWld(b2Vec2_zero);
+	PhysicsDebugDraw physicsDraw(renderContext);
+	physicsDraw.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit);
+	physWld.SetDebugDraw(&physicsDraw);
 
 	OperationsStack opStack(&vp1, &wld, &wld);
 	GLFWInput::initialize(gltGetWindow());
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
-	MouseObject mouse;
-	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(&mouse, InputEvent::MB_LEFT)));
+	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	Bone b = Bone(glm::vec2(0, 0), 0, 5.f, glm::vec2(0.6, 0.3f), glm::vec2(0), 0.f);
-	Bone b1 = Bone(glm::vec2(0, -1), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
-	Spring s(AttachPoint(b.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b1.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.2f);
-	Bone b2 = Bone(glm::vec2(0, -2), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
-	Spring s2(AttachPoint(b1.getRigidBody(), glm::vec2(-0.2,-0.15)), AttachPoint(b2.getRigidBody(), glm::vec2(-0.1, 0.35)), 50, 0.1f);
+	Bone b = Bone(&physWld, glm::vec2(0, 0), 0, 5.f, glm::vec2(0.6, 0.3f), glm::vec2(0), 0.f);
+	Bone b1 = Bone(&physWld, glm::vec2(0, -1), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 	wld.addObject(&b1);
-	//wld.addObject(&b2);
-	//wld.addObject(new WorldObject(&s));
-	// wld.addObject(new WorldObject(&s2));
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
@@ -64,21 +58,22 @@ int main()
 
 		if (dt > 0) {
 			opStack.update(dt);
-			wld.updatePrePhysics(dt);
-			physics.update(0.01f, true);
-			wld.updatePostPhysics(dt);
+			physWld.Step(dt, 6, 2);
 		}
 
 		// draw builds the render queue
 		wld.draw();
+		physWld.DrawDebugData();
 
 		// now we do the actual openGL render (which is independent of our world)
 		gltBegin();
 		renderer.render();
 		std::stringstream ss;
-		ss << "E(trans) = " << physics.getTranslationalEnergy() << "\tE(rot) = " << physics.getRotationalEnergy()
+		/*ss << "E(trans) = " << physics.getTranslationalEnergy() << "\tE(rot) = " << physics.getRotationalEnergy()
 				<< "\tE(elast) = " << physics.getElasticPotentialEnergy()
 				<< "\nE(total) = " << physics.getTranslationalEnergy() + physics.getRotationalEnergy() + physics.getElasticPotentialEnergy();
+				*/
+		ss << "Salut Lume!\n[Powered by Box2D]";
 		GLText::print(ss.str().c_str(), 20, 20, 16);
 		gltEnd();
 	}

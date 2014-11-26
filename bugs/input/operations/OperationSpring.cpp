@@ -11,12 +11,10 @@
 #include "../InputEvent.h"
 #include "../IWorldManager.h"
 #include "IOperationSpatialLocator.h"
-#include "../../objects/MouseObject.h"
 #include "../../objects/WorldObject.h"
-#include "../../physics/Spring.h"
 
-OperationSpring::OperationSpring(MouseObject* mObj, InputEvent::MOUSE_BUTTON boundButton)
-	: mouse(mObj), springObj(nullptr), pContext(nullptr), boundButton(boundButton), isActive(false)
+OperationSpring::OperationSpring(InputEvent::MOUSE_BUTTON boundButton)
+	: springObj(nullptr), pContext(nullptr), boundButton(boundButton), isActive(false)
 {
 }
 
@@ -46,7 +44,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
 		WorldObject* pressedObj = pContext->locator->getObjectAtPos(wldClickPos);
 		if (pressedObj != nullptr) {
-			Spring* s = new Spring(
+			/*Spring* s = new Spring(
 				AttachPoint(pressedObj->getRigidBody(),
 					pressedObj->getRigidBody()->worldToLocal(wldClickPos)
 				),
@@ -55,7 +53,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 				0.0f // initialLength
 				);
 			springObj = new WorldObject(s);
-			pContext->worldManager->addObject(springObj);
+			pContext->worldManager->addObject(springObj);*/
 		}
 		break;
 	}
@@ -69,7 +67,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		break;
 	}
 	case InputEvent::EV_MOUSE_MOVED: {
-		mouse->teleport(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y)));
+		// mouse->teleport(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y)));
 		break;
 	}
 	default:

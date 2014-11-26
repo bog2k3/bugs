@@ -8,13 +8,16 @@
 #ifndef OBJECTS_WORLDOBJECT_H_
 #define OBJECTS_WORLDOBJECT_H_
 
-// render objects:
+#include <glm/fwd.hpp>
+
+// render classes:
 class Shape2D;
 class Viewport;
-// end render objects
+// end render classes
 
-class RigidBody;
-class Spring;
+// physics classes:
+class b2World;
+class b2Body;
 
 class ObjectRenderContext {
 public:
@@ -30,32 +33,15 @@ public:
 	}
 };
 
-enum WorldObjectType {
-	TYPE_RIGID,
-	TYPE_SPRING,
-};
-
 class WorldObject {
 public:
 	virtual ~WorldObject();
-	WorldObject(RigidBody* rigid); // this makes this object owner of the rigid body passed (will delete it on destructor)
-	WorldObject(Spring* spring); // this makes this object owner of the rigid body passed (will delete it on destructor)
-	WorldObject(WorldObjectType type); // ownership of physics objects falls on descendant class (responsibility to delete)
+	WorldObject(b2World* world, glm::vec2 position, float angle, bool dynamic, glm::vec2 velocity, float angularVelocity);
 
 	virtual void draw(ObjectRenderContext* ctx);
 
-	virtual RigidBody* getRigidBody() const { return rigidBody; }
-	virtual Spring* getSpring() const { return spring; }
-	WorldObjectType getType() const { return type; }
-
 protected:
-	WorldObjectType const type;
-	RigidBody* const rigidBody;
-	Spring* const spring;
-
-private:
-	bool ownerOfResource;
-
+	b2Body* body;
 };
 
 #endif /* OBJECTS_WORLDOBJECT_H_ */

@@ -65,6 +65,19 @@ void Shape2D::drawLine(glm::vec2 point1, glm::vec2 point2, float z, glm::vec3 rg
 	indices.push_back(buffer.size()-1);
 }
 
+void Shape2D::drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 rgb) {
+	s_lineVertex sVertex;
+	sVertex.rgb = rgb;
+	for (int i=0; i<nVerts; i++) {
+		sVertex.pos = glm::vec3(verts[i], z);
+		buffer.push_back(sVertex);
+		indices.push_back(buffer.size()-1);
+		if (i > 0)
+			indices.push_back(buffer.size()-1);
+	}
+	indices.push_back(buffer.size()-nVerts);
+}
+
 void Shape2D::drawRectangle(glm::vec2 pos, float z, glm::vec2 size, float rotation, glm::vec3 rgb) {
 	float halfW = size.x * 0.5f;
 	float halfH = size.y * 0.5f;

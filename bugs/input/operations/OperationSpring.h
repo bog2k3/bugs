@@ -10,12 +10,11 @@
 
 #include "IOperation.h"
 
-class MouseObject;
 class WorldObject;
 
 class OperationSpring: public IOperation {
 public:
-	OperationSpring(MouseObject* mObj, InputEvent::MOUSE_BUTTON boundButton);
+	OperationSpring(InputEvent::MOUSE_BUTTON boundButton);
 	virtual ~OperationSpring();
 
 	virtual void enter(const OperationContext* pContext);
@@ -26,7 +25,6 @@ public:
 	virtual void update(float dt);
 
 protected:
-	MouseObject* mouse;
 	WorldObject* springObj;
 	const OperationContext* pContext;
 	InputEvent::MOUSE_BUTTON boundButton;
