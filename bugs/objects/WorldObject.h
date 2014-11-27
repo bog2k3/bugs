@@ -38,7 +38,7 @@ public:
 	virtual ~WorldObject();
 	WorldObject(b2World* world, glm::vec2 position, float angle, bool dynamic, glm::vec2 velocity, float angularVelocity);
 
-	virtual void draw(ObjectRenderContext* ctx);
+	virtual void draw(ObjectRenderContext* ctx) {}
 
 	b2Body* getBody() { return body; }
 

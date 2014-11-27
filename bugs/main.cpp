@@ -37,7 +37,7 @@ int main()
 	PhysicsDebugDraw physicsDraw(renderContext);
 	physicsDraw.SetFlags(
 				  b2Draw::e_shapeBit
-				| b2Draw::e_centerOfMassBit
+				//| b2Draw::e_centerOfMassBit
 				| b2Draw::e_jointBit
 				//| b2Draw::e_aabbBit
 			);
@@ -58,6 +58,16 @@ int main()
 	wld.addObject(&b1);
 
 	Joint j(&b, glm::vec2(0, 0.6f), &b1, glm::vec2(0, -0.6f), 1, -0.1f, PI/1.5f);
+
+	b2BodyDef gdef;
+	gdef.type = b2_staticBody;
+	b2Body* g = physWld.CreateBody(&gdef);
+
+	b2WeldJointDef jd;
+	jd.bodyA = b1.getBody();
+	jd.bodyB = g;
+	jd.localAnchorB = jd.bodyA->GetWorldPoint(jd.localAnchorA);
+	b2WeldJoint* jw = (b2WeldJoint*) physWld.CreateJoint(&jd);
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {

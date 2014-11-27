@@ -50,19 +50,18 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
 		WorldObject* pressedObj = pContext->locator->getObjectAtPos(wldClickPos);
 		if (pressedObj != nullptr) {
-			if (mouseBody == nullptr) {
-				b2BodyDef bdef;
-				bdef.type = b2_staticBody;
-				mouseBody = pContext->physics->CreateBody(&bdef);
-				b2CircleShape shape;
-				shape.m_radius = 0.1f;
-				b2FixtureDef fdef;
-				fdef.shape = &shape;
-				b2Fixture* fix = mouseBody->CreateFixture(&fdef);
-				b2Filter filter;
-				filter.maskBits = 0;
-				fix->SetFilterData(filter);
-			}
+			b2BodyDef bdef;
+			bdef.type = b2_staticBody;
+			bdef.position = g2b(wldClickPos);
+			mouseBody = pContext->physics->CreateBody(&bdef);
+			b2CircleShape shape;
+			shape.m_radius = 0.1f;
+			b2FixtureDef fdef;
+			fdef.shape = &shape;
+			b2Fixture* fix = mouseBody->CreateFixture(&fdef);
+			b2Filter filter;
+			filter.maskBits = 0;
+			fix->SetFilterData(filter);
 			b2MouseJointDef def;
 			def.target = g2b(wldClickPos);
 			def.bodyA = mouseBody;
@@ -86,6 +85,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 	case InputEvent::EV_MOUSE_MOVED: {
 		if (mouseJoint) {
 			mouseJoint->SetTarget(g2b(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y))));
+			mouseBody->SetTransform(mouseJoint->GetTarget(), 0);
 		}
 		break;
 	}

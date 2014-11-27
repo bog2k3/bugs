@@ -13,8 +13,6 @@
 #include <algorithm>
 
 World::World(b2World* physWld) : physWld(physWld) {
-	// TODO Auto-generated constructor stub
-
 }
 
 World::~World() {

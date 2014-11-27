@@ -28,25 +28,3 @@ WorldObject::WorldObject(b2World* world, glm::vec2 position, float angle, bool d
 WorldObject::~WorldObject() {
 }
 
-void WorldObject::draw(ObjectRenderContext* ctx)
-{
-	/*switch (type) {
-		case TYPE_RIGID: {
-			// glm::vec2 size = rigidBody->getLocalBoundingBox().getSize();
-			// ctx->shape->drawRectangle(rigidBody->getPosition(), 0, size, rigidBody->getRotation(), glm::vec3(0,1,0));
-			break;
-		}
-		case TYPE_SPRING: {
-			// glm::vec2 size = glm::vec2(10, 10) / ctx->viewport->getCamera()->getZoomLevel();  // always 10 pixels
-			// render attachment #1:
-			// ctx->shape->drawRectangle(spring->a1.getWorldPos(), 0, size, PI*0.25, glm::vec3(1,0,0));
-			// render attachment #2:
-			// ctx->shape->drawRectangle(spring->a2.getWorldPos(), 0, size, PI*0.25, glm::vec3(1,0,0));
-			// render line:
-			// ctx->shape->drawLine(spring->a1.getWorldPos(), spring->a2.getWorldPos(), 0, glm::vec3(1,0,0));
-			break;
-		}
-		default:
-			break;
-	}*/
-}

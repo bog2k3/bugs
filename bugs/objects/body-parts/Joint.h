@@ -10,12 +10,12 @@
 
 #include <glm/fwd.hpp>
 
-class Bone;
+class WorldObject;
 class b2RevoluteJoint;
 
 class Joint {
 public:
-	Joint(Bone* b1, glm::vec2 offset1, Bone* b2, glm::vec2 offset2, float size, float phiMin, float phiMax);
+	Joint(WorldObject* b1, glm::vec2 offset1, WorldObject* b2, glm::vec2 offset2, float size, float phiMin, float phiMax);
 	virtual ~Joint();
 
 protected:
