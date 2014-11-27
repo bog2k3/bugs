@@ -58,7 +58,10 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 				shape.m_radius = 0.1f;
 				b2FixtureDef fdef;
 				fdef.shape = &shape;
-				mouseBody->CreateFixture(&fdef);
+				b2Fixture* fix = mouseBody->CreateFixture(&fdef);
+				b2Filter filter;
+				filter.maskBits = 0;
+				fix->SetFilterData(filter);
 			}
 			b2MouseJointDef def;
 			def.target = g2b(wldClickPos);
@@ -74,9 +77,6 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		if (ev.mouseButton != boundButton || !isActive)
 			break;
 		isActive = false;
-		/*pContext->worldManager->removeObject(springObj);
-		delete springObj;
-		springObj = nullptr;*/
 		pContext->physics->DestroyJoint(mouseJoint);
 		mouseJoint = nullptr;
 		pContext->physics->DestroyBody(mouseBody);
@@ -84,10 +84,8 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		break;
 	}
 	case InputEvent::EV_MOUSE_MOVED: {
-		// mouse->teleport(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y)));
 		if (mouseJoint) {
 			mouseJoint->SetTarget(g2b(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y))));
-			// mouseBody->SetTransform(g2b(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y))), 0);
 		}
 		break;
 	}

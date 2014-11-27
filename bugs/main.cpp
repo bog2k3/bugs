@@ -11,8 +11,10 @@
 #include "input/operations/OperationPan.h"
 #include "input/operations/OperationSpring.h"
 #include "objects/body-parts/Bone.h"
+#include "objects/body-parts/Joint.h"
 #include "World.h"
 #include "PhysicsDebugDraw.h"
+#include "math/math2D.h"
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
 
@@ -33,7 +35,12 @@ int main()
 
 	b2World physWld(b2Vec2_zero);
 	PhysicsDebugDraw physicsDraw(renderContext);
-	physicsDraw.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit);
+	physicsDraw.SetFlags(
+				  b2Draw::e_shapeBit
+				| b2Draw::e_centerOfMassBit
+				| b2Draw::e_jointBit
+				//| b2Draw::e_aabbBit
+			);
 	physWld.SetDebugDraw(&physicsDraw);
 
 	World wld(&physWld);
@@ -45,10 +52,12 @@ int main()
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	Bone b = Bone(&physWld, glm::vec2(0, 0), 0, 5.f, glm::vec2(0.6, 0.3f), glm::vec2(0), 0.f);
-	Bone b1 = Bone(&physWld, glm::vec2(0, -1), 0, 5.f, glm::vec2(0.3, 0.7f), glm::vec2(0), 0.f);
+	Bone b = Bone(&physWld, glm::vec2(0, 0), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
+	Bone b1 = Bone(&physWld, glm::vec2(0, -1), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 	wld.addObject(&b1);
+
+	Joint j(&b, glm::vec2(0, 0.6f), &b1, glm::vec2(0, -0.6f), 1, -0.1f, PI/1.5f);
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
