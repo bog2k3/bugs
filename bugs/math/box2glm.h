@@ -25,4 +25,8 @@ inline glm::vec3 b2g(b2Color const& v) {
 	return glm::vec3(v.r, v.g, v.b);
 }
 
+inline b2Vec2 g2b(glm::vec2 const &v) {
+	return b2Vec2(v.x, v.y);
+}
+
 #endif /* MATH_BOX2GLM_H_ */

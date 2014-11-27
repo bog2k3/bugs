@@ -12,9 +12,11 @@
 #include "../IWorldManager.h"
 #include "IOperationSpatialLocator.h"
 #include "../../objects/WorldObject.h"
+#include "../../math/box2glm.h"
+#include <Box2D/Box2D.h>
 
 OperationSpring::OperationSpring(InputEvent::MOUSE_BUTTON boundButton)
-	: springObj(nullptr), pContext(nullptr), boundButton(boundButton), isActive(false)
+	: pContext(nullptr), boundButton(boundButton), isActive(false), mouseJoint(nullptr), mouseBody(nullptr)
 {
 }
 
@@ -26,6 +28,10 @@ void OperationSpring::enter(const OperationContext* pContext) {
 }
 
 void OperationSpring::leave() {
+	if (mouseBody) {
+		pContext->physics->DestroyBody(mouseBody);
+		mouseBody = nullptr;
+	}
 	pContext = nullptr;
 }
 
@@ -44,16 +50,23 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
 		WorldObject* pressedObj = pContext->locator->getObjectAtPos(wldClickPos);
 		if (pressedObj != nullptr) {
-			/*Spring* s = new Spring(
-				AttachPoint(pressedObj->getRigidBody(),
-					pressedObj->getRigidBody()->worldToLocal(wldClickPos)
-				),
-				AttachPoint(mouse, glm::vec2(0)),
-				10.f, // k
-				0.0f // initialLength
-				);
-			springObj = new WorldObject(s);
-			pContext->worldManager->addObject(springObj);*/
+			if (mouseBody == nullptr) {
+				b2BodyDef bdef;
+				bdef.type = b2_staticBody;
+				mouseBody = pContext->physics->CreateBody(&bdef);
+				b2CircleShape shape;
+				shape.m_radius = 0.1f;
+				b2FixtureDef fdef;
+				fdef.shape = &shape;
+				mouseBody->CreateFixture(&fdef);
+			}
+			b2MouseJointDef def;
+			def.target = g2b(wldClickPos);
+			def.bodyA = mouseBody;
+			def.bodyB = pressedObj->getBody();
+			def.bodyB->SetAwake(true);
+			def.maxForce = 100;
+			mouseJoint = (b2MouseJoint*)pContext->physics->CreateJoint(&def);
 		}
 		break;
 	}
@@ -61,13 +74,21 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		if (ev.mouseButton != boundButton || !isActive)
 			break;
 		isActive = false;
-		pContext->worldManager->removeObject(springObj);
+		/*pContext->worldManager->removeObject(springObj);
 		delete springObj;
-		springObj = nullptr;
+		springObj = nullptr;*/
+		pContext->physics->DestroyJoint(mouseJoint);
+		mouseJoint = nullptr;
+		pContext->physics->DestroyBody(mouseBody);
+		mouseBody = nullptr;
 		break;
 	}
 	case InputEvent::EV_MOUSE_MOVED: {
 		// mouse->teleport(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y)));
+		if (mouseJoint) {
+			mouseJoint->SetTarget(g2b(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y))));
+			// mouseBody->SetTransform(g2b(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y))), 0);
+		}
 		break;
 	}
 	default:

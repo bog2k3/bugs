@@ -31,15 +31,15 @@ int main()
 	ObjectRenderContext renderContext(new Shape2D(&renderer), &vp1);
 	GLText::initialize("data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ');
 
-	World wld;
-	wld.setRenderContext(renderContext);
-
 	b2World physWld(b2Vec2_zero);
 	PhysicsDebugDraw physicsDraw(renderContext);
 	physicsDraw.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit);
 	physWld.SetDebugDraw(&physicsDraw);
 
-	OperationsStack opStack(&vp1, &wld, &wld);
+	World wld(&physWld);
+	wld.setRenderContext(renderContext);
+
+	OperationsStack opStack(&vp1, &wld, &wld, &physWld);
 	GLFWInput::initialize(gltGetWindow());
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));

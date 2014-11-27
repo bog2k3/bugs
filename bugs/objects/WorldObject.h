@@ -40,6 +40,8 @@ public:
 
 	virtual void draw(ObjectRenderContext* ctx);
 
+	b2Body* getBody() { return body; }
+
 protected:
 	b2Body* body;
 };

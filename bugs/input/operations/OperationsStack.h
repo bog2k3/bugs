@@ -9,11 +9,12 @@ class IOperation;
 class InputEvent;
 class IOperationSpatialLocator;
 class IWorldManager;
+class b2World;
 
 class OperationsStack
 {
 public:
-	OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, IWorldManager* wldManager);
+	OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, IWorldManager* wldManager, b2World* physics);
 	~OperationsStack();
 
 	// pushes a new operation onto the stack; the new operation will become active

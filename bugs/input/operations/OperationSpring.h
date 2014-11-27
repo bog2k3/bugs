@@ -11,6 +11,8 @@
 #include "IOperation.h"
 
 class WorldObject;
+class b2MouseJoint;
+class b2Body;
 
 class OperationSpring: public IOperation {
 public:
@@ -25,10 +27,11 @@ public:
 	virtual void update(float dt);
 
 protected:
-	WorldObject* springObj;
 	const OperationContext* pContext;
 	InputEvent::MOUSE_BUTTON boundButton;
 	bool isActive;
+	b2MouseJoint* mouseJoint;
+	b2Body* mouseBody;
 };
 
 #endif /* INPUT_OPERATIONS_OPERATIONSPRING_H_ */

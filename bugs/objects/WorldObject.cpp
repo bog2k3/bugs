@@ -20,7 +20,7 @@ WorldObject::WorldObject(b2World* world, glm::vec2 position, float angle, bool d
 	def.position.Set(position.x, position.y);
 	def.type = dynamic ? b2_dynamicBody : b2_staticBody;
 	def.userData = (void*)this;
-	def.angularDamping = def.linearDamping = 0.1f;
+	def.angularDamping = def.linearDamping = 0.3f;
 
 	body = world->CreateBody(&def);
 }
