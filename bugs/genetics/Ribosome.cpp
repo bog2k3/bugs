@@ -2,7 +2,7 @@
 
 #include "../neuralnet/functions.h"
 #include "../math/tools.h"
-#include "../Logger.h"
+#include "../log.h"
 #include "../neuralnet/Network.h"
 #include "../neuralnet/Neuron.h"
 #include "../neuralnet/OutputSocket.h"
@@ -109,6 +109,7 @@ void Ribosome::decode_and_develop_network(NeuralNet* net) {
 					break;
 				case GENE_TRANSFER_ARGUMENT:
 					net->neurons[iCh]->transferConstant = genes[iG].value_double;
+					break;
 				case GENE_OUTPUT:
 					// the output Gene says this Neuron should be linked to one of the NeuralNet's output sockets
 					// we need to save all neurons of this kind into a list, then order them based on the 
@@ -171,20 +172,20 @@ void segregate_and_alter_meta_genes(vector<MetaGene*> &src1, vector<MetaGene*> &
 
 // alters the Gene by mutating, transforming or deleting
 // returns false if Gene has been deleted, and true otherwise
-bool alter_gene(Gene *pGene, unsigned availableDefInputs, unsigned nTotalNeurons, logger &log)
+bool alter_gene(Gene *pGene, unsigned availableDefInputs, unsigned nTotalNeurons)
 {
 	// update Gene's meta genes:
 	for (unsigned iMG=0, nMG=pGene->metaGenes.size(); iMG<nMG; ++ iMG)
 		alter_meta_gene(pGene->metaGenes[iMG]);
 
 	if (randd() < pGene->chance_to_delete.value) {
-		log << "Gene has been deleted!\n";
+		LOGLN("Gene has been deleted!");
 		// Gene is deleted
 		return false;
 	}
 
 	if (randd() < pGene->chance_to_transform.value) {
-		log << "Gene transforming... ";
+		LOGNP("Gene transforming... ");
 		gene_type newType = (gene_type)(randi(GENE_INPUT_SOURCE, GENE_OUTPUT));
 		gene_value_type newValueType = Gene::mapGeneValueTypes[newType];
 		if (newValueType != pGene->value_type) {
@@ -202,11 +203,11 @@ bool alter_gene(Gene *pGene, unsigned availableDefInputs, unsigned nTotalNeurons
 		}
 		pGene->type = newType;
 		pGene->value_type = newValueType;
-		log < "new type : " < mapGeneTypeNames[pGene->type] < "\n";
+		LOGNP("new type : " << mapGeneTypeNames[pGene->type] << "\n");
 	}
 
 	if (randd() < pGene->chance_to_mutate.value) {
-		log << "Gene mutating...  ";
+		LOGLN("Gene mutating...  ");
 		switch (pGene->value_type) {
 			case GENE_VALUE_INT:
 				// int value genes must be treated in a special way, because they usually define indices
@@ -214,11 +215,11 @@ bool alter_gene(Gene *pGene, unsigned availableDefInputs, unsigned nTotalNeurons
 				switch (pGene->type) {
 				case GENE_INPUT_SOURCE:
 					pGene->value_int = randi(-(int)availableDefInputs, nTotalNeurons - 1);
-					log < "New Input index is : " < pGene->value_int < "\n";
+					LOGNP("New Input index is : " << pGene->value_int << "\n");
 					break;
 				case GENE_TRANSFER_FUNCTION:
 					pGene->value_int = randi(FN_SIN, FN_MAXCOUNT-1);
-					log < "Transfer function changed to : " < mapTransferFunctionNames[(transferFuncNames)pGene->value_int] < "\n";
+					LOGNP("Transfer function changed to : " << mapTransferFunctionNames[(transferFuncNames)pGene->value_int] << "\n");
 					break;
 				default:
 					break;
@@ -226,7 +227,7 @@ bool alter_gene(Gene *pGene, unsigned availableDefInputs, unsigned nTotalNeurons
 				break;
 			case GENE_VALUE_DOUBLE:
 				pGene->value_double += srandd() * pGene->mutation_reference_value.value;
-				log < "New dbl value is : " < pGene->value_double < "\n";
+				LOGNP("New dbl value is : " << pGene->value_double << "\n");
 				break;
 			default:
 				assert(false && "Invalid Gene type!");
@@ -239,14 +240,14 @@ bool alter_gene(Gene *pGene, unsigned availableDefInputs, unsigned nTotalNeurons
 }
 
 template<typename T>
-void shuffle_elements(vector<T> &vec, logger &log) {
+void shuffle_elements(vector<T> &vec) {
 	//use chance_to_swap from each element
 	int prevSwap = -1;
 	for (unsigned i=0, n=vec.size(); i<n; ++i) {
 		if (randd() < vec[i].chance_to_swap.value) {
 			if (prevSwap != -1) {
 				// we found a match, swap them!
-				(log << "Swapping ") < i < " and " < prevSwap < "\n";
+				LOGLN("Swapping " << i << " and " << prevSwap);
 				T aux = vec[prevSwap];
 				vec[prevSwap] = vec[i];
 				vec[i] = aux;
@@ -261,7 +262,7 @@ void shuffle_elements(vector<T> &vec, logger &log) {
 // alter the Chromosome by swapping genes' places, spawning new genes, splitting or deleting
 // returns false if Chromosome has been deleted, and true otherwise
 // if Chromosome is split, then in pOutSplit will be returned a new Chromosome, else NULL
-bool alter_chromosome(Chromosome *pChromosome, Chromosome** pOutSplit, unsigned availDefInputs, unsigned nTotalNeurons, unsigned numSynapses, logger &log)
+bool alter_chromosome(Chromosome *pChromosome, Chromosome** pOutSplit, unsigned availDefInputs, unsigned nTotalNeurons, unsigned numSynapses)
 {
 	if (numSynapses == 0)
 		numSynapses = 1;
@@ -272,19 +273,21 @@ bool alter_chromosome(Chromosome *pChromosome, Chromosome** pOutSplit, unsigned 
 	}
 
 	// shuffle:
-	log.push_prefix("shuffle_genes");
-	shuffle_elements<Gene>(pChromosome->gene_list, log);
-	log.pop_prefix();
+	{
+		LOGPREFIX("shuffle_genes");
+		shuffle_elements<Gene>(pChromosome->gene_list);
+	}
 
 	// spawn new Gene
 	if (randd() < pChromosome->chance_to_spawn_gene.value) {
 		//don't allow output genes!
-		log << "New Gene spawned ! Altering (deletion suppressed)...\n";
-		log.push_prefix("new_gene");
-		Gene newGene((gene_type)(randi(GENE_INPUT_SOURCE, GENE_TYPE_END-1)), 0, randd());
-		while (!alter_gene(&newGene, availDefInputs, nTotalNeurons, log)); // avoid deletion
-		log.pop_prefix();
-		pChromosome->add_gene(newGene);
+		LOGLN("New Gene spawned ! Altering (deletion suppressed)...");
+		{
+			LOGPREFIX("new_gene");
+			Gene newGene((gene_type)(randi(GENE_INPUT_SOURCE, GENE_TYPE_END-1)), 0, randd());
+			while (!alter_gene(&newGene, availDefInputs, nTotalNeurons)); // avoid deletion
+			pChromosome->add_gene(newGene);
+		}
 	}
 
 	// split:
@@ -292,7 +295,7 @@ bool alter_chromosome(Chromosome *pChromosome, Chromosome** pOutSplit, unsigned 
 		unsigned splitpoint = pChromosome->gene_list.size() / 2 + randi(pChromosome->gene_list.size()/2);
 		if (splitpoint == pChromosome->gene_list.size())
 			--splitpoint;
-		(log << "Splitting Chromosome at position ") < splitpoint < "\n";
+		LOGLN("Splitting Chromosome at position " << splitpoint);
 		*pOutSplit = new Chromosome(*pChromosome);
 		(*pOutSplit)->gene_list = vector<Gene>((*pOutSplit)->gene_list.begin() + splitpoint, (*pOutSplit)->gene_list.end());
 		// update new Chromosome's meta genes:
@@ -354,8 +357,8 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 	// there's a small chance that each Chromosome may be deleted from the Genome (inverse proportional to the
 	// number of synapses it forms
 
-	logger log("recombine_offspring");
-	log << "START recombination\n";
+	LOGGER("recombine_offspring");
+	LOGLN("START recombination");
 
 	Genome newGenome; // this represents the output Genome
 	vector<unsigned> synapses; synapses.assign(max(genome1.size(),genome2.size())+1, 0); // holds the synapse count that will
@@ -377,7 +380,7 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 
 	for (unsigned i=0; i<nCommonChroms; ++i) {
 		ostringstream str; str << "chromosome_" << i;
-		log.push_prefix(str.str());
+		LOGPREFIX(str.str());
 
 		// create i-th Chromosome from the two parent genome
 		Chromosome chr; // the new Chromosome
@@ -404,8 +407,8 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 
 			// alter Gene and check if it should be deleted:
 			str.str(""); str << "gene_" << iG;
-			log.push_prefix(str.str());
-			if (alter_gene(&selectedGene, availableInputs, approxGenomeSize, log)) {
+			LOGPREFIX(str.str());
+			if (alter_gene(&selectedGene, availableInputs, approxGenomeSize)) {
 				chr.add_gene(selectedGene);
 				if (selectedGene.type == GENE_INPUT_SOURCE) {
 					synapses[i]++;	// target Neuron
@@ -418,7 +421,6 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 					isCrtOut = true;
 				}
 			}
-			log.pop_prefix();
 		}
 		// copy the remaining genes:
 		vector<Gene> *vecRemaining = NULL;
@@ -428,12 +430,13 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 			if (pC2.gene_list.size() > nCommonGenes)
 				vecRemaining = &pC2.gene_list;
 		if (vecRemaining != NULL) {
-			log.push_prefix("remaining_genes");
+			LOGPREFIX("remaining_genes");
 			for (unsigned iG=nCommonGenes, nG=vecRemaining->size(); iG<nG; ++iG) {
-				str.str(""); str << "gene_" << iG; log.push_prefix(str.str());
+				str.str(""); str << "gene_" << iG;
+				LOGPREFIX(str.str());
 				Gene g = (*vecRemaining)[iG];
 				// bool isOut = g.type == GENE_OUTPUT;
-				if (randd() < 0.5 && alter_gene(&g, availableInputs, approxGenomeSize, log)) {
+				if (randd() < 0.5 && alter_gene(&g, availableInputs, approxGenomeSize)) {
 					chr.add_gene(g);
 					if (g.type == GENE_OUTPUT && !isCrtOut) {
 						outputCount++;
@@ -441,13 +444,10 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 						isCrtOut = true;
 					}
 				}
-				log.pop_prefix();
 			}
-			log.pop_prefix();
 		}
 
 		newGenome.push_back(chr);
-		log.pop_prefix();
 	}
 
 	// now treat remaining genome which are segregated at Chromosome level
@@ -473,9 +473,10 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 
 	// alter genome:
 	for (unsigned i=0; i<newGenome.size(); i++) {
-		ostringstream str; str << "chromosome_" << i; log.push_prefix(str.str());
+		ostringstream str; str << "chromosome_" << i;
+		LOGPREFIX(str.str());
 		Chromosome* pAux = NULL;
-		if (alter_chromosome(&newGenome[i], &pAux, availableInputs, newGenome.size(), synapses[i], log)) {
+		if (alter_chromosome(&newGenome[i], &pAux, availableInputs, newGenome.size(), synapses[i])) {
 			
 			if (pAux) { // Chromosome has been split
 				
@@ -512,7 +513,7 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 			}
 			// newGenome[i].chance_to_swap.value /= synapses[i] ? synapses[i] : 1; // prepare for swapping
 		} else {
-			log << "Chromosome deleted!\n";
+			LOGLN("Chromosome deleted!");
 			// check if it was output:
 			if (isOutput[i])
 				outputCount--;
@@ -521,7 +522,6 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 			isOutput.erase(isOutput.begin()+i);
 			i--;
 		}
-		log.pop_prefix();
 	}
 
 	// now check if there are enough output genome and if not, add some output genes to make up the required number
@@ -535,19 +535,20 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 
 	// shuffle genome:
 	// divided all genome chance to shuffle by the number of their synapses, do the shuffling then multiply back
-	log.push_prefix("shuffling_chromosomes");
-	for (unsigned i=0, n=newGenome.size(); i<n; i++) {
-		newGenome[i].chance_to_swap.value /= synapses[i] ? synapses[i] : 1;
-	}
-	shuffle_elements<Chromosome>(newGenome, log);
-	log.pop_prefix();
-	for (unsigned i=0, n=newGenome.size(); i<n; i++) {
-		newGenome[i].chance_to_swap.value *= synapses[i] ? synapses[i] : 1;
+	{
+		LOGPREFIX("shuffling_chromosomes");
+		for (unsigned i=0, n=newGenome.size(); i<n; i++) {
+			newGenome[i].chance_to_swap.value /= synapses[i] ? synapses[i] : 1;
+		}
+		shuffle_elements<Chromosome>(newGenome);
+		for (unsigned i=0, n=newGenome.size(); i<n; i++) {
+			newGenome[i].chance_to_swap.value *= synapses[i] ? synapses[i] : 1;
+		}
 	}
 
 	// check if we should create new genome:
 	if (randd() < constants::global_chance_new_chromosome) {
-		log << "Created new Chromosome!\n";
+		LOGLN("Created new Chromosome!");
 		newGenome.push_back(createRandomChromosome(newGenome.size(), availableInputs));
 		// create several jump-start Input synapses from other neurons to this new one
 		unsigned nSyn = randi(1, 4);
@@ -564,7 +565,7 @@ inline int MIN(int a, int b) { return a>b?b:a; }
 		}
 	}
 
-	log << "END recombination.\n";
+	LOGLN("END recombination.");
 
 	return newGenome;
 }

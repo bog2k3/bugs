@@ -15,6 +15,8 @@
 #include "World.h"
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
+#include "log.h"
+
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
 
@@ -22,7 +24,7 @@
 
 int main()
 {
-	std::cout << "bugs\n";
+	LOGGER("app_main");
 
 	if (!gltInit(800, 600, "Bugs"))
 		return -1;
