@@ -52,25 +52,24 @@ int main()
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	Bone b = Bone(&physWld, glm::vec2(0, 0), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
-	Bone b1 = Bone(&physWld, glm::vec2(0, -1), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
+	Bone b = Bone(&wld, glm::vec2(0, 0), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
+	Bone b1 = Bone(&wld, glm::vec2(0, -1), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 	wld.addObject(&b1);
 
 	Joint j(&b, glm::vec2(0, 0.6f), &b1, glm::vec2(0, -0.6f), 1, -0.1f, PI/1.5f);
 
-	b2BodyDef gdef;
-	gdef.type = b2_staticBody;
-	b2Body* g = physWld.CreateBody(&gdef);
-
-	b2WeldJointDef jd;
-	jd.bodyA = b1.getBody();
-	jd.bodyB = g;
-	jd.localAnchorB = jd.bodyA->GetWorldPoint(jd.localAnchorA);
-	b2WeldJoint* jw = (b2WeldJoint*) physWld.CreateJoint(&jd);
-
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
+
+		// do the actual openGL render (which is independent of our world)
+		gltBegin();
+		renderer.render();
+		std::stringstream ss;
+		ss << "Salut Lume!\n[Powered by Box2D]";
+		GLText::print(ss.str().c_str(), 20, 20, 16);
+		// now rendering is on-going, get on with other stuff:
+
 		float newTime = glfwGetTime();
 		float dt = newTime - t;
 		t = newTime;
@@ -84,16 +83,7 @@ int main()
 		wld.draw();
 		physWld.DrawDebugData();
 
-		// now we do the actual openGL render (which is independent of our world)
-		gltBegin();
-		renderer.render();
-		std::stringstream ss;
-		/*ss << "E(trans) = " << physics.getTranslationalEnergy() << "\tE(rot) = " << physics.getRotationalEnergy()
-				<< "\tE(elast) = " << physics.getElasticPotentialEnergy()
-				<< "\nE(total) = " << physics.getTranslationalEnergy() + physics.getRotationalEnergy() + physics.getElasticPotentialEnergy();
-				*/
-		ss << "Salut Lume!\n[Powered by Box2D]";
-		GLText::print(ss.str().c_str(), 20, 20, 16);
+		// wait until rendering is done and show frame output:
 		gltEnd();
 	}
 

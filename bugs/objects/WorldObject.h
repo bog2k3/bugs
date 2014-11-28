@@ -13,11 +13,11 @@
 // render classes:
 class Shape2D;
 class Viewport;
-// end render classes
-
 // physics classes:
 class b2World;
 class b2Body;
+// general classes:
+class World;
 
 class ObjectRenderContext {
 public:
@@ -36,13 +36,17 @@ public:
 class WorldObject {
 public:
 	virtual ~WorldObject();
-	WorldObject(b2World* world, glm::vec2 position, float angle, bool dynamic, glm::vec2 velocity, float angularVelocity);
+	WorldObject(World* world, glm::vec2 position, float angle, bool dynamic, glm::vec2 velocity, float angularVelocity);
 
 	virtual void draw(ObjectRenderContext* ctx) {}
 
 	b2Body* getBody() { return body; }
+	World* getWorld() { return world; }
+	b2World* getPhysics() { return physics; }
 
 protected:
+	World* world;
+	b2World* physics;
 	b2Body* body;
 };
 

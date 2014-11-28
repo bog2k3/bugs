@@ -14,7 +14,7 @@ class b2WeldJoint;
 
 class Gripper : public WorldObject {
 public:
-	Gripper(b2World* world, glm::vec2 position, float radius, float density);
+	Gripper(World* world, glm::vec2 position, float radius, float density);
 	virtual ~Gripper();
 
 	void setActive(bool active);

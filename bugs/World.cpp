@@ -13,6 +13,9 @@
 #include <algorithm>
 
 World::World(b2World* physWld) : physWld(physWld) {
+	b2BodyDef gdef;
+	gdef.type = b2_staticBody;
+	groundBody = physWld->CreateBody(&gdef);
 }
 
 World::~World() {

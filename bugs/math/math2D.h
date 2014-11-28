@@ -5,6 +5,7 @@
 
 #define EPS 1.e-30f
 #define PI 3.1415926535897932384626433832795f
+#define E 2.71828182845904523536
 
 template<typename T> inline T sqr(T x) { return x*x; }
 template<typename T> inline void xchg(T &x1, T &x2) { T aux = x1; x1 = x2; x2 = aux; }

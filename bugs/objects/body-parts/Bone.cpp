@@ -8,7 +8,7 @@
 #include "Bone.h"
 #include <Box2D/Box2D.h>
 
-Bone::Bone(b2World* world, glm::vec2 position, float rotation, float density, glm::vec2 size, glm::vec2 initialVelocity, float initialAngularVelocity)
+Bone::Bone(World* world, glm::vec2 position, float rotation, float density, glm::vec2 size, glm::vec2 initialVelocity, float initialAngularVelocity)
 	: WorldObject(world, position, rotation, true, initialVelocity, initialAngularVelocity)
 {
 	b2PolygonShape shape;

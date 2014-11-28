@@ -6,10 +6,11 @@
  */
 
 #include "Gripper.h"
+#include "../../World.h"
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 
-Gripper::Gripper(b2World* world, glm::vec2 position, float radiud, float density)
+Gripper::Gripper(World* world, glm::vec2 position, float radiud, float density)
 	: WorldObject(world, position, 0, true, glm::vec2(0), 0)
 	, radius(radius)
 	, active(false)
@@ -26,7 +27,7 @@ Gripper::Gripper(b2World* world, glm::vec2 position, float radiud, float density
 }
 
 Gripper::~Gripper() {
-	// TODO Auto-generated destructor stub
+	setActive(false);
 }
 
 void Gripper::setActive(bool active) {
@@ -35,7 +36,10 @@ void Gripper::setActive(bool active) {
 	this->active = active;
 	if (active) {
 		b2WeldJointDef jd;
-		jd.bodyA = getGroundObject from world...
+		jd.bodyA = getWorld()->getGroundBody();
+		jd.localAnchorA = body->GetWorldPoint(b2Vec2_zero);
+		jd.bodyB = body;
+		groundJoint = (b2WeldJoint*)getPhysics()->CreateJoint(&jd);
 	} else {
 		body->GetWorld()->DestroyJoint(groundJoint);
 		groundJoint = nullptr;

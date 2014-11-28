@@ -17,6 +17,7 @@
 #include <deque>
 
 class b2World;
+class b2Body;
 
 class World : public IOperationSpatialLocator, public IWorldManager, public b2QueryCallback {
 public:
@@ -36,8 +37,12 @@ public:
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);
 
+	b2World* getPhysics() { return physWld; }
+	b2Body* getGroundBody() { return groundBody; }
+
 protected:
 	b2World* physWld;
+	b2Body* groundBody;
 	std::list<WorldObject*> objects;
 	ObjectRenderContext renderContext;
 
