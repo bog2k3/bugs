@@ -10,7 +10,7 @@
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 
-Gripper::Gripper(World* world, glm::vec2 position, float radiud, float density)
+Gripper::Gripper(World* world, glm::vec2 position, float radius, float density)
 	: WorldObject(world, position, 0, true, glm::vec2(0), 0)
 	, radius(radius)
 	, active(false)

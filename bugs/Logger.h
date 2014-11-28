@@ -11,7 +11,7 @@ public:
 	void push_prefix(std::string prefix) { this->prefix.push_back(prefix); }
 	void pop_prefix() { this->prefix.pop_back(); }
 
-	template<typename T> inline const logger& operator < (T &val) const { std::cout << val; return *this; }
+	template<typename T> inline const logger& operator << (T &val) const { std::cout << val; return *this; }
 	template<typename T> inline const logger& operator << (T &val) const { writeprefix(); std::cout << val; return *this; }
 
 private:

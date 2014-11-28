@@ -246,7 +246,7 @@ void shuffle_elements(vector<T> &vec, logger &log) {
 		if (randd() < vec[i].chance_to_swap.value) {
 			if (prevSwap != -1) {
 				// we found a match, swap them!
-				log << "Swapping " < i < " and " < prevSwap < "\n";
+				(log << "Swapping ") < i < " and " < prevSwap < "\n";
 				T aux = vec[prevSwap];
 				vec[prevSwap] = vec[i];
 				vec[i] = aux;
@@ -292,7 +292,7 @@ bool alter_chromosome(Chromosome *pChromosome, Chromosome** pOutSplit, unsigned 
 		unsigned splitpoint = pChromosome->gene_list.size() / 2 + randi(pChromosome->gene_list.size()/2);
 		if (splitpoint == pChromosome->gene_list.size())
 			--splitpoint;
-		log << "Splitting Chromosome at position " < splitpoint < "\n";
+		(log << "Splitting Chromosome at position ") < splitpoint < "\n";
 		*pOutSplit = new Chromosome(*pChromosome);
 		(*pOutSplit)->gene_list = vector<Gene>((*pOutSplit)->gene_list.begin() + splitpoint, (*pOutSplit)->gene_list.end());
 		// update new Chromosome's meta genes:
