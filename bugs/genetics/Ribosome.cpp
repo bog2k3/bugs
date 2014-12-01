@@ -41,8 +41,8 @@ void check_create_default_input(NeuralNet* net, unsigned int inputIndex) {
 	}
 }
 
-void Ribosome::decode_and_develop_network(NeuralNet* net) {
-	/* Develops an embryonic NeuralNet by decoding its Genome sequence and building the NeuralNet from that.
+void Ribosome::decode_and_develop_entity(Bug* in_out_bug) {
+	/* Develops an embryonic Bug by decoding its Genome sequence and building the Bug from that.
 
 	Each Chromosome in the Genome defines an individual Neuron.
 
@@ -54,7 +54,8 @@ void Ribosome::decode_and_develop_network(NeuralNet* net) {
 	for Input source, then its modulus represents a default Input source index, else the number represents the index
 	of a Neuron to be used as Input for the current one
 	*/
-	assert(net->neurons.empty() && L"Embryonic NeuralNet has an invalid state!");
+
+	/*assert(net->neurons.empty() && L"Embryonic NeuralNet has an invalid state!");
 	assert(net->inputs.empty() && L"Embryonic NeuralNet has an invalid state!");
 	assert(net->outputs.empty() && L"Embryonic NeuralNet has an invalid state!");
 
@@ -147,6 +148,7 @@ void Ribosome::decode_and_develop_network(NeuralNet* net) {
 		outputNeurons[i].pNeuron->isOutput = true;
 		net->outputs.push_back(pOut);
 	}
+	*/
 }
 
 void alter_meta_gene(MetaGene* pMeta)

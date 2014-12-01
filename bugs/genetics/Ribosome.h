@@ -8,7 +8,7 @@
 #include "Chromosome.h"
 
 class Chromosome;
-class NeuralNet;
+class Bug;
 
 class Ribosome {
 public:
@@ -26,12 +26,9 @@ public:
 	// creates a random Genome; maxChromosomes must be greater than nDefaultInputs and requiredOutputs
 	static Genome createRandomGenome(unsigned maxChromosomes, unsigned nDefaultInputs, unsigned requiredOutputs);
 
-protected:
 	// decodes an embryonic network's Genome and develops that network according to the Genome
 	// into a fully functional network
-	static void decode_and_develop_network(NeuralNet* in_out_net);
-
-	friend class NeuralNet;
+	static void decode_and_develop_entity(Bug* in_out_bug);
 };
 
 #endif //__ribosome_h__

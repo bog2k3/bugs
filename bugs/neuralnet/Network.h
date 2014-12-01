@@ -16,8 +16,7 @@ public:
 
 #define MAX_NETWORK_DEFAULT_INPUTS 16
 
-	// create and develop a new network from the given genome
-	NeuralNet(Genome theGenome);
+	NeuralNet();
 
 	// clone the entire network with all neurons and synapses and stuff, updating all pointers
 	NeuralNet(const NeuralNet& original);
@@ -34,9 +33,7 @@ public:
 	std::vector<OutputSocket*> inputs; // list of input sockets that feed data to neurons
 	std::vector<Input*> outputs; // list of output sockets that output data from the network
 
-	const Genome& getGenome() { return genome; }
 protected:
-	Genome genome;
 
 	friend class Ribosome;
 };

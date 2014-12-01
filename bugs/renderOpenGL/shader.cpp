@@ -1,12 +1,13 @@
+#include "shader.hpp"
+#include "../log.h"
+
+#include <GL/glew.h>
+
 #include <fstream>
 #include <iostream>
 #include <vector>
 
 using namespace std;
-
-#include <GL/glew.h>
-
-#include "shader.hpp"
 
 std::string Shaders::readShaderFile(const char* path) {
 	std::ifstream VertexShaderStream(path, std::ios::in);
@@ -49,7 +50,7 @@ GLuint Shaders::createAndCompileShader(std::string const &code, GLuint shaderTyp
 		std::cerr << std::endl;
 		return 0;
 	}
-	cout << "OK" << endl;
+	LOGNP("OK\n");
 	return shaderID;
 }
 
@@ -57,7 +58,7 @@ GLuint Shaders::loadVertexShader(const char* path) {
 	string vertexShaderCode = readShaderFile(path);
 	if (vertexShaderCode == "")
 		return 0;
-	cout << "Compiling shader : " << path << " . . . ";
+	LOG("Compiling shader : " << path << " . . . ");
 	return createAndCompileShader(vertexShaderCode, GL_VERTEX_SHADER);
 }
 
@@ -65,14 +66,14 @@ GLuint Shaders::loadGeometryShader(const char* path) {
 	string vertexShaderCode = readShaderFile(path);
 	if (vertexShaderCode == "")
 		return 0;
-	cout << "Compiling shader : " << path << " . . . ";
+	LOG("Compiling shader : " << path << " . . . ");
 	return createAndCompileShader(vertexShaderCode, GL_GEOMETRY_SHADER);
 }
 GLuint Shaders::loadFragmentShader(const char* path) {
 	string vertexShaderCode = readShaderFile(path);
 	if (vertexShaderCode == "")
 		return 0;
-	cout << "Compiling shader : " << path << " . . . ";
+	LOG("Compiling shader : " << path << " . . . ");
 	return createAndCompileShader(vertexShaderCode, GL_FRAGMENT_SHADER);
 }
 
@@ -81,18 +82,19 @@ GLuint Shaders::createProgram(const char* vertex_file_path, const char* fragment
 }
 GLuint Shaders::createProgramGeom(const char* vertex_file_path, const char* geom_file_path,
 		const char* fragment_file_path) {
+	LOGPREFIX("SHADERS");
 	// Create the shaders
 	GLuint vertexShaderID = loadVertexShader(vertex_file_path);
 	GLuint geomShaderID = geom_file_path != nullptr ? loadGeometryShader(geom_file_path) : 0;
 	GLuint fragmentShaderID = loadFragmentShader(fragment_file_path);
 
 	if (vertexShaderID == 0 || fragmentShaderID == 0 || (geom_file_path != nullptr && geomShaderID == 0)) {
-		cout << "Some shaders failed. Aborting...\n";
+		LOGLN("Some shaders failed. Aborting...");
 		return 0;
 	}
 
 	// Link the program
-	cout << "Linking program . . .";
+	LOG("Linking program . . .");
 	GLuint programID = glCreateProgram();
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, geomShaderID);
@@ -103,18 +105,18 @@ GLuint Shaders::createProgramGeom(const char* vertex_file_path, const char* geom
 	GLint Result = GL_FALSE;
 	glGetProgramiv(programID, GL_LINK_STATUS, &Result);
 	if (Result != GL_TRUE) {
-		cerr << "Shader link ERROR!!!" << endl;
+		ERROR("Shader link ERROR!!!");
 		int InfoLogLength;
 		glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 		if (InfoLogLength > 0) {
 			std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 			glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-			cerr << &ProgramErrorMessage[0] << std::endl;
+			ERROR(&ProgramErrorMessage[0]);
 		} else {
-			cerr << "(no error description)" << endl;
+			ERROR("(no error description)");
 		}
 	} else {
-		cout << "OK\n";
+		LOGNP("OK\n");
 	}
 
 	glDeleteShader(vertexShaderID);

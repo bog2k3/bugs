@@ -1,21 +1,17 @@
 #include "Network.h"
 
 #include "../math/tools.h"
-#include "../genetics/Ribosome.h"
 #include "Traverser.h"
 
 #include <map>
 using namespace std;
 
-NeuralNet::NeuralNet(Genome theGenome)
-	: genome(theGenome)
+NeuralNet::NeuralNet()
 {
-	Ribosome::decode_and_develop_network(this);
 }
 
 // clone the entire network with all neurons and synapses and stuff, updating all pointers
 NeuralNet::NeuralNet(const NeuralNet& original)
-	: genome(original.genome)
 {
 	map<Input*, Input*> mapInputs; // map for remapping inputs for the new network
 	

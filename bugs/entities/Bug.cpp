@@ -6,13 +6,14 @@
  */
 
 #include "Bug.h"
+#include "../neuralnet/Network.h"
 
-Bug::Bug() {
-	// TODO Auto-generated constructor stub
-
+Bug::Bug(Genome genome)
+	: genome(genome)
+	, neuralNet(new NeuralNet())
+{
 }
 
 Bug::~Bug() {
-	// TODO Auto-generated destructor stub
 }
 

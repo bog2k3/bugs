@@ -17,7 +17,7 @@
 #define LOGGER(NAME) logger logger_token(NAME)
 #define LOGPREFIX(PREF) logger_prefix logger_prefix_token(PREF);
 
-#define LOG(X) logger::getCurrent() ? logger::getCurrent()->writeprefix(std::cout) : 0; std::cout << X
+#define LOG(X) logger::getCurrent()->writeprefix(std::cout); std::cout << X
 #define LOGNP(X) std::cout << X
 #define LOGLN(X) logger::getCurrent()->writeprefix(std::cout); std::cout << X << std::endl
 #define ERROR(X) std::cerr << "[ERROR]"; logger::getCurrent()->writeprefix(std::cerr); std::cerr << X << std::endl
