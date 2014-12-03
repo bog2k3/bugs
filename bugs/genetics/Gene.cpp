@@ -1,15 +1,39 @@
 #include "Gene.h"
 
-std::map<gene_type, gene_value_type> Gene::mapGeneValueTypes;
+void Gene::update_meta_genes_vec() {
+	metaGenes.clear();
+	// add meta-genes to this vector to enable their segregation:
+	metaGenes.push_back(&chance_to_delete);
+	metaGenes.push_back(&chance_to_swap_ahead);
+	metaGenes.push_back(&chance_to_swap_behind);
 
-int populateMap() {
-	Gene::mapGeneValueTypes[GENE_INPUT_SOURCE] = GENE_VALUE_INT;
-	Gene::mapGeneValueTypes[GENE_INPUT_WEIGHT] = GENE_VALUE_DOUBLE;
-	Gene::mapGeneValueTypes[GENE_BIAS] = GENE_VALUE_DOUBLE;
-	Gene::mapGeneValueTypes[GENE_TRANSFER_FUNCTION] = GENE_VALUE_INT;
-	Gene::mapGeneValueTypes[GENE_TRANSFER_ARGUMENT] = GENE_VALUE_DOUBLE;
-	Gene::mapGeneValueTypes[GENE_OUTPUT] = GENE_VALUE_DOUBLE;
-	return 0;
+	switch (type) {
+	case GENE_TYPE_DEVELOPMENT:
+		metaGenes.push_back(&data.gene_command.angle.meta);
+		metaGenes.push_back(&data.gene_command.location.meta);
+		break;
+	case GENE_TYPE_GENERAL_ATTRIB:
+		metaGenes.push_back(&data.gene_general_attribute.value.meta);
+		break;
+	case GENE_TYPE_MUSCLE_COMMAND:
+		metaGenes.push_back(&data.gene_muscle_command.muscleID.meta);
+		metaGenes.push_back(&data.gene_muscle_command.neuronDelta.meta);
+		metaGenes.push_back(&data.gene_muscle_command.weight.meta);
+		break;
+	case GENE_TYPE_NEURON:
+		break;
+	case GENE_TYPE_PART_ATTRIBUTE:
+		metaGenes.push_back(&data.gene_local_attribute.location.meta);
+		metaGenes.push_back(&data.gene_local_attribute.value.meta);
+		break;
+	case GENE_TYPE_SYNAPSE:
+		metaGenes.push_back(&data.gene_synapse.delta.meta);
+		metaGenes.push_back(&data.gene_synapse.weight.meta);
+		break;
+	case GENE_TYPE_TRANSFER:
+		metaGenes.push_back(&data.gene_transfer_function.functionID.meta);
+		break;
+	default:
+		break;
+	}
 }
-
-int dummyToPopulateMap = populateMap();

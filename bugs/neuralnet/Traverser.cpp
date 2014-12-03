@@ -1,6 +1,7 @@
 #include "Traverser.h"
 #include "Network.h"
 #include "Neuron.h"
+#include "../math/tools.h"
 
 #include <vector>
 #include <assert.h>

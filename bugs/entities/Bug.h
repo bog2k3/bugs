@@ -8,9 +8,8 @@
 #ifndef ENTITIES_BUG_H_
 #define ENTITIES_BUG_H_
 
-#include "../genetics/Chromosome.h"
-
 #include <list>
+#include "../genetics/Genome.h"
 
 class ISensor;
 class IMotor;

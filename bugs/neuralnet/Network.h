@@ -7,7 +7,8 @@
 #define __network_h__
 
 #include <vector>
-#include "../genetics/Chromosome.h"
+
+#include "../genetics/Genome.h"
 #include "Neuron.h"
 #include "OutputSocket.h"
 

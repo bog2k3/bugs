@@ -1,8 +1,8 @@
 #ifndef __serialization_h__
 #define __serialization_h__
 
-#include "../genetics/Chromosome.h"
 #include <string>
+#include "../genetics/Genome.h"
 
 class Serialization {
 public:
