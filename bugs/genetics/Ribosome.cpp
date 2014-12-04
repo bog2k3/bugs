@@ -12,13 +12,13 @@
 #include "Genome.h"
 using namespace std;
 
-struct neuronOutputGenePair {
+/*struct neuronOutputGenePair {
 	Neuron* pNeuron;
 	double output_gene_value;
 	neuronOutputGenePair(Neuron* pNeuron, double output_gene_value)
 		: pNeuron(pNeuron), output_gene_value(output_gene_value)
 	{ }
-};
+};*/
 
 Ribosome::Ribosome(Bug* bug)
 	: bug(bug)
@@ -27,5 +27,5 @@ Ribosome::Ribosome(Bug* bug)
 }
 
 bool Ribosome::step() {
-	bug->genome
+	// bug->genome.
 }

@@ -17,10 +17,15 @@ class NeuralNet;
 
 class Bug {
 public:
-	explicit Bug(Genome genome);
+	explicit Bug(Genome const &genome);
 	virtual ~Bug();
 
 	const Genome& getGenome() { return genome; }
+
+	/**
+	 * creates a new basic bug out of a default genome
+	 */
+	static Bug* newBasicBug();
 
 protected:
 	Genome genome;

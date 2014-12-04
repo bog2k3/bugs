@@ -106,8 +106,7 @@ public:
 		: type(type)
 		, data(data)
 		, chance_to_delete(constants::initial_gene_delete, constants::change_gene_delete)
-		, chance_to_swap_ahead(constants::initial_gene_swap, constants::change_gene_swap)
-		, chance_to_swap_behind(constants::initial_gene_swap, constants::change_gene_swap)
+		, chance_to_swap(constants::initial_gene_swap, constants::change_gene_swap)
 		, mutation_reference_value(constants::initial_gene_mutation_value, constants::change_gene_mutation_value)
 	{
 		update_meta_genes_vec();
@@ -117,8 +116,7 @@ public:
 		: type(original.type)
 		, data(original.data)
 		, chance_to_delete(original.chance_to_delete)
-		, chance_to_swap_ahead(original.chance_to_swap_ahead)
-		, chance_to_swap_behind(original.chance_to_swap_behind)
+		, chance_to_swap(original.chance_to_swap)
 		, mutation_reference_value(original.mutation_reference_value)
 	{
 		update_meta_genes_vec();
@@ -127,8 +125,7 @@ public:
 	std::vector<MetaGene*> metaGenes;
 
 	MetaGene chance_to_delete;		// [0..1] represents the likelihood that this gene will disappear completely
-	MetaGene chance_to_swap_ahead;	// likelihood that this gene will swap places with the next one
-	MetaGene chance_to_swap_behind;	// likelihood that this gene will swap places with the previous one
+	MetaGene chance_to_swap;		// likelihood that this gene will swap places with an adjacent one
 
 	MetaGene mutation_reference_value; // maximum value by which a gene can be mutated. The mutation is random between - and + this value
 
