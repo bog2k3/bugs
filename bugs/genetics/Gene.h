@@ -8,6 +8,7 @@
 
 #include "../math/tools.h"
 #include "constants.h"
+#include <stdint.h>
 #include <map>
 #include <vector>
 
@@ -48,22 +49,22 @@ struct Atom {
 	MetaGene meta;
 
 	operator T() { return value; }
-	void set(T value, double meta_ref_value, double meta_dynamic_var) {
+	void set(T value) {
 		this->value = value;
-		this->meta.value = meta_ref_value;
-		this->meta.dynamic_variation = meta_dynamic_var;
+		this->meta.value = constants::initial_gene_mutate;
+		this->meta.dynamic_variation = constants::change_gene_mutate;
 	}
 };
 
 struct GeneCommand {
-	Atom<unsigned> location;
+	Atom<uint64_t> location;
 	int command;
 	int part_type;
 	Atom<float> angle;
 };
 
 struct GeneLocalAttribute {
-	Atom<unsigned> location;
+	Atom<uint64_t> location;
 	int attribute;
 	bool relativeValue;
 	Atom<float> value;
@@ -100,9 +101,16 @@ public:
 		GeneSynapse gene_synapse;
 		GeneTransferFunction gene_transfer_function;
 		GeneMuscleCommand gene_muscle_command;
+
+		GeneData(GeneCommand gc) : gene_command(gc) {}
+		GeneData(GeneLocalAttribute gla) : gene_local_attribute(gla) {}
+		GeneData(GeneGeneralAttribute gga) : gene_general_attribute(gga) {}
+		GeneData(GeneSynapse gs) : gene_synapse(gs) {}
+		GeneData(GeneTransferFunction gt) : gene_transfer_function(gt) {}
+		GeneData(GeneMuscleCommand gm) : gene_muscle_command(gm) {}
 	} data;
 
-	Gene(gene_type type, GeneData &data)
+	Gene(gene_type type, GeneData data)
 		: type(type)
 		, data(data)
 		, chance_to_delete(constants::initial_gene_delete, constants::change_gene_delete)
@@ -111,6 +119,13 @@ public:
 	{
 		update_meta_genes_vec();
 	}
+
+	Gene(GeneCommand gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
+	Gene(GeneLocalAttribute gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
+	Gene(GeneGeneralAttribute gga) : Gene(GENE_TYPE_GENERAL_ATTRIB, gga) {}
+	Gene(GeneSynapse gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
+	Gene(GeneTransferFunction gt) : Gene(GENE_TYPE_TRANSFER, gt) {}
+	Gene(GeneMuscleCommand gm) : Gene(GENE_TYPE_MUSCLE_COMMAND, gm) {}
 
 	Gene(const Gene& original)
 		: type(original.type)

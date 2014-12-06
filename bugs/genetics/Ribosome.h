@@ -19,7 +19,7 @@ public:
 	~Ribosome();
 
 	/**
-	 * develops the entity one more step. Returns true when the process is complete
+	 * develops the entity one more step. Returns true as long as the process is not finished.
 	 */
 	bool step();
 

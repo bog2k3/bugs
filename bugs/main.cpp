@@ -54,12 +54,12 @@ int main()
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	Bone b = Bone(&wld, glm::vec2(0, 0), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
+	/*Bone b = Bone(&wld, glm::vec2(0, 0), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
 	Bone b1 = Bone(&wld, glm::vec2(0, -1), 0, 5.f, glm::vec2(0.5, 1.0f), glm::vec2(0), 0.f);
 	wld.addObject(&b);
 	wld.addObject(&b1);
 
-	Joint j(&b, glm::vec2(0, 0.6f), &b1, glm::vec2(0, -0.6f), 1, -0.1f, PI/1.5f);
+	Joint j(&b, glm::vec2(0, 0.6f), &b1, glm::vec2(0, -0.6f), 1, -0.1f, PI/1.5f);*/
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {

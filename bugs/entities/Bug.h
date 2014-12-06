@@ -14,11 +14,14 @@
 class ISensor;
 class IMotor;
 class NeuralNet;
+class Ribosome;
 
 class Bug {
 public:
-	explicit Bug(Genome const &genome);
+	explicit Bug(Genome const &genome, float zygoteSize);
 	virtual ~Bug();
+
+	void update(float dt);
 
 	const Genome& getGenome() { return genome; }
 
@@ -32,6 +35,13 @@ protected:
 	std::list<ISensor*> sensors;
 	std::list<IMotor*> motors;
 	NeuralNet* neuralNet;
+	Ribosome* ribosome;
+	bool isAlive;
+	bool isDeveloping;
+	float tRibosomeStep; // time since last ribosome step
+	float energy;
+	float scale;
+	float scaledEnergy;
 
 	friend class Ribosome;
 };
