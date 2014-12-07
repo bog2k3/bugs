@@ -6,8 +6,10 @@
 #define __ribosome_h__
 
 #include "Genome.h"
+#include "Gene.h"
 
 class Bug;
+class DevelopmentNode;
 
 /**
  * decodes the entity's genome and builds it step by step. When finished the entity will have its final
@@ -25,7 +27,15 @@ public:
 
 private:
 	Bug* bug;
-	int crtPosition;
+	unsigned crtPosition;
+	DevelopmentNode* root;
+
+	void decodeGrowth(GeneCommand const& g);
+	void decodePartAttrib(GeneLocalAttribute const& g);
+	void decodeGeneralAttrib(GeneGeneralAttribute const& g);
+	void decodeSynapse(GeneSynapse const& g);
+	void decodeTransferFn(GeneTransferFunction const& g);
+	void decodeMuscleCommand(GeneMuscleCommand const& g);
 };
 
 #endif //__ribosome_h__

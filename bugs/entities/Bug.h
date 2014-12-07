@@ -15,6 +15,8 @@ class ISensor;
 class IMotor;
 class NeuralNet;
 class Ribosome;
+class Torso;
+class ZygoteShell;
 
 class Bug {
 public:
@@ -42,6 +44,8 @@ protected:
 	float energy;
 	float scale;
 	float scaledEnergy;
+	Torso* body;
+	ZygoteShell* zygoteShell;
 
 	friend class Ribosome;
 };

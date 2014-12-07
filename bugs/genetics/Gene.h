@@ -48,7 +48,7 @@ struct Atom {
 	T value;
 	MetaGene meta;
 
-	operator T() { return value; }
+	operator T() const { return value; }
 	void set(T value) {
 		this->value = value;
 		this->meta.value = constants::initial_gene_mutate;
@@ -57,10 +57,10 @@ struct Atom {
 };
 
 struct GeneCommand {
-	Atom<uint64_t> location;
+	Atom<uint64_t> location;	// 4 bits for joints, 1 bit for bone - total depth: 12 dual levels
 	int command;
 	int part_type;
-	Atom<float> angle;
+	Atom<float> angle;			// angle is relative to the previous element's orientation
 };
 
 struct GeneLocalAttribute {

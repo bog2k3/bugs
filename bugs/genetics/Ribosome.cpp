@@ -8,16 +8,101 @@
 #include "../neuralnet/OutputSocket.h"
 #include "Gene.h"
 #include "GeneDefinitions.h"
+#include "DevelopmentNode.h"
+#include "../entities/Bug.h"
+#include "../objects/body-parts/Torso.h"
+#include "../objects/body-parts/Bone.h"
+#include "../objects/body-parts/Gripper.h"
+#include "../objects/body-parts/Joint.h"
+#include "../objects/body-parts/ZygoteShell.h"
+#include "../log.h"
 
 #include "Genome.h"
 using namespace std;
 
 Ribosome::Ribosome(Bug* bug)
-	: bug(bug)
-	, crtPosition(0)
+	: bug{bug}
+	, crtPosition{0}
+	, root{new DevelopmentNode()}
 {
+	root->bodyPart = new Torso(bug->zygoteShell);
 }
 
 bool Ribosome::step() {
-	// bug->genome.
+	bool hasFirst = crtPosition < bug->genome.first.size();
+	bool hasSecond = crtPosition < bug->genome.second.size();
+	if (!hasFirst && !hasSecond) {
+		// decoding sequence finished
+		delete root;
+		return false;
+	}
+	Gene* g = nullptr;
+	// choose the dominant (or the only) gene out of the current pair:
+	if (hasFirst && (!hasSecond || bug->genome.first[crtPosition].RID > bug->genome.second[crtPosition].RID))
+		g = &bug->genome.first[crtPosition];
+	else
+		g = &bug->genome.second[crtPosition];
+
+	// now decode the gene
+	switch (g->type) {
+	case GENE_TYPE_DEVELOPMENT:
+		decodeGrowth(g->data.gene_command);
+		break;
+	case GENE_TYPE_PART_ATTRIBUTE:
+		decodePartAttrib(g->data.gene_local_attribute);
+		break;
+	case GENE_TYPE_GENERAL_ATTRIB:
+		decodeGeneralAttrib(g->data.gene_general_attribute);
+		break;
+	case GENE_TYPE_NEURON:
+		// add new neuron here
+		break;
+	case GENE_TYPE_SYNAPSE:
+		decodeSynapse(g->data.gene_synapse);
+		break;
+	case GENE_TYPE_TRANSFER:
+		decodeTransferFn(g->data.gene_transfer_function);
+		break;
+	case GENE_TYPE_MUSCLE_COMMAND:
+		decodeMuscleCommand(g->data.gene_muscle_command);
+		break;
+	default:
+		LOG("Invalid gene type : " << g->type);
+	}
+
+	// move to next position
+	crtPosition++;
+	return true;
+}
+
+void Ribosome::decodeGrowth(GeneCommand const& g) {
+	std::list<DevelopmentNode*> nodes;
+	root->matchLocation(g.location, &nodes);
+
+	// now grow a new part on each bone element in nodes list
+	for (auto n : nodes) {
+		if (n->bodyPart->getType() != BODY_PART_BONE)
+			continue;
+
+	}
+}
+
+void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
+
+}
+
+void Ribosome::decodeGeneralAttrib(GeneGeneralAttribute const& g) {
+
+}
+
+void Ribosome::decodeSynapse(GeneSynapse const& g) {
+
+}
+
+void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
+
+}
+
+void Ribosome::decodeMuscleCommand(GeneMuscleCommand const& g) {
+
 }
