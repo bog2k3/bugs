@@ -79,11 +79,26 @@ void Ribosome::decodeGrowth(GeneCommand const& g) {
 	std::list<DevelopmentNode*> nodes;
 	root->matchLocation(g.location, &nodes);
 
-	// now grow a new part on each bone element in nodes list
-	for (auto n : nodes) {
-		if (n->bodyPart->getType() != BODY_PART_BONE)
-			continue;
-
+	if (g.command == GENE_DEV_GROW) {
+		// now grow a new part on each adequate element in nodes list
+		for (auto n : nodes) {
+			// grow only works on bones and torso
+			if (n->bodyPart->getType() != BODY_PART_BONE && n->bodyPart->getType() != BODY_PART_TORSO)
+				continue;
+			if (n->nChildren == 4)
+				continue;
+			BodyPart* bp = nullptr;
+			switch (g.part_type) {
+				// bp = new ...
+			}
+			n->children[n->nChildren++] = new DevelopmentNode(n, bp);
+		}
+	} else if (g.command == GENE_DEV_SPLIT) {
+		// split may work on bones and joints only
+		for (auto n : nodes) {
+			if (n->bodyPart->getType() != BODY_PART_BONE && n->bodyPart->getType() != BODY_PART_JOINT)
+				continue;
+		}
 	}
 }
 
