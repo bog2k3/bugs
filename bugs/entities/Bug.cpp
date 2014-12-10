@@ -19,7 +19,7 @@ const float DECODE_FREQUENCY = 1.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 const float ZYGOTE_ENERGY_DENSITY = 1000; // Joules per m^2
 
-Bug::Bug(Genome const &genome, float zygoteSize)
+Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	: genome(genome)
 	, neuralNet(new NeuralNet())
 	, ribosome(new Ribosome(this))
@@ -36,9 +36,8 @@ Bug::Bug(Genome const &genome, float zygoteSize)
 	// energia disponibila in zigot si energia necesara dezvoltarii determina scala initiala dupa decodare.
 
 	// create embryo shell:
-	zygoteShell = new ZygoteShell(zygoteSize);
-	body = new Torso(zygoteSize * 0.1f);
-	body->setParent(zygoteShell);
+	zygoteShell = new ZygoteShell(zygoteSize, PhysicsProperties(position, 0));
+	body = new Torso(zygoteShell, zygoteSize * 0.1f, PhysicsProperties(glm::vec2(0), 0));
 }
 
 Bug::~Bug() {
@@ -54,7 +53,7 @@ void Bug::update(float dt) {
 				isDeveloping = ribosome->step();
 				if (!isDeveloping) {
 					// delete embryo shell
-					body->setParent(nullptr);
+					body->changeParent(nullptr);
 					delete zygoteShell;
 					zygoteShell = nullptr;
 				}
@@ -75,7 +74,7 @@ void Bug::update(float dt) {
 	}
 }
 
-Bug* Bug::newBasicBug() {
+Bug* Bug::newBasicBug(glm::vec2 position) {
 	Genome g;
 
 	GeneCommand gc;
@@ -137,5 +136,5 @@ Bug* Bug::newBasicBug() {
 
 	g.second = g.first; // make a duplicate of all genes into the second chromosome
 
-	return new Bug(g, 0.08f);
+	return new Bug(g, 0.08f, position);
 }

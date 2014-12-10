@@ -8,13 +8,13 @@
 #ifndef OBJECTS_BODY_PARTS_GRIPPER_H_
 #define OBJECTS_BODY_PARTS_GRIPPER_H_
 
-#include "../WorldObject.h"
+#include "BodyPart.h"
 
 class b2WeldJoint;
 
-class Gripper : public WorldObject {
+class Gripper : public BodyPart {
 public:
-	Gripper(World* world, glm::vec2 position, float radius, float density);
+	Gripper(BodyPart* parent, float radius, float density, PhysicsProperties props);
 	virtual ~Gripper();
 
 	void setActive(bool active);

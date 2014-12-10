@@ -8,6 +8,7 @@
 #ifndef ENTITIES_BUG_H_
 #define ENTITIES_BUG_H_
 
+#include <glm/fwd.hpp>
 #include <list>
 #include "../genetics/Genome.h"
 
@@ -20,7 +21,7 @@ class ZygoteShell;
 
 class Bug {
 public:
-	explicit Bug(Genome const &genome, float zygoteSize);
+	explicit Bug(Genome const &genome, float zygoteSize, glm::vec2 position);
 	virtual ~Bug();
 
 	void update(float dt);
@@ -30,7 +31,7 @@ public:
 	/**
 	 * creates a new basic bug out of a default genome
 	 */
-	static Bug* newBasicBug();
+	static Bug* newBasicBug(glm::vec2 position);
 
 protected:
 	Genome genome;

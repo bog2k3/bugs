@@ -21,7 +21,7 @@ class b2Body;
 
 class World : public IOperationSpatialLocator, public IWorldManager, public b2QueryCallback {
 public:
-	World(b2World* physWld);
+	static World* getInstance();
 	virtual ~World();
 
 	WorldObject* getObjectAtPos(glm::vec2 pos);
@@ -37,10 +37,12 @@ public:
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);
 
+	void setPhysics(b2World* physWld);
 	b2World* getPhysics() { return physWld; }
 	b2Body* getGroundBody() { return groundBody; }
 
 protected:
+	World();
 	b2World* physWld;
 	b2Body* groundBody;
 	std::list<WorldObject*> objects;

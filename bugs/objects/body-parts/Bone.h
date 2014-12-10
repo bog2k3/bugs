@@ -8,12 +8,12 @@
 #ifndef OBJECTS_BODY_PARTS_BONE_H_
 #define OBJECTS_BODY_PARTS_BONE_H_
 
-#include "../WorldObject.h"
+#include "BodyPart.h"
 #include <glm/vec2.hpp>
 
-class Bone: public WorldObject {
+class Bone: public BodyPart {
 public:
-	Bone(World* world, glm::vec2 position, float rotation, float density, glm::vec2 size, glm::vec2 initialVelocity, float initialAngularVelocity);
+	Bone(BodyPart* parent, float density, glm::vec2 size, PhysicsProperties props);
 	virtual ~Bone();
 
 protected:

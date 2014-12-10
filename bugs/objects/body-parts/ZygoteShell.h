@@ -12,7 +12,7 @@
 
 class ZygoteShell: public BodyPart {
 public:
-	ZygoteShell(World* world, glm::vec2 position, float angle, bool dynamic, glm::vec2 velocity, float angularVelocity);
+	ZygoteShell(float size, PhysicsProperties props);
 	virtual ~ZygoteShell();
 };
 

@@ -27,8 +27,8 @@ public:
 	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 rgb);
 
 private:
-	void render(Viewport* vp);
-	void purgeRenderQueue();
+	void render(Viewport* vp) override;
+	void purgeRenderQueue() override;
 
 	struct s_lineVertex {
 		glm::vec3 pos;	// position X,Y,Z

@@ -9,13 +9,13 @@
 #define OBJECTS_BODY_PARTS_JOINT_H_
 
 #include <glm/fwd.hpp>
+#include "BodyPart.h"
 
-class WorldObject;
 class b2RevoluteJoint;
 
 class Joint {
 public:
-	Joint(WorldObject* b1, glm::vec2 offset1, WorldObject* b2, glm::vec2 offset2, float size, float phiMin, float phiMax);
+	Joint(BodyPart* parent, glm::vec2 offset1, BodyPart* other, glm::vec2 offset2, float size, float phiMin, float phiMax);
 	virtual ~Joint();
 
 protected:

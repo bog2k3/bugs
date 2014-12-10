@@ -12,7 +12,7 @@
 
 class Torso : public BodyPart {
 public:
-	Torso(BodyPart* parent);
+	Torso(BodyPart* parent, float size, PhysicsProperties props);
 	virtual ~Torso();
 };
 

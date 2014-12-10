@@ -7,7 +7,8 @@
 
 #include "Torso.h"
 
-Torso::Torso(BodyPart* parent) : BodyPart(parent, BODY_PART_TORSO) {
+Torso::Torso(BodyPart* parent, float size, PhysicsProperties props)
+	: BodyPart(parent, BODY_PART_TORSO, props) {
 	// TODO Auto-generated constructor stub
 
 }

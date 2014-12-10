@@ -8,23 +8,25 @@
 #include "WorldObject.h"
 #include "../World.h"
 #include "../math/math2D.h"
+#include "../math/box2glm.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/Viewport.h"
 #include "../renderOpenGL/Camera.h"
 #include <Box2D/Box2D.h>
 
-WorldObject::WorldObject(World* world, glm::vec2 position, float angle, bool dynamic, glm::vec2 velocity, float angularVelocity)
-	: world(world)
-	, physics(world->getPhysics())
+WorldObject::WorldObject(PhysicsProperties props)
+	: physProps_(props)
 {
 	b2BodyDef def;
-	def.angle = angle;
-	def.position.Set(position.x, position.y);
-	def.type = dynamic ? b2_dynamicBody : b2_staticBody;
+	def.angle = props.angle;
+	def.position.Set(props.position.x, props.position.y);
+	def.type = props.dynamic ? b2_dynamicBody : b2_staticBody;
 	def.userData = (void*)this;
 	def.angularDamping = def.linearDamping = 0.3f;
+	def.angularVelocity = props.angularVelocity;
+	def.linearVelocity = g2b(props.velocity);
 
-	body = physics->CreateBody(&def);
+	body_ = World::getInstance()->getPhysics()->CreateBody(&def);
 }
 
 WorldObject::~WorldObject() {

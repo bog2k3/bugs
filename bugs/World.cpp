@@ -12,10 +12,19 @@
 #include <Box2D/Box2D.h>
 #include <algorithm>
 
-World::World(b2World* physWld) : physWld(physWld) {
+World::World() : physWld(nullptr), groundBody(nullptr) {
+}
+
+void World::setPhysics(b2World* phys) {
+	physWld = phys;
 	b2BodyDef gdef;
 	gdef.type = b2_staticBody;
 	groundBody = physWld->CreateBody(&gdef);
+}
+
+World* World::getInstance() {
+	static World instance;
+	return &instance;
 }
 
 World::~World() {

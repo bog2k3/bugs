@@ -6,12 +6,14 @@
  */
 
 #include "DevelopmentNode.h"
+#include "../objects/body-parts/BodyPart.h"
+#include <assert.h>
 
-DevelopmentNode::DevelopmentNode()
-	: parent{nullptr}
+DevelopmentNode::DevelopmentNode(DevelopmentNode* parent, BodyPart* part)
+	: parent{parent}
 	, children{nullptr}
-	, bodyPart{nullptr}
-	, isJoint{false}
+	, bodyPart{part}
+	, isJoint{part->getType() == BODY_PART_JOINT}
 	, nChildren{0}
 {
 }

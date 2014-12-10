@@ -8,8 +8,8 @@
 #include "Bone.h"
 #include <Box2D/Box2D.h>
 
-Bone::Bone(World* world, glm::vec2 position, float rotation, float density, glm::vec2 size, glm::vec2 initialVelocity, float initialAngularVelocity)
-	: WorldObject(world, position, rotation, true, initialVelocity, initialAngularVelocity)
+Bone::Bone(BodyPart* parent, float density, glm::vec2 size, PhysicsProperties props)
+	: BodyPart(parent, BODY_PART_BONE, props)
 {
 	b2PolygonShape shape;
 	shape.SetAsBox(size.x * 0.5f, size.y * 0.5f);
@@ -19,7 +19,7 @@ Bone::Bone(World* world, glm::vec2 position, float rotation, float density, glm:
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
 
-	body->CreateFixture(&fixDef);
+	body_->CreateFixture(&fixDef);
 }
 
 Bone::~Bone() {

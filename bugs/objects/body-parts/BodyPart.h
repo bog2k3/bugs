@@ -24,16 +24,22 @@ enum PART_TYPE {
 
 class BodyPart : public WorldObject {
 public:
-	BodyPart(World* world, glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, PART_TYPE type);
-	BodyPart(BodyPart* parent, PART_TYPE type);
+	BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props);
 	virtual ~BodyPart();
 
-	void setParent(WorldObject* parent);
-	PART_TYPE getType() { return type; }
+	PART_TYPE getType() { return type_; }
+
+	void changeParent(BodyPart* newParent);
 
 protected:
-	PART_TYPE type;
-	BodyPart* parent;
+	PART_TYPE type_;
+	BodyPart* parent_;
+	static const unsigned MAX_CHILDREN = 4;
+	BodyPart* children_[MAX_CHILDREN];
+	int nChildren_;
+
+	void add(BodyPart* part);
+	void remove(BodyPart* part);
 };
 
 

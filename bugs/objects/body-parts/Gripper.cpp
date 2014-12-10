@@ -10,8 +10,8 @@
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 
-Gripper::Gripper(World* world, glm::vec2 position, float radius, float density)
-	: WorldObject(world, position, 0, true, glm::vec2(0), 0)
+Gripper::Gripper(BodyPart* parent, float radius, float density, PhysicsProperties props)
+	: BodyPart(parent, BODY_PART_GRIPPER, props)
 	, radius(radius)
 	, active(false)
 	, groundJoint(nullptr)
@@ -23,7 +23,7 @@ Gripper::Gripper(World* world, glm::vec2 position, float radius, float density)
 	fdef.friction = 0.3f;
 	fdef.restitution = 0.2f;
 	fdef.shape = &shape;
-	body->CreateFixture(&fdef);
+	body_->CreateFixture(&fdef);
 }
 
 Gripper::~Gripper() {
@@ -36,12 +36,12 @@ void Gripper::setActive(bool active) {
 	this->active = active;
 	if (active) {
 		b2WeldJointDef jd;
-		jd.bodyA = getWorld()->getGroundBody();
-		jd.localAnchorA = body->GetWorldPoint(b2Vec2_zero);
-		jd.bodyB = body;
-		groundJoint = (b2WeldJoint*)getPhysics()->CreateJoint(&jd);
+		jd.bodyA = World::getInstance()->getGroundBody();
+		jd.localAnchorA = body_->GetWorldPoint(b2Vec2_zero);
+		jd.bodyB = body_;
+		groundJoint = (b2WeldJoint*)World::getInstance()->getPhysics()->CreateJoint(&jd);
 	} else {
-		body->GetWorld()->DestroyJoint(groundJoint);
+		body_->GetWorld()->DestroyJoint(groundJoint);
 		groundJoint = nullptr;
 	}
 }

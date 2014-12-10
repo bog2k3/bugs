@@ -15,11 +15,13 @@ class BodyPart;
 
 class DevelopmentNode {
 public:
-	DevelopmentNode();
+	DevelopmentNode(DevelopmentNode* parent, BodyPart* part);
 	virtual ~DevelopmentNode();
 
+	static const unsigned MAX_CHILDREN = 4;
+
 	DevelopmentNode* parent;
-	DevelopmentNode* children[4];
+	DevelopmentNode* children[MAX_CHILDREN];
 
 	void matchLocation(uint64_t loc, std::list<DevelopmentNode*> *out);
 

@@ -23,9 +23,8 @@ using namespace std;
 Ribosome::Ribosome(Bug* bug)
 	: bug{bug}
 	, crtPosition{0}
-	, root{new DevelopmentNode()}
+	, root(nullptr)
 {
-	root->bodyPart = new Torso(bug->zygoteShell);
 }
 
 bool Ribosome::step() {
