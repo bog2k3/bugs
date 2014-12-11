@@ -10,38 +10,56 @@
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 
-Gripper::Gripper(BodyPart* parent, float radius, float density, PhysicsProperties props)
+Gripper::Gripper(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_GRIPPER, props)
-	, radius(radius)
-	, active(false)
-	, groundJoint(nullptr)
+	, radius_(0.01f)
+	, density_(1.f)
+	, active_(false)
+	, committed_(false)
+	, groundJoint_(nullptr)
 {
-	b2CircleShape shape;
-	shape.m_radius = radius;
-	b2FixtureDef fdef;
-	fdef.density = density;
-	fdef.friction = 0.3f;
-	fdef.restitution = 0.2f;
-	fdef.shape = &shape;
-	body_->CreateFixture(&fdef);
 }
 
 Gripper::~Gripper() {
 	setActive(false);
 }
 
+void Gripper::commit() {
+	assert(!committed_);
+
+	b2CircleShape shape;
+	shape.m_radius = radius_;
+	b2FixtureDef fdef;
+	fdef.density = density_;
+	fdef.friction = 0.3f;
+	fdef.restitution = 0.2f;
+	fdef.shape = &shape;
+	body_->CreateFixture(&fdef);
+
+	committed_ = true;
+}
+
+void Gripper::setRadius(float value) {
+	assert(!committed_);
+	radius_ = value;
+}
+void Gripper::setDensity(float value) {
+	assert(!committed_);
+	density_ = value;
+}
+
 void Gripper::setActive(bool active) {
-	if (this->active == active)
+	if (active_ == active)
 		return;
-	this->active = active;
+	active_ = active;
 	if (active) {
 		b2WeldJointDef jd;
 		jd.bodyA = World::getInstance()->getGroundBody();
 		jd.localAnchorA = body_->GetWorldPoint(b2Vec2_zero);
 		jd.bodyB = body_;
-		groundJoint = (b2WeldJoint*)World::getInstance()->getPhysics()->CreateJoint(&jd);
+		groundJoint_ = (b2WeldJoint*)World::getInstance()->getPhysics()->CreateJoint(&jd);
 	} else {
-		body_->GetWorld()->DestroyJoint(groundJoint);
-		groundJoint = nullptr;
+		body_->GetWorld()->DestroyJoint(groundJoint_);
+		groundJoint_ = nullptr;
 	}
 }

@@ -45,10 +45,10 @@ int main()
 			);
 	physWld.SetDebugDraw(&physicsDraw);
 
-	World wld(&physWld);
-	wld.setRenderContext(renderContext);
+	World::getInstance()->setPhysics(&physWld);
+	World::getInstance()->setRenderContext(renderContext);
 
-	OperationsStack opStack(&vp1, &wld, &wld, &physWld);
+	OperationsStack opStack(&vp1, World::getInstance(), World::getInstance(), &physWld);
 	GLFWInput::initialize(gltGetWindow());
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
@@ -82,7 +82,7 @@ int main()
 		}
 
 		// draw builds the render queue
-		wld.draw();
+		World::getInstance()->draw();
 		physWld.DrawDebugData();
 
 		// wait until rendering is done and show frame output:

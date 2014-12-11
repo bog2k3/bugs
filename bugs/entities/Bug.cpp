@@ -37,7 +37,7 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 
 	// create embryo shell:
 	zygoteShell = new ZygoteShell(zygoteSize, PhysicsProperties(position, 0));
-	body = new Torso(zygoteShell, zygoteSize * 0.1f, PhysicsProperties(glm::vec2(0), 0));
+	body = new Torso(zygoteShell, PhysicsProperties(glm::vec2(0), 0));
 }
 
 Bug::~Bug() {

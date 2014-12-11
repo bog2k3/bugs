@@ -11,9 +11,10 @@
 ZygoteShell::ZygoteShell(float size, PhysicsProperties props)
 	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL, props)
 {
+	// create fixture
 }
 
 ZygoteShell::~ZygoteShell() {
-	// TODO Auto-generated destructor stub
+	// delete fixture
 }
 

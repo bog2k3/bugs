@@ -56,6 +56,7 @@ public:
 	virtual void draw(ObjectRenderContext* ctx) {}
 
 	b2Body* getBody() { return body_; }
+	PhysicsProperties getPhysicsProp() { return physProps_; }
 
 protected:
 	b2Body* body_;

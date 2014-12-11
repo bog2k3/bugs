@@ -13,13 +13,20 @@
 
 class b2RevoluteJoint;
 
-class Joint {
+class Joint : public BodyPart {
 public:
-	Joint(BodyPart* parent, glm::vec2 offset1, BodyPart* other, glm::vec2 offset2, float size, float phiMin, float phiMax);
-	virtual ~Joint();
+	Joint(BodyPart* parent, PhysicsProperties props);
+	virtual ~Joint() override;
+
+	void commit() override;
 
 protected:
-	b2RevoluteJoint* physJoint;
+	glm::vec2 offset1_;
+	glm::vec2 offset2_;
+	float size_;
+	float phiMin_;
+	float phiMax_;
+	b2RevoluteJoint* physJoint_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

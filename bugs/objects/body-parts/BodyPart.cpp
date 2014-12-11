@@ -42,3 +42,9 @@ void BodyPart::remove(BodyPart* part) {
 			break;
 		}
 }
+
+void BodyPart::commit_tree() {
+	commit();
+	for (auto c : children_)
+		c->commit_tree();
+}

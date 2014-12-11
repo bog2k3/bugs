@@ -13,10 +13,20 @@
 
 class Bone: public BodyPart {
 public:
-	Bone(BodyPart* parent, float density, glm::vec2 size, PhysicsProperties props);
-	virtual ~Bone();
+	Bone(BodyPart* parent, PhysicsProperties props);
+	virtual ~Bone() override;
+	virtual void commit() override;
+
+	float getDensity() { return density_; }
+	glm::vec2 getSize() { return size_; }
+
+	void setDensity(float value);
+	void setSize(glm::vec2 value);
 
 protected:
+	float density_;
+	glm::vec2 size_;
+	bool committed_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

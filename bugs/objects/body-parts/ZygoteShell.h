@@ -14,6 +14,8 @@ class ZygoteShell: public BodyPart {
 public:
 	ZygoteShell(float size, PhysicsProperties props);
 	virtual ~ZygoteShell();
+
+	void commit() override {}; // nothing to do here, the zygote does not change after creation
 };
 
 #endif /* OBJECTS_BODY_PARTS_ZYGOTESHELL_H_ */

@@ -6,25 +6,37 @@
  */
 
 #include "Joint.h"
-#include "../WorldObject.h"
 #include <Box2D/Box2D.h>
+#include "../WorldObject.h"
 #include "../../math/box2glm.h"
+#include "../../math/math2D.h"
 
-Joint::Joint(WorldObject* b1, glm::vec2 offset1, WorldObject* b2, glm::vec2 offset2, float size, float phiMin, float phiMax) {
-	b2RevoluteJointDef def;
-	def.bodyA = b1->getBody();
-	def.localAnchorA = g2b(offset1);
-	def.bodyB = b2->getBody();
-	def.localAnchorB = g2b(offset2);
-	def.enableLimit = true;
-	def.lowerAngle = phiMin;
-	def.upperAngle = phiMax;
-	def.userData = (void*)this;
-
-	physJoint = (b2RevoluteJoint*)b1->getBody()->GetWorld()->CreateJoint(&def);
+Joint::Joint(BodyPart* parent, PhysicsProperties props)
+	: BodyPart(parent, BODY_PART_JOINT, props)
+	, offset1_(0)
+	, offset2_(0)
+	, size_(1.e-4f)
+	, phiMin_(-PI/8)
+	, phiMax_(PI * 0.9f)
+	, physJoint_(nullptr)
+{
 }
 
 Joint::~Joint() {
-	// TODO Auto-generated destructor stub
+	// delete joint
 }
 
+void Joint::commit() {
+	assert(nChildren_ == 1);
+	b2RevoluteJointDef def;
+	def.bodyA = parent_->getBody();
+	def.localAnchorA = g2b(offset1_);
+	def.bodyB = children_[0]->getBody();
+	def.localAnchorB = g2b(offset2_);
+	def.enableLimit = true;
+	def.lowerAngle = phiMin_;
+	def.upperAngle = phiMax_;
+	def.userData = (void*)this;
+
+	physJoint_ = (b2RevoluteJoint*)parent_->getBody()->GetWorld()->CreateJoint(&def);
+}

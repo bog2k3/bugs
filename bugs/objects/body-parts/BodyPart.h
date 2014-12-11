@@ -25,16 +25,28 @@ enum PART_TYPE {
 class BodyPart : public WorldObject {
 public:
 	BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props);
-	virtual ~BodyPart();
+	virtual ~BodyPart() override;
 
 	PART_TYPE getType() { return type_; }
 
 	void changeParent(BodyPart* newParent);
 
+	/*
+	 * This is called after the body is completely developed and no more changes will occur on body parts
+	 * except in rare circumstances.
+	 * At this point the physics fixtures must be created and all temporary data purged.
+	 */
+	virtual void commit()=0;
+
+	/*
+	 * this will commit recursively in the entire body tree
+	 */
+	void commit_tree();
+
 protected:
 	PART_TYPE type_;
 	BodyPart* parent_;
-	static const unsigned MAX_CHILDREN = 4;
+	static const int MAX_CHILDREN = 4;
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
 
