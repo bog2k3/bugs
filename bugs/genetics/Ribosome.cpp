@@ -74,6 +74,16 @@ bool Ribosome::step() {
 	return true;
 }
 
+bool Ribosome::partMustGenerateJoint(int part_type) {
+	switch (part_type) {
+	case BODY_PART_BONE:
+	case BODY_PART_GRIPPER:
+		return true;
+	default:
+		return false;
+	}
+}
+
 void Ribosome::decodeGrowth(GeneCommand const& g) {
 	std::list<DevelopmentNode*> nodes;
 	root->matchLocation(g.location, &nodes);
@@ -86,10 +96,38 @@ void Ribosome::decodeGrowth(GeneCommand const& g) {
 				continue;
 			if (n->nChildren == 4)
 				continue;
+			if (partMustGenerateJoint(g.part_type)) {
+				// we cannot grow this part directly onto its parent, they must be connected by a joint
+				glm::vec2 offset(0, 0);
+				Joint* linkJoint = new Joint(n->bodyPart, PhysicsProperties(offset, 0));
+				n->children[n->nChildren++] = new DevelopmentNode(n, linkJoint);
+				// set n to point to the joint's node, since that's where the actual part will be attached:
+				n = n->children[n->nChildren-1];
+			}
+			glm::vec2 offset(0);
+			float angle = g.angle;
+			// must compute the position and angle of the new part
+			//...
+
 			BodyPart* bp = nullptr;
 			switch (g.part_type) {
-				// bp = new ...
+			case BODY_PART_BONE:
+				bp = new Bone(n->bodyPart, PhysicsProperties(offset, angle));
+				break;
+			case BODY_PART_GRIPPER:
+				bp = new Gripper(n->bodyPart, PhysicsProperties(offset, angle));
+				break;
+			case BODY_PART_MUSCLE:
+				// bp = new Muscle(n->bodyPart, PhysicsProperties(offset, angle));
+				break;
+			case BODY_PART_SENSOR:
+				// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));
+				break;
+			default:
+				break;
 			}
+			if (!bp)
+				continue;
 			n->children[n->nChildren++] = new DevelopmentNode(n, bp);
 		}
 	} else if (g.command == GENE_DEV_SPLIT) {

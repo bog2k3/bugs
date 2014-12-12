@@ -13,6 +13,7 @@
 
 class Bone: public BodyPart {
 public:
+	// the position and rotation in props are relative to the parent
 	Bone(BodyPart* parent, PhysicsProperties props);
 	virtual ~Bone() override;
 	virtual void commit() override;

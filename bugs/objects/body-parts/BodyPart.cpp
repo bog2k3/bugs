@@ -15,8 +15,9 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
 	, children_{nullptr}
 	, nChildren_(0)
 {
-	if (parent)
+	if (parent) {
 		parent->add(this);
+	}
 }
 
 BodyPart::~BodyPart() {

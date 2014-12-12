@@ -36,6 +36,7 @@ private:
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);
 	void decodeMuscleCommand(GeneMuscleCommand const& g);
+	bool partMustGenerateJoint(int part_type);
 };
 
 #endif //__ribosome_h__

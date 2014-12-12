@@ -24,6 +24,7 @@ enum PART_TYPE {
 
 class BodyPart : public WorldObject {
 public:
+	// the position and rotation in props are relative to the parent
 	BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props);
 	virtual ~BodyPart() override;
 
