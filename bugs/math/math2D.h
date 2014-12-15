@@ -95,7 +95,7 @@ public:
 		return glm::dot(point, getDirectionVector());
 	}
 
-	inline bool intersectsCircle(Circle const &circ) const { return abs(a*circ.vCenter.x + b*circ.vCenter.y + c) <= circ.Radius; }
+	inline bool intersectsCircle(Circle const &circ) const { return glm::abs(a*circ.vCenter.x + b*circ.vCenter.y + c) <= circ.Radius; }
 };
 
 /// represents an axis aligned box
