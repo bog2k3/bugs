@@ -1,3 +1,13 @@
 BUGS (by bogdan ionita)
 
 uses Box2D for physics.
+
+[BUILD]
+Eclipse CDT
+Link with: GLEW, glfw3, X11, Xrandr, Xi, Xxf86vm, pthread, rt, GL, Box2D, png
+
+Box2D can be downloaded here:
+	http://box2d.org/downloads/
+		(go to google project page)
+or direct link (v2.3.0):
+	https://code.google.com/p/box2d/downloads/detail?name=Box2D_v2.3.0.7z&can=2&q=
