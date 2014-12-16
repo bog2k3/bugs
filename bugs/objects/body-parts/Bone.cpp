@@ -6,6 +6,7 @@
  */
 
 #include "Bone.h"
+#include "../../math/math2D.h"
 #include <Box2D/Box2D.h>
 
 Bone::Bone(BodyPart* parent, PhysicsProperties props)
@@ -47,4 +48,43 @@ void Bone::commit() {
 	body_->CreateFixture(&fixDef);
 
 	committed_ = true;
+}
+glm::vec2 Bone::getRelativeAttachmentPoint(float relativeAngle)
+{
+	assert(!committed_);
+
+	// bring the angle between [-PI, +PI]
+	relativeAngle = limitAngle(relativeAngle, PI);
+
+	float hw = sqrtf(size_.x/size_.y) * 0.5f; // half width
+	float hh = size_.y * hw; // half height
+
+	float ac1 = atanf(hw/hh);
+	if (relativeAngle >= 0) {
+		if (relativeAngle <= ac1) {
+			// top edge, left side
+			return glm::vec2(tanf(relativeAngle) * hh, hh);
+		} else if (relativeAngle <= PI - ac1) {
+			// left edge
+			if (eqEps(relativeAngle, PI*0.5f)) // treat singularity for tan at PI/2
+				return glm::vec2(-hw, 0);
+			return glm::vec2(-hw, hw / tanf(relativeAngle));
+		} else {
+			// bottom edge, left side
+			return glm::vec2(-tanf(relativeAngle) * hh, -hh);
+		}
+	} else /* relativeAngle < 0 */ {
+		if (relativeAngle >= -ac1) {
+			// top edge, right side
+			return glm::vec2(tanf(relativeAngle) * hh, hh);
+		} else if (relativeAngle >= -PI + ac1) {
+			// right edge
+			if (eqEps(relativeAngle, -PI*0.5f)) // treat singularity for tan at -PI/2
+				return glm::vec2(hw, 0);
+			return glm::vec2(hw, hw / tanf(-relativeAngle));
+		} else {
+			// bottom edge, right side
+			return glm::vec2(-tanf(relativeAngle) * hh, -hh);
+		}
+	}
 }

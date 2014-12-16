@@ -32,6 +32,8 @@ public:
 
 	void changeParent(BodyPart* newParent);
 
+	virtual glm::vec2 getRelativeAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
+
 	/*
 	 * This is called after the body is completely developed and no more changes will occur on body parts
 	 * except in rare circumstances.

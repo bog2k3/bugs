@@ -165,4 +165,20 @@ protected:
 	ArbitraryBox(glm::vec2 vertices[4]);
 };
 
-float cross2D(const glm::vec2 &v1, const glm::vec2 &v2);
+inline float cross2D(const glm::vec2 &v1, const glm::vec2 &v2) {
+	return (v1.x*v2.y) - (v1.y*v2.x);
+}
+
+/**
+ * brings an angle into a user defined range (bisector being the max angle where the circle is cut):
+ * 	[bisector-2*PI, bisector]
+ * for example, providing PI/2 as bisector, the angle will be brought into this interval:
+ * 	[-3*PI/2, PI/2]
+ */
+inline float limitAngle(float a, float bisector) {
+	while (a > bisector)
+		a -= 2*PI;
+	while (a < bisector - 2*PI)
+		a += 2*PI;
+	return a;
+}

@@ -104,24 +104,24 @@ void Ribosome::decodeGrowth(GeneCommand const& g) {
 				// set n to point to the joint's node, since that's where the actual part will be attached:
 				n = n->children[n->nChildren-1];
 			}
-			glm::vec2 offset(0);
-			float angle = g.angle;
-			// must compute the position and angle of the new part
-			//...
+			// The child's attachment point relative to the parent's center is computed from the angle specified in the gene,
+			// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
+			// until it touches an edge of the parent. That point is used as attachment of the new part.
+			glm::vec2 offset = n->bodyPart->getRelativeAttachmentPoint(g.angle);
 
 			BodyPart* bp = nullptr;
 			switch (g.part_type) {
 			case BODY_PART_BONE:
-				bp = new Bone(n->bodyPart, PhysicsProperties(offset, angle));
+				bp = new Bone(n->bodyPart, PhysicsProperties(offset, g.angle));
 				break;
 			case BODY_PART_GRIPPER:
-				bp = new Gripper(n->bodyPart, PhysicsProperties(offset, angle));
+				bp = new Gripper(n->bodyPart, PhysicsProperties(offset, g.angle));
 				break;
 			case BODY_PART_MUSCLE:
-				// bp = new Muscle(n->bodyPart, PhysicsProperties(offset, angle));
+				// bp = new Muscle(n->bodyPart, PhysicsProperties(offset, g.angle));
 				break;
 			case BODY_PART_SENSOR:
-				// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));
+				// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, g.angle));
 				break;
 			default:
 				break;
