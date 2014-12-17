@@ -41,6 +41,8 @@ WorldObject* World::getObjectAtPos(glm::vec2 pos) {
 	b2AABB aabb;
 	aabb.lowerBound = aabb.upperBound = g2b(pos);
 	physWld->QueryAABB(this, aabb);
+	if (b2QueryResult.empty())
+		return nullptr;
 	b2Fixture* ptr = b2QueryResult.front();
 	b2QueryResult.clear();	// reset
 	return (WorldObject*)ptr->GetBody()->GetUserData();
@@ -72,4 +74,9 @@ void World::removeObject(WorldObject* obj) {
 					[obj] (WorldObject* const & x) { return x == obj; }),
 			objects.end()
 		);
+}
+void World::update(float dt) {
+	for (auto obj : objects) {
+		::update(obj);
+	}
 }

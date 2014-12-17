@@ -32,6 +32,7 @@ public:
 
 	void setRenderContext(ObjectRenderContext ctxt) { renderContext = ctxt; }
 	void draw();
+	void update(float dt);
 
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);

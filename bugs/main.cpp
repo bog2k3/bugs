@@ -79,6 +79,7 @@ int main()
 		if (dt > 0) {
 			opStack.update(dt);
 			physWld.Step(dt, 6, 2);
+			World::getInstance()->update(dt);
 		}
 
 		// draw builds the render queue

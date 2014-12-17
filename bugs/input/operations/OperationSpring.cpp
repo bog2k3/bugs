@@ -46,10 +46,10 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 	case InputEvent::EV_MOUSE_DOWN: {
 		if (ev.mouseButton != boundButton)
 			break;
-		isActive = true;
 		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
 		WorldObject* pressedObj = pContext->locator->getObjectAtPos(wldClickPos);
 		if (pressedObj != nullptr) {
+			isActive = true;
 			b2BodyDef bdef;
 			bdef.type = b2_staticBody;
 			bdef.position = g2b(wldClickPos);

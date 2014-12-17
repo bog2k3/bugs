@@ -56,6 +56,9 @@ void Bug::update(float dt) {
 					body->changeParent(nullptr);
 					delete zygoteShell;
 					zygoteShell = nullptr;
+
+					// commit all changes and create the physics bodys and fixtures:
+					body->commit_tree();
 				}
 			}
 		} else {
