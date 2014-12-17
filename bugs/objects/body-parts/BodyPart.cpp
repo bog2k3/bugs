@@ -58,12 +58,10 @@ void BodyPart::commit_tree() {
 	transform_position_and_angle();
 	// perform commit on local node:
 	assert(!committed_);
+	WorldObject::commit();
 	commit();
 	committed_ = true;
 	// perform recursive commit on all children:
 	for (auto c : children_)
 		c->commit_tree();
-	// delete the initialization data since we don't need it any more after this step:
-	delete physProps_;
-	physProps_ = nullptr;
 }

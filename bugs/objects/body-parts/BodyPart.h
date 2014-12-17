@@ -43,7 +43,7 @@ public:
 	 * The physicsProperties of the body are transform to world coordinates before this method is called;
 	 * The physicsProperties are deleted after the commit is finished.
 	 */
-	virtual void commit()=0;
+	virtual void commit() = 0;
 
 	/*
 	 * this will commit recursively in the entire body tree
