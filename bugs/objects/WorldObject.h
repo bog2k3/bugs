@@ -56,11 +56,11 @@ public:
 	virtual void draw(ObjectRenderContext* ctx) {}
 
 	b2Body* getBody() { return body_; }
-	PhysicsProperties getPhysicsProp() { return physProps_; }
+	PhysicsProperties& getPhysicsProp() { return *physProps_; }
 
 protected:
 	b2Body* body_;
-	PhysicsProperties physProps_;
+	PhysicsProperties *physProps_;	// these are valid only for the initial state of the object
 };
 
 #endif /* OBJECTS_WORLDOBJECT_H_ */

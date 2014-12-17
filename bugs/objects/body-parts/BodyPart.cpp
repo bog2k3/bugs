@@ -6,6 +6,7 @@
  */
 
 #include "BodyPart.h"
+#include <glm/gtx/rotate_vector.hpp>
 #include <assert.h>
 
 BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
@@ -14,6 +15,7 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
 	, parent_(parent)
 	, children_{nullptr}
 	, nChildren_(0)
+	, committed_(false)
 {
 	if (parent) {
 		parent->add(this);
@@ -44,8 +46,24 @@ void BodyPart::remove(BodyPart* part) {
 		}
 }
 
+void BodyPart::transform_position_and_angle() {
+	if (parent_) {
+		physProps_->position = parent_->physProps_->position + glm::rotate(physProps_->position, parent_->physProps_->angle);
+		physProps_->angle += parent_->physProps_->angle;
+	}
+}
+
 void BodyPart::commit_tree() {
+	// first transform position and angle into world space:
+	transform_position_and_angle();
+	// perform commit on local node:
+	assert(!committed_);
 	commit();
+	committed_ = true;
+	// perform recursive commit on all children:
 	for (auto c : children_)
 		c->commit_tree();
+	// delete the initialization data since we don't need it any more after this step:
+	delete physProps_;
+	physProps_ = nullptr;
 }

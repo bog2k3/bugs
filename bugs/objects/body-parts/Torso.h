@@ -27,7 +27,6 @@ public:
 protected:
 	float size_;
 	float density_;
-	bool committed_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */

@@ -15,7 +15,7 @@
 #include <Box2D/Box2D.h>
 
 WorldObject::WorldObject(PhysicsProperties props)
-	: physProps_(props)
+	: physProps_(new PhysicsProperties(props))
 {
 	b2BodyDef def;
 	def.angle = props.angle;

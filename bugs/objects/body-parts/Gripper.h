@@ -33,7 +33,6 @@ protected:
 	float radius_;
 	float density_;
 	bool active_;
-	bool committed_;
 	b2WeldJoint* groundJoint_;
 };
 

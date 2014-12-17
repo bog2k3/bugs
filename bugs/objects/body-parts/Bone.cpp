@@ -13,7 +13,6 @@ Bone::Bone(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_BONE, props)
 	, density_(1)
 	, size_(1.e-4f, 0.7f)	// 1 sq cm, more wide than long
-	, committed_(false)
 {
 }
 
@@ -46,8 +45,6 @@ void Bone::commit() {
 	fixDef.shape = &shape;
 
 	body_->CreateFixture(&fixDef);
-
-	committed_ = true;
 }
 glm::vec2 Bone::getRelativeAttachmentPoint(float relativeAngle)
 {

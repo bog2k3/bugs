@@ -11,7 +11,6 @@ Torso::Torso(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_TORSO, props)
 	, size_(1.e-3f) // 10 sq cm
 	, density_(1.f)
-	, committed_(false)
 {
 }
 
@@ -21,8 +20,6 @@ Torso::~Torso() {
 
 void Torso::commit() {
 	assert(!committed_);
-	committed_ = true;
-
 	// create fixture....
 }
 

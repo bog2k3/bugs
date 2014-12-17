@@ -9,7 +9,7 @@
 #define ENTITIES_BUG_H_
 
 #include <glm/fwd.hpp>
-#include <list>
+#include <vector>
 #include "../genetics/Genome.h"
 
 class ISensor;
@@ -35,8 +35,8 @@ public:
 
 protected:
 	Genome genome;
-	std::list<ISensor*> sensors;
-	std::list<IMotor*> motors;
+	std::vector<ISensor*> sensors;
+	std::vector<IMotor*> motors;
 	NeuralNet* neuralNet;
 	Ribosome* ribosome;
 	bool isAlive;

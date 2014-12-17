@@ -13,8 +13,6 @@
 
 Joint::Joint(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_JOINT, props)
-	, offset1_(0)
-	, offset2_(0)
 	, size_(1.e-4f)
 	, phiMin_(-PI/8)
 	, phiMax_(PI * 0.9f)
@@ -28,11 +26,10 @@ Joint::~Joint() {
 
 void Joint::commit() {
 	assert(nChildren_ == 1);
+
 	b2RevoluteJointDef def;
-	def.bodyA = parent_->getBody();
-	def.localAnchorA = g2b(offset1_);
-	def.bodyB = children_[0]->getBody();
-	def.localAnchorB = g2b(offset2_);
+	// physProps_.position must be in world space at this step:
+	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(physProps_->position));
 	def.enableLimit = true;
 	def.lowerAngle = phiMin_;
 	def.upperAngle = phiMax_;

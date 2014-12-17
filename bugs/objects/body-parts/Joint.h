@@ -21,8 +21,6 @@ public:
 	void commit() override;
 
 protected:
-	glm::vec2 offset1_;
-	glm::vec2 offset2_;
 	float size_;
 	float phiMin_;
 	float phiMax_;

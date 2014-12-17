@@ -22,7 +22,7 @@ DevelopmentNode::~DevelopmentNode() {
 	// TODO Auto-generated destructor stub
 }
 
-void DevelopmentNode::matchLocation(uint64_t loc, std::list<DevelopmentNode*> *out) {
+void DevelopmentNode::matchLocation(uint64_t loc, std::vector<DevelopmentNode*> *out) {
 	if (loc == 0 || nChildren == 0) {
 		out->push_back(this);
 	} else {

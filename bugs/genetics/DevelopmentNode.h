@@ -8,7 +8,7 @@
 #ifndef GENETICS_DEVELOPMENTNODE_H_
 #define GENETICS_DEVELOPMENTNODE_H_
 
-#include <list>
+#include <vector>
 #include <stdint.h>
 
 class BodyPart;
@@ -23,14 +23,14 @@ public:
 	DevelopmentNode* parent;
 	DevelopmentNode* children[MAX_CHILDREN];
 
-	void matchLocation(uint64_t loc, std::list<DevelopmentNode*> *out);
+	void matchLocation(uint64_t loc, std::vector<DevelopmentNode*> *out);
 
 protected:
 	friend class Ribosome;
 
 	BodyPart* bodyPart;
-	std::list<int> motorLines; // a list of motor nerve lines that pass through this node
-	std::list<int> sensorLines; // a list of sensor nerve lines -..-
+	std::vector<int> motorLines; // a list of motor nerve lines that pass through this node
+	std::vector<int> sensorLines; // a list of sensor nerve lines -..-
 	bool isJoint;
 	int nChildren;
 };

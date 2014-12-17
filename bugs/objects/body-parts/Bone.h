@@ -28,7 +28,6 @@ public:
 protected:
 	float density_;
 	glm::vec2 size_;
-	bool committed_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

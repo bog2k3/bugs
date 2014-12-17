@@ -13,7 +13,6 @@
 #include "input/IWorldManager.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <vector>
-#include <list>
 #include <deque>
 
 class b2World;
@@ -45,7 +44,7 @@ protected:
 	World();
 	b2World* physWld;
 	b2Body* groundBody;
-	std::list<WorldObject*> objects;
+	std::vector<WorldObject*> objects;
 	ObjectRenderContext renderContext;
 
 	std::deque<b2Fixture*> b2QueryResult;

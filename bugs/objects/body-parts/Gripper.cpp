@@ -15,7 +15,6 @@ Gripper::Gripper(BodyPart* parent, PhysicsProperties props)
 	, radius_(0.01f)
 	, density_(1.f)
 	, active_(false)
-	, committed_(false)
 	, groundJoint_(nullptr)
 {
 }
@@ -26,7 +25,6 @@ Gripper::~Gripper() {
 
 void Gripper::commit() {
 	assert(!committed_);
-
 	b2CircleShape shape;
 	shape.m_radius = radius_;
 	b2FixtureDef fdef;
@@ -35,8 +33,6 @@ void Gripper::commit() {
 	fdef.restitution = 0.2f;
 	fdef.shape = &shape;
 	body_->CreateFixture(&fdef);
-
-	committed_ = true;
 }
 
 void Gripper::setRadius(float value) {

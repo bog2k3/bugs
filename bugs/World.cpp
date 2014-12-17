@@ -67,5 +67,9 @@ void World::addObject(WorldObject* obj) {
 }
 
 void World::removeObject(WorldObject* obj) {
-	objects.remove_if([obj] (WorldObject* const & x) { return x == obj; });
+	objects.erase(
+			std::remove_if(objects.begin(), objects.end(),
+					[obj] (WorldObject* const & x) { return x == obj; }),
+			objects.end()
+		);
 }
