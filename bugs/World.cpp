@@ -75,8 +75,11 @@ void World::removeObject(WorldObject* obj) {
 			objects.end()
 		);
 }
+void World::addUpdatable(updatable_wrap w) {
+	updatables.push_back(w);
+}
 void World::update(float dt) {
-	for (auto obj : objects) {
-		::update(obj);
+	for (auto &w : updatables) {
+		w.update(dt);
 	}
 }

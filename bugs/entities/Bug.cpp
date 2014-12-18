@@ -43,6 +43,10 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 Bug::~Bug() {
 }
 
+template<> void update(Bug* b, float dt) {
+	b->update(dt);
+}
+
 void Bug::update(float dt) {
 	if (isAlive) {
 		if (isDeveloping) {
@@ -141,3 +145,4 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 
 	return new Bug(g, 0.08f, position);
 }
+

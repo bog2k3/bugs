@@ -11,6 +11,7 @@
 #include <glm/fwd.hpp>
 #include <vector>
 #include "../genetics/Genome.h"
+#include "../updatable.h"
 
 class ISensor;
 class IMotor;
@@ -50,5 +51,7 @@ protected:
 
 	friend class Ribosome;
 };
+
+template<> void update(Bug* b, float dt);
 
 #endif /* ENTITIES_BUG_H_ */

@@ -12,6 +12,7 @@
 #include "input/operations/IOperationSpatialLocator.h"
 #include "input/IWorldManager.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
+#include "updatable.h"
 #include <vector>
 #include <deque>
 
@@ -37,6 +38,13 @@ public:
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);
 
+	void addUpdatable(updatable_wrap w);
+	void removeUpdatable(updatable_wrap w) {
+		updatables.erase(std::remove_if(updatables.begin(), updatables.end(), [&w] (const updatable_wrap& x) {
+			return x.equal_value(w);
+		}), updatables.end());
+	}
+
 	void setPhysics(b2World* physWld);
 	b2World* getPhysics() { return physWld; }
 	b2Body* getGroundBody() { return groundBody; }
@@ -46,6 +54,7 @@ protected:
 	b2World* physWld;
 	b2Body* groundBody;
 	std::vector<WorldObject*> objects;
+	std::vector<updatable_wrap> updatables;
 	ObjectRenderContext renderContext;
 
 	std::deque<b2Fixture*> b2QueryResult;
