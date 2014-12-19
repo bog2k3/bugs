@@ -25,6 +25,7 @@ Ribosome::Ribosome(Bug* bug)
 	, crtPosition{0}
 	, root(nullptr)
 {
+	// create root developmentNode over torso
 }
 
 bool Ribosome::step() {
