@@ -26,9 +26,9 @@ public:
 	bool step();
 
 private:
-	Bug* bug;
-	unsigned crtPosition;
-	DevelopmentNode* root;
+	Bug* bug_;
+	unsigned crtPosition_;
+	DevelopmentNode* root_;
 
 	void decodeDevelopCommand(GeneCommand const& g);
 	void decodeDevelopGrowth(GeneCommand const& g, std::vector<DevelopmentNode*> const& nodes);

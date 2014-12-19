@@ -16,9 +16,10 @@ class b2RevoluteJoint;
 class Joint : public BodyPart {
 public:
 	Joint(BodyPart* parent, PhysicsProperties props);
-	virtual ~Joint() override;
+	~Joint() override;
 
 	void commit() override;
+	void draw(ObjectRenderContext* ctx) override;
 
 protected:
 	float size_;

@@ -28,6 +28,8 @@ public:
 	BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props);
 	virtual ~BodyPart() override;
 
+	virtual void draw(ObjectRenderContext* ctx) override;
+
 	PART_TYPE getType() { return type_; }
 
 	void changeParent(BodyPart* newParent);
@@ -61,6 +63,7 @@ protected:
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void transform_position_and_angle();
+	glm::vec3 getWorldTransformation();
 };
 
 

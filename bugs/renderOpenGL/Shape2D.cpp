@@ -11,6 +11,7 @@
 #include "Viewport.h"
 #include "Camera.h"
 #include "shader.hpp"
+#include "../math/math2D.h"
 
 #include <stdexcept>
 #include <glm/mat4x4.hpp>
@@ -109,4 +110,17 @@ void Shape2D::drawRectangle(glm::vec2 pos, float z, glm::vec2 size, float rotati
 void Shape2D::purgeRenderQueue() {
 	buffer.clear();
 	indices.clear();
+}
+
+void Shape2D::drawCircle(glm::vec2 pos, float radius, float z, int nSides, glm::vec3 rgb) {
+	// make a polygon out of the circle
+	float phiStep = 2 * PI * 1.f / nSides;
+	glm::vec2 v[nSides];
+	float phi = 0;
+	for (int i=0; i<nSides; i++) {
+		v[i].x = radius * cosf(phi) + pos.x;
+		v[i].y = radius * sinf(phi) + pos.y;
+		phi += phiStep;
+	}
+	drawPolygon(v, nSides, z, rgb);
 }

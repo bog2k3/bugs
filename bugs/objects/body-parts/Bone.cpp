@@ -7,6 +7,7 @@
 
 #include "Bone.h"
 #include "../../math/math2D.h"
+#include "../../renderOpenGL/Shape2D.h"
 #include <Box2D/Box2D.h>
 
 Bone::Bone(BodyPart* parent, PhysicsProperties props)
@@ -83,5 +84,17 @@ glm::vec2 Bone::getRelativeAttachmentPoint(float relativeAngle)
 			// bottom edge, right side
 			return glm::vec2(-tanf(relativeAngle) * hh, -hh);
 		}
+	}
+}
+
+void Bone::draw(ObjectRenderContext* ctx) {
+	if (committed_) {
+		// nothing to draw, physics will draw for us
+	} else {
+		glm::vec3 worldTransform = getWorldTransformation();
+		float w = sqrtf(size_.x/size_.y);
+		float h = size_.y * w;
+		ctx->shape->drawRectangle(glm::vec2(worldTransform.x, worldTransform.y), 0,
+				glm::vec2(w, h), worldTransform.z, glm::vec3(0, 1, 0));
 	}
 }

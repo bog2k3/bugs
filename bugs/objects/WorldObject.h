@@ -62,11 +62,12 @@ public:
 	void commit();
 
 	b2Body* getBody() { return body_; }
-	PhysicsProperties& getPhysicsProp() { return *physProps_; }
+	PhysicsProperties& getPhysicsProp() { return *initialData_; }
 
 protected:
 	b2Body* body_;
-	PhysicsProperties *physProps_;	// these are valid only for the initial state of the object
+	PhysicsProperties *initialData_;	// these are valid only for the initial state of the object
+	void purgeInitializationData();
 
 private:
 	bool committed_;

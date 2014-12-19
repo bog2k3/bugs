@@ -182,3 +182,7 @@ inline float limitAngle(float a, float bisector) {
 		a += 2*PI;
 	return a;
 }
+
+inline glm::vec2 vec3xy(glm::vec3 in) {
+	return glm::vec2(in.x, in.y);
+}

@@ -75,9 +75,17 @@ void World::removeObject(WorldObject* obj) {
 			objects.end()
 		);
 }
+
 void World::addUpdatable(updatable_wrap w) {
 	updatables.push_back(w);
 }
+
+void World::removeUpdatable(updatable_wrap w) {
+	updatables.erase(std::remove_if(updatables.begin(), updatables.end(), [&w] (const updatable_wrap& x) {
+		return x.equal_value(w);
+	}), updatables.end());
+}
+
 void World::update(float dt) {
 	for (auto &w : updatables) {
 		w.update(dt);

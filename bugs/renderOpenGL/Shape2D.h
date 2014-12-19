@@ -25,6 +25,7 @@ public:
 	void drawLine(glm::vec2 point1, glm::vec2 point2, float z, glm::vec3 rgb);
 	void drawRectangle(glm::vec2 pos, float z, glm::vec2 size, float rotation, glm::vec3 rgb);
 	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 rgb);
+	void drawCircle(glm::vec2 pos, float radius, float , int nSides, glm::vec3 rgb);
 
 private:
 	void render(Viewport* vp) override;

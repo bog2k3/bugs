@@ -32,17 +32,7 @@ void PhysicsDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCoun
 
 /// Draw a circle.
 void PhysicsDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color) {
-	// make a polygon out of the circle
-	const int nVerts = 12;
-	float phiStep = 2 * PI * 1.f / nVerts;
-	b2Vec2 v[nVerts];
-	float phi = 0;
-	for (int i=0; i<nVerts; i++) {
-		v[i].x = radius * cosf(phi) + center.x;
-		v[i].y = radius * sinf(phi) + center.y;
-		phi += phiStep;
-	}
-	DrawPolygon(v, nVerts, color);
+	rc.shape->drawCircle(b2g(center), radius, 0, 12, b2g(color));
 }
 
 /// Draw a solid circle.

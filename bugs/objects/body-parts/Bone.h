@@ -19,6 +19,8 @@ public:
 	void commit() override;
 	glm::vec2 getRelativeAttachmentPoint(float relativeAngle) override;
 
+	void draw(ObjectRenderContext* ctx) override;
+
 	float getDensity() { return density_; }
 	glm::vec2 getSize() { return size_; }
 

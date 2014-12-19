@@ -20,24 +20,25 @@ const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 const float ZYGOTE_ENERGY_DENSITY = 1000; // Joules per m^2
 
 Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
-	: genome(genome)
-	, neuralNet(new NeuralNet())
-	, ribosome(new Ribosome(this))
-	, isAlive(true)
-	, isDeveloping(true)
-	, tRibosomeStep(0)
-	, energy(zygoteSize * ZYGOTE_ENERGY_DENSITY)
-	, scale(0.05f)
-	, scaledEnergy(0)
-	, body(nullptr)
-	, zygoteShell(nullptr)
+	: genome_(genome)
+	, neuralNet_(new NeuralNet())
+	, ribosome_(nullptr)
+	, isAlive_(true)
+	, isDeveloping_(true)
+	, tRibosomeStep_(0)
+	, energy_(zygoteSize * ZYGOTE_ENERGY_DENSITY)
+	, scale_(0.05f)
+	, scaledEnergy_(0)
+	, body_(nullptr)
+	, zygoteShell_(nullptr)
 {
 	// pe masura ce se dezvolta, fiecare noua parte consuma energie.
 	// energia disponibila in zigot si energia necesara dezvoltarii determina scala initiala dupa decodare.
 
 	// create embryo shell:
-	zygoteShell = new ZygoteShell(zygoteSize, PhysicsProperties(position, 0));
-	body = new Torso(zygoteShell, PhysicsProperties(glm::vec2(0), 0));
+	zygoteShell_ = new ZygoteShell(zygoteSize, PhysicsProperties(position, 0));
+	body_ = new Torso(zygoteShell_, PhysicsProperties(glm::vec2(0), 0));
+	ribosome_ = new Ribosome(this);
 }
 
 Bug::~Bug() {
@@ -48,25 +49,25 @@ template<> void update(Bug* b, float dt) {
 }
 
 void Bug::update(float dt) {
-	if (isAlive) {
-		if (isDeveloping) {
+	if (isAlive_) {
+		if (isDeveloping_) {
 			// developing embryo
-			tRibosomeStep += dt;
-			if (tRibosomeStep >= DECODE_PERIOD) {
-				tRibosomeStep -= DECODE_PERIOD;
-				isDeveloping = ribosome->step();
-				if (!isDeveloping) {
+			tRibosomeStep_ += dt;
+			if (tRibosomeStep_ >= DECODE_PERIOD) {
+				tRibosomeStep_ -= DECODE_PERIOD;
+				isDeveloping_ = ribosome_->step();
+				if (!isDeveloping_) {
 					// delete embryo shell
-					body->changeParent(nullptr);
-					delete zygoteShell;
-					zygoteShell = nullptr;
+					body_->changeParent(nullptr);
+					delete zygoteShell_;
+					zygoteShell_ = nullptr;
 
 					// commit all changes and create the physics bodys and fixtures:
-					body->commit_tree();
+					body_->commit_tree();
 				}
 			}
 		} else {
-			if (scale < 1) {
+			if (scale_ < 1) {
 				// juvenile, growing
 				// growth happens by scaling up size and scaling down energy proportionally;
 				// growth speed is dictated by genes

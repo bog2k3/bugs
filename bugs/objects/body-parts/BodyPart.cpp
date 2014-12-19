@@ -6,7 +6,10 @@
  */
 
 #include "BodyPart.h"
+#include "../../math/box2glm.h"
+#include "../../renderOpenGL/Shape2D.h"
 #include <glm/gtx/rotate_vector.hpp>
+#include <Box2D/Dynamics/b2Body.h>
 #include <assert.h>
 
 BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
@@ -48,20 +51,37 @@ void BodyPart::remove(BodyPart* part) {
 
 void BodyPart::transform_position_and_angle() {
 	if (parent_) {
-		physProps_->position = parent_->physProps_->position + glm::rotate(physProps_->position, parent_->physProps_->angle);
-		physProps_->angle += parent_->physProps_->angle;
+		initialData_->position = b2g(parent_->body_->GetPosition()) +
+				glm::rotate(initialData_->position, parent_->body_->GetAngle());
+		initialData_->angle += parent_->body_->GetAngle();
 	}
 }
 
 void BodyPart::commit_tree() {
-	// first transform position and angle into world space:
-	transform_position_and_angle();
 	// perform commit on local node:
 	assert(!committed_);
+	// first transform position and angle into world space:
+	transform_position_and_angle();
 	WorldObject::commit();
 	commit();
+	WorldObject::purgeInitializationData();
 	committed_ = true;
 	// perform recursive commit on all children:
 	for (auto c : children_)
 		c->commit_tree();
+}
+
+glm::vec3 BodyPart::getWorldTransformation() {
+	assert(!committed_);
+	glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
+	return parentTransform + glm::vec3(initialData_->position, initialData_->angle);
+}
+
+void BodyPart::draw(ObjectRenderContext* ctx) {
+	if (committed_)
+		return;
+	glm::vec3 trans = getWorldTransformation();
+	glm::vec2 pos(trans.x, trans.y);
+	ctx->shape->drawLine(pos + glm::vec2(-0.01f, 0), pos + glm::vec2(0.01f, 0), 0, glm::vec3(0.2f, 0.2f, 1.f));
+	ctx->shape->drawLine(pos + glm::vec2(0, -0.01f), pos + glm::vec2(0, 0.01f), 0, glm::vec3(1.f, 0.2f, 0.2f));
 }

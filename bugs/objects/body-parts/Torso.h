@@ -13,9 +13,10 @@
 class Torso : public BodyPart {
 public:
 	Torso(BodyPart* parent, PhysicsProperties props);
-	virtual ~Torso() override;
+	~Torso() override;
 
-	virtual void commit() override;
+	void commit() override;
+	void draw(ObjectRenderContext* ctx) override;
 
 	// returns the 'size' (surface area)
 	float getSize() { return size_; }

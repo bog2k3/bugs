@@ -6,6 +6,8 @@
  */
 
 #include "Torso.h"
+#include "../../math/math2D.h"
+#include "../../renderOpenGL/Shape2D.h"
 
 Torso::Torso(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_TORSO, props)
@@ -27,7 +29,17 @@ void Torso::setSize(float val) {
 	assert(!committed_);
 	size_ = val;
 }
+
 void Torso::setDensity(float val) {
 	assert(!committed_);
 	density_ = val;
+}
+
+void Torso::draw(ObjectRenderContext* ctx) {
+	if (committed_) {
+		// nothing, physics draws
+	} else {
+		glm::vec2 pos = vec3xy(getWorldTransformation());
+		ctx->shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, glm::vec3(0.4f, 1.f, 0.f));
+	}
 }

@@ -111,7 +111,8 @@ public:
 	} data;
 
 	Gene(gene_type type, GeneData data)
-		: type(type)
+		: RID(new_RID())
+		, type(type)
 		, data(data)
 		, chance_to_delete(constants::initial_gene_delete, constants::change_gene_delete)
 		, chance_to_swap(constants::initial_gene_swap, constants::change_gene_swap)

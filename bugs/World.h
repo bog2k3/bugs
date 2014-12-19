@@ -39,11 +39,7 @@ public:
 	void removeObject(WorldObject* obj);
 
 	void addUpdatable(updatable_wrap w);
-	void removeUpdatable(updatable_wrap w) {
-		updatables.erase(std::remove_if(updatables.begin(), updatables.end(), [&w] (const updatable_wrap& x) {
-			return x.equal_value(w);
-		}), updatables.end());
-	}
+	void removeUpdatable(updatable_wrap w);
 
 	void setPhysics(b2World* physWld);
 	b2World* getPhysics() { return physWld; }

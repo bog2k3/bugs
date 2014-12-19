@@ -27,7 +27,7 @@ public:
 
 	void update(float dt);
 
-	const Genome& getGenome() { return genome; }
+	const Genome& getGenome() { return genome_; }
 
 	/**
 	 * creates a new basic bug out of a default genome
@@ -35,19 +35,19 @@ public:
 	static Bug* newBasicBug(glm::vec2 position);
 
 protected:
-	Genome genome;
-	std::vector<ISensor*> sensors;
-	std::vector<IMotor*> motors;
-	NeuralNet* neuralNet;
-	Ribosome* ribosome;
-	bool isAlive;
-	bool isDeveloping;
-	float tRibosomeStep; // time since last ribosome step
-	float energy;
-	float scale;
-	float scaledEnergy;
-	Torso* body;
-	ZygoteShell* zygoteShell;
+	Genome genome_;
+	std::vector<ISensor*> sensors_;
+	std::vector<IMotor*> motors_;
+	NeuralNet* neuralNet_;
+	Ribosome* ribosome_;
+	bool isAlive_;
+	bool isDeveloping_;
+	float tRibosomeStep_; // time since last ribosome step
+	float energy_;
+	float scale_;
+	float scaledEnergy_;
+	Torso* body_;
+	ZygoteShell* zygoteShell_;
 
 	friend class Ribosome;
 };

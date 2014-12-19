@@ -21,27 +21,26 @@
 using namespace std;
 
 Ribosome::Ribosome(Bug* bug)
-	: bug{bug}
-	, crtPosition{0}
-	, root(nullptr)
+	: bug_{bug}
+	, crtPosition_{0}
+	, root_{new DevelopmentNode(nullptr, bug_->body_)}
 {
-	// create root developmentNode over torso
 }
 
 bool Ribosome::step() {
-	bool hasFirst = crtPosition < bug->genome.first.size();
-	bool hasSecond = crtPosition < bug->genome.second.size();
+	bool hasFirst = crtPosition_ < bug_->genome_.first.size();
+	bool hasSecond = crtPosition_ < bug_->genome_.second.size();
 	if (!hasFirst && !hasSecond) {
 		// decoding sequence finished
-		delete root;
+		delete root_;
 		return false;
 	}
 	Gene* g = nullptr;
 	// choose the dominant (or the only) gene out of the current pair:
-	if (hasFirst && (!hasSecond || bug->genome.first[crtPosition].RID > bug->genome.second[crtPosition].RID))
-		g = &bug->genome.first[crtPosition];
+	if (hasFirst && (!hasSecond || bug_->genome_.first[crtPosition_].RID > bug_->genome_.second[crtPosition_].RID))
+		g = &bug_->genome_.first[crtPosition_];
 	else
-		g = &bug->genome.second[crtPosition];
+		g = &bug_->genome_.second[crtPosition_];
 
 	// now decode the gene
 	switch (g->type) {
@@ -71,7 +70,7 @@ bool Ribosome::step() {
 	}
 
 	// move to next position
-	crtPosition++;
+	crtPosition_++;
 	return true;
 }
 
@@ -87,7 +86,7 @@ bool Ribosome::partMustGenerateJoint(int part_type) {
 
 void Ribosome::decodeDevelopCommand(GeneCommand const& g) {
 	std::vector<DevelopmentNode*> nodes;
-	root->matchLocation(g.location, &nodes);
+	root_->matchLocation(g.location, &nodes);
 	if (g.command == GENE_DEV_GROW) {
 		decodeDevelopGrowth(g, nodes);
 	} else if (g.command == GENE_DEV_SPLIT) {
