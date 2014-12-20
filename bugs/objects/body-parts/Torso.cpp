@@ -8,6 +8,7 @@
 #include "Torso.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 Torso::Torso(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_TORSO, props)
@@ -42,4 +43,10 @@ void Torso::draw(ObjectRenderContext* ctx) {
 		glm::vec2 pos = vec3xy(getWorldTransformation());
 		ctx->shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, glm::vec3(0.4f, 1.f, 0.f));
 	}
+}
+
+glm::vec2 Torso::getRelativeAttachmentPoint(float relativeAngle)
+{
+	assert(!committed_);
+	return glm::rotate(glm::vec2(0, sqrtf(size_ * PI_INV)), relativeAngle);
 }

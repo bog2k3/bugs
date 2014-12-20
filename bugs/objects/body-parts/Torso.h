@@ -17,6 +17,7 @@ public:
 
 	void commit() override;
 	void draw(ObjectRenderContext* ctx) override;
+	glm::vec2 getRelativeAttachmentPoint(float relativeAngle) override;
 
 	// returns the 'size' (surface area)
 	float getSize() { return size_; }

@@ -20,6 +20,7 @@ public:
 
 	void commit() override;
 	void draw(ObjectRenderContext* ctx) override;
+	glm::vec2 getRelativeAttachmentPoint(float relativeAngle) override;
 
 protected:
 	float size_;

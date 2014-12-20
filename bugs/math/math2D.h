@@ -5,6 +5,7 @@
 
 #define EPS 1.e-30f
 #define PI 3.1415926535897932384626433832795f
+#define PI_INV 0.31830988618f
 #define E 2.71828182845904523536
 
 template<typename T> inline T sqr(T x) { return x*x; }
@@ -183,6 +184,6 @@ inline float limitAngle(float a, float bisector) {
 	return a;
 }
 
-inline glm::vec2 vec3xy(glm::vec3 in) {
+inline glm::vec2 vec3xy(glm::vec3 const &in) {
 	return glm::vec2(in.x, in.y);
 }
