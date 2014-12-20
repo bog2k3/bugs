@@ -32,14 +32,14 @@ void Joint::commit() {
 	assert(nChildren_ == 1);
 
 	b2RevoluteJointDef def;
-	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(initialData_->position));
+	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(vec3xy(getWorldTransformation())));
 	// physProps_.position must be in world space at this step:
 	def.enableLimit = true;
 	def.lowerAngle = phiMin_;
 	def.upperAngle = phiMax_;
 	def.userData = (void*)this;
 
-	physJoint_ = (b2RevoluteJoint*)parent_->getBody()->GetWorld()->CreateJoint(&def);
+	physJoint_ = (b2RevoluteJoint*)body_->GetWorld()->CreateJoint(&def);
 }
 
 void Joint::draw(ObjectRenderContext* ctx) {

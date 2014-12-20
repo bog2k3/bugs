@@ -16,21 +16,22 @@ class Gripper : public BodyPart {
 public:
 	// the position and rotation in props are relative to the parent
 	Gripper(BodyPart* parent, PhysicsProperties props);
-	virtual ~Gripper() override;
+	~Gripper() override;
 
-	virtual void commit() override;
+	void commit() override;
+	void draw(ObjectRenderContext* ctx) override;
 
 	void setActive(bool active);
 	bool isActive() { return active_; }
 
-	float getRadius() { return radius_; }
 	float getDensity() { return density_; }
+	float getSize() { return size_; }
 
-	void setRadius(float value);
 	void setDensity(float value);
+	void setSize(float value);
 
 protected:
-	float radius_;
+	float size_;
 	float density_;
 	bool active_;
 	b2WeldJoint* groundJoint_;
