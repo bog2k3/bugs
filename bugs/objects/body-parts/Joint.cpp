@@ -6,7 +6,7 @@
  */
 
 #include "Joint.h"
-#include "../WorldObject.h"
+#include "../../World.h"
 #include "../../math/box2glm.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
@@ -22,6 +22,8 @@ Joint::Joint(BodyPart* parent, PhysicsProperties props)
 	, phiMax_(PI * 0.9f)
 	, physJoint_(nullptr)
 {
+	// suppress physics body creation, since the joint doesn't own a body
+	dontCreateBody_ = true;
 }
 
 Joint::~Joint() {
@@ -39,7 +41,7 @@ void Joint::commit() {
 	def.upperAngle = phiMax_;
 	def.userData = (void*)this;
 
-	physJoint_ = (b2RevoluteJoint*)body_->GetWorld()->CreateJoint(&def);
+	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 }
 
 void Joint::draw(ObjectRenderContext* ctx) {

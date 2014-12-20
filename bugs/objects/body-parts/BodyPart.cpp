@@ -19,6 +19,7 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
 	, children_{nullptr}
 	, nChildren_(0)
 	, committed_(false)
+	, dontCreateBody_(false)
 {
 	if (parent) {
 		parent->add(this);
@@ -62,7 +63,8 @@ void BodyPart::commit_tree() {
 	assert(!committed_);
 	// first transform position and angle into world space:
 	transform_position_and_angle();
-	WorldObject::commit();
+	if (!dontCreateBody_)
+		WorldObject::commit();
 	commit();
 	WorldObject::purgeInitializationData();
 	committed_ = true;
@@ -72,9 +74,11 @@ void BodyPart::commit_tree() {
 }
 
 glm::vec3 BodyPart::getWorldTransformation() {
-	assert(!committed_);
 	glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-	return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
+	if (!committed_)
+		return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
+	else
+		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
 }
 
 void BodyPart::draw(ObjectRenderContext* ctx) {
