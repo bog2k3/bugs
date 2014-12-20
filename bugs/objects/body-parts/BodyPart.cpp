@@ -74,7 +74,7 @@ void BodyPart::commit_tree() {
 glm::vec3 BodyPart::getWorldTransformation() {
 	assert(!committed_);
 	glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-	return parentTransform + glm::vec3(initialData_->position, initialData_->angle);
+	return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
 }
 
 void BodyPart::draw(ObjectRenderContext* ctx) {

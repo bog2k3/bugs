@@ -9,6 +9,9 @@
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include <Box2D/Box2D.h>
+#include <glm/gtx/rotate_vector.hpp>
+
+const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
 Bone::Bone(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_BONE, props)
@@ -38,7 +41,7 @@ void Bone::commit() {
 
 	// create fixture:
 	b2PolygonShape shape;
-	shape.SetAsBox(size_.x * 0.5f, size_.y * 0.5f);
+	shape.SetAsBox(size_.y * 0.5f, size_.x * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
 	b2FixtureDef fixDef;
 	fixDef.density = density_;
 	fixDef.friction = 0.2f;
@@ -55,34 +58,34 @@ glm::vec2 Bone::getRelativeAttachmentPoint(float relativeAngle)
 	relativeAngle = limitAngle(relativeAngle, PI);
 
 	float hw = sqrtf(size_.x/size_.y) * 0.5f; // half width
-	float hh = size_.y * hw; // half height
+	float hl = size_.y * hw; // half length
 
-	float ac1 = atanf(hw/hh);
+	float ac1 = atanf(hw/hl);
 	if (relativeAngle >= 0) {
 		if (relativeAngle <= ac1) {
-			// top edge, left side
-			return glm::vec2(tanf(relativeAngle) * hh, hh);
+			// front edge, left side
+			return glm::vec2(hl, tanf(relativeAngle) * hl);
 		} else if (relativeAngle <= PI - ac1) {
 			// left edge
 			if (eqEps(relativeAngle, PI*0.5f)) // treat singularity for tan at PI/2
-				return glm::vec2(-hw, 0);
-			return glm::vec2(-hw, hw / tanf(relativeAngle));
+				return glm::vec2(0, -hw);
+			return glm::vec2(hw / tanf(relativeAngle), hw);
 		} else {
-			// bottom edge, left side
-			return glm::vec2(-tanf(relativeAngle) * hh, -hh);
+			// back edge, left side
+			return glm::vec2(-hl, -tanf(relativeAngle) * hl);
 		}
 	} else /* relativeAngle < 0 */ {
 		if (relativeAngle >= -ac1) {
-			// top edge, right side
-			return glm::vec2(tanf(relativeAngle) * hh, hh);
+			// front edge, right side
+			return glm::vec2(hl, tanf(relativeAngle) * hl);
 		} else if (relativeAngle >= -PI + ac1) {
 			// right edge
 			if (eqEps(relativeAngle, -PI*0.5f)) // treat singularity for tan at -PI/2
-				return glm::vec2(hw, 0);
-			return glm::vec2(hw, hw / tanf(-relativeAngle));
+				return glm::vec2(0, -hw);
+			return glm::vec2(-hw / tanf(relativeAngle), hw);
 		} else {
-			// bottom edge, right side
-			return glm::vec2(-tanf(relativeAngle) * hh, -hh);
+			// back edge, right side
+			return glm::vec2(-hl, -tanf(relativeAngle) * hl);
 		}
 	}
 }
@@ -93,8 +96,13 @@ void Bone::draw(ObjectRenderContext* ctx) {
 	} else {
 		glm::vec3 worldTransform = getWorldTransformation();
 		float w = sqrtf(size_.x/size_.y);
-		float h = size_.y * w;
-		ctx->shape->drawRectangle(glm::vec2(worldTransform.x, worldTransform.y), 0,
-				glm::vec2(w, h), worldTransform.z, glm::vec3(0, 1, 0));
+		float l = size_.y * w;
+		ctx->shape->drawRectangle(vec3xy(worldTransform), 0,
+				glm::vec2(l, w), worldTransform.z, debug_color);
+		ctx->shape->drawLine(
+				vec3xy(worldTransform),
+				vec3xy(worldTransform) + glm::rotate(getRelativeAttachmentPoint(0), worldTransform.z),
+				0,
+				debug_color);
 	}
 }

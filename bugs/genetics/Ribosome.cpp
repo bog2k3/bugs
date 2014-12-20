@@ -76,8 +76,8 @@ bool Ribosome::step() {
 
 bool Ribosome::partMustGenerateJoint(int part_type) {
 	switch (part_type) {
-	case BODY_PART_BONE:
-	case BODY_PART_GRIPPER:
+	case GENE_PART_BONE:
+	case GENE_PART_GRIPPER:
 		return true;
 	default:
 		return false;
@@ -103,32 +103,37 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 		if (n->nChildren == 4)
 			continue;
 
+		float angle = g.angle;
+
 		// The child's attachment point relative to the parent's center is computed from the angle specified in the gene,
 		// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
 		// until it touches an edge of the parent. That point is used as attachment of the new part.
-		glm::vec2 offset = n->bodyPart->getRelativeAttachmentPoint(g.angle);
+		glm::vec2 offset = n->bodyPart->getRelativeAttachmentPoint(angle);
 
 		if (partMustGenerateJoint(g.part_type)) {
 			// we cannot grow this part directly onto its parent, they must be connected by a joint
-			Joint* linkJoint = new Joint(n->bodyPart, PhysicsProperties(offset, 0));
+			Joint* linkJoint = new Joint(n->bodyPart, PhysicsProperties(offset, angle));
 			n->children[n->nChildren++] = new DevelopmentNode(n, linkJoint);
 			// set n to point to the joint's node, since that's where the actual part will be attached:
 			n = n->children[n->nChildren-1];
+			// recompute coordinates in joint's space:
+			angle = 0;
+			offset = n->bodyPart->getRelativeAttachmentPoint(angle);
 		}
 
 		BodyPart* bp = nullptr;
 		switch (g.part_type) {
-		case BODY_PART_BONE:
-			bp = new Bone(n->bodyPart, PhysicsProperties(offset, g.angle));
+		case GENE_PART_BONE:
+			bp = new Bone(n->bodyPart, PhysicsProperties(offset, angle));
 			break;
-		case BODY_PART_GRIPPER:
-			bp = new Gripper(n->bodyPart, PhysicsProperties(offset, g.angle));
+		case GENE_PART_GRIPPER:
+			bp = new Gripper(n->bodyPart, PhysicsProperties(offset, angle));
 			break;
-		case BODY_PART_MUSCLE:
-			// bp = new Muscle(n->bodyPart, PhysicsProperties(offset, g.angle));
+		case GENE_PART_MUSCLE:
+			// bp = new Muscle(n->bodyPart, PhysicsProperties(offset, angle));
 			break;
-		case BODY_PART_SENSOR:
-			// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, g.angle));
+		case GENE_PART_SENSOR:
+			// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));
 			break;
 		default:
 			break;
