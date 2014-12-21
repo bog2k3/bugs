@@ -39,6 +39,8 @@ public:
 	// this is usually the point where the ray from the center intersects the edge of the body part.
 	virtual glm::vec2 getRelativeAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
 
+	virtual glm::vec3 getWorldTransformation() const;
+
 	/*
 	 * This is called after the body is completely developed and no more changes will occur on body parts
 	 * except in rare circumstances.
@@ -64,7 +66,6 @@ protected:
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void transform_position_and_angle();
-	glm::vec3 getWorldTransformation();
 
 private:
 	void commit_tree(std::vector<BodyPart*> &out_joints);

@@ -88,15 +88,12 @@ void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
 		children_[i]->commit_tree(out_joints);
 }
 
-glm::vec3 BodyPart::getWorldTransformation() {
+glm::vec3 BodyPart::getWorldTransformation() const {
 	glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
 	if (!committed_)
 		return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
 	else {
-		if (type_ == BODY_PART_JOINT) {
-			// joint doesn't have body_, so must take data from physical joint itself
-		} else
-			return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
+		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
 	}
 }
 

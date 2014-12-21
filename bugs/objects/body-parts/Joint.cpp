@@ -42,6 +42,16 @@ void Joint::commit() {
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 }
 
+glm::vec3 Joint::getWorldTransformation() const {
+	glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
+	if (!committed_)
+		return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
+	else {
+		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
+				physJoint_->GetJointAngle()); // getjoint angle is not quite the right thing.
+	}
+}
+
 void Joint::draw(ObjectRenderContext* ctx) {
 	if (committed_) {
 		// nothing, physics draws
