@@ -39,13 +39,20 @@ bool World::ReportFixture(b2Fixture* fixture) {
 WorldObject* World::getObjectAtPos(glm::vec2 pos) {
 	assert(b2QueryResult.empty());
 	b2AABB aabb;
-	aabb.lowerBound = aabb.upperBound = g2b(pos);
+	aabb.lowerBound = g2b(pos) - b2Vec2(0.005f, 0.005f);
+	aabb.upperBound = g2b(pos) + b2Vec2(0.005f, 0.005f);
 	physWld->QueryAABB(this, aabb);
 	if (b2QueryResult.empty())
 		return nullptr;
-	b2Fixture* ptr = b2QueryResult.front();
+	WorldObject* ret = nullptr;
+	for (b2Fixture* f : b2QueryResult) {
+		if (f->TestPoint(g2b(pos))) {
+			ret = (WorldObject*)f->GetBody()->GetUserData();
+			break;
+		}
+	}
 	b2QueryResult.clear();	// reset
-	return (WorldObject*)ptr->GetBody()->GetUserData();
+	return ret;
 }
 void World::getObjectsInBox(AlignedBox box, std::vector<WorldObject*> &outVec) {
 	b2AABB aabb;

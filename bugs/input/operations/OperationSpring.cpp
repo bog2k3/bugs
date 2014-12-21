@@ -55,7 +55,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 			bdef.position = g2b(wldClickPos);
 			mouseBody = pContext->physics->CreateBody(&bdef);
 			b2CircleShape shape;
-			shape.m_radius = 0.1f;
+			shape.m_radius = 0.05f;
 			b2FixtureDef fdef;
 			fdef.shape = &shape;
 			b2Fixture* fix = mouseBody->CreateFixture(&fdef);
