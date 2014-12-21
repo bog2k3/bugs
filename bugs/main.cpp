@@ -58,6 +58,24 @@ int main()
 	Bug* b = Bug::newBasicBug(glm::vec2(0, 0));
 	World::getInstance()->addUpdatable(b);
 
+	b2BodyDef def1;
+	def1.type = b2_dynamicBody;
+	def1.angle = 0;
+	def1.position.Set(0,0);
+	b2BodyDef def2(def1);
+	def2.angle = PI;
+	def2.position.Set(-0.02f, 0);
+	b2Body* b1 = physWld.CreateBody(&def1);
+	b2Body* b2 = physWld.CreateBody(&def2);
+	b2RevoluteJointDef def;
+	def.Initialize(b1, b2, b2Vec2(-0.01f, 0));
+	// physProps_.position must be in world space at this step:
+	def.enableLimit = true;
+	def.lowerAngle = -PI/8;
+	def.upperAngle = PI/1.2f;
+
+	b2RevoluteJoint* physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
+
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
 

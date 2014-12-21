@@ -22,8 +22,6 @@ Joint::Joint(BodyPart* parent, PhysicsProperties props)
 	, phiMax_(PI * 0.9f)
 	, physJoint_(nullptr)
 {
-	// suppress physics body creation, since the joint doesn't own a body
-	dontCreateBody_ = true;
 }
 
 Joint::~Joint() {

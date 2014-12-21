@@ -9,6 +9,7 @@
 #define OBJECTS_BODY_PARTS_BODYPART_H_
 
 #include "../WorldObject.h"
+#include <vector>
 
 enum PART_TYPE {
 	BODY_PART_INVALID,
@@ -59,12 +60,14 @@ protected:
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
 	bool committed_;
-	bool dontCreateBody_;
 
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void transform_position_and_angle();
 	glm::vec3 getWorldTransformation();
+
+private:
+	void commit_tree(std::vector<BodyPart*> &out_joints);
 };
 
 

@@ -54,12 +54,12 @@ public:
 	// creates a new world object with the initial properties props.
 	// the physics body is not yet created at this stage unless autoCommit is set to true. This allows
 	// more tweaking to be done to the WorldObject's physicsProperties before the body is finally created by calling commit().
-	WorldObject(PhysicsProperties props, bool autoCommit=false);
+	WorldObject(PhysicsProperties props, bool autoCreatePhysicsBody=false);
 
 	virtual void draw(ObjectRenderContext* ctx) {}
 
 	// creates the object's physics body from the object's PhysicsProperties
-	void commit();
+	void createPhysicsBody();
 
 	b2Body* getBody() { return body_; }
 	PhysicsProperties& getPhysicsProp() { return *initialData_; }
@@ -68,9 +68,6 @@ protected:
 	b2Body* body_;
 	PhysicsProperties *initialData_;	// these are valid only for the initial state of the object
 	void purgeInitializationData();
-
-private:
-	bool committed_;
 };
 
 #endif /* OBJECTS_WORLDOBJECT_H_ */

@@ -19,7 +19,6 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
 	, children_{nullptr}
 	, nChildren_(0)
 	, committed_(false)
-	, dontCreateBody_(false)
 {
 	if (parent) {
 		parent->add(this);
@@ -59,15 +58,30 @@ void BodyPart::transform_position_and_angle() {
 }
 
 void BodyPart::commit_tree() {
-	// perform commit on local node:
 	assert(!committed_);
+	std::vector<BodyPart*> joints;
+	commit_tree(joints);
+	// joints must be committed last, after all other parts are committed
+	// because they must use the body of both parent and child when creating the actual joint
+	for (auto j : joints) {
+		j->commit();
+		j->WorldObject::purgeInitializationData();
+		j->committed_ = true;
+	}
+}
+
+void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
 	// first transform position and angle into world space:
 	transform_position_and_angle();
-	if (!dontCreateBody_)
-		WorldObject::commit();
-	commit();
-	WorldObject::purgeInitializationData();
-	committed_ = true;
+	// perform commit on local node:
+	if (type_ == BODY_PART_JOINT) {
+		out_joints.push_back(this);
+	} else {
+		WorldObject::createPhysicsBody();
+		commit();
+		WorldObject::purgeInitializationData();
+		committed_ = true;
+	}
 	// perform recursive commit on all children:
 	for (auto c : children_)
 		c->commit_tree();
@@ -77,8 +91,12 @@ glm::vec3 BodyPart::getWorldTransformation() {
 	glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
 	if (!committed_)
 		return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
-	else
-		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
+	else {
+		if (type_ == BODY_PART_JOINT) {
+			// joint doesn't have body_, so must take data from physical joint itself
+		} else
+			return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
+	}
 }
 
 void BodyPart::draw(ObjectRenderContext* ctx) {

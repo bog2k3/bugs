@@ -14,22 +14,21 @@
 #include "../renderOpenGL/Camera.h"
 #include <Box2D/Box2D.h>
 
-WorldObject::WorldObject(PhysicsProperties props, bool autoCommit/*=false*/)
-	: initialData_(new PhysicsProperties(props))
-	, committed_(false)
+WorldObject::WorldObject(PhysicsProperties props, bool autoCreatePhysicsBody/*=false*/)
+	: body_(nullptr)
+	, initialData_(new PhysicsProperties(props))
 {
 	World::getInstance()->addObject(this);
-	if (autoCommit)
-		commit();
+	if (autoCreatePhysicsBody)
+		createPhysicsBody();
 }
 
 WorldObject::~WorldObject() {
 	World::getInstance()->removeObject(this);
 }
 
-void WorldObject::commit() {
-	assert(!committed_);
-	committed_ = true;
+void WorldObject::createPhysicsBody() {
+	assert(body_==nullptr);
 
 	b2BodyDef def;
 	def.angle = initialData_->angle;
@@ -44,7 +43,7 @@ void WorldObject::commit() {
 }
 
 void WorldObject::purgeInitializationData() {
-	// delete the initialization data since we don't need it any more after this step:
+	// delete the initialization data after creating the body since it's not needed any more
 	delete initialData_;
 	initialData_ = nullptr;
 }
