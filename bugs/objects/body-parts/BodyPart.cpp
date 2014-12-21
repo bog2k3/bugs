@@ -72,7 +72,10 @@ void BodyPart::commit_tree() {
 }
 
 void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
-	// first transform position and angle into world space:
+	 // move away from the parent by half size
+	if (parent_)
+		initialData_->position -= glm::rotate(getRelativeAttachmentPoint(PI), initialData_->angle);
+	// transform position and angle into world space:
 	transform_position_and_angle();
 	// perform commit on local node:
 	if (type_ == BODY_PART_JOINT) {

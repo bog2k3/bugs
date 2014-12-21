@@ -20,6 +20,7 @@ public:
 
 	void commit() override;
 	void draw(ObjectRenderContext* ctx) override;
+	glm::vec2 getRelativeAttachmentPoint(float relativeAngle) override;
 
 	void setActive(bool active);
 	bool isActive() { return active_; }

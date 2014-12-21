@@ -96,12 +96,12 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	// second bone:
 	gc.location.set(0b10001);
 	gc.angle.set(0);
-	g.first.push_back(gc);
+	//g.first.push_back(gc);
 
 	// the gripper:
 	gc.location.set(0b1000110001);
 	gc.part_type = GENE_PART_GRIPPER;
-	g.first.push_back(gc);
+	//g.first.push_back(gc);
 
 	// bone 1 muscle 1:
 	gc.location.set(0b10001);

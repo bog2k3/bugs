@@ -75,3 +75,9 @@ void Gripper::draw(ObjectRenderContext* ctx) {
 		ctx->shape->drawLine(pos, pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z), 0, debug_color);
 	}
 }
+
+glm::vec2 Gripper::getRelativeAttachmentPoint(float relativeAngle)
+{
+	assert(!committed_);
+	return glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle);
+}

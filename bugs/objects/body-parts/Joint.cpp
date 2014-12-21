@@ -17,7 +17,7 @@ static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
 Joint::Joint(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_JOINT, props)
-	, size_(1.e-4f)
+	, size_(0.4e-4f)
 	, phiMin_(-PI/8)
 	, phiMax_(PI * 0.9f)
 	, physJoint_(nullptr)
@@ -29,12 +29,13 @@ Joint::~Joint() {
 }
 
 void Joint::commit() {
+	assert(!committed_);
 	assert(nChildren_ == 1);
 
 	b2RevoluteJointDef def;
 	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(vec3xy(getWorldTransformation())));
 	// physProps_.position must be in world space at this step:
-	def.enableLimit = true;
+	def.enableLimit = false;
 	def.lowerAngle = phiMin_;
 	def.upperAngle = phiMax_;
 	def.userData = (void*)this;
@@ -48,7 +49,7 @@ glm::vec3 Joint::getWorldTransformation() const {
 		return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
 	else {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
-				physJoint_->GetJointAngle()); // getjoint angle is not quite the right thing.
+			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetJointAngle());
 	}
 }
 
