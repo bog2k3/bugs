@@ -10,6 +10,7 @@
 #include "../../math/box2glm.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include "../../log.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -17,7 +18,7 @@ static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
 Joint::Joint(BodyPart* parent, PhysicsProperties props)
 	: BodyPart(parent, BODY_PART_JOINT, props)
-	, size_(0.4e-4f)
+	, size_(0.2e-4f)
 	, phiMin_(-PI/8)
 	, phiMax_(PI * 0.9f)
 	, physJoint_(nullptr)
@@ -33,9 +34,9 @@ void Joint::commit() {
 	assert(nChildren_ == 1);
 
 	b2RevoluteJointDef def;
-	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(vec3xy(getWorldTransformation())));
-	// physProps_.position must be in world space at this step:
-	def.enableLimit = false;
+	// physProps_.position is be in world space at this step:
+	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(initialData_->position));
+	def.enableLimit = true;
 	def.lowerAngle = phiMin_;
 	def.upperAngle = phiMax_;
 	def.userData = (void*)this;
@@ -44,9 +45,8 @@ void Joint::commit() {
 }
 
 glm::vec3 Joint::getWorldTransformation() const {
-	glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
 	if (!committed_)
-		return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
+		return BodyPart::getWorldTransformation();
 	else {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
 			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetJointAngle());

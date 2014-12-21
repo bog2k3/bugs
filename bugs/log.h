@@ -19,7 +19,7 @@
 
 #define LOG(X) logger::getCurrent()->writeprefix(std::cout); std::cout << X
 #define LOGNP(X) std::cout << X
-#define LOGLN(X) logger::getCurrent()->writeprefix(std::cout); std::cout << X << std::endl
+#define LOGLN(X) LOG(X) << std::endl
 #define ERROR(X) std::cerr << "[ERROR]"; logger::getCurrent()->writeprefix(std::cerr); std::cerr << X << std::endl
 
 #else
@@ -30,7 +30,6 @@
 #endif
 
 #include <string>
-#include <iostream>
 #include <deque>
 #include <stack>
 

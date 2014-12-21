@@ -62,6 +62,7 @@ protected:
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
 	bool committed_;
+	bool coordinates_local_;
 
 	void add(BodyPart* part);
 	void remove(BodyPart* part);

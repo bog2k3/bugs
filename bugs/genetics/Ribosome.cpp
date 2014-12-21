@@ -118,7 +118,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 			n = n->children[n->nChildren-1];
 			// recompute coordinates in joint's space:
 			angle = 0;
-			offset = n->bodyPart->getRelativeAttachmentPoint(angle);
+			offset = n->bodyPart->getRelativeAttachmentPoint(0);
 		}
 
 		BodyPart* bp = nullptr;

@@ -8,6 +8,7 @@
 #include "Bone.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include "../../log.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
