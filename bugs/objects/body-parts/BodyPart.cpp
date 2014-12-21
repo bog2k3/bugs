@@ -8,6 +8,7 @@
 #include "BodyPart.h"
 #include "../../math/box2glm.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include "../../math/math2D.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <assert.h>
@@ -51,9 +52,9 @@ void BodyPart::remove(BodyPart* part) {
 
 void BodyPart::transform_position_and_angle() {
 	if (parent_) {
-		initialData_->position = b2g(parent_->body_->GetPosition()) +
-				glm::rotate(initialData_->position, parent_->body_->GetAngle());
-		initialData_->angle += parent_->body_->GetAngle();
+		glm::vec3 wt = getWorldTransformation();
+		initialData_->angle = wt.z;
+		initialData_->position = vec3xy(wt);
 	}
 }
 
@@ -83,8 +84,8 @@ void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
 		committed_ = true;
 	}
 	// perform recursive commit on all children:
-	for (auto c : children_)
-		c->commit_tree();
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->commit_tree(out_joints);
 }
 
 glm::vec3 BodyPart::getWorldTransformation() {
