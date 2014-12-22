@@ -76,8 +76,7 @@ void Gripper::draw(ObjectRenderContext* ctx) {
 	}
 }
 
-glm::vec2 Gripper::getRelativeAttachmentPoint(float relativeAngle)
+glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
 {
-	assert(!committed_);
 	return glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle);
 }

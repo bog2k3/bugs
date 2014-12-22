@@ -17,7 +17,7 @@ public:
 	Bone(BodyPart* parent, PhysicsProperties props);
 	~Bone() override;
 	void commit() override;
-	glm::vec2 getRelativeAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 
 	void draw(ObjectRenderContext* ctx) override;
 

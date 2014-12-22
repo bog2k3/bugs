@@ -64,8 +64,7 @@ void Joint::draw(ObjectRenderContext* ctx) {
 	}
 }
 
-glm::vec2 Joint::getRelativeAttachmentPoint(float relativeAngle)
+glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 {
-	assert(!committed_);
 	return glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle);
 }

@@ -38,9 +38,17 @@ public:
 
 	void changeParent(BodyPart* newParent);
 
-	// return the attachment point in the specified local direction from the part's center.
-	// this is usually the point where the ray from the center intersects the edge of the body part.
-	virtual glm::vec2 getRelativeAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
+	/**
+	 * return the attachment point for a child of the current part, in the specified direction
+	 * (in current's part coordinate frame).
+	 * This is usually the point where the ray from the center intersects the edge of the body part.
+	 */
+	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
+
+	/**
+	 * returns the attachment point for the current part in its parent's coordinate space.
+	 */
+	glm::vec2 getUpstreamAttachmentPoint();
 
 	virtual glm::vec3 getWorldTransformation() const;
 

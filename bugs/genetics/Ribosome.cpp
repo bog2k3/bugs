@@ -131,7 +131,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 		// The child's attachment point relative to the parent's center is computed from the angle specified in the gene,
 		// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
 		// until it touches an edge of the parent. That point is used as attachment of the new part.
-		glm::vec2 offset = n->bodyPart->getRelativeAttachmentPoint(angle);
+		glm::vec2 offset = n->bodyPart->getChildAttachmentPoint(angle);
 
 		if (partMustGenerateJoint(g.part_type)) {
 			// we cannot grow this part directly onto its parent, they must be connected by a joint
@@ -141,7 +141,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 			n = n->children[n->nChildren-1];
 			// recompute coordinates in joint's space:
 			angle = 0;
-			offset = n->bodyPart->getRelativeAttachmentPoint(0);
+			offset = n->bodyPart->getChildAttachmentPoint(0);
 		}
 
 		BodyPart* bp = nullptr;

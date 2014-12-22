@@ -52,6 +52,13 @@ void BodyPart::remove(BodyPart* part) {
 		}
 }
 
+glm::vec2 BodyPart::getUpstreamAttachmentPoint() {
+	if (!parent_)
+		return glm::vec2(0);
+	else
+		return parent_->getChildAttachmentPoint(initialData_->angle);
+}
+
 void BodyPart::transform_position_and_angle() {
 	if (parent_) {
 		glm::vec3 wt = getWorldTransformation();
@@ -76,9 +83,12 @@ void BodyPart::commit_tree() {
 }
 
 void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
-	 // move away from the parent by half size
-	if (parent_)
-		initialData_->position -= glm::rotate(getRelativeAttachmentPoint(PI), initialData_->angle);
+	if (parent_) {
+		// update attachment point (since parent may have changed its size or aspect ratio):
+		initialData_->position = getUpstreamAttachmentPoint();
+		// move away from the parent by half size:
+		initialData_->position -= glm::rotate(getChildAttachmentPoint(PI), initialData_->angle);
+	}
 	// transform position and angle into world space:
 	transform_position_and_angle();
 	// perform commit on local node:

@@ -61,8 +61,7 @@ void Torso::draw(ObjectRenderContext* ctx) {
 	}
 }
 
-glm::vec2 Torso::getRelativeAttachmentPoint(float relativeAngle)
+glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle)
 {
-	assert(!committed_);
 	return glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle);
 }

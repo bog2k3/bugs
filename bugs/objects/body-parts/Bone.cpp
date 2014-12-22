@@ -51,9 +51,10 @@ void Bone::commit() {
 
 	body_->CreateFixture(&fixDef);
 }
-glm::vec2 Bone::getRelativeAttachmentPoint(float relativeAngle)
+glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
 {
-	assert(!committed_);
+#error "this must take aspect ratio into account"
+	// as if the angle is expressed for an aspect ratio of 1:1, and then the resulting point is stretched along the edge.
 
 	// bring the angle between [-PI, +PI]
 	relativeAngle = limitAngle(relativeAngle, PI);
@@ -102,7 +103,7 @@ void Bone::draw(ObjectRenderContext* ctx) {
 				glm::vec2(l, w), worldTransform.z, debug_color);
 		ctx->shape->drawLine(
 				vec3xy(worldTransform),
-				vec3xy(worldTransform) + glm::rotate(getRelativeAttachmentPoint(0), worldTransform.z),
+				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 				0,
 				debug_color);
 	}

@@ -20,7 +20,7 @@ public:
 
 	void commit() override;
 	void draw(ObjectRenderContext* ctx) override;
-	glm::vec2 getRelativeAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	glm::vec3 getWorldTransformation() const override;
 
 protected:
