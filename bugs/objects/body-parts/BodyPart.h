@@ -82,10 +82,11 @@ protected:
 
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
-	void transform_position_and_angle();
 	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
+	glm::vec2 getFinalPrecommitPosition();
 
 private:
+	void transform_position_and_angle();
 	void commit_tree(std::vector<BodyPart*> &out_joints);
 	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;
 };

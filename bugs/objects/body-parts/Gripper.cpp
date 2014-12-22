@@ -69,6 +69,7 @@ void Gripper::draw(ObjectRenderContext* ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {
+		initialData_->position = getFinalPrecommitPosition();
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx->shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);

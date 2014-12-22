@@ -82,13 +82,19 @@ void BodyPart::commit_tree() {
 	}
 }
 
-void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
+glm::vec2 BodyPart::getFinalPrecommitPosition() {
 	if (parent_) {
 		// update attachment point (since parent may have changed its size or aspect ratio):
-		initialData_->position = getUpstreamAttachmentPoint();
+		glm::vec2 pos = getUpstreamAttachmentPoint();
 		// move away from the parent by half size:
-		initialData_->position -= glm::rotate(getChildAttachmentPoint(PI), initialData_->angle);
-	}
+		pos -= glm::rotate(getChildAttachmentPoint(PI), initialData_->angle);
+		return pos;
+	} else
+		return initialData_->position;
+}
+
+void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
+	initialData_->position = getFinalPrecommitPosition();
 	// transform position and angle into world space:
 	transform_position_and_angle();
 	// perform commit on local node:

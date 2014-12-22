@@ -102,6 +102,7 @@ void Bone::draw(ObjectRenderContext* ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {
+		initialData_->position = getFinalPrecommitPosition();
 		glm::vec3 worldTransform = getWorldTransformation();
 		float w = sqrtf(size_/aspectRatio_);
 		float l = aspectRatio_ * w;
