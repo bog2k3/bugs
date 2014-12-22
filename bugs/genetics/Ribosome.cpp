@@ -27,17 +27,38 @@ Ribosome::Ribosome(Bug* bug)
 {
 }
 
+// compares two unsigned longs as if they were expressed as coordinates in a circular scale
+// (where the largest number comes right before 0 and is considered smaller than 0)
+// X1 is greater than X2 on this scale if X1 is to the left of X2 (the coordinates grow in
+// geometrical direction - counter-clockwise). That means the path from X1 back to X2 is shorter
+// than the path from X1 forward to X2.
+// This model guarantees that any number has half other numbers greater than it and half smaller than it,
+// which is a needed condition for gene dominance, so that no number is privileged in an absolute manner,
+// only relative to other genes.
+static bool isCircularGreater(unsigned long x1, unsigned long x2) {
+	unsigned long d1 = x1 - x2;
+	unsigned long d2 = x2 - x1;
+	return d1 < d2;
+}
+
 bool Ribosome::step() {
 	bool hasFirst = crtPosition_ < bug_->genome_.first.size();
 	bool hasSecond = crtPosition_ < bug_->genome_.second.size();
 	if (!hasFirst && !hasSecond) {
 		// decoding sequence finished
+		// apply the general attribute genes:
+		for (auto &g : generalAttribGenes)
+			decodeGeneralAttrib(g);
+		// delete development tree:
 		delete root_;
 		return false;
 	}
 	Gene* g = nullptr;
 	// choose the dominant (or the only) gene out of the current pair:
-	if (hasFirst && (!hasSecond || bug_->genome_.first[crtPosition_].RID > bug_->genome_.second[crtPosition_].RID))
+	if (hasFirst && (!hasSecond || isCircularGreater(
+			bug_->genome_.first[crtPosition_].RID,
+			bug_->genome_.second[crtPosition_].RID)
+		))
 		g = &bug_->genome_.first[crtPosition_];
 	else
 		g = &bug_->genome_.second[crtPosition_];
@@ -51,7 +72,8 @@ bool Ribosome::step() {
 		decodePartAttrib(g->data.gene_local_attribute);
 		break;
 	case GENE_TYPE_GENERAL_ATTRIB:
-		decodeGeneralAttrib(g->data.gene_general_attribute);
+		// postpone these genes and apply them at the end, because they must apply to the whole body
+		generalAttribGenes.push_back(g->data.gene_general_attribute);
 		break;
 	case GENE_TYPE_NEURON:
 		// add new neuron here
@@ -156,7 +178,22 @@ void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 }
 
 void Ribosome::decodeGeneralAttrib(GeneGeneralAttribute const& g) {
-
+	root_->applyRecursive([&g] (DevelopmentNode* n) {
+		switch (g.attribute) {
+		case GENE_ATTRIB_SIZE:
+			// must figure out a way to apply certain attribute types to only parts that support them;
+			// maybe a map? also, the attribute value must be a cummulative object that keeps track of how many
+			// times it has been changed and returns an average. The change may be by an absolute value or by a %
+			n->bodyPart->size_->changeRelative(g.value);
+			break;
+		case GENE_ATTRIB_ASPECT_RATIO:
+			break;
+		case GENE_ATTRIB_DENSITY:
+			break;
+		case GENE_ATTRIB_INSERTION_OFS:
+			break;
+		}
+	});
 }
 
 void Ribosome::decodeSynapse(GeneSynapse const& g) {

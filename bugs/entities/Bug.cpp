@@ -118,7 +118,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.location.set(0);
 	ga.value.set(0.1f * 0.1f);
-	//g.first.push_back(ga);
+	g.first.push_back(ga);
 
 	// first bone size:
 	ga.location.set(0b10001);

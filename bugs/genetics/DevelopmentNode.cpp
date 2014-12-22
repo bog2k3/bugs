@@ -39,3 +39,9 @@ void DevelopmentNode::matchLocation(uint64_t loc, std::vector<DevelopmentNode*> 
 		}
 	}
 }
+
+void DevelopmentNode::applyRecursive(std::function<void(DevelopmentNode* pCurrent)> pred) {
+	pred(this);
+	for (int i=0; i<nChildren; i++)
+		children[i]->applyRecursive(pred);
+}

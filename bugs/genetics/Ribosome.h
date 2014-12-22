@@ -29,6 +29,7 @@ private:
 	Bug* bug_;
 	unsigned crtPosition_;
 	DevelopmentNode* root_;
+	std::vector<GeneGeneralAttribute> generalAttribGenes;
 
 	void decodeDevelopCommand(GeneCommand const& g);
 	void decodeDevelopGrowth(GeneCommand const& g, std::vector<DevelopmentNode*> const& nodes);

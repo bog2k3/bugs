@@ -9,6 +9,7 @@
 #define GENETICS_DEVELOPMENTNODE_H_
 
 #include <vector>
+#include <functional>
 #include <stdint.h>
 
 class BodyPart;
@@ -24,6 +25,7 @@ public:
 	DevelopmentNode* children[MAX_CHILDREN];
 
 	void matchLocation(uint64_t loc, std::vector<DevelopmentNode*> *out);
+	void applyRecursive(std::function<void(DevelopmentNode* pCurrent)> pred);
 
 protected:
 	friend class Ribosome;
