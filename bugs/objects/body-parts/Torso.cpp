@@ -18,6 +18,8 @@ Torso::Torso(BodyPart* parent, PhysicsProperties props)
 	, size_(0.5e-3f) // 10 sq cm
 	, density_(1.f)
 {
+	registerAttribute(GENE_ATTRIB_SIZE, size_);
+	registerAttribute(GENE_ATTRIB_DENSITY, density_);
 }
 
 Torso::~Torso() {
@@ -38,16 +40,6 @@ void Torso::commit() {
 	fixDef.shape = &shape;
 
 	body_->CreateFixture(&fixDef);
-}
-
-void Torso::setSize(float val) {
-	assert(!committed_);
-	size_ = val;
-}
-
-void Torso::setDensity(float val) {
-	assert(!committed_);
-	density_ = val;
 }
 
 void Torso::draw(ObjectRenderContext* ctx) {

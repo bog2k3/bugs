@@ -23,12 +23,9 @@ public:
 	float getSize() { return size_; }
 	float getDensity() { return density_; }
 
-	void setSize(float val);
-	void setDensity(float val);
-
 protected:
-	float size_;
-	float density_;
+	CummulativeValue size_;
+	CummulativeValue density_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */

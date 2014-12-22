@@ -22,14 +22,13 @@ public:
 	void draw(ObjectRenderContext* ctx) override;
 
 	float getDensity() { return density_; }
-	glm::vec2 getSize() { return size_; }
-
-	void setDensity(float value);
-	void setSize(glm::vec2 value);
+	float getSize() { return size_; }
+	float getAspectRatio() { return aspectRatio_; }
 
 protected:
-	float density_;
-	glm::vec2 size_;
+	CummulativeValue density_;
+	CummulativeValue size_;
+	CummulativeValue aspectRatio_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

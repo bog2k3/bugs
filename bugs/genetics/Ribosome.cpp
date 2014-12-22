@@ -181,7 +181,7 @@ void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 	for (auto n : nodes) {
 		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_attribute_type)g.attribute);
 		if (pAttrib)
-			pAttrib->changeRel(g.value);
+			pAttrib->changeAbs(g.value);
 	}
 }
 

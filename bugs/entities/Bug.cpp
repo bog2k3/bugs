@@ -107,11 +107,11 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	gc.location.set(0b10001);
 	gc.angle.set(PI/2);
 	gc.part_type = GENE_PART_MUSCLE;
-	//g.first.push_back(gc);
+	g.first.push_back(gc);
 
 	// bone 1 muscle 2:
 	gc.angle.set(-PI/2);
-	//g.first.push_back(gc);
+	g.first.push_back(gc);
 
 	GeneLocalAttribute ga;
 	// body size (sq meters)
@@ -123,23 +123,23 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	// first bone size:
 	ga.location.set(0b10001);
 	ga.value.set(0.08f * 0.01f);
-	//g.first.push_back(ga);
+	g.first.push_back(ga);
 
 	// first bone aspect
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(4);
-	//g.first.push_back(ga);
+	g.first.push_back(ga);
 
 	// second bone size:
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.location.set(0b1000110001);
 	ga.value.set(0.08f * 0.01f);
-	//g.first.push_back(ga);
+	g.first.push_back(ga);
 
 	// second bone aspect
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(4);
-	//g.first.push_back(ga);
+	g.first.push_back(ga);
 
 	// first muscle size
 
