@@ -115,7 +115,7 @@ void Shape2D::purgeRenderQueue() {
 void Shape2D::drawCircle(glm::vec2 pos, float radius, float z, int nSides, glm::vec3 rgb) {
 	// make a polygon out of the circle
 	float phiStep = 2 * PI * 1.f / nSides;
-	glm::vec2 v[nSides];
+	glm::vec2 *v = new glm::vec2[nSides];
 	float phi = 0;
 	for (int i=0; i<nSides; i++) {
 		v[i].x = radius * cosf(phi) + pos.x;
@@ -123,4 +123,5 @@ void Shape2D::drawCircle(glm::vec2 pos, float radius, float z, int nSides, glm::
 		phi += phiStep;
 	}
 	drawPolygon(v, nSides, z, rgb);
+	delete [] v;
 }

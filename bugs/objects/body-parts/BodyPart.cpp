@@ -116,3 +116,11 @@ void BodyPart::draw(ObjectRenderContext* ctx) {
 	ctx->shape->drawLine(pos + glm::vec2(-0.01f, 0), pos + glm::vec2(0.01f, 0), 0, glm::vec3(0.2f, 0.2f, 1.f));
 	ctx->shape->drawLine(pos + glm::vec2(0, -0.01f), pos + glm::vec2(0, 0.01f), 0, glm::vec3(1.f, 0.2f, 0.2f));
 }
+
+void BodyPart::registerAttribute(gene_attribute_type type, CummulativeValue& value) {
+	mapAttributes_[type] = &value;
+}
+
+CummulativeValue* BodyPart::getAttribute(gene_attribute_type attrib) {
+	return mapAttributes_[attrib];
+}

@@ -9,7 +9,10 @@
 #define OBJECTS_BODY_PARTS_BODYPART_H_
 
 #include "../WorldObject.h"
+#include "../../genetics/GeneDefinitions.h"
+#include "../../genetics/CummulativeValue.h"
 #include <vector>
+#include <map>
 
 enum PART_TYPE {
 	BODY_PART_INVALID,
@@ -51,6 +54,11 @@ public:
 	virtual void commit() = 0;
 
 	/*
+	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
+	 */
+	CummulativeValue* getAttribute(gene_attribute_type attrib);
+
+	/*
 	 * this will commit recursively in the entire body tree
 	 */
 	void commit_tree();
@@ -67,9 +75,11 @@ protected:
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void transform_position_and_angle();
+	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
 
 private:
 	void commit_tree(std::vector<BodyPart*> &out_joints);
+	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;
 };
 
 

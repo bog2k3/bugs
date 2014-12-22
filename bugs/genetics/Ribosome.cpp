@@ -9,6 +9,7 @@
 #include "Gene.h"
 #include "GeneDefinitions.h"
 #include "DevelopmentNode.h"
+#include "CummulativeValue.h"
 #include "../entities/Bug.h"
 #include "../objects/body-parts/Torso.h"
 #include "../objects/body-parts/Bone.h"
@@ -175,24 +176,20 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g, std::vector<DevelopmentN
 
 void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 	// when changing part's size or aspect ratio, must update all direct children's attachment points (scale them appropriately)
+	std::vector<DevelopmentNode*> nodes;
+	root_->matchLocation(g.location, &nodes);
+	for (auto n : nodes) {
+		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_attribute_type)g.attribute);
+		if (pAttrib)
+			pAttrib->changeRel(g.value);
+	}
 }
 
 void Ribosome::decodeGeneralAttrib(GeneGeneralAttribute const& g) {
 	root_->applyRecursive([&g] (DevelopmentNode* n) {
-		switch (g.attribute) {
-		case GENE_ATTRIB_SIZE:
-			// must figure out a way to apply certain attribute types to only parts that support them;
-			// maybe a map? also, the attribute value must be a cummulative object that keeps track of how many
-			// times it has been changed and returns an average. The change may be by an absolute value or by a %
-			n->bodyPart->size_->changeRelative(g.value);
-			break;
-		case GENE_ATTRIB_ASPECT_RATIO:
-			break;
-		case GENE_ATTRIB_DENSITY:
-			break;
-		case GENE_ATTRIB_INSERTION_OFS:
-			break;
-		}
+		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_attribute_type)g.attribute);
+		if (pAttrib)
+			pAttrib->changeRel(g.value);
 	});
 }
 
