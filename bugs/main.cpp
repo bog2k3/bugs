@@ -2,7 +2,6 @@
 
 #include "renderOpenGL/glToolkit.h"
 #include "renderOpenGL/Shape2D.h"
-#include "renderOpenGL/Text.h"
 #include "renderOpenGL/Renderer.h"
 #include "renderOpenGL/Viewport.h"
 #include "input/GLFWInput.h"
@@ -22,6 +21,7 @@
 #include <Box2D/Box2D.h>
 
 #include <sstream>
+#include "renderOpenGL/GLText.h"
 
 int main()
 {
@@ -33,8 +33,8 @@ int main()
 	Renderer renderer;
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
-	RenderContext renderContext(new Shape2D(&renderer), &vp1);
-	GLText::initialize("data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ');
+	RenderContext renderContext(new Shape2D(&renderer), &vp1,
+			new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' '));
 
 	b2World physWld(b2Vec2_zero);
 	PhysicsDebugDraw physicsDraw(renderContext);
@@ -66,7 +66,7 @@ int main()
 		renderer.render();
 		std::stringstream ss;
 		ss << "Salut Lume!\n[Powered by Box2D]";
-		GLText::print(ss.str().c_str(), 20, 20, 16);
+		renderContext.text->print(ss.str().c_str(), 20, 20, 16);
 		// now rendering is on-going, get on with other stuff:
 
 		float newTime = glfwGetTime();

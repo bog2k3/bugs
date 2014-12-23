@@ -14,9 +14,9 @@ class GLText;
 
 class RenderContext {
 public:
-	Shape2D* const shape;
-	const Viewport* const viewport;
-	GLText* const text;
+	Shape2D* shape;
+	const Viewport* viewport;
+	GLText* text;
 
 	RenderContext()
 		: shape(nullptr)
@@ -26,12 +26,6 @@ public:
 
 	RenderContext(Shape2D* shape, Viewport* vp, GLText* text)
 		: shape(shape), viewport(vp), text(text) {
-	}
-
-	RenderContext(RenderContext const& orig) = default;
-	RenderContext& operator =(RenderContext const& orig) {
-		*this = RenderContext(orig);
-		return *this;
 	}
 };
 

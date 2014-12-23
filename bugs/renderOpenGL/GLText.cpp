@@ -5,31 +5,24 @@
  *      Author: bog
  */
 
+#include "shader.hpp"
+#include "TextureLoader.h"
+#include "Renderer.h"
+#include "Viewport.h"
+
 #include <vector>
 #include <GL/glew.h>
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Text.h"
+#include "GLText.h"
 using namespace glm;
 
-#include "shader.hpp"
-#include "TextureLoader.h"
-
-unsigned Text2DTextureID;              // Texture containing the font
-unsigned Text2DVertexBufferID;         // Buffer containing the vertices
-unsigned Text2DUVBufferID;             //                       UVs
-unsigned Text2DShaderID;               // Program used to disaply the text
-unsigned vertexPosition_screenspaceID; // Location of the program's "vertexPosition_screenspace" attribute
-unsigned vertexUVID;                   // Location of the program's "vertexUV" attribute
-unsigned viewportHalfSizeID;
-unsigned Text2DUniformID;              // Location of the program's texture attribute
-int rows, cols, first_char;
-float cellRatio; // cellWeight / cellHidth
-
-GLText::GLText(const char * texturePath, int rows_, int cols_, char firstChar_) {
-	rows = rows_, cols = cols_, first_char = firstChar_;
+GLText::GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar)
+	: rows(rows), cols(cols), firstChar(firstChar)
+{
+	renderer->registerRenderable(this);
 	cellRatio = (float)rows/cols;
 	// Initialize texture
 	Text2DTextureID = TextureLoader::loadFromPNG(texturePath, nullptr, nullptr);
@@ -53,13 +46,23 @@ GLText::GLText(const char * texturePath, int rows_, int cols_, char firstChar_) 
 	Text2DUniformID = glGetUniformLocation( Text2DShaderID, "myTextureSampler" );
 }
 
+GLText::~GLText() {
+	// Delete buffers
+	glDeleteBuffers(1, &Text2DVertexBufferID);
+	glDeleteBuffers(1, &Text2DUVBufferID);
+
+	// Delete texture
+	glDeleteTextures(1, &Text2DTextureID);
+
+	// Delete shader
+	glDeleteProgram(Text2DShaderID);
+}
+
 void GLText::print(const std::string text, int x, int y, int size) {
 	unsigned int length = text.length();
 	float xSize = size*cellRatio;
 
 	// Fill buffers
-	std::vector<glm::vec2> vertices;
-	std::vector<glm::vec2> UVs;
 	int initialX = x;
 	for ( unsigned int i=0 ; i<length ; i++ ) {
 		char character = text[i];
@@ -88,8 +91,8 @@ void GLText::print(const std::string text, int x, int y, int size) {
 		vertices.push_back(vertex_up_right);
 		vertices.push_back(vertex_down_left);
 
-		float uv_x = ((character - first_char) % cols) / (float)cols;
-		float uv_y = 1.f - ((character - first_char) / cols) / (float)rows;
+		float uv_x = ((character - firstChar) % cols) / (float)cols;
+		float uv_y = 1.f - ((character - firstChar) / cols) / (float)rows;
 
 		glm::vec2 uv_up_left    = glm::vec2( uv_x          , uv_y );
 		glm::vec2 uv_up_right   = glm::vec2( uv_x+1.0f/cols, uv_y );
@@ -103,6 +106,9 @@ void GLText::print(const std::string text, int x, int y, int size) {
 		UVs.push_back(uv_up_right);
 		UVs.push_back(uv_down_left);
 	}
+}
+
+void GLText::render(Viewport* pCrtViewport) {
 	glBindBuffer(GL_ARRAY_BUFFER, Text2DVertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec2), &vertices[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, Text2DUVBufferID);
@@ -119,7 +125,7 @@ void GLText::print(const std::string text, int x, int y, int size) {
 	// Set our "myTextureSampler" sampler to user Texture Unit 0
 	glUniform1i(Text2DUniformID, 0);
 
-	vec2 halfVP(400,300);
+	vec2 halfVP(pCrtViewport->getWidth() / 2, pCrtViewport->getHeight() / 2);
 	glUniform2fv(viewportHalfSizeID, 1, &halfVP[0]);
 
 	// 1rst attribute buffer : vertices
@@ -145,14 +151,7 @@ void GLText::print(const std::string text, int x, int y, int size) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void GLText::cleanup() {
-	// Delete buffers
-	glDeleteBuffers(1, &Text2DVertexBufferID);
-	glDeleteBuffers(1, &Text2DUVBufferID);
-
-	// Delete texture
-	glDeleteTextures(1, &Text2DTextureID);
-
-	// Delete shader
-	glDeleteProgram(Text2DShaderID);
+void GLText::purgeRenderQueue() {
+	vertices.clear();
+	UVs.clear();
 }
