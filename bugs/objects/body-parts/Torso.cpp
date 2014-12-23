@@ -8,6 +8,7 @@
 #include "Torso.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include "../../renderOpenGL/RenderContext.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -42,7 +43,7 @@ void Torso::commit() {
 	body_->CreateFixture(&fixDef);
 }
 
-void Torso::draw(ObjectRenderContext* ctx) {
+void Torso::draw(RenderContext* ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {

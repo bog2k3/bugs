@@ -17,11 +17,6 @@ Viewport::~Viewport()
 	delete pCamera;
 }
 
-Camera* Viewport::getCamera()
-{
-	return pCamera;
-}
-
 void Viewport::setScale(double scale)
 {
 	fScale = scale;
@@ -66,7 +61,7 @@ void Viewport::pan(vec2 delta)
 	pCamera->move(vec2(-delta.x / mag, delta.y / mag));
 }
 
-vec2 Viewport::unproject(vec2 point)
+vec2 Viewport::unproject(vec2 point) const
 {
 	double _1mag = 1.0 / pCamera->getZoomLevel();
 	vec2 vCamPos = pCamera->getPos();
@@ -75,7 +70,7 @@ vec2 Viewport::unproject(vec2 point)
 	return point;
 }
 
-vec2 Viewport::project(vec2 point)
+vec2 Viewport::project(vec2 point) const
 {
 	vec2 vCamPos = pCamera->getPos();
 	point -= vCamPos;

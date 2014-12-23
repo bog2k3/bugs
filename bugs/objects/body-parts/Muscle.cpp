@@ -8,6 +8,7 @@
 #include "Muscle.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include "../../renderOpenGL/RenderContext.h"
 #include <glm/vec3.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <math.h>
@@ -50,7 +51,7 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)
 	}
 }
 
-void Muscle::draw(ObjectRenderContext* ctx) {
+void Muscle::draw(RenderContext* ctx) {
 	initialData_->position = getFinalPrecommitPosition();
 	glm::vec3 worldTransform = getWorldTransformation();
 	float w = sqrtf(size_/aspectRatio_);

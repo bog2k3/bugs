@@ -19,7 +19,7 @@ public:
 	~Joint() override;
 
 	void commit() override;
-	void draw(ObjectRenderContext* ctx) override;
+	void draw(RenderContext* ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	glm::vec3 getWorldTransformation() const override;
 

@@ -66,6 +66,16 @@ void Shape2D::drawLine(glm::vec2 point1, glm::vec2 point2, float z, glm::vec3 rg
 	indices.push_back(buffer.size()-1);
 }
 
+void Shape2D::drawLineList(glm::vec2* verts, int nVerts, float z, glm::vec3 rgb) {
+	s_lineVertex s;
+	for (int i=0; i<nVerts; i++) {
+		s.pos = glm::vec3(verts[i], z);
+		s.rgb = rgb;
+		buffer.push_back(s);
+		indices.push_back(buffer.size()-1);
+	}
+}
+
 void Shape2D::drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 rgb) {
 	s_lineVertex sVertex;
 	sVertex.rgb = rgb;

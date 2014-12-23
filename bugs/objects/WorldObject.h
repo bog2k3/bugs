@@ -11,24 +11,9 @@
 #include <glm/vec2.hpp>
 
 // render classes:
-class Shape2D;
-class Viewport;
+class RenderContext;
 // physics classes:
 class b2Body;
-
-class ObjectRenderContext {
-public:
-	Shape2D* shape;
-	Viewport* viewport;
-
-	ObjectRenderContext(Shape2D* shape, Viewport* vp)
-		: shape(shape), viewport(vp) {
-	}
-
-	ObjectRenderContext()
-		: shape(nullptr), viewport(nullptr) {
-	}
-};
 
 struct PhysicsProperties {
 	glm::vec2 position;
@@ -56,7 +41,7 @@ public:
 	// more tweaking to be done to the WorldObject's physicsProperties before the body is finally created by calling commit().
 	WorldObject(PhysicsProperties props, bool autoCreatePhysicsBody=false);
 
-	virtual void draw(ObjectRenderContext* ctx) {}
+	virtual void draw(RenderContext* ctx) {}
 
 	// creates the object's physics body from the object's PhysicsProperties
 	void createPhysicsBody();

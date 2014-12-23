@@ -16,7 +16,7 @@ public:
 	~ZygoteShell() override;
 
 	void commit() override {}; // nothing to do here, the zygote does not change after creation
-	void draw(ObjectRenderContext* ctx) override;
+	void draw(RenderContext* ctx) override;
 
 private:
 	float size_;

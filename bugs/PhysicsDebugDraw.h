@@ -8,12 +8,13 @@
 #ifndef PHYSICSDEBUGDRAW_H_
 #define PHYSICSDEBUGDRAW_H_
 
-#include <Box2D/Common/b2Draw.h>
+#include "renderOpenGL/RenderContext.h"
 #include "objects/WorldObject.h"
+#include <Box2D/Common/b2Draw.h>
 
 class PhysicsDebugDraw : public b2Draw {
 public:
-	PhysicsDebugDraw(ObjectRenderContext ctx);
+	PhysicsDebugDraw(RenderContext ctx);
 	virtual ~PhysicsDebugDraw();
 
 	/// Draw a closed polygon provided in CCW order.
@@ -36,7 +37,7 @@ public:
 	virtual void DrawTransform(const b2Transform& xf);
 
 private:
-	ObjectRenderContext rc;
+	RenderContext rc;
 };
 
 #endif /* PHYSICSDEBUGDRAW_H_ */

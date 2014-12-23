@@ -40,7 +40,7 @@ void Joint::commit() {
 	def.lowerAngle = phiMin_;
 	def.upperAngle = phiMax_;
 	def.userData = (void*)this;
-	def.collideConnected = true;
+	// def.collideConnected = true;
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 }
@@ -54,7 +54,7 @@ glm::vec3 Joint::getWorldTransformation() const {
 	}
 }
 
-void Joint::draw(ObjectRenderContext* ctx) {
+void Joint::draw(RenderContext* ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {

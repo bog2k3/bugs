@@ -8,6 +8,7 @@
 #include "ZygoteShell.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include "../../renderOpenGL/RenderContext.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -25,7 +26,7 @@ ZygoteShell::~ZygoteShell() {
 	// delete fixture
 }
 
-void ZygoteShell::draw(ObjectRenderContext* ctx) {
+void ZygoteShell::draw(RenderContext* ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {

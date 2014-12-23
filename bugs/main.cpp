@@ -25,7 +25,6 @@
 
 int main()
 {
-#error "must add a visual scale"
 	LOGGER("app_main");
 
 	if (!gltInit(800, 600, "Bugs"))
@@ -34,7 +33,7 @@ int main()
 	Renderer renderer;
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
-	ObjectRenderContext renderContext(new Shape2D(&renderer), &vp1);
+	RenderContext renderContext(new Shape2D(&renderer), &vp1);
 	GLText::initialize("data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ');
 
 	b2World physWld(b2Vec2_zero);

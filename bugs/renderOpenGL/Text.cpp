@@ -28,7 +28,7 @@ unsigned Text2DUniformID;              // Location of the program's texture attr
 int rows, cols, first_char;
 float cellRatio; // cellWeight / cellHidth
 
-void GLText::initialize(const char * texturePath, int rows_, int cols_, char firstChar_) {
+GLText::GLText(const char * texturePath, int rows_, int cols_, char firstChar_) {
 	rows = rows_, cols = cols_, first_char = firstChar_;
 	cellRatio = (float)rows/cols;
 	// Initialize texture

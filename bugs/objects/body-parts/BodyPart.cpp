@@ -7,6 +7,7 @@
 
 #include "BodyPart.h"
 #include "../../math/box2glm.h"
+#include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../math/math2D.h"
 #include "../../log.h"
@@ -132,7 +133,7 @@ glm::vec3 BodyPart::getWorldTransformation() const {
 	}
 }
 
-void BodyPart::draw(ObjectRenderContext* ctx) {
+void BodyPart::draw(RenderContext* ctx) {
 	if (committed_)
 		return;
 	glm::vec3 trans = getWorldTransformation();

@@ -65,7 +65,7 @@ void Gripper::setActive(bool active) {
 	}
 }
 
-void Gripper::draw(ObjectRenderContext* ctx) {
+void Gripper::draw(RenderContext* ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {

@@ -7,12 +7,13 @@
 
 #include "PhysicsDebugDraw.h"
 #include "renderOpenGL/Shape2D.h"
+#include "renderOpenGL/RenderContext.h"
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include "math/box2glm.h"
 #include "math/math2D.h"
 
-PhysicsDebugDraw::PhysicsDebugDraw(ObjectRenderContext ctx) : rc(ctx) {
+PhysicsDebugDraw::PhysicsDebugDraw(RenderContext ctx) : rc(ctx) {
 	// TODO Auto-generated constructor stub
 }
 

@@ -11,8 +11,9 @@
 #include "objects/WorldObject.h"
 #include "input/operations/IOperationSpatialLocator.h"
 #include "input/IWorldManager.h"
-#include <Box2D/Dynamics/b2WorldCallbacks.h>
+#include "renderOpenGL/RenderContext.h"
 #include "updatable.h"
+#include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <vector>
 #include <deque>
 
@@ -31,7 +32,7 @@ public:
 	/// @return false to terminate the query.
 	virtual bool ReportFixture(b2Fixture* fixture);
 
-	void setRenderContext(ObjectRenderContext ctxt) { renderContext = ctxt; }
+	void setRenderContext(RenderContext ctxt) { renderContext = ctxt; }
 	void draw();
 	void update(float dt);
 
@@ -51,7 +52,7 @@ protected:
 	b2Body* groundBody;
 	std::vector<WorldObject*> objects;
 	std::vector<updatable_wrap> updatables;
-	ObjectRenderContext renderContext;
+	RenderContext renderContext;
 
 	std::deque<b2Fixture*> b2QueryResult;
 };
