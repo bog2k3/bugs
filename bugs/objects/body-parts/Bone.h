@@ -15,7 +15,7 @@ class Bone: public BodyPart {
 public:
 	// the position and rotation in props are relative to the parent
 	Bone(BodyPart* parent, PhysicsProperties props);
-	~Bone() override;
+	virtual ~Bone() override;
 	void commit() override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 

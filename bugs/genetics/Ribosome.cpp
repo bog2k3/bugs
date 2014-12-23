@@ -16,6 +16,7 @@
 #include "../objects/body-parts/Gripper.h"
 #include "../objects/body-parts/Joint.h"
 #include "../objects/body-parts/ZygoteShell.h"
+#include "../objects/body-parts/Muscle.h"
 #include "../log.h"
 
 #include "Genome.h"
@@ -153,7 +154,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 			bp = new Gripper(n->bodyPart, PhysicsProperties(offset, angle));
 			break;
 		case GENE_PART_MUSCLE:
-			// bp = new Muscle(n->bodyPart, PhysicsProperties(offset, angle));
+			bp = new Muscle(n->bodyPart, PhysicsProperties(offset, angle));
 			break;
 		case GENE_PART_SENSOR:
 			// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));

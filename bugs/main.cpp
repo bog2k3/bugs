@@ -25,6 +25,7 @@
 
 int main()
 {
+#error "must add a visual scale"
 	LOGGER("app_main");
 
 	if (!gltInit(800, 600, "Bugs"))

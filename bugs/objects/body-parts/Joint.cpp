@@ -40,6 +40,7 @@ void Joint::commit() {
 	def.lowerAngle = phiMin_;
 	def.upperAngle = phiMax_;
 	def.userData = (void*)this;
+	def.collideConnected = true;
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 }

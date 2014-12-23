@@ -21,6 +21,8 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
 	, children_{nullptr}
 	, nChildren_(0)
 	, committed_(false)
+	, keepInitializationData_(false)
+	, dontCommit_(false)
 	, coordinates_local_(true)
 {
 	if (parent) {
@@ -29,6 +31,9 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
 }
 
 BodyPart::~BodyPart() {
+	changeParent(nullptr);
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->changeParent(nullptr);
 }
 
 void BodyPart::add(BodyPart* part) {
@@ -77,7 +82,8 @@ void BodyPart::commit_tree() {
 	// because they must use the body of both parent and child when creating the actual joint
 	for (auto j : joints) {
 		j->commit();
-		j->WorldObject::purgeInitializationData();
+		if (!keepInitializationData_)
+			j->WorldObject::purgeInitializationData();
 		j->committed_ = true;
 	}
 }
@@ -103,12 +109,14 @@ void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
 	} else {
 		WorldObject::createPhysicsBody();
 		commit();
-		WorldObject::purgeInitializationData();
+		if (!keepInitializationData_)
+			WorldObject::purgeInitializationData();
 		committed_ = true;
 	}
 	// perform recursive commit on all children:
 	for (int i=0; i<nChildren_; i++)
-		children_[i]->commit_tree(out_joints);
+		if (!children_[i]->dontCommit_)
+			children_[i]->commit_tree(out_joints);
 }
 
 glm::vec3 BodyPart::getWorldTransformation() const {

@@ -78,7 +78,8 @@ protected:
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
 	bool committed_;
-	bool coordinates_local_;
+	bool keepInitializationData_;
+	bool dontCommit_;
 
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
@@ -86,6 +87,7 @@ protected:
 	glm::vec2 getFinalPrecommitPosition();
 
 private:
+	bool coordinates_local_;
 	void transform_position_and_angle();
 	void commit_tree(std::vector<BodyPart*> &out_joints);
 	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;

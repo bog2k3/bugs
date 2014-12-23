@@ -30,9 +30,7 @@ Bone::~Bone() {
 
 void Bone::commit() {
 	assert(!committed_);
-	// preprocess...
-	// right now size_ contains x=surface_area and y=aspect_ratio=length/width
-	// transform to width, length
+
 	glm::vec2 boxSize((float)size_, (float)aspectRatio_);
 	boxSize.x = sqrtf(boxSize.x/boxSize.y);
 	boxSize.y *= boxSize.x;
@@ -67,35 +65,6 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
 		// back edge
 		return glm::vec2(-hl, sinf(relativeAngle) / sinf(PI/4) * hw);
 	}
-
-	/*float ac1 = atanf(hw/hl);
-	if (relativeAngle >= 0) {
-		if (relativeAngle <= ac1) {
-			// front edge, left side
-			return glm::vec2(hl, tanf(relativeAngle) * hl);
-		} else if (relativeAngle <= PI - ac1) {
-			// left edge
-			if (eqEps(relativeAngle, PI*0.5f)) // treat singularity for tan at PI/2
-				return glm::vec2(0, -hw);
-			return glm::vec2(hw / tanf(relativeAngle), hw);
-		} else {
-			// back edge, left side
-			return glm::vec2(-hl, -tanf(relativeAngle) * hl);
-		}
-	} else / * relativeAngle < 0 * / {
-		if (relativeAngle >= -ac1) {
-			// front edge, right side
-			return glm::vec2(hl, tanf(relativeAngle) * hl);
-		} else if (relativeAngle >= -PI + ac1) {
-			// right edge
-			if (eqEps(relativeAngle, -PI*0.5f)) // treat singularity for tan at -PI/2
-				return glm::vec2(0, -hw);
-			return glm::vec2(-hw / tanf(relativeAngle), hw);
-		} else {
-			// back edge, right side
-			return glm::vec2(-hl, -tanf(relativeAngle) * hl);
-		}
-	}*/
 }
 
 void Bone::draw(ObjectRenderContext* ctx) {
