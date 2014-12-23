@@ -65,9 +65,9 @@ void World::getObjectsInBox(AlignedBox box, std::vector<WorldObject*> &outVec) {
 	}
 }
 
-void World::draw() {
-	for (auto obj : objects) {
-		obj->draw(&renderContext);
+template<> void draw(World*& wld, RenderContext& ctx) {
+	for (auto obj : wld->objects) {
+		obj->draw(ctx);
 	}
 }
 
@@ -81,20 +81,4 @@ void World::removeObject(WorldObject* obj) {
 					[obj] (WorldObject* const & x) { return x == obj; }),
 			objects.end()
 		);
-}
-
-void World::addUpdatable(updatable_wrap w) {
-	updatables.push_back(w);
-}
-
-void World::removeUpdatable(updatable_wrap w) {
-	updatables.erase(std::remove_if(updatables.begin(), updatables.end(), [&w] (const updatable_wrap& x) {
-		return x.equal_value(w);
-	}), updatables.end());
-}
-
-void World::update(float dt) {
-	for (auto &w : updatables) {
-		w.update(dt);
-	}
 }

@@ -19,7 +19,7 @@ public:
 	~Gripper() override;
 
 	void commit() override;
-	void draw(RenderContext* ctx) override;
+	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 
 	void setActive(bool active);

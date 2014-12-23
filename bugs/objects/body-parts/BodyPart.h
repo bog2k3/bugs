@@ -32,7 +32,7 @@ public:
 	BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props);
 	virtual ~BodyPart() override;
 
-	virtual void draw(RenderContext* ctx) override;
+	virtual void draw(RenderContext& ctx) override;
 
 	PART_TYPE getType() { return type_; }
 

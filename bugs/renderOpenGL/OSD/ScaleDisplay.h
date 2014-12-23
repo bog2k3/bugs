@@ -12,7 +12,6 @@ public:
 	void render(RenderContext* ctx);
 
 protected:
-	// TODO: make multi-instance safe (share video resources)
 	glm::vec2 pos_;
 	int segmentsXOffset;
 	int segmentHeight;

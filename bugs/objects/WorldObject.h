@@ -41,7 +41,7 @@ public:
 	// more tweaking to be done to the WorldObject's physicsProperties before the body is finally created by calling commit().
 	WorldObject(PhysicsProperties props, bool autoCreatePhysicsBody=false);
 
-	virtual void draw(RenderContext* ctx) {}
+	virtual void draw(RenderContext& ctx) {}
 
 	// creates the object's physics body from the object's PhysicsProperties
 	void createPhysicsBody();

@@ -4,7 +4,7 @@
 #include "../Viewport.h"
 #include "../Camera.h"
 #include "../Shape2D.h"
-#include "../Text.h"
+#include "../GLText.h"
 #include <math.h>
 #include <glm/vec3.hpp>
 #include <stdio.h>
@@ -69,10 +69,10 @@ void ScaleDisplay::render(RenderContext* ctx)
 	char scaleLabel[100];
 
 	snprintf(scaleLabel, 100, "(10^%d)", exponent);
-	GLText::print(scaleLabel, pos_.x, pos_.y, 12);
+	ctx->text->print(scaleLabel, pos_.x, pos_.y, 12);
 	for (int i=0; i<segments+1; i++) {
 		snprintf(scaleLabel, 100, "%g", i*segIncrement);
 		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? 0 : segmentHeight / 2;
-		GLText::print(scaleLabel, pos_.x+segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement), pos_.y + localSegHeight, 12);
+		ctx->text->print(scaleLabel, pos_.x+segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement), pos_.y + localSegHeight, 12);
 	}
 }

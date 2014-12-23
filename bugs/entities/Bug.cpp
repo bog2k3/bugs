@@ -44,7 +44,7 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 Bug::~Bug() {
 }
 
-template<> void update(Bug* b, float dt) {
+template<> void update(Bug*& b, float dt) {
 	b->update(dt);
 }
 

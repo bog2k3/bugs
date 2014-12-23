@@ -133,13 +133,13 @@ glm::vec3 BodyPart::getWorldTransformation() const {
 	}
 }
 
-void BodyPart::draw(RenderContext* ctx) {
+void BodyPart::draw(RenderContext& ctx) {
 	if (committed_)
 		return;
 	glm::vec3 trans = getWorldTransformation();
 	glm::vec2 pos(trans.x, trans.y);
-	ctx->shape->drawLine(pos + glm::vec2(-0.01f, 0), pos + glm::vec2(0.01f, 0), 0, glm::vec3(0.2f, 0.2f, 1.f));
-	ctx->shape->drawLine(pos + glm::vec2(0, -0.01f), pos + glm::vec2(0, 0.01f), 0, glm::vec3(1.f, 0.2f, 0.2f));
+	ctx.shape->drawLine(pos + glm::vec2(-0.01f, 0), pos + glm::vec2(0.01f, 0), 0, glm::vec3(0.2f, 0.2f, 1.f));
+	ctx.shape->drawLine(pos + glm::vec2(0, -0.01f), pos + glm::vec2(0, 0.01f), 0, glm::vec3(1.f, 0.2f, 0.2f));
 }
 
 void BodyPart::registerAttribute(gene_attribute_type type, CummulativeValue& value) {

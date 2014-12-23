@@ -1,41 +1,43 @@
 /*
- * updatable.h
+ * drawable.h
  *
- *  Created on: Dec 18, 2014
+ *  Created on: Dec 23, 2014
  *      Author: bogdan
  */
 
-#ifndef UPDATABLE_H_
-#define UPDATABLE_H_
+#ifndef DRAWABLE_H_
+#define DRAWABLE_H_
 
 #include <memory>
 
-template <typename T>
-void update(T &t, float dt);
+class RenderContext;
 
-class updatable_wrap {
+template <typename T>
+void draw(T& t, RenderContext &ctx);
+
+class drawable_wrap {
 public:
 	template<typename T>
-	updatable_wrap(T t)
+	drawable_wrap(T t)
 		: self_(new model_t<T>(t)) {
 	}
 
-	updatable_wrap(const updatable_wrap& w) : self_(w.self_->copy()) {}
-	updatable_wrap(updatable_wrap &&w) : self_(std::move(w.self_)) {}
-	updatable_wrap operator = (updatable_wrap &&w) { return updatable_wrap(w); }
+	drawable_wrap(const drawable_wrap& w) : self_(w.self_->copy()) {}
+	drawable_wrap(drawable_wrap &&w) : self_(std::move(w.self_)) {}
+	drawable_wrap operator = (drawable_wrap &&w) { return drawable_wrap(w); }
 
-	bool equal_value(updatable_wrap const& w) const {
+	bool equal_value(drawable_wrap const& w) const {
 		return self_->equal_value(w.self_.get());
 	}
 
-	void update(float dt) {
-		self_->update_(dt);
+	void draw(RenderContext &ctx) {
+		self_->draw_(ctx);
 	}
 
 private:
 	struct concept_t {
-		virtual ~concept_t() = default;
-		virtual void update_(float dt) = 0;
+		virtual ~concept_t() noexcept = default;
+		virtual void draw_(RenderContext& ctx) = 0;
 		virtual concept_t* copy()=0;
 		virtual bool equal_value(const concept_t* x) const = 0;
 	};
@@ -43,8 +45,9 @@ private:
 	struct model_t : concept_t {
 		T data_;
 		model_t(T x) : data_(std::move(x)) {}
-		void update_(float dt) override {
-			::update(data_, dt);
+		~model_t() noexcept {};
+		void draw_(RenderContext& ctx) override {
+			::draw(data_, ctx);
 		}
 		concept_t* copy() override {
 			return new model_t<T>(data_);
@@ -61,4 +64,4 @@ private:
 	std::unique_ptr<concept_t> self_;
 };
 
-#endif /* UPDATABLE_H_ */
+#endif /* DRAWABLE_H_ */

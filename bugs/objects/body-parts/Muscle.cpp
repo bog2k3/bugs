@@ -51,14 +51,14 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)
 	}
 }
 
-void Muscle::draw(RenderContext* ctx) {
+void Muscle::draw(RenderContext& ctx) {
 	initialData_->position = getFinalPrecommitPosition();
 	glm::vec3 worldTransform = getWorldTransformation();
 	float w = sqrtf(size_/aspectRatio_);
 	float l = aspectRatio_ * w;
-	ctx->shape->drawRectangle(vec3xy(worldTransform), 0,
+	ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
 			glm::vec2(l, w), worldTransform.z, debug_color);
-	ctx->shape->drawLine(
+	ctx.shape->drawLine(
 			vec3xy(worldTransform),
 			vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 			0,

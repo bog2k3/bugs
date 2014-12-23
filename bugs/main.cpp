@@ -16,6 +16,8 @@
 #include "math/math2D.h"
 #include "log.h"
 #include "entities/Bug.h"
+#include "DrawList.h"
+#include "UpdateList.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -47,7 +49,6 @@ int main()
 	physWld.SetDebugDraw(&physicsDraw);
 
 	World::getInstance()->setPhysics(&physWld);
-	World::getInstance()->setRenderContext(renderContext);
 
 	OperationsStack opStack(&vp1, World::getInstance(), World::getInstance(), &physWld);
 	GLFWInput::initialize(gltGetWindow());
@@ -56,7 +57,12 @@ int main()
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
 	Bug* b = Bug::newBasicBug(glm::vec2(0, 0));
-	World::getInstance()->addUpdatable(b);
+
+	UpdateList updateList;
+	updateList.add(b);
+
+	DrawList drawList;
+	drawList.add(World::getInstance());
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
@@ -76,11 +82,11 @@ int main()
 		if (dt > 0) {
 			opStack.update(dt);
 			physWld.Step(dt, 6, 2);
-			World::getInstance()->update(dt);
+			updateList.update(dt);
 		}
 
 		// draw builds the render queue
-		World::getInstance()->draw();
+		drawList.draw(renderContext);
 		physWld.DrawDebugData();
 
 		// wait until rendering is done and show frame output:

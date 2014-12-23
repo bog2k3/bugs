@@ -12,7 +12,7 @@
 #include "input/operations/IOperationSpatialLocator.h"
 #include "input/IWorldManager.h"
 #include "renderOpenGL/RenderContext.h"
-#include "updatable.h"
+#include "drawable.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <vector>
 #include <deque>
@@ -32,15 +32,10 @@ public:
 	/// @return false to terminate the query.
 	virtual bool ReportFixture(b2Fixture* fixture);
 
-	void setRenderContext(RenderContext ctxt) { renderContext = ctxt; }
-	void draw();
 	void update(float dt);
 
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);
-
-	void addUpdatable(updatable_wrap w);
-	void removeUpdatable(updatable_wrap w);
 
 	void setPhysics(b2World* physWld);
 	b2World* getPhysics() { return physWld; }
@@ -51,10 +46,12 @@ protected:
 	b2World* physWld;
 	b2Body* groundBody;
 	std::vector<WorldObject*> objects;
-	std::vector<updatable_wrap> updatables;
-	RenderContext renderContext;
 
 	std::deque<b2Fixture*> b2QueryResult;
+
+	friend void draw<World*>(World*& wld, RenderContext& ctx);
 };
+
+template<> void draw(World*& wld, RenderContext& ctx);
 
 #endif /* WORLD_H_ */

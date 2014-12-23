@@ -16,7 +16,7 @@ public:
 	~Torso() override;
 
 	void commit() override;
-	void draw(RenderContext* ctx) override;
+	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 
 	// returns the 'size' (surface area)

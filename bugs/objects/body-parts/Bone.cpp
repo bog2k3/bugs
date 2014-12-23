@@ -68,7 +68,7 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
 	}
 }
 
-void Bone::draw(RenderContext* ctx) {
+void Bone::draw(RenderContext& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {
@@ -76,9 +76,9 @@ void Bone::draw(RenderContext* ctx) {
 		glm::vec3 worldTransform = getWorldTransformation();
 		float w = sqrtf(size_/aspectRatio_);
 		float l = aspectRatio_ * w;
-		ctx->shape->drawRectangle(vec3xy(worldTransform), 0,
+		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
 				glm::vec2(l, w), worldTransform.z, debug_color);
-		ctx->shape->drawLine(
+		ctx.shape->drawLine(
 				vec3xy(worldTransform),
 				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 				0,
