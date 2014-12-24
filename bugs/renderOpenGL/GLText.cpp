@@ -19,48 +19,54 @@
 #include "GLText.h"
 using namespace glm;
 
-GLText::GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar)
-	: rows(rows), cols(cols), firstChar(firstChar)
+GLText::GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar, int defaultSize)
+	: rows(rows), cols(cols), firstChar(firstChar), defaultSize_(defaultSize)
 {
 	renderer->registerRenderable(this);
 	cellRatio = (float)rows/cols;
 	// Initialize texture
-	Text2DTextureID = TextureLoader::loadFromPNG(texturePath, nullptr, nullptr);
+	textureID = TextureLoader::loadFromPNG(texturePath, nullptr, nullptr);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Text2DTextureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Initialize VBO
-	glGenBuffers(1, &Text2DVertexBufferID);
-	glGenBuffers(1, &Text2DUVBufferID);
+	glGenBuffers(1, &vertexBufferID);
+	glGenBuffers(1, &UVBufferID);
+	glGenBuffers(1, &colorBufferID);
 
 	// Initialize Shader
-	Text2DShaderID = Shaders::createProgram("data/shaders/text.vert", "data/shaders/text.frag");
+	shaderID = Shaders::createProgram("data/shaders/text.vert", "data/shaders/text.frag");
 
 	// Get a handle for our buffers
-	vertexPosition_screenspaceID = glGetAttribLocation(Text2DShaderID, "vertexPosition_screenspace");
-	vertexUVID = glGetAttribLocation(Text2DShaderID, "vertexUV");
+	vertexPosition_screenspaceID = glGetAttribLocation(shaderID, "vertexPosition_screenspace");
+	vertexUVID = glGetAttribLocation(shaderID, "vertexUV");
+	vertexColorID = glGetAttribLocation(shaderID, "vertexColor");
 
 	// Initialize uniforms' IDs
-	viewportHalfSizeID = glGetUniformLocation(Text2DShaderID, "viewportHalfSize");
-	Text2DUniformID = glGetUniformLocation( Text2DShaderID, "myTextureSampler" );
+	viewportHalfSizeID = glGetUniformLocation(shaderID, "viewportHalfSize");
+	u_textureID = glGetUniformLocation( shaderID, "myTextureSampler" );
 }
 
 GLText::~GLText() {
 	// Delete buffers
-	glDeleteBuffers(1, &Text2DVertexBufferID);
-	glDeleteBuffers(1, &Text2DUVBufferID);
+	glDeleteBuffers(1, &vertexBufferID);
+	glDeleteBuffers(1, &UVBufferID);
+	glDeleteBuffers(1, &colorBufferID);
 
 	// Delete texture
-	glDeleteTextures(1, &Text2DTextureID);
+	glDeleteTextures(1, &textureID);
 
 	// Delete shader
-	glDeleteProgram(Text2DShaderID);
+	glDeleteProgram(shaderID);
 }
 
-void GLText::print(const std::string text, int x, int y, int size) {
+void GLText::print(const std::string text, int x, int y, int size, glm::vec3 const& color) {
 	unsigned int length = text.length();
 	float xSize = size*cellRatio;
+	glm::vec4 altColor = glm::vec4(color, 1.f);
+	if (size < defaultSize_)
+		altColor.a *= (float)defaultSize_ / size;
 
 	// Fill buffers
 	int initialX = x;
@@ -71,15 +77,15 @@ void GLText::print(const std::string text, int x, int y, int size) {
 			continue;
 		}
 		if (character == '\n') {
-			y -= size * 0.75f;
+			y += size * 0.75f;
 			x = initialX;
 			continue;
 		}
 
-		glm::vec2 vertex_up_left    = glm::vec2(x      , y+size );
-		glm::vec2 vertex_up_right   = glm::vec2(x+xSize, y+size );
-		glm::vec2 vertex_down_right = glm::vec2(x+xSize, y      );
-		glm::vec2 vertex_down_left  = glm::vec2(x      , y      );
+		glm::vec2 vertex_up_left    = glm::vec2(x      , y-size);
+		glm::vec2 vertex_up_right   = glm::vec2(x+xSize, y-size);
+		glm::vec2 vertex_down_right = glm::vec2(x+xSize, y);
+		glm::vec2 vertex_down_left  = glm::vec2(x      , y);
 
 		x += xSize;
 
@@ -105,38 +111,44 @@ void GLText::print(const std::string text, int x, int y, int size) {
 		UVs.push_back(uv_down_right);
 		UVs.push_back(uv_up_right);
 		UVs.push_back(uv_down_left);
+
+		for (int ci=0; ci<6; ci++)
+			colors.push_back(altColor);
 	}
 }
 
 void GLText::render(Viewport* pCrtViewport) {
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DVertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec2), &vertices[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DUVBufferID);
-	glBufferData(GL_ARRAY_BUFFER, UVs.size() * sizeof(glm::vec2), &UVs[0], GL_STATIC_DRAW);
-
 	// Bind shader
-	glUseProgram(Text2DShaderID);
+	glUseProgram(shaderID);
 
 	// Bind texture
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Text2DTextureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Set our "myTextureSampler" sampler to user Texture Unit 0
-	glUniform1i(Text2DUniformID, 0);
+	glUniform1i(u_textureID, 0);
 
 	vec2 halfVP(pCrtViewport->getWidth() / 2, pCrtViewport->getHeight() / 2);
 	glUniform2fv(viewportHalfSizeID, 1, &halfVP[0]);
 
-	// 1rst attribute buffer : vertices
+	// 1st attribute buffer : vertices
 	glEnableVertexAttribArray(vertexPosition_screenspaceID);
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DVertexBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(vertexPosition_screenspaceID, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 
 	// 2nd attribute buffer : UVs
 	glEnableVertexAttribArray(vertexUVID);
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DUVBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, UVBufferID);
+	glBufferData(GL_ARRAY_BUFFER, UVs.size() * sizeof(UVs[0]), &UVs[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(vertexUVID, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+
+	// 3rd attribute buffer : vertex colors
+	glEnableVertexAttribArray(vertexColorID);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
+	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(colors[0]), &colors[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(vertexColorID, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -148,10 +160,12 @@ void GLText::render(Viewport* pCrtViewport) {
 
 	glDisableVertexAttribArray(vertexPosition_screenspaceID);
 	glDisableVertexAttribArray(vertexUVID);
+	glDisableVertexAttribArray(vertexColorID);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GLText::purgeRenderQueue() {
 	vertices.clear();
 	UVs.clear();
+	colors.clear();
 }

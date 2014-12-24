@@ -10,32 +10,38 @@
 
 #include "IRenderable.h"
 #include <string>
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 class Renderer;
 
 class GLText : public IRenderable{
 public:
-	GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar);
+	GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar, int defaultSize);
 	~GLText() override;
 
-	void print(const std::string text, int x, int y, int size);
+	void print(const std::string text, int x, int y, int size, glm::vec3 const& color);
 
 	void render(Viewport* pCrtViewport) override;
 	void purgeRenderQueue() override;
 
 private:
-	unsigned Text2DTextureID;             	// Texture containing the font
-	unsigned Text2DVertexBufferID;         	// Buffer containing the vertices
-	unsigned Text2DUVBufferID;             	// UVs
-	unsigned Text2DShaderID;               	// Program used to disaply the text
+	unsigned textureID;             	// Texture containing the font
+	unsigned vertexBufferID;         	// Buffer containing the vertices
+	unsigned UVBufferID;             	// UVs
+	unsigned colorBufferID;					// vertex colors
+	unsigned shaderID;               	// Program used to disaply the text
 	unsigned vertexPosition_screenspaceID; 	// Location of the program's "vertexPosition_screenspace" attribute
 	unsigned vertexUVID;                   	// Location of the program's "vertexUV" attribute
+	unsigned vertexColorID;
 	unsigned viewportHalfSizeID;
-	unsigned Text2DUniformID;              	// Location of the program's texture attribute
+	unsigned u_textureID;              	// Location of the program's texture attribute
 	int rows, cols, firstChar;
 	float cellRatio; 						// cellWeight / cellHidth
+	int defaultSize_;					// text size from the texture
 	std::vector<glm::vec2> vertices;
 	std::vector<glm::vec2> UVs;
+	std::vector<glm::vec4> colors;
 };
 
 #endif /* RENDEROPENGL_GLTEXT_H_ */

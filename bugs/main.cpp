@@ -18,6 +18,7 @@
 #include "entities/Bug.h"
 #include "DrawList.h"
 #include "UpdateList.h"
+#include "objects/OSD/ScaleDisplay.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -35,8 +36,10 @@ int main()
 	Renderer renderer;
 	Viewport vp1(0, 0, 800, 600);
 	renderer.addViewport(&vp1);
-	RenderContext renderContext(new Shape2D(&renderer), &vp1,
-			new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' '));
+	RenderContext renderContext(
+			&vp1,
+			new Shape2D(&renderer),
+			new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22));
 
 	b2World physWld(b2Vec2_zero);
 	PhysicsDebugDraw physicsDraw(renderContext);
@@ -63,18 +66,10 @@ int main()
 
 	DrawList drawList;
 	drawList.add(World::getInstance());
+	drawList.add(ScaleDisplay(glm::vec2(15, 25), 150));
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
-
-		// do the actual openGL render (which is independent of our world)
-		gltBegin();
-		renderer.render();
-		std::stringstream ss;
-		ss << "Salut Lume!\n[Powered by Box2D]";
-		renderContext.text->print(ss.str().c_str(), 20, 20, 16);
-		// now rendering is on-going, get on with other stuff:
-
 		float newTime = glfwGetTime();
 		float dt = newTime - t;
 		t = newTime;
@@ -84,13 +79,21 @@ int main()
 			physWld.Step(dt, 6, 2);
 			updateList.update(dt);
 		}
+		// wait until previous frame finishes rendering and show frame output:
+		gltEnd();
 
-		// draw builds the render queue
+		// draw builds the render queue for the current frame
 		drawList.draw(renderContext);
 		physWld.DrawDebugData();
 
-		// wait until rendering is done and show frame output:
-		gltEnd();
+		std::stringstream ss;
+		ss << "Salut Lume!\n[Powered by Box2D]";
+		renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 16, glm::vec3(0.2f, 0.4, 1.0f));
+
+		// do the actual openGL render for the previous frame (which is independent of our world)
+		gltBegin();
+		renderer.render();
+		// now rendering is on-going, move on to the next update:
 	}
 
 	delete renderContext.shape;

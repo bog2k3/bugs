@@ -76,6 +76,30 @@ void Shape2D::drawLineList(glm::vec2* verts, int nVerts, float z, glm::vec3 rgb)
 	}
 }
 
+void Shape2D::drawLineStrip(glm::vec2* verts, int nVerts, float z, glm::vec3 rgb) {
+	s_lineVertex s;
+	for (int i=0; i<nVerts; i++) {
+		s.pos = glm::vec3(verts[i], z);
+		s.rgb = rgb;
+		buffer.push_back(s);
+		indices.push_back(buffer.size()-1);
+		if (i > 0 && i < nVerts-1)
+			indices.push_back(buffer.size()-1);
+	}
+}
+
+inline void Shape2D::transformViewportToWorld(glm::vec2* vIn, glm::vec2* vOut, int n, Viewport const& vp) {
+	for (int i=0; i<n; i++)
+		vOut[i] = vp.unproject(vIn[i]);
+}
+
+void Shape2D::drawLineStripViewport(glm::vec2* verts, int nVerts, float z, glm::vec3 rgb, Viewport const& vp) {
+	glm::vec2* vertsWorld = new glm::vec2[nVerts];
+	transformViewportToWorld(verts, vertsWorld, nVerts, vp);
+	drawLineStrip(vertsWorld, nVerts, z, rgb);
+	delete [] vertsWorld;
+}
+
 void Shape2D::drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 rgb) {
 	s_lineVertex sVertex;
 	sVertex.rgb = rgb;

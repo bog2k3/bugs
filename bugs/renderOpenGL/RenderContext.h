@@ -14,18 +14,18 @@ class GLText;
 
 class RenderContext {
 public:
-	Shape2D* shape;
 	const Viewport* viewport;
+	Shape2D* shape;
 	GLText* text;
 
 	RenderContext()
-		: shape(nullptr)
-		, viewport(nullptr)
+		: viewport(nullptr)
+		, shape(nullptr)
 		, text(nullptr) {
 	}
 
-	RenderContext(Shape2D* shape, Viewport* vp, GLText* text)
-		: shape(shape), viewport(vp), text(text) {
+	RenderContext(Viewport* vp, Shape2D* shape, GLText* text)
+		: viewport(vp), shape(shape), text(text) {
 	}
 };
 
