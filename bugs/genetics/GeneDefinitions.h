@@ -36,7 +36,8 @@ enum gene_attribute_type {
 	GENE_ATTRIB_SIZE,			// represents the surface area of the part
 	GENE_ATTRIB_ASPECT_RATIO,	// aspect_ratio = length / width
 	GENE_ATTRIB_DENSITY,		// density - for bones
-	GENE_ATTRIB_INSERTION_OFS,	// (%) offset of insertion point for muscle (by default it's at 20% bone's length)
+	GENE_ATTRIB_PARENT_OFFSET,	// sideways offset from parent joint, in % of current's part's width (default=0%)
+
 	GENE_ATTRIB_END
 };
 

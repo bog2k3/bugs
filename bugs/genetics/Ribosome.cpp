@@ -176,6 +176,7 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g, std::vector<DevelopmentN
 }
 
 void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
+#error "add parentOffset_ in BodyPart for GENE_ATTRIB_PARENT_OFFSET, and use it when computing final position"
 	// when changing part's size or aspect ratio, must update all direct children's attachment points (scale them appropriately)
 	std::vector<DevelopmentNode*> nodes;
 	root_->matchLocation(g.location, &nodes);
