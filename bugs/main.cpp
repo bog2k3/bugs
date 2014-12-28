@@ -26,6 +26,10 @@
 #include <sstream>
 #include "renderOpenGL/GLText.h"
 
+template<> void draw(b2World*& wld, RenderContext &ctx) {
+	wld->DrawDebugData();
+}
+
 int main()
 {
 	LOGGER("app_main");
@@ -61,11 +65,40 @@ int main()
 
 	Bug* b = Bug::newBasicBug(glm::vec2(0, 0));
 
+	/*
+	 * joint motor test:
+	 *
+	b2BodyDef bdef;
+	bdef.angularDamping = bdef.linearDamping = 0.4f;
+	bdef.type = b2_dynamicBody;
+	bdef.position.Set(-1.f, 0.f);
+	b2Body* b1 = physWld.CreateBody(&bdef);
+	bdef.position.Set(+1.f, 0.f);
+	b2Body* b2 = physWld.CreateBody(&bdef);
+
+	b2FixtureDef fdef;
+	fdef.density = 1.f;
+	fdef.restitution = 0.6f;
+	b2PolygonShape shp;
+	shp.SetAsBox(0.9f, 0.5f);
+	fdef.shape = &shp;
+	b1->CreateFixture(&fdef);
+	b2->CreateFixture(&fdef);
+
+	b2RevoluteJointDef jdef;
+	jdef.Initialize(b1, b2, b2Vec2(0, 0));
+	jdef.enableMotor = true;
+	jdef.maxMotorTorque = 1.f;
+	jdef.motorSpeed = PI*1.5f;
+	physWld.CreateJoint(&jdef);
+	*/
+
 	UpdateList updateList;
 	updateList.add(b);
 
 	DrawList drawList;
 	drawList.add(World::getInstance());
+	drawList.add(&physWld);
 	drawList.add(ScaleDisplay(glm::vec2(15, 25), 150));
 
 	float t = glfwGetTime();
@@ -84,7 +117,6 @@ int main()
 
 		// draw builds the render queue for the current frame
 		drawList.draw(renderContext);
-		physWld.DrawDebugData();
 
 		std::stringstream ss;
 		ss << "Salut Lume!\n[Powered by Box2D]";

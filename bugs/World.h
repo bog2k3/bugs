@@ -25,14 +25,12 @@ public:
 	static World* getInstance();
 	virtual ~World();
 
-	WorldObject* getObjectAtPos(glm::vec2 pos);
+	b2Body* getBodyAtPos(glm::vec2 pos);
 	void getObjectsInBox(AlignedBox box, std::vector<WorldObject*> &outVec);
 
 	/// Called for each fixture found in the query AABB.
 	/// @return false to terminate the query.
 	virtual bool ReportFixture(b2Fixture* fixture);
-
-	void update(float dt);
 
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);

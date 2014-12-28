@@ -36,7 +36,7 @@ bool World::ReportFixture(b2Fixture* fixture) {
 	return true;
 }
 
-WorldObject* World::getObjectAtPos(glm::vec2 pos) {
+b2Body* World::getBodyAtPos(glm::vec2 pos) {
 	assert(b2QueryResult.empty());
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(0.005f, 0.005f);
@@ -44,10 +44,10 @@ WorldObject* World::getObjectAtPos(glm::vec2 pos) {
 	physWld->QueryAABB(this, aabb);
 	if (b2QueryResult.empty())
 		return nullptr;
-	WorldObject* ret = nullptr;
+	b2Body* ret = nullptr;
 	for (b2Fixture* f : b2QueryResult) {
 		if (f->TestPoint(g2b(pos))) {
-			ret = (WorldObject*)f->GetBody()->GetUserData();
+			ret = f->GetBody();
 			break;
 		}
 	}

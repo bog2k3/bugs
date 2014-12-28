@@ -47,7 +47,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		if (ev.mouseButton != boundButton)
 			break;
 		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
-		WorldObject* pressedObj = pContext->locator->getObjectAtPos(wldClickPos);
+		b2Body* pressedObj = pContext->locator->getBodyAtPos(wldClickPos);
 		if (pressedObj != nullptr) {
 			isActive = true;
 			b2BodyDef bdef;
@@ -65,7 +65,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 			b2MouseJointDef def;
 			def.target = g2b(wldClickPos);
 			def.bodyA = mouseBody;
-			def.bodyB = pressedObj->getBody();
+			def.bodyB = pressedObj;
 			def.bodyB->SetAwake(true);
 			def.maxForce = 100;
 			mouseJoint = (b2MouseJoint*)pContext->physics->CreateJoint(&def);
