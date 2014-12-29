@@ -28,6 +28,7 @@ enum gene_sensor_type {
 	GENE_SENSOR_INVALID = 0,
 	GENE_SENSOR_EYE,		// eye sight
 	GENE_SENSOR_SMELL,		// smell - proximity to certain materials
+	GENE_SENSOR_JOINT_ANGLE,
 	GENE_SENSOR_END
 };
 

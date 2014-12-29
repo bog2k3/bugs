@@ -3,6 +3,21 @@
  *
  *  Created on: Dec 23, 2014
  *      Author: bog
+ *
+ *
+ *  Muscle width determines its max effective torque
+ *  Muscle length determines the max speed of the joint
+ *  max muscle contraction (%) is constant -> longer muscle's length during a full contraction varies more.
+ *  muscle contraction speed (m/s) is constant => a longer muscle (which needs to vary its length more) is slower.
+ *  muscle length spectrum correlates 1:1 to the joint's rotation limits.
+ *  	- minimum muscle length (max contraction) corresponds to the joint being at its closest limit
+ *  	- max muscle length (min contraction) corresponds to the joint being wide open
+ *  the greater the ratio between muscle length variation and joint angle variation the greater the insertion point
+ *  	(theoretical) of the muscle. This should have an effect on muscle's max effective torque (greater torque, but slower)
+ *  muscle should know in which direction it actions the joint motor.
+ *  muscle command signal is clamped to [0.0 : 1.0]
+ *  joint motor speed is muscle's max angular speed
+ *  joint max torque is signal.value * muscle's max torque
  */
 
 #include "Muscle.h"

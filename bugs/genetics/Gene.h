@@ -61,6 +61,8 @@ struct GeneCommand {
 	int command;
 	int part_type;
 	Atom<float> angle;			// angle is relative to the previous element's orientation
+#warning "make this work:"
+	Atom<float> childAngle;		// child can be rotated further from the relative growth angle.
 };
 
 struct GeneLocalAttribute {

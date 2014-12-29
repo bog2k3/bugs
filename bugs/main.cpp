@@ -30,8 +30,15 @@ template<> void draw(b2World*& wld, RenderContext &ctx) {
 	wld->DrawDebugData();
 }
 
-int main()
-{
+/*void statsHdr() {
+	std::cout << "t,phi,omega,tau,e\n";
+}
+
+void stats(float t, float phi, float omega, float tau, float e) {
+	std::cout<<t<<","<<phi<<","<<omega<<","<<tau<<","<<e<<"\n";
+}*/
+
+int main() {
 	LOGGER("app_main");
 
 	if (!gltInit(800, 600, "Bugs"))
@@ -73,25 +80,32 @@ int main()
 	bdef.type = b2_dynamicBody;
 	bdef.position.Set(-1.f, 0.f);
 	b2Body* b1 = physWld.CreateBody(&bdef);
-	bdef.position.Set(+1.f, 0.f);
+	bdef.position.Set(+0.5f, 0.f);
+	//bdef.angle = PI/2;
 	b2Body* b2 = physWld.CreateBody(&bdef);
 
 	b2FixtureDef fdef;
 	fdef.density = 1.f;
 	fdef.restitution = 0.6f;
 	b2PolygonShape shp;
-	shp.SetAsBox(0.9f, 0.5f);
+	shp.SetAsBox(0.9f, 0.2f);
 	fdef.shape = &shp;
 	b1->CreateFixture(&fdef);
+	shp.SetAsBox(0.2f, 1.9f);
 	b2->CreateFixture(&fdef);
 
 	b2RevoluteJointDef jdef;
 	jdef.Initialize(b1, b2, b2Vec2(0, 0));
 	jdef.enableMotor = true;
-	jdef.maxMotorTorque = 1.f;
-	jdef.motorSpeed = PI*1.5f;
-	physWld.CreateJoint(&jdef);
-	*/
+	jdef.maxMotorTorque = 0.5f;
+	jdef.motorSpeed = PI/2;
+	b2RevoluteJoint* j = (b2RevoluteJoint*)physWld.CreateJoint(&jdef);
+
+	float phi = j->GetJointAngle();
+	float e = 0;
+	statsHdr();
+	stats(0, phi, 0, 0, e);
+	/**/
 
 	UpdateList updateList;
 	updateList.add(b);
@@ -99,7 +113,7 @@ int main()
 	DrawList drawList;
 	drawList.add(World::getInstance());
 	drawList.add(&physWld);
-	drawList.add(ScaleDisplay(glm::vec2(15, 25), 150));
+	drawList.add(ScaleDisplay(glm::vec2(15, 25), 300));
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
@@ -114,6 +128,14 @@ int main()
 		}
 		// wait until previous frame finishes rendering and show frame output:
 		gltEnd();
+
+		/*float lastPhi = phi;
+		phi = j->GetJointAngle();
+		float omega = (phi - lastPhi) / dt;
+		float tau = j->GetMotorTorque(1.f/dt);
+		e += tau * (phi-lastPhi);
+		stats(t, phi, omega, tau, e);
+		*/
 
 		// draw builds the render queue for the current frame
 		drawList.draw(renderContext);
