@@ -18,6 +18,17 @@
  *  muscle command signal is clamped to [0.0 : 1.0]
  *  joint motor speed is muscle's max angular speed
  *  joint max torque is signal.value * muscle's max torque
+ *
+ *  formulas for muscle:
+ *
+ *  l0 = muscle relaxed length												[m]
+ *  l = muscle max contracted length < l									[m]
+ *  gamma (contraction ratio) = l/l0 < 1									[1]
+ *  dx (length difference) = l0 - l = l0 * (1 - gamma) 						[m]
+ *  h (distance from muscle's end to joint - length of tendon) 				[m]
+ *  r (insertion distance from joint center) = (dx^2 - 2*dx*h)/(2*(dx+h))	[m]
+ *  F (max muscle force) = constant * muscle.width							[N]
+ *  tau (max torque) = F * h*r/sqrt(h^2+r^2)								[Nm]
  */
 
 #include "Muscle.h"
