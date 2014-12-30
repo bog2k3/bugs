@@ -8,6 +8,7 @@
 #ifndef GENETICS_DEVELOPMENTNODE_H_
 #define GENETICS_DEVELOPMENTNODE_H_
 
+#include "Gene.h"
 #include <vector>
 #include <functional>
 #include <stdint.h>
@@ -24,7 +25,7 @@ public:
 	DevelopmentNode* parent;
 	DevelopmentNode* children[MAX_CHILDREN];
 
-	void matchLocation(uint64_t loc, std::vector<DevelopmentNode*> *out);
+	void matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<DevelopmentNode*> *out);
 	void applyRecursive(std::function<void(DevelopmentNode* pCurrent)> pred);
 
 protected:

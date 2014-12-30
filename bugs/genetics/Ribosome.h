@@ -30,10 +30,11 @@ private:
 	unsigned crtPosition_;
 	DevelopmentNode* root_;
 	std::vector<GeneGeneralAttribute> generalAttribGenes;
+	std::vector<DevelopmentNode*> activeSet_;
 
 	void decodeDevelopCommand(GeneCommand const& g);
-	void decodeDevelopGrowth(GeneCommand const& g, std::vector<DevelopmentNode*> const& nodes);
-	void decodeDevelopSplit(GeneCommand const& g, std::vector<DevelopmentNode*> const& nodes);
+	void decodeDevelopGrowth(GeneCommand const& g);
+	void decodeDevelopSplit(GeneCommand const& g);
 	void decodePartAttrib(GeneLocalAttribute const& g);
 	void decodeGeneralAttrib(GeneGeneralAttribute const& g);
 	void decodeSynapse(GeneSynapse const& g);

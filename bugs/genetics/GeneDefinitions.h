@@ -34,10 +34,14 @@ enum gene_sensor_type {
 
 enum gene_attribute_type {
 	GENE_ATTRIB_INVALID = 0,
+	GENE_ATTRIB_ATTACHMENT_ANGLE,	// modifies the original growth angle
+	GENE_ATTRIB_LOCAL_ROTATION,		// rotates the part around its own center
+	GENE_ATTRIB_ATTACHMENT_OFFSET,	// sideways offset from parent joint, in % of current's part's width (default=0%)
 	GENE_ATTRIB_SIZE,			// represents the surface area of the part
 	GENE_ATTRIB_ASPECT_RATIO,	// aspect_ratio = length / width
 	GENE_ATTRIB_DENSITY,		// density - for bones
-	GENE_ATTRIB_PARENT_OFFSET,	// sideways offset from parent joint, in % of current's part's width (default=0%)
+	GENE_ATTRIB_JOINT_LOW_LIMIT,	// low angle limit for joint
+	GENE_ATTRIB_JOINT_HIGH_LIMIT,	// high angle limit for joint
 
 	GENE_ATTRIB_END
 };

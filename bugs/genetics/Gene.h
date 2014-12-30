@@ -57,8 +57,11 @@ struct Atom {
 	}
 };
 
+typedef uint16_t LocationLevelType; // bit 15 = current node, bits 0..14 children nodes
+typedef Atom<LocationLevelType> LocationType[constants::MAX_GROWTH_DEPTH];
+
 struct GeneLocation {
-	Atom<uint16_t> level[constants::MAX_GROWTH_DEPTH];	// bit 15 = current node, bits 0..14 children nodes
+	LocationType location;
 };
 
 struct GeneCommand {

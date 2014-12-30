@@ -22,21 +22,14 @@ DevelopmentNode::~DevelopmentNode() {
 	// TODO Auto-generated destructor stub
 }
 
-void DevelopmentNode::matchLocation(uint64_t loc, std::vector<DevelopmentNode*> *out) {
-	if (loc == 0 || nChildren == 0) {
+void DevelopmentNode::matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<DevelopmentNode*> *out) {
+	assert(nLevel >= 0);
+	if (*location & (1<<15)) {
 		out->push_back(this);
-	} else {
-		if (isJoint) {
-			if (loc == 1)
-				out->push_back(children[0]);
-			else
-				children[0]->matchLocation(loc >> 1, out);
-		} else {
-			for (int i=0; i<nChildren; i++) {
-				if (loc & (1 << i))
-					children[i]->matchLocation(loc >> 4, out);
-			}
-		}
+	}
+	for (int i=0; i<nChildren; i++) {
+		if (*location & (1 << i))
+			children[i]->matchLocation(location+1, nLevel-1, out);
 	}
 }
 

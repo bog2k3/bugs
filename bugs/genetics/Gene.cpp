@@ -6,10 +6,11 @@ void Gene::update_meta_genes_vec() {
 	metaGenes.push_back(&chance_to_delete);
 	metaGenes.push_back(&chance_to_swap);
 
+#warning "update all gene types"
+
 	switch (type) {
 	case GENE_TYPE_DEVELOPMENT:
 		metaGenes.push_back(&data.gene_command.angle.meta);
-		metaGenes.push_back(&data.gene_command.location.meta);
 		break;
 	case GENE_TYPE_GENERAL_ATTRIB:
 		metaGenes.push_back(&data.gene_general_attribute.value.meta);
@@ -22,7 +23,6 @@ void Gene::update_meta_genes_vec() {
 	case GENE_TYPE_NEURON:
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		metaGenes.push_back(&data.gene_local_attribute.location.meta);
 		metaGenes.push_back(&data.gene_local_attribute.value.meta);
 		break;
 	case GENE_TYPE_SYNAPSE:

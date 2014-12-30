@@ -67,6 +67,10 @@ bool Ribosome::step() {
 
 	// now decode the gene
 	switch (g->type) {
+	case GENE_TYPE_LOCATION:
+		activeSet_.clear();
+		root_->matchLocation(g->data.gene_location.location, constants::MAX_GROWTH_DEPTH, &activeSet_);
+		break;
 	case GENE_TYPE_DEVELOPMENT:
 		decodeDevelopCommand(g->data.gene_command);
 		break;
@@ -109,18 +113,16 @@ bool Ribosome::partMustGenerateJoint(int part_type) {
 }
 
 void Ribosome::decodeDevelopCommand(GeneCommand const& g) {
-	std::vector<DevelopmentNode*> nodes;
-	root_->matchLocation(g.location, &nodes);
 	if (g.command == GENE_DEV_GROW) {
-		decodeDevelopGrowth(g, nodes);
+		decodeDevelopGrowth(g);
 	} else if (g.command == GENE_DEV_SPLIT) {
-		decodeDevelopSplit(g, nodes);
+		decodeDevelopSplit(g);
 	}
 }
 
-void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<DevelopmentNode*> const& nodes) {
+void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 	// now grow a new part on each adequate element in nodes list
-	for (auto n : nodes) {
+	for (auto n : activeSet_) {
 		// grow only works on bones and torso
 		if (n->bodyPart->getType() != BODY_PART_BONE && n->bodyPart->getType() != BODY_PART_TORSO)
 			continue;
@@ -166,9 +168,9 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 		n->children[n->nChildren++] = new DevelopmentNode(n, bp);
 	}
 }
-void Ribosome::decodeDevelopSplit(GeneCommand const& g, std::vector<DevelopmentNode*> const& nodes) {
+void Ribosome::decodeDevelopSplit(GeneCommand const& g) {
 	// split may work on bones, joints and grippers only
-	for (auto n : nodes) {
+	for (auto n : activeSet_) {
 		if (   n->bodyPart->getType() != BODY_PART_BONE
 			&& n->bodyPart->getType() != BODY_PART_JOINT
 			&& n->bodyPart->getType() != BODY_PART_GRIPPER
@@ -183,9 +185,7 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g, std::vector<DevelopmentN
 void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 #warning "add parentOffset_ in BodyPart for GENE_ATTRIB_PARENT_OFFSET, and use it when computing final position"
 	// when changing part's size or aspect ratio, must update all direct children's attachment points (scale them appropriately)
-	std::vector<DevelopmentNode*> nodes;
-	root_->matchLocation(g.location, &nodes);
-	for (auto n : nodes) {
+	for (auto n : activeSet_) {
 		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_attribute_type)g.attribute);
 		if (pAttrib)
 			pAttrib->changeAbs(g.value);

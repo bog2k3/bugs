@@ -32,6 +32,7 @@
  */
 
 #include "Muscle.h"
+#include "Joint.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/RenderContext.h"
@@ -45,10 +46,12 @@ static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 const float Muscle::contractionRatio = 0.7f;
 const float Muscle::forcePerWidthRatio = 100; // this is the theoretical force of a muscle 1 meter wide.
 
-Muscle::Muscle(BodyPart* parent, PhysicsProperties props)
-: BodyPart(parent, BODY_PART_MUSCLE, props)
-, size_(0.5e-4f)
-, aspectRatio_(0.7f)
+Muscle::Muscle(BodyPart* parent, PhysicsProperties props, Joint* joint)
+	: BodyPart(parent, BODY_PART_MUSCLE, props)
+	, joint_(joint)
+	, size_(0.5e-4f)
+	, aspectRatio_(0.7f)
+	, maxTorque_(0)
 {
 	// we need this for debug draw, since muscle doesn't create fixture, nor body
 	keepInitializationData_ = true;
@@ -59,11 +62,25 @@ Muscle::~Muscle() {
 }
 
 void Muscle::commit() {
+	assert(joint_ != nullptr);
+
 	// here we compute the characteristics of the muscle
-	float w0 = sqrtf(size_/aspectRatio_); // relaxed width
-	float l0 = aspectRatio_ * w0; // relaxed length
+	// here we reverse width and length in order to consider length parallel to the parent and width orthogonal
+	float l0 = sqrtf(size_/aspectRatio_); // relaxed length
+	float w0 = aspectRatio_ * l0; // relaxed width
 	float dx = l0 * (1 - contractionRatio);
-	float h =
+
+	// h is computed as the distance from the joint to the muscle's OX axis (in world coordinates) minus l0/2
+	glm::vec3 Tw = getWorldTransformation();
+	glm::vec2 OX = glm::rotate(glm::vec2(1, 0), Tw.z);	// OX axis in world space
+	float h = distPointLine(vec3xy(joint_->getWorldTransformation()), vec3xy(Tw), OX);
+	// r is the theoretical insertion distance (from joint)
+	float r = (dx*dx - 2*dx*h)/(2*(dx+h));
+
+	// and finally:
+	maxTorque_ = forcePerWidthRatio * w0 * h*r/sqrt(h*h+r*r);
+
+#warning "must also compute max speed"
 }
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)

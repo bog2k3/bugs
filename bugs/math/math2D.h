@@ -187,3 +187,12 @@ inline float limitAngle(float a, float bisector) {
 inline glm::vec2 vec3xy(glm::vec3 const &in) {
 	return glm::vec2(in.x, in.y);
 }
+
+/**
+ * computes the distance from point P to the line defined by lineOrigin and lineDirection.
+ * lineDirection is assumed to be normalized.
+ */
+inline float distPointLine(glm::vec2 P, glm::vec2 lineOrigin, glm::vec2 lineDirection) {
+	glm::vec2 OP = P - lineOrigin;
+	return (OP - lineDirection * glm::dot(OP, lineDirection)).length();
+}
