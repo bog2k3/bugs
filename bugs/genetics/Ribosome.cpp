@@ -143,6 +143,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 			// recompute coordinates in joint's space:
 			angle = 0;
 			offset = n->bodyPart->getChildAttachmentPoint(0);
+
+#error "joints must also generate muscles around them"
 		}
 
 		BodyPart* bp = nullptr;
@@ -152,9 +154,6 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 			break;
 		case GENE_PART_GRIPPER:
 			bp = new Gripper(n->bodyPart, PhysicsProperties(offset, angle));
-			break;
-		case GENE_PART_MUSCLE:
-			bp = new Muscle(n->bodyPart, PhysicsProperties(offset, angle));
 			break;
 		case GENE_PART_SENSOR:
 			// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));
@@ -168,11 +167,17 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, std::vector<Development
 	}
 }
 void Ribosome::decodeDevelopSplit(GeneCommand const& g, std::vector<DevelopmentNode*> const& nodes) {
-	// split may work on bones and joints only
+	// split may work on bones, joints and grippers only
 	for (auto n : nodes) {
-		if (n->bodyPart->getType() != BODY_PART_BONE && n->bodyPart->getType() != BODY_PART_JOINT)
+		if (   n->bodyPart->getType() != BODY_PART_BONE
+			&& n->bodyPart->getType() != BODY_PART_JOINT
+			&& n->bodyPart->getType() != BODY_PART_GRIPPER
+			)
 			continue;
 	}
+	// split on bone or gripper actually splits its parent joint
+	// split on joint also duplicates the muscles around the joint
+	// angle of gene represents the angle to separate the newly split parts
 }
 
 void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {

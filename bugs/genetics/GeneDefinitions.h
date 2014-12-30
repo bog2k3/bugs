@@ -18,9 +18,8 @@ enum gene_development_command {
 enum gene_part_type {
 	GENE_PART_INVALID = 0,
 	GENE_PART_BONE,			// bone
-	GENE_PART_MUSCLE,		// muscle
-	GENE_PART_SENSOR,		// sensor - one of the sensor types
 	GENE_PART_GRIPPER,		// gripper - used to move around, like a foot
+	GENE_PART_SENSOR,		// sensor - one of the sensor types
 	GENE_PART_END
 };
 
@@ -29,6 +28,7 @@ enum gene_sensor_type {
 	GENE_SENSOR_EYE,		// eye sight
 	GENE_SENSOR_SMELL,		// smell - proximity to certain materials
 	GENE_SENSOR_JOINT_ANGLE,
+	GENE_SENSOR_GRIPPER_STATE,
 	GENE_SENSOR_END
 };
 
