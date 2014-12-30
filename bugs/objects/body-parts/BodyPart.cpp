@@ -23,7 +23,7 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
 	, nChildren_(0)
 	, committed_(false)
 	, keepInitializationData_(false)
-	, dontCommit_(false)
+	, dontCreateBody_(false)
 	, coordinates_local_(true)
 {
 	if (parent) {
@@ -102,13 +102,16 @@ glm::vec2 BodyPart::getFinalPrecommitPosition() {
 
 void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
 	initialData_->position = getFinalPrecommitPosition();
-	// transform position and angle into world space:
-	transform_position_and_angle();
+	if (!dontCreateBody_) {
+		// transform position and angle into world space:
+		transform_position_and_angle();
+	}
 	// perform commit on local node:
 	if (type_ == BODY_PART_JOINT) {
 		out_joints.push_back(this);
 	} else {
-		WorldObject::createPhysicsBody();
+		if (!dontCreateBody_)
+			WorldObject::createPhysicsBody();
 		commit();
 		if (!keepInitializationData_)
 			WorldObject::purgeInitializationData();
@@ -116,12 +119,11 @@ void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
 	}
 	// perform recursive commit on all children:
 	for (int i=0; i<nChildren_; i++)
-		if (!children_[i]->dontCommit_)
-			children_[i]->commit_tree(out_joints);
+		children_[i]->commit_tree(out_joints);
 }
 
 glm::vec3 BodyPart::getWorldTransformation() const {
-	if (!committed_) {
+	if (body_ == nullptr) {
 		if (coordinates_local_) {
 			glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
 			return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);

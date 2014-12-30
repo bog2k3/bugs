@@ -23,8 +23,8 @@
  *
  *  l0 = muscle relaxed length												[m]
  *  l = muscle max contracted length < l									[m]
- *  gamma (contraction ratio) = l/l0 < 1									[1]
- *  dx (length difference) = l0 - l = l0 * (1 - gamma) 						[m]
+ *  contractionRatio = l/l0 < 1												[1]
+ *  dx (length difference) = l0 - l = l0 * (1 - contractionRatio)			[m]
  *  h (distance from muscle's end to joint - length of tendon) 				[m]
  *  r (insertion distance from joint center) = (dx^2 - 2*dx*h)/(2*(dx+h))	[m]
  *  F (max muscle force) = constant * muscle.width							[N]
@@ -42,18 +42,28 @@
 
 static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 
+const float Muscle::contractionRatio = 0.7f;
+const float Muscle::forcePerWidthRatio = 100; // this is the theoretical force of a muscle 1 meter wide.
+
 Muscle::Muscle(BodyPart* parent, PhysicsProperties props)
 : BodyPart(parent, BODY_PART_MUSCLE, props)
 , size_(0.5e-4f)
 , aspectRatio_(0.7f)
-, insertionOffset_(0.5f)
 {
 	// we need this for debug draw, since muscle doesn't create fixture, nor body
 	keepInitializationData_ = true;
-	dontCommit_ = true;
+	dontCreateBody_ = true;
 }
 
 Muscle::~Muscle() {
+}
+
+void Muscle::commit() {
+	// here we compute the characteristics of the muscle
+	float w0 = sqrtf(size_/aspectRatio_); // relaxed width
+	float l0 = aspectRatio_ * w0; // relaxed length
+	float dx = l0 * (1 - contractionRatio);
+	float h =
 }
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)

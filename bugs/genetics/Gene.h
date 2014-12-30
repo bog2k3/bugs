@@ -14,6 +14,7 @@
 
 enum gene_type {
 	GENE_TYPE_INVALID = 0,
+	GENE_TYPE_LOCATION,			// defines the effective location for the next genes
 	GENE_TYPE_DEVELOPMENT,		// developmental gene - commands the growth of the body
 	GENE_TYPE_PART_ATTRIBUTE,	// body part attribute - establishes characteristics of certain body parts
 	GENE_TYPE_GENERAL_ATTRIB,	// general body attribute - controls the overall features of all
@@ -56,8 +57,11 @@ struct Atom {
 	}
 };
 
+struct GeneLocation {
+	Atom<uint16_t> level[constants::MAX_GROWTH_DEPTH];	// bit 15 = current node, bits 0..14 children nodes
+};
+
 struct GeneCommand {
-	Atom<uint64_t> location;	// 4 bits for joints, 1 bit for bone - total depth: 12 dual levels
 	int command;
 	int part_type;
 	Atom<float> angle;			// angle is relative to the previous element's orientation
@@ -66,10 +70,9 @@ struct GeneCommand {
 };
 
 struct GeneLocalAttribute {
-	Atom<uint64_t> location;
+	Atom<float> value;
 	int attribute;
 	bool relativeValue;
-	Atom<float> value;
 };
 
 struct GeneGeneralAttribute {
@@ -97,6 +100,7 @@ public:
 	unsigned long RID;	// this is unique to this gene, when the gene is mutated, the RID changes
 	gene_type type;		// the type of gene
 	union GeneData {
+		GeneLocation gene_location;
 		GeneCommand gene_command;
 		GeneLocalAttribute gene_local_attribute;
 		GeneGeneralAttribute gene_general_attribute;
@@ -104,6 +108,7 @@ public:
 		GeneTransferFunction gene_transfer_function;
 		GeneMuscleCommand gene_muscle_command;
 
+		GeneData(GeneLocation gl) : gene_location(gl) {}
 		GeneData(GeneCommand gc) : gene_command(gc) {}
 		GeneData(GeneLocalAttribute gla) : gene_local_attribute(gla) {}
 		GeneData(GeneGeneralAttribute gga) : gene_general_attribute(gga) {}
@@ -123,6 +128,7 @@ public:
 		update_meta_genes_vec();
 	}
 
+	Gene(GeneLocation gl) : Gene(GENE_TYPE_LOCATION, gl) {}
 	Gene(GeneCommand gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
 	Gene(GeneLocalAttribute gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
 	Gene(GeneGeneralAttribute gga) : Gene(GENE_TYPE_GENERAL_ATTRIB, gga) {}

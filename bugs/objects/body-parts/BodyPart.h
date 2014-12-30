@@ -79,7 +79,7 @@ protected:
 	int nChildren_;
 	bool committed_;
 	bool keepInitializationData_;
-	bool dontCommit_;
+	bool dontCreateBody_;
 
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
