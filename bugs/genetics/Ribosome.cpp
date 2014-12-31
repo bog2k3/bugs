@@ -2,6 +2,7 @@
 
 #include "../neuralnet/functions.h"
 #include "../math/tools.h"
+#include "../math/math2D.h"
 #include "../log.h"
 #include "../neuralnet/Network.h"
 #include "../neuralnet/Neuron.h"
@@ -126,7 +127,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		// grow only works on bones and torso
 		if (n->bodyPart->getType() != BODY_PART_BONE && n->bodyPart->getType() != BODY_PART_TORSO)
 			continue;
-		if (n->nChildren == 4)
+		if (n->nChildren == DevelopmentNode::MAX_CHILDREN)
 			continue;
 
 		float angle = g.angle;
@@ -139,14 +140,29 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		if (partMustGenerateJoint(g.part_type)) {
 			// we cannot grow this part directly onto its parent, they must be connected by a joint
 			Joint* linkJoint = new Joint(n->bodyPart, PhysicsProperties(offset, angle));
-			n->children[n->nChildren++] = new DevelopmentNode(n, linkJoint);
+			DevelopmentNode* nodeJoint = n->children[n->nChildren++] = new DevelopmentNode(n, linkJoint);
+
+			// now generate the two muscles around the joint
+			// 1. Left
+			if (n->nChildren < DevelopmentNode::MAX_CHILDREN) {
+				float mLeftAngle = angle + PI/8;
+				glm::vec2 mLeftOffs = n->bodyPart->getChildAttachmentPoint(mLeftAngle);
+				Muscle* mLeft = new Muscle(n->bodyPart, PhysicsProperties(mLeftOffs, mLeftAngle), linkJoint, +1);
+				n->children[n->nChildren++] = new DevelopmentNode(n, mLeft);
+			}
+			// 2. Right
+			if (n->nChildren < DevelopmentNode::MAX_CHILDREN) {
+				float mRightAngle = angle - PI/8;
+				glm::vec2 mRightOffs = n->bodyPart->getChildAttachmentPoint(mRightAngle);
+				Muscle* mRight = new Muscle(n->bodyPart, PhysicsProperties(mRightOffs, mRightAngle), linkJoint, -1);
+				n->children[n->nChildren++] = new DevelopmentNode(n, mRight);
+			}
+
 			// set n to point to the joint's node, since that's where the actual part will be attached:
-			n = n->children[n->nChildren-1];
+			n = nodeJoint;
 			// recompute coordinates in joint's space:
 			angle = 0;
 			offset = n->bodyPart->getChildAttachmentPoint(0);
-
-#error "joints must also generate muscles around them"
 		}
 
 		BodyPart* bp = nullptr;

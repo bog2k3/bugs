@@ -23,11 +23,15 @@ public:
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	glm::vec3 getWorldTransformation() const override;
 
+	float getTotalRange(); // returns the total angular range (in radians) of the joint.
+
 protected:
 	float size_;
 	float phiMin_;
 	float phiMax_;
 	b2RevoluteJoint* physJoint_;
+
+	void fixAngles();
 };
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

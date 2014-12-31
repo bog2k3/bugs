@@ -29,9 +29,21 @@ Joint::~Joint() {
 	// delete joint
 }
 
+/**
+ * if the angles are screwed, limit them to 0
+ */
+void Joint::fixAngles() {
+	if (phiMin_ > 0)
+		phiMin_ = 0;
+	if (phiMax_ < 0)
+		phiMax_ = 0;
+}
+
 void Joint::commit() {
 	assert(!committed_);
 	assert(nChildren_ == 1);
+
+	fixAngles();
 
 	b2RevoluteJointDef def;
 	// physProps_.position is be in world space at this step:
@@ -69,4 +81,22 @@ void Joint::draw(RenderContext& ctx) {
 glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 {
 	return glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle);
+}
+
+float Joint::getTotalRange() {
+	if (committed_) {
+		// the angles are already fixed
+		return phiMax_ - phiMin_;
+	} else {
+		// save original values:
+		float fm = phiMin_, fM = phiMax_;
+		// fix the angles:
+		fixAngles();
+		// compute range:
+		float ret = phiMax_ - phiMin_;
+		// restore original values:
+		phiMax_ = fM, phiMin_ = fm;
+
+		return ret;
+	}
 }

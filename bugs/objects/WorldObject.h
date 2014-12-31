@@ -47,7 +47,7 @@ public:
 	void createPhysicsBody();
 
 	b2Body* getBody() { return body_; }
-	PhysicsProperties& getPhysicsProp() { return *initialData_; }
+	PhysicsProperties& getInitialData() { assert(initialData_ != nullptr); return *initialData_; }
 
 protected:
 	b2Body* body_;

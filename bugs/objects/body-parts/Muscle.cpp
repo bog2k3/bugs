@@ -45,13 +45,16 @@ static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 
 const float Muscle::contractionRatio = 0.7f;
 const float Muscle::forcePerWidthRatio = 100; // this is the theoretical force of a muscle 1 meter wide.
+const float Muscle::maxLinearContractionSpeed = 0.8f; // max meters/second linear contraction speed
 
-Muscle::Muscle(BodyPart* parent, PhysicsProperties props, Joint* joint)
+Muscle::Muscle(BodyPart* parent, PhysicsProperties props, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, props)
 	, joint_(joint)
+	, rotationSign_(motorDirSign)
 	, size_(0.5e-4f)
 	, aspectRatio_(0.7f)
 	, maxTorque_(0)
+	, maxJointAngularSpeed_(0)
 {
 	// we need this for debug draw, since muscle doesn't create fixture, nor body
 	keepInitializationData_ = true;
@@ -80,7 +83,8 @@ void Muscle::commit() {
 	// and finally:
 	maxTorque_ = forcePerWidthRatio * w0 * h*r/sqrt(h*h+r*r);
 
-#warning "must also compute max speed"
+	// must also compute max speed:
+	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * maxLinearContractionSpeed;
 }
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)

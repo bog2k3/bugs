@@ -55,13 +55,15 @@ struct Atom {
 		this->meta.value = constants::initial_gene_mutate;
 		this->meta.dynamic_variation = constants::change_gene_mutate;
 	}
+
+	Atom() : value(), meta() {}
 };
 
 typedef uint16_t LocationLevelType; // bit 15 = current node, bits 0..14 children nodes
-typedef Atom<LocationLevelType> LocationType[constants::MAX_GROWTH_DEPTH];
 
 struct GeneLocation {
-	LocationType location;
+	Atom<LocationLevelType> location[constants::MAX_GROWTH_DEPTH];
+#warning "when mutating this gene, use only bit 15 and 0 for odd levels, and all 16 for even levels"
 };
 
 struct GeneCommand {

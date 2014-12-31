@@ -14,7 +14,8 @@ class Joint;
 
 class Muscle: public BodyPart {
 public:
-	Muscle(BodyPart* parent, PhysicsProperties props, Joint* joint); // the position and rotation in props are relative to the parent
+	// the position and rotation in props are relative to the parent:
+	Muscle(BodyPart* parent, PhysicsProperties props, Joint* joint, int motorDirSign);
 	virtual ~Muscle() override;
 
 	void commit() override;
@@ -25,14 +26,17 @@ public:
 	float getAspectRatio() { return aspectRatio_; }
 
 protected:
-	static const float contractionRatio;
-	static const float forcePerWidthRatio;
+	static const float contractionRatio;			// [1]
+	static const float forcePerWidthRatio;			// [N/m]
+	static const float maxLinearContractionSpeed;	// [m/s]
 
 	Joint* joint_;
+	float rotationSign_;
 	CummulativeValue size_;
 	CummulativeValue aspectRatio_;	// length/width
 
 	float maxTorque_;
+	float maxJointAngularSpeed_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

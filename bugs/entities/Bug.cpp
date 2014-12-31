@@ -85,43 +85,44 @@ void Bug::update(float dt) {
 Bug* Bug::newBasicBug(glm::vec2 position) {
 	Genome g;
 
-	GeneCommand gc;
 	// first bone:
+	GeneLocation gl;
+	gl.location[0].set(1 << 15);
+	g.first.push_back(gl);
+	GeneCommand gc;
 	gc.command = GENE_DEV_GROW;
 	gc.angle.set(PI);
 	gc.part_type = GENE_PART_BONE;
-	gc.location.set(0);
 	g.first.push_back(gc);
 
 	// second bone:
-	gc.location.set(0b10001);
+	gl.location[0].set(1);
+	gl.location[1].set(1);
+	gl.location[2].set(1 << 15);
+	g.first.push_back(gl);
 	gc.angle.set(0);
 	g.first.push_back(gc);
 
 	// the gripper:
-	gc.location.set(0b1000110001);
+	gl.location[2].set(1);
+	gl.location[3].set(1);
+	gl.location[4].set(1 << 15);
+	g.first.push_back(gl);
 	gc.part_type = GENE_PART_GRIPPER;
 	g.first.push_back(gc);
 
-	// bone 1 muscle 1:
-	gc.location.set(0b10001);
-	gc.angle.set(PI/2);
-	gc.part_type = GENE_PART_MUSCLE;
-	g.first.push_back(gc);
-
-	// bone 1 muscle 2:
-	gc.angle.set(-PI/2);
-	g.first.push_back(gc);
-
-	GeneLocalAttribute ga;
 	// body size (sq meters)
+	GeneLocalAttribute ga;
+	gl.location[0].set(1 << 15);
+	g.first.push_back(gl);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.location.set(0);
 	ga.value.set(0.1f * 0.1f);
 	g.first.push_back(ga);
 
 	// first bone size:
-	ga.location.set(0b10001);
+	gl.location[0].set(1);
+	gl.location[2].set(1 << 15);
+	g.first.push_back(gl);
 	ga.value.set(0.08f * 0.01f);
 	g.first.push_back(ga);
 
@@ -131,8 +132,9 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(ga);
 
 	// second bone size:
+	gl.location[2].set(1);
+	g.first.push_back(gl);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.location.set(0b1000110001);
 	ga.value.set(0.08f * 0.01f);
 	g.first.push_back(ga);
 
@@ -142,6 +144,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(ga);
 
 	// first muscle size
+	// ...
 
 	g.second = g.first; // make a duplicate of all genes into the second chromosome
 
