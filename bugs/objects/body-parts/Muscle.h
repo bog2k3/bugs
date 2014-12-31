@@ -15,7 +15,7 @@ class Joint;
 class Muscle: public BodyPart {
 public:
 	// the position and rotation in props are relative to the parent:
-	Muscle(BodyPart* parent, PhysicsProperties props, Joint* joint, int motorDirSign);
+	Muscle(BodyPart* parent, Joint* joint, int motorDirSign);
 	virtual ~Muscle() override;
 
 	void commit() override;

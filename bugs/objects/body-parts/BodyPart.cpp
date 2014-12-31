@@ -15,10 +15,10 @@
 #include <Box2D/Dynamics/b2Body.h>
 #include <assert.h>
 
-BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props)
-	: WorldObject(props)
-	, type_(type)
+BodyPart::BodyPart(BodyPart* parent, PART_TYPE type)
+	: type_(type)
 	, parent_(parent)
+	, initialData_(new PhysicsProperties())
 	, children_{nullptr}
 	, nChildren_(0)
 	, committed_(false)
@@ -83,8 +83,10 @@ void BodyPart::commit_tree() {
 	// because they must use the body of both parent and child when creating the actual joint
 	for (auto j : joints) {
 		j->commit();
-		if (!keepInitializationData_)
-			j->WorldObject::purgeInitializationData();
+		if (!keepInitializationData_) {
+			delete j->initialData_;
+			j->initialData_ = nullptr;
+		}
 		j->committed_ = true;
 	}
 }
@@ -111,10 +113,12 @@ void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
 		out_joints.push_back(this);
 	} else {
 		if (!dontCreateBody_)
-			WorldObject::createPhysicsBody();
+			WorldObject::createPhysicsBody(*initialData_);
 		commit();
-		if (!keepInitializationData_)
-			WorldObject::purgeInitializationData();
+		if (!keepInitializationData_) {
+			delete initialData_;
+			initialData_ = nullptr;
+		}
 		committed_ = true;
 	}
 	// perform recursive commit on all children:

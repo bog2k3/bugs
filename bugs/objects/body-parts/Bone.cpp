@@ -15,8 +15,8 @@
 
 const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
-Bone::Bone(BodyPart* parent, PhysicsProperties props)
-	: BodyPart(parent, BODY_PART_BONE, props)
+Bone::Bone(BodyPart* parent)
+	: BodyPart(parent, BODY_PART_BONE)
 	, density_(1)
 	, size_(1.e-4f)	// 1 sq cm
 	, aspectRatio_(0.7f) // more wide than long

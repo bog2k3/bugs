@@ -30,29 +30,27 @@ struct PhysicsProperties {
 		: position(pos), angle(angle), dynamic(true), velocity(glm::vec2(0)), angularVelocity(0)
 	{}
 
+	PhysicsProperties() : PhysicsProperties(glm::vec2(0), 0) {}
+
 	PhysicsProperties(const PhysicsProperties& o) = default;
 };
 
 class WorldObject {
 public:
 	virtual ~WorldObject();
-	// creates a new world object with the initial properties props.
-	// the physics body is not yet created at this stage unless autoCommit is set to true. This allows
-	// more tweaking to be done to the WorldObject's physicsProperties before the body is finally created by calling commit().
-	WorldObject(PhysicsProperties props, bool autoCreatePhysicsBody=false);
+	// creates a new world object.
+	// the physics body is not yet created at this stage.
+	WorldObject();
 
 	virtual void draw(RenderContext& ctx) {}
 
-	// creates the object's physics body from the object's PhysicsProperties
-	void createPhysicsBody();
+	// creates the object's physics body from the PhysicsProperties
+	void createPhysicsBody(PhysicsProperties const &props);
 
 	b2Body* getBody() { return body_; }
-	PhysicsProperties& getInitialData() { assert(initialData_ != nullptr); return *initialData_; }
 
 protected:
 	b2Body* body_;
-	PhysicsProperties *initialData_;	// these are valid only for the initial state of the object
-	void purgeInitializationData();
 };
 
 #endif /* OBJECTS_WORLDOBJECT_H_ */

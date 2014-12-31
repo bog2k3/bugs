@@ -28,8 +28,7 @@ enum PART_TYPE {
 
 class BodyPart : public WorldObject {
 public:
-	// the position and rotation in props are relative to the parent
-	BodyPart(BodyPart* parent, PART_TYPE type, PhysicsProperties props);
+	BodyPart(BodyPart* parent, PART_TYPE type);
 	virtual ~BodyPart() override;
 
 	virtual void draw(RenderContext& ctx) override;
@@ -74,12 +73,14 @@ public:
 protected:
 	PART_TYPE type_;
 	BodyPart* parent_;
+
 	static const int MAX_CHILDREN = 4;
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
+
 	bool committed_;
-	bool keepInitializationData_;
-	bool dontCreateBody_;
+	bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
+	bool dontCreateBody_;			// set to true to prevent creating an actual physics body
 
 	void add(BodyPart* part);
 	void remove(BodyPart* part);

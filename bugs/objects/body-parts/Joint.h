@@ -15,7 +15,7 @@ class b2RevoluteJoint;
 
 class Joint : public BodyPart {
 public:
-	Joint(BodyPart* parent, PhysicsProperties props);
+	Joint(BodyPart* parent);
 	~Joint() override;
 
 	void commit() override;

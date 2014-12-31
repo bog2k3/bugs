@@ -15,8 +15,8 @@
 
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
-ZygoteShell::ZygoteShell(float size, PhysicsProperties props)
-	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL, props)
+ZygoteShell::ZygoteShell(float size)
+	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL)
 	, size_(size)
 {
 	// create fixture

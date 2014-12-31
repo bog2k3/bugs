@@ -15,8 +15,8 @@
 
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
-Gripper::Gripper(BodyPart* parent, PhysicsProperties props)
-	: BodyPart(parent, BODY_PART_GRIPPER, props)
+Gripper::Gripper(BodyPart* parent)
+	: BodyPart(parent, BODY_PART_GRIPPER)
 	, size_(0.5e-4f)
 	, density_(1.f)
 	, active_(false)

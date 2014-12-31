@@ -14,8 +14,8 @@
 
 static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 
-Torso::Torso(BodyPart* parent, PhysicsProperties props)
-	: BodyPart(parent, BODY_PART_TORSO, props)
+Torso::Torso(BodyPart* parent)
+	: BodyPart(parent, BODY_PART_TORSO)
 	, size_(0.5e-3f) // 10 sq cm
 	, density_(1.f)
 {

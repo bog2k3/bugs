@@ -12,7 +12,7 @@
 
 class Torso : public BodyPart {
 public:
-	Torso(BodyPart* parent, PhysicsProperties props);
+	Torso(BodyPart* parent);
 	~Torso() override;
 
 	void commit() override;

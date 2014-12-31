@@ -16,8 +16,8 @@
 
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
-Joint::Joint(BodyPart* parent, PhysicsProperties props)
-	: BodyPart(parent, BODY_PART_JOINT, props)
+Joint::Joint(BodyPart* parent)
+	: BodyPart(parent, BODY_PART_JOINT)
 	, size_(0.2e-4f)
 	, phiMin_(-PI/8)
 	, phiMax_(PI * 0.9f)

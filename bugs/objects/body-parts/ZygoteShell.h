@@ -12,7 +12,7 @@
 
 class ZygoteShell: public BodyPart {
 public:
-	ZygoteShell(float size, PhysicsProperties props);
+	ZygoteShell(float size);
 	~ZygoteShell() override;
 
 	void commit() override {}; // nothing to do here, the zygote does not change after creation

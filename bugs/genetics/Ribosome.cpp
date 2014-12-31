@@ -139,7 +139,9 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 
 		if (partMustGenerateJoint(g.part_type)) {
 			// we cannot grow this part directly onto its parent, they must be connected by a joint
-			Joint* linkJoint = new Joint(n->bodyPart, PhysicsProperties(offset, angle));
+			Joint* linkJoint = new Joint(n->bodyPart);
+			linkJoint->initialData_->position = offset;
+			linkJoint->initialData_->angle = angle;
 			DevelopmentNode* nodeJoint = n->children[n->nChildren++] = new DevelopmentNode(n, linkJoint);
 
 			// now generate the two muscles around the joint
@@ -147,14 +149,18 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 			if (n->nChildren < DevelopmentNode::MAX_CHILDREN) {
 				float mLeftAngle = angle + PI/8;
 				glm::vec2 mLeftOffs = n->bodyPart->getChildAttachmentPoint(mLeftAngle);
-				Muscle* mLeft = new Muscle(n->bodyPart, PhysicsProperties(mLeftOffs, mLeftAngle), linkJoint, +1);
+				Muscle* mLeft = new Muscle(n->bodyPart, linkJoint, +1);
+				mLeft->initialData_->position = mLeftOffs;
+				mLeft->initialData_->angle = angle;
 				n->children[n->nChildren++] = new DevelopmentNode(n, mLeft);
 			}
 			// 2. Right
 			if (n->nChildren < DevelopmentNode::MAX_CHILDREN) {
 				float mRightAngle = angle - PI/8;
 				glm::vec2 mRightOffs = n->bodyPart->getChildAttachmentPoint(mRightAngle);
-				Muscle* mRight = new Muscle(n->bodyPart, PhysicsProperties(mRightOffs, mRightAngle), linkJoint, -1);
+				Muscle* mRight = new Muscle(n->bodyPart, linkJoint, -1);
+				mRight->initialData_->position = mRightOffs;
+				mRight->initialData_->angle = angle;
 				n->children[n->nChildren++] = new DevelopmentNode(n, mRight);
 			}
 
@@ -168,10 +174,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		BodyPart* bp = nullptr;
 		switch (g.part_type) {
 		case GENE_PART_BONE:
-			bp = new Bone(n->bodyPart, PhysicsProperties(offset, angle));
+			bp = new Bone(n->bodyPart);
 			break;
 		case GENE_PART_GRIPPER:
-			bp = new Gripper(n->bodyPart, PhysicsProperties(offset, angle));
+			bp = new Gripper(n->bodyPart);
 			break;
 		case GENE_PART_SENSOR:
 			// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));
@@ -181,6 +187,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		}
 		if (!bp)
 			continue;
+		bp->initialData_->position = offset;
+		bp->initialData_->angle = angle;
 		n->children[n->nChildren++] = new DevelopmentNode(n, bp);
 	}
 }

@@ -47,12 +47,12 @@ const float Muscle::contractionRatio = 0.7f;
 const float Muscle::forcePerWidthRatio = 100; // this is the theoretical force of a muscle 1 meter wide.
 const float Muscle::maxLinearContractionSpeed = 0.8f; // max meters/second linear contraction speed
 
-Muscle::Muscle(BodyPart* parent, PhysicsProperties props, Joint* joint, int motorDirSign)
-	: BodyPart(parent, BODY_PART_MUSCLE, props)
+Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
+	: BodyPart(parent, BODY_PART_MUSCLE)
 	, joint_(joint)
 	, rotationSign_(motorDirSign)
-	, size_(0.5e-4f)
-	, aspectRatio_(0.7f)
+	, size_(0.2e-4f)
+	, aspectRatio_(2.0f)
 	, maxTorque_(0)
 	, maxJointAngularSpeed_(0)
 {
@@ -68,9 +68,8 @@ void Muscle::commit() {
 	assert(joint_ != nullptr);
 
 	// here we compute the characteristics of the muscle
-	// here we reverse width and length in order to consider length parallel to the parent and width orthogonal
-	float l0 = sqrtf(size_/aspectRatio_); // relaxed length
-	float w0 = aspectRatio_ * l0; // relaxed width
+	float w0 = sqrtf(size_/aspectRatio_); // relaxed width
+	float l0 = aspectRatio_ * w0; // relaxed length
 	float dx = l0 * (1 - contractionRatio);
 
 	// h is computed as the distance from the joint to the muscle's OX axis (in world coordinates) minus l0/2

@@ -15,7 +15,7 @@ class b2WeldJoint;
 class Gripper : public BodyPart {
 public:
 	// the position and rotation in props are relative to the parent
-	Gripper(BodyPart* parent, PhysicsProperties props);
+	Gripper(BodyPart* parent);
 	~Gripper() override;
 
 	void commit() override;
