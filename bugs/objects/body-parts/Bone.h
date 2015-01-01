@@ -13,7 +13,7 @@
 #include <memory>
 
 struct BoneInitializationData : public BodyPartInitializationData {
-	virtual ~BoneInitializationData() {}
+	virtual ~BoneInitializationData() noexcept = default;
 	BoneInitializationData()
 		: density(1) , aspectRatio(0.7f) {
 	}

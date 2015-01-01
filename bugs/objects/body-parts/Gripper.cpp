@@ -16,7 +16,7 @@
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
 Gripper::Gripper(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_GRIPPER, std::shared_ptr<BodyPartInitializationData>(new GripperInitializationData()))
+	: BodyPart(parent, BODY_PART_GRIPPER, std::make_shared<GripperInitializationData>())
 	, gripperInitialData_(std::static_pointer_cast<GripperInitializationData>(getInitializationData()))
 	, active_(false)
 	, groundJoint_(nullptr)

@@ -48,17 +48,19 @@ const float Muscle::forcePerWidthRatio = 100; // this is the theoretical force o
 const float Muscle::maxLinearContractionSpeed = 0.8f; // max meters/second linear contraction speed
 
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
-	: BodyPart(parent, BODY_PART_MUSCLE)
+	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
+	, muscleInitialData_(std::static_pointer_cast<MuscleInitializationData>(getInitializationData()))
 	, joint_(joint)
 	, rotationSign_(motorDirSign)
-	, size_(0.2e-4f)
-	, aspectRatio_(2.0f)
 	, maxTorque_(0)
 	, maxJointAngularSpeed_(0)
 {
 	// we need this for debug draw, since muscle doesn't create fixture, nor body
 	keepInitializationData_ = true;
 	dontCreateBody_ = true;
+
+	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
+	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
 }
 
 Muscle::~Muscle() {
@@ -67,9 +69,11 @@ Muscle::~Muscle() {
 void Muscle::commit() {
 	assert(joint_ != nullptr);
 
+	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
+
 	// here we compute the characteristics of the muscle
-	float w0 = sqrtf(size_/aspectRatio_); // relaxed width
-	float l0 = aspectRatio_ * w0; // relaxed length
+	float w0 = sqrtf(initData->size / initData->aspectRatio); // relaxed width
+	float l0 = initData->aspectRatio * w0; // relaxed length
 	float dx = l0 * (1 - contractionRatio);
 
 	// h is computed as the distance from the joint to the muscle's OX axis (in world coordinates) minus l0/2
@@ -88,13 +92,15 @@ void Muscle::commit() {
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)
 {
+	assert(!committed_);
+	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
 	// this also takes aspect ratio into account as if the angle is expressed
 	// for an aspect ratio of 1:1, and then the resulting point is stretched along the edge.
 
 	// bring the angle between [-PI, +PI]
 	relativeAngle = limitAngle(relativeAngle, 7*PI/4);
-	float hw = sqrtf(size_/aspectRatio_) * 0.5f; // half width
-	float hl = aspectRatio_ * hw; // half length
+	float hw = sqrtf(initData->size / initData->aspectRatio) * 0.5f; // half width
+	float hl = initData->aspectRatio * hw; // half length
 	if (relativeAngle < PI/4) {
 		// front edge
 		return glm::vec2(hl, sinf(relativeAngle) / sinf(PI/4) * hw);
@@ -108,8 +114,8 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)
 }
 
 void Muscle::draw(RenderContext& ctx) {
-	initialData_->position = getFinalPrecommitPosition();
-	glm::vec3 worldTransform = getWorldTransformation();
+	// initialData_->position = getFinalPrecommitPosition();
+	/*glm::vec3 worldTransform = getWorldTransformation();
 	float w = sqrtf(size_/aspectRatio_);
 	float l = aspectRatio_ * w;
 	ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
@@ -118,5 +124,5 @@ void Muscle::draw(RenderContext& ctx) {
 			vec3xy(worldTransform),
 			vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 			0,
-			debug_color);
+			debug_color);*/
 }

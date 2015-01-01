@@ -12,6 +12,14 @@
 
 class Joint;
 
+struct MuscleInitializationData : public BodyPartInitializationData {
+	virtual ~MuscleInitializationData() noexcept = default;
+	MuscleInitializationData() : aspectRatio(2.0f) {
+	}
+
+	CummulativeValue aspectRatio;	// length/width
+};
+
 class Muscle: public BodyPart {
 public:
 	// the position and rotation in props are relative to the parent:
@@ -22,19 +30,14 @@ public:
 	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 
-	float getSize() { return size_; }
-	float getAspectRatio() { return aspectRatio_; }
-
 protected:
 	static const float contractionRatio;			// [1]
 	static const float forcePerWidthRatio;			// [N/m]
 	static const float maxLinearContractionSpeed;	// [m/s]
 
+	std::weak_ptr<MuscleInitializationData> muscleInitialData_;
 	Joint* joint_;
 	float rotationSign_;
-	CummulativeValue size_;
-	CummulativeValue aspectRatio_;	// length/width
-
 	float maxTorque_;
 	float maxJointAngularSpeed_;
 };

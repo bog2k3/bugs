@@ -135,13 +135,12 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		// The child's attachment point relative to the parent's center is computed from the angle specified in the gene,
 		// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
 		// until it touches an edge of the parent. That point is used as attachment of the new part.
-		glm::vec2 offset = n->bodyPart->getChildAttachmentPoint(angle);
+		// glm::vec2 offset = n->bodyPart->getChildAttachmentPoint(angle);
 
 		if (partMustGenerateJoint(g.part_type)) {
 			// we cannot grow this part directly onto its parent, they must be connected by a joint
 			Joint* linkJoint = new Joint(n->bodyPart);
-			linkJoint->initialData_->position = offset;
-			linkJoint->initialData_->angle = angle;
+			linkJoint->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
 			DevelopmentNode* nodeJoint = n->children[n->nChildren++] = new DevelopmentNode(n, linkJoint);
 
 			// now generate the two muscles around the joint
@@ -150,8 +149,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 				float mLeftAngle = angle + PI/8;
 				glm::vec2 mLeftOffs = n->bodyPart->getChildAttachmentPoint(mLeftAngle);
 				Muscle* mLeft = new Muscle(n->bodyPart, linkJoint, +1);
-				mLeft->initialData_->position = mLeftOffs;
-				mLeft->initialData_->angle = angle;
+				mLeft->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
 				n->children[n->nChildren++] = new DevelopmentNode(n, mLeft);
 			}
 			// 2. Right
@@ -159,8 +157,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 				float mRightAngle = angle - PI/8;
 				glm::vec2 mRightOffs = n->bodyPart->getChildAttachmentPoint(mRightAngle);
 				Muscle* mRight = new Muscle(n->bodyPart, linkJoint, -1);
-				mRight->initialData_->position = mRightOffs;
-				mRight->initialData_->angle = angle;
+				mRight->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
 				n->children[n->nChildren++] = new DevelopmentNode(n, mRight);
 			}
 
@@ -168,7 +165,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 			n = nodeJoint;
 			// recompute coordinates in joint's space:
 			angle = 0;
-			offset = n->bodyPart->getChildAttachmentPoint(0);
+			// offset = n->bodyPart->getChildAttachmentPoint(0);
 		}
 
 		BodyPart* bp = nullptr;
@@ -187,8 +184,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		}
 		if (!bp)
 			continue;
-		bp->initialData_->position = offset;
-		bp->initialData_->angle = angle;
+		bp->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
 		n->children[n->nChildren++] = new DevelopmentNode(n, bp);
 	}
 }

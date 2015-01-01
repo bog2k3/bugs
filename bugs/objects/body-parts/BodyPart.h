@@ -28,7 +28,7 @@ enum PART_TYPE {
 };
 
 struct BodyPartInitializationData {
-	virtual ~BodyPartInitializationData() {}
+	virtual ~BodyPartInitializationData() = default;
 	BodyPartInitializationData()
 		: size(1.e-4f) {
 	}

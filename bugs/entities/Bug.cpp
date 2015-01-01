@@ -36,8 +36,8 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	// energia disponibila in zigot si energia necesara dezvoltarii determina scala initiala dupa decodare.
 
 	// create embryo shell:
-	zygoteShell_ = new ZygoteShell(zygoteSize, PhysicsProperties(position, 0));
-	body_ = new Torso(zygoteShell_, PhysicsProperties(glm::vec2(0), 0));
+	zygoteShell_ = new ZygoteShell(zygoteSize);
+	body_ = new Torso(zygoteShell_);
 	ribosome_ = new Ribosome(this);
 }
 

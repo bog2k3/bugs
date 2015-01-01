@@ -19,7 +19,6 @@ public:
 	void draw(RenderContext& ctx) override;
 
 private:
-	float size_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_ZYGOTESHELL_H_ */

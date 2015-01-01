@@ -10,6 +10,14 @@
 
 #include "BodyPart.h"
 
+struct TorsoInitializationData : public BodyPartInitializationData {
+	virtual ~TorsoInitializationData() noexcept = default;
+	TorsoInitializationData() : density_(1.f) {
+	}
+
+	CummulativeValue density_;
+};
+
 class Torso : public BodyPart {
 public:
 	Torso(BodyPart* parent);
@@ -19,13 +27,8 @@ public:
 	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 
-	// returns the 'size' (surface area)
-	float getSize() { return size_; }
-	float getDensity() { return density_; }
-
 protected:
-	CummulativeValue size_;
-	CummulativeValue density_;
+	std::weak_ptr<TorsoInitializationData> torsoInitialData_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */

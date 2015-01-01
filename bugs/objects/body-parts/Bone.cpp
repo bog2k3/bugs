@@ -16,7 +16,7 @@
 const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
 Bone::Bone(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_BONE, std::shared_ptr<BodyPartInitializationData>(new BoneInitializationData()))
+	: BodyPart(parent, BODY_PART_BONE, std::make_shared<BoneInitializationData>())
 	, boneInitialData_(std::static_pointer_cast<BoneInitializationData>(getInitializationData()))
 {
 	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();

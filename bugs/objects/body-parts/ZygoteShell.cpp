@@ -16,10 +16,9 @@
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
 ZygoteShell::ZygoteShell(float size)
-	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL)
-	, size_(size)
+	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
 {
-	// create fixture
+	getInitializationData()->size = size;
 }
 
 ZygoteShell::~ZygoteShell() {
@@ -30,9 +29,10 @@ void ZygoteShell::draw(RenderContext& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {
-		glm::vec3 transform = getWorldTransformation();
+		/*glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
 		ctx.shape->drawLine(pos, pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z), 0, debug_color);
+		*/
 	}
 }

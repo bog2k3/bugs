@@ -12,12 +12,11 @@
 #include "BodyPart.h"
 
 struct JointInitializationData : public BodyPartInitializationData {
-	virtual ~JointInitializationData() = default;
+	virtual ~JointInitializationData() noexcept = default;
 	JointInitializationData();
 
-	CummulativeValue phiMin_;
-	CummulativeValue phiMax_;
-	CummulativeValue repauseAngle_;		// this is the angle toward which the joint tends to settle when muscles are idle
+	CummulativeValue phiMin;
+	CummulativeValue phiMax;
 };
 
 class b2RevoluteJoint;
@@ -37,6 +36,7 @@ public:
 protected:
 	std::weak_ptr<JointInitializationData> jointInitialData_;
 	b2RevoluteJoint* physJoint_;
+	float repauseAngle_;		// this is the angle toward which the joint tends to settle when muscles are idle
 
 	void fixAngles();
 };

@@ -14,7 +14,7 @@
 class b2WeldJoint;
 
 struct GripperInitializationData : public BodyPartInitializationData {
-	virtual ~GripperInitializationData() {}
+	virtual ~GripperInitializationData() noexcept = default;
 	GripperInitializationData()
 		: density(1) {
 	}
