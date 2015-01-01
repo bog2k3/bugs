@@ -81,12 +81,12 @@ void Joint::draw(RenderContext& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {
-		/*initialData_->position = getFinalPrecommitPosition();
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
-		ctx.shape->drawLine(pos, pos+glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z), 0, debug_color);
-		*/
+		ctx.shape->drawCircle(pos, sqrtf(getInitializationData()->size/PI), 0, 12, debug_color);
+		ctx.shape->drawLine(pos,
+				pos + glm::rotate(glm::vec2(sqrtf(getInitializationData()->size/PI), 0), transform.z),
+				0, debug_color);
 	}
 }
 

@@ -90,8 +90,7 @@ void Muscle::commit() {
 	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * maxLinearContractionSpeed;
 }
 
-glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const
-{
+glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
 	assert(!committed_);
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
 	// this also takes aspect ratio into account as if the angle is expressed
@@ -114,15 +113,17 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const
 }
 
 void Muscle::draw(RenderContext& ctx) {
-	// initialData_->position = getFinalPrecommitPosition();
-	/*glm::vec3 worldTransform = getWorldTransformation();
-	float w = sqrtf(size_/aspectRatio_);
-	float l = aspectRatio_ * w;
-	ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
-			glm::vec2(l, w), worldTransform.z, debug_color);
-	ctx.shape->drawLine(
-			vec3xy(worldTransform),
-			vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
-			0,
-			debug_color);*/
+	if (!committed_) {
+		std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
+		glm::vec3 worldTransform = getWorldTransformation();
+		float w = sqrtf(initData->size / initData->aspectRatio);
+		float l = initData->aspectRatio * w;
+		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
+				glm::vec2(l, w), worldTransform.z, debug_color);
+		ctx.shape->drawLine(
+				vec3xy(worldTransform),
+				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
+				0,
+				debug_color);
+	}
 }

@@ -74,10 +74,10 @@ void Bone::draw(RenderContext& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {
-		/*initialData_->position = getFinalPrecommitPosition();
+		std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
 		glm::vec3 worldTransform = getWorldTransformation();
-		float w = sqrtf(size_/aspectRatio_);
-		float l = aspectRatio_ * w;
+		float w = sqrtf(initData->size / initData->aspectRatio);
+		float l = initData->aspectRatio * w;
 		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
 				glm::vec2(l, w), worldTransform.z, debug_color);
 		ctx.shape->drawLine(
@@ -85,6 +85,5 @@ void Bone::draw(RenderContext& ctx) {
 				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 				0,
 				debug_color);
-		*/
 	}
 }
