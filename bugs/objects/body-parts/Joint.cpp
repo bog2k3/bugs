@@ -16,11 +16,14 @@
 
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
+JointInitializationData::JointInitializationData()
+	: phiMin_(-PI/8), phiMax_(PI * 0.9f) {
+	size = 0.2e-4f;
+}
+
 Joint::Joint(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_JOINT)
-	, size_(0.2e-4f)
-	, phiMin_(-PI/8)
-	, phiMax_(PI * 0.9f)
+	: BodyPart(parent, BODY_PART_JOINT, std::make_shared<JointInitializationData>(JointInitializationData()))
+	, jointInitialData_(std::static_pointer_cast<JointInitializationData>(getInitializationData()))
 	, physJoint_(nullptr)
 {
 }

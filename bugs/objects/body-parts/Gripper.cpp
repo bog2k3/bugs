@@ -16,9 +16,8 @@
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
 Gripper::Gripper(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_GRIPPER)
-	, size_(0.5e-4f)
-	, density_(1.f)
+	: BodyPart(parent, BODY_PART_GRIPPER, std::shared_ptr<BodyPartInitializationData>(new GripperInitializationData()))
+	, gripperInitialData_(std::static_pointer_cast<GripperInitializationData>(getInitializationData()))
 	, active_(false)
 	, groundJoint_(nullptr)
 {
@@ -30,23 +29,17 @@ Gripper::~Gripper() {
 
 void Gripper::commit() {
 	assert(!committed_);
+
+	std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();
+
 	b2CircleShape shape;
-	shape.m_radius = sqrtf(size_ * PI_INV);
+	shape.m_radius = sqrtf(initData->size * PI_INV);
 	b2FixtureDef fdef;
-	fdef.density = density_;
+	fdef.density = initData->density;
 	fdef.friction = 0.3f;
 	fdef.restitution = 0.2f;
 	fdef.shape = &shape;
 	body_->CreateFixture(&fdef);
-}
-
-void Gripper::setSize(float value) {
-	assert(!committed_);
-	size_ = value;
-}
-void Gripper::setDensity(float value) {
-	assert(!committed_);
-	density_ = value;
 }
 
 void Gripper::setActive(bool active) {
@@ -69,15 +62,18 @@ void Gripper::draw(RenderContext& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {
-		initialData_->position = getFinalPrecommitPosition();
+		/*initialData_->position = getFinalPrecommitPosition();
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
 		ctx.shape->drawLine(pos, pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z), 0, debug_color);
+		*/
 	}
 }
 
 glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
 {
-	return glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle);
+	assert(!committed_);
+	std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();
+	return glm::rotate(glm::vec2(sqrtf(initData->size * PI_INV), 0), relativeAngle);
 }

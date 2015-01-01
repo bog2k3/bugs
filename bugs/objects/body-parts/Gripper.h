@@ -9,8 +9,18 @@
 #define OBJECTS_BODY_PARTS_GRIPPER_H_
 
 #include "BodyPart.h"
+#include <memory>
 
 class b2WeldJoint;
+
+struct GripperInitializationData : public BodyPartInitializationData {
+	virtual ~GripperInitializationData() {}
+	GripperInitializationData()
+		: density(1) {
+	}
+
+	CummulativeValue density;
+};
 
 class Gripper : public BodyPart {
 public:
@@ -25,15 +35,8 @@ public:
 	void setActive(bool active);
 	bool isActive() { return active_; }
 
-	float getDensity() { return density_; }
-	float getSize() { return size_; }
-
-	void setDensity(float value);
-	void setSize(float value);
-
 protected:
-	float size_;
-	float density_;
+	std::weak_ptr<GripperInitializationData> gripperInitialData_;
 	bool active_;
 	b2WeldJoint* groundJoint_;
 };

@@ -13,6 +13,7 @@
 #include "../../genetics/CummulativeValue.h"
 #include <vector>
 #include <map>
+#include <memory>
 
 enum PART_TYPE {
 	BODY_PART_INVALID,
@@ -26,9 +27,22 @@ enum PART_TYPE {
 	BODY_PART_SENSOR,
 };
 
+struct BodyPartInitializationData {
+	virtual ~BodyPartInitializationData() {}
+	BodyPartInitializationData()
+		: size(1.e-4f) {
+	}
+	PhysicsProperties cachedProps;
+
+	CummulativeValue attachmentDirectionParent;		// the attachment direction in parent's space
+	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
+	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
+	CummulativeValue size;							// surface area
+};
+
 class BodyPart : public WorldObject {
 public:
-	BodyPart(BodyPart* parent, PART_TYPE type);
+	BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
 	virtual ~BodyPart() override;
 
 	virtual void draw(RenderContext& ctx) override;
@@ -47,9 +61,9 @@ public:
 	/**
 	 * returns the attachment point for the current part in its parent's coordinate space.
 	 */
-	glm::vec2 getUpstreamAttachmentPoint();
+	//glm::vec2 getUpstreamAttachmentPoint();
 
-	virtual glm::vec3 getWorldTransformation() const;
+	virtual glm::vec3 getWorldTransformation();
 
 	/*
 	 * This is called after the body is completely developed and no more changes will occur on body parts
@@ -74,7 +88,7 @@ protected:
 	PART_TYPE type_;
 	BodyPart* parent_;
 
-	static const int MAX_CHILDREN = 4;
+	static const int MAX_CHILDREN = 15;
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
 
@@ -85,13 +99,12 @@ protected:
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
-	glm::vec2 getFinalPrecommitPosition();
+	std::shared_ptr<BodyPartInitializationData> getInitializationData() { return initialData_; }
 
 private:
-	bool coordinates_local_;
-	void transform_position_and_angle();
-	void commit_tree(std::vector<BodyPart*> &out_joints);
+	void computePrecommitTransform();
 	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;
+	std::shared_ptr<BodyPartInitializationData> initialData_;
 };
 
 

@@ -10,6 +10,17 @@
 
 #include "BodyPart.h"
 #include <glm/vec2.hpp>
+#include <memory>
+
+struct BoneInitializationData : public BodyPartInitializationData {
+	virtual ~BoneInitializationData() {}
+	BoneInitializationData()
+		: density(1) , aspectRatio(0.7f) {
+	}
+
+	CummulativeValue density;
+	CummulativeValue aspectRatio;
+};
 
 class Bone: public BodyPart {
 public:
@@ -21,14 +32,8 @@ public:
 
 	void draw(RenderContext& ctx) override;
 
-	float getDensity() { return density_; }
-	float getSize() { return size_; }
-	float getAspectRatio() { return aspectRatio_; }
-
 protected:
-	CummulativeValue density_;
-	CummulativeValue size_;
-	CummulativeValue aspectRatio_;
+	std::weak_ptr<BoneInitializationData> boneInitialData_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

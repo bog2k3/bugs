@@ -11,24 +11,30 @@
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../math/math2D.h"
 #include "../../log.h"
+#include "../../genetics/GeneDefinitions.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <assert.h>
 
-BodyPart::BodyPart(BodyPart* parent, PART_TYPE type)
+BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
 	: type_(type)
 	, parent_(parent)
-	, initialData_(new PhysicsProperties())
 	, children_{nullptr}
 	, nChildren_(0)
 	, committed_(false)
 	, keepInitializationData_(false)
 	, dontCreateBody_(false)
-	, coordinates_local_(true)
+	, initialData_(initialData)
 {
+	assert (initialData != nullptr);
 	if (parent) {
 		parent->add(this);
 	}
+
+	registerAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE, initialData_->attachmentDirectionParent);
+	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->angleOffset);
+	registerAttribute(GENE_ATTRIB_ATTACHMENT_OFFSET, initialData_->lateralOffset);
+	registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
 }
 
 BodyPart::~BodyPart() {
@@ -58,7 +64,7 @@ void BodyPart::remove(BodyPart* part) {
 		}
 }
 
-glm::vec2 BodyPart::getUpstreamAttachmentPoint() {
+/*glm::vec2 BodyPart::getUpstreamAttachmentPoint() {
 	if (!parent_)
 		return glm::vec2(0);
 	else
@@ -72,26 +78,34 @@ void BodyPart::transform_position_and_angle() {
 		initialData_->position = vec3xy(wt);
 	}
 	coordinates_local_ = false;
-}
+}*/
 
 void BodyPart::commit_tree() {
 	assert(!committed_);
 	LOGGER("commit_tree");
-	std::vector<BodyPart*> joints;
-	commit_tree(joints);
-	// joints must be committed last, after all other parts are committed
-	// because they must use the body of both parent and child when creating the actual joint
-	for (auto j : joints) {
-		j->commit();
-		if (!keepInitializationData_) {
-			delete j->initialData_;
-			j->initialData_ = nullptr;
-		}
-		j->committed_ = true;
+	// initialData_->position = getFinalPrecommitPosition();
+	computePrecommitTransform();
+	// perform commit on local node:
+	if (type_ != BODY_PART_JOINT) {
+		if (!dontCreateBody_)
+			WorldObject::createPhysicsBody(initialData_->cachedProps);
+		commit();
+		committed_ = true;
+	}
+	// perform recursive commit on all children:
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->commit_tree();
+
+	if (type_ == BODY_PART_JOINT) {
+		commit();
+		committed_ = true;
+	}
+	if (!keepInitializationData_) {
+		initialData_.reset();
 	}
 }
 
-glm::vec2 BodyPart::getFinalPrecommitPosition() {
+/*glm::vec2 BodyPart::getFinalPrecommitPosition() {
 	if (parent_) {
 		// update attachment point (since parent may have changed its size or aspect ratio):
 		glm::vec2 pos = getUpstreamAttachmentPoint();
@@ -100,40 +114,21 @@ glm::vec2 BodyPart::getFinalPrecommitPosition() {
 		return pos;
 	} else
 		return initialData_->position;
+}*/
+
+void BodyPart::computePrecommitTransform() {
+	// do the magic here and update initialData_->cachedProps from other initialData_ fields
+	// initialData_->cachedProps must be in world space
+	// parent's initialData_->cachedProps are assumed to be in world space at this time
 }
 
-void BodyPart::commit_tree(std::vector<BodyPart*> &out_joints) {
-	initialData_->position = getFinalPrecommitPosition();
-	if (!dontCreateBody_) {
-		// transform position and angle into world space:
-		transform_position_and_angle();
-	}
-	// perform commit on local node:
-	if (type_ == BODY_PART_JOINT) {
-		out_joints.push_back(this);
-	} else {
-		if (!dontCreateBody_)
-			WorldObject::createPhysicsBody(*initialData_);
-		commit();
-		if (!keepInitializationData_) {
-			delete initialData_;
-			initialData_ = nullptr;
-		}
-		committed_ = true;
-	}
-	// perform recursive commit on all children:
-	for (int i=0; i<nChildren_; i++)
-		children_[i]->commit_tree(out_joints);
-}
-
-glm::vec3 BodyPart::getWorldTransformation() const {
+glm::vec3 BodyPart::getWorldTransformation() {
 	if (body_ == nullptr) {
-		if (coordinates_local_) {
-			glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-			return parentTransform + glm::vec3(glm::rotate(initialData_->position, parentTransform.z), initialData_->angle);
-		} else {
-			return glm::vec3(initialData_->position, initialData_->angle);
-		}
+		/*glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
+		return parentTransform + glm::vec3(
+				glm::rotate(initialData_->cachedProps.position, parentTransform.z),
+				initialData_->cachedProps.angle);*/
+#warning "implement slow method here that doesn't affect initialProps_"
 	} else {
 		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
 	}
