@@ -56,14 +56,14 @@ public:
 	 * (in current's part coordinate frame).
 	 * This is usually the point where the ray from the center intersects the edge of the body part.
 	 */
-	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
+	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) const { return glm::vec2(0); }
 
 	/**
 	 * returns the attachment point for the current part in its parent's coordinate space.
 	 */
 	//glm::vec2 getUpstreamAttachmentPoint();
 
-	virtual glm::vec3 getWorldTransformation();
+	virtual glm::vec3 getWorldTransformation() const;
 
 	/*
 	 * This is called after the body is completely developed and no more changes will occur on body parts
@@ -99,10 +99,11 @@ protected:
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
-	std::shared_ptr<BodyPartInitializationData> getInitializationData() { return initialData_; }
+	std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
 
 private:
-	void computePrecommitTransform();
+	void computeBodyPhysProps();
+	glm::vec2 getUpstreamAttachmentPoint() const;
 	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 };

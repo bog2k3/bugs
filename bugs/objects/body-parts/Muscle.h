@@ -28,7 +28,7 @@ public:
 
 	void commit() override;
 	void draw(RenderContext& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 
 protected:
 	static const float contractionRatio;			// [1]

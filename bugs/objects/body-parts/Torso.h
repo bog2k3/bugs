@@ -12,10 +12,10 @@
 
 struct TorsoInitializationData : public BodyPartInitializationData {
 	virtual ~TorsoInitializationData() noexcept = default;
-	TorsoInitializationData() : density_(1.f) {
+	TorsoInitializationData() : density(1.f) {
 	}
 
-	CummulativeValue density_;
+	CummulativeValue density;
 };
 
 class Torso : public BodyPart {
@@ -25,7 +25,7 @@ public:
 
 	void commit() override;
 	void draw(RenderContext& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 
 protected:
 	std::weak_ptr<TorsoInitializationData> torsoInitialData_;

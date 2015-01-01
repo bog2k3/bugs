@@ -28,8 +28,8 @@ public:
 
 	void commit() override;
 	void draw(RenderContext& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
-	// glm::vec3 getWorldTransformation() const override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
+	glm::vec3 getWorldTransformation() const override;
 
 	float getTotalRange(); // returns the total angular range (in radians) of the joint.
 

@@ -71,7 +71,7 @@ void Gripper::draw(RenderContext& ctx) {
 	}
 }
 
-glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 {
 	assert(!committed_);
 	std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();

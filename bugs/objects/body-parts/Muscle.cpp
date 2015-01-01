@@ -90,7 +90,7 @@ void Muscle::commit() {
 	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * maxLinearContractionSpeed;
 }
 
-glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const
 {
 	assert(!committed_);
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();

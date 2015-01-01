@@ -28,7 +28,7 @@ public:
 	Bone(BodyPart* parent);
 	virtual ~Bone() override;
 	void commit() override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 
 	void draw(RenderContext& ctx) override;
 

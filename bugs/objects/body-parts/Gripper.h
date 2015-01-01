@@ -30,7 +30,7 @@ public:
 
 	void commit() override;
 	void draw(RenderContext& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 
 	void setActive(bool active);
 	bool isActive() { return active_; }

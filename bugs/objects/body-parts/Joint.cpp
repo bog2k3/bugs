@@ -68,14 +68,14 @@ void Joint::commit() {
 	repauseAngle_ = initData->angleOffset;
 }
 
-/*glm::vec3 Joint::getWorldTransformation() const {
+glm::vec3 Joint::getWorldTransformation() const {
 	if (!committed_)
 		return BodyPart::getWorldTransformation();
 	else {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
 			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetJointAngle());
 	}
-}*/
+}
 
 void Joint::draw(RenderContext& ctx) {
 	if (committed_) {
@@ -90,7 +90,7 @@ void Joint::draw(RenderContext& ctx) {
 	}
 }
 
-glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle) const
 {
 	assert(!committed_);
 	return glm::rotate(glm::vec2(sqrtf(getInitializationData()->size * PI_INV), 0), relativeAngle);

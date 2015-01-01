@@ -47,7 +47,7 @@ void Bone::commit() {
 
 	body_->CreateFixture(&fixDef);
 }
-glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 {
 	// this also takes aspect ratio into account as if the angle is expressed
 	// for an aspect ratio of 1:1, and then the resulting point is stretched along the edge.
@@ -56,7 +56,7 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
 
 	// bring the angle between [-PI, +PI]
 	relativeAngle = limitAngle(relativeAngle, 7*PI/4);
-	float hw = sqrtf(initData->size/initData->aspectRatio) * 0.5f; // half width
+	float hw = sqrtf(initData->size / initData->aspectRatio) * 0.5f; // half width
 	float hl = initData->aspectRatio * hw; // half length
 	if (relativeAngle < PI/4) {
 		// front edge
