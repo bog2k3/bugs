@@ -39,6 +39,7 @@ protected:
 	std::weak_ptr<GripperInitializationData> gripperInitialData_;
 	bool active_;
 	b2WeldJoint* groundJoint_;
+	float size_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_GRIPPER_H_ */

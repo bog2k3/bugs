@@ -71,20 +71,8 @@ glm::vec2 BodyPart::getUpstreamAttachmentPoint() const {
 		return parent_->getChildAttachmentPoint(initialData_->attachmentDirectionParent);
 }
 
-/*
-void BodyPart::transform_position_and_angle() {
-	if (parent_) {
-		glm::vec3 wt = getWorldTransformation();
-		initialData_->angle = wt.z;
-		initialData_->position = vec3xy(wt);
-	}
-	coordinates_local_ = false;
-}*/
-
 void BodyPart::commit_tree() {
 	assert(!committed_);
-	//LOGGER("commit_tree");
-	// initialData_->position = getFinalPrecommitPosition();
 	computeBodyPhysProps();
 	// perform commit on local node:
 	if (type_ != BODY_PART_JOINT) {
@@ -105,16 +93,12 @@ void BodyPart::commit_tree() {
 	committed_ = true;
 }
 
-/*glm::vec2 BodyPart::getFinalPrecommitPosition() {
-	if (parent_) {
-		// update attachment point (since parent may have changed its size or aspect ratio):
-		glm::vec2 pos = getUpstreamAttachmentPoint();
-		// move away from the parent by half size:
-		pos -= glm::rotate(getChildAttachmentPoint(PI), initialData_->angle);
-		return pos;
-	} else
-		return initialData_->position;
-}*/
+glm::vec2 BodyPart::computeParentSpacePosition() const {
+	return getUpstreamAttachmentPoint() - glm::rotate(
+			getChildAttachmentPoint(PI - initialData_->angleOffset),
+			(float)initialData_->attachmentDirectionParent + initialData_->angleOffset);
+#warning "must take into account lateral offset"
+}
 
 void BodyPart::computeBodyPhysProps() {
 	// do the magic here and update initialData_->cachedProps from other initialData_ fields
@@ -123,9 +107,7 @@ void BodyPart::computeBodyPhysProps() {
 	PhysicsProperties parentProps = parent_ ? parent_->initialData_->cachedProps : PhysicsProperties();
 	initialData_->cachedProps.velocity = parentProps.velocity;
 	// compute parent space position:
-	glm::vec2 pos = getUpstreamAttachmentPoint()
-			- glm::rotate(getChildAttachmentPoint(PI), (float)initialData_->attachmentDirectionParent);
-#warning "must take into account lateral offset"
+	glm::vec2 pos = computeParentSpacePosition();
 	// compute world space position:
 	pos = parentProps.position + glm::rotate(pos, parentProps.angle);
 	initialData_->cachedProps.position = pos;
@@ -134,15 +116,17 @@ void BodyPart::computeBodyPhysProps() {
 }
 
 glm::vec3 BodyPart::getWorldTransformation() const {
-	if (body_ == nullptr) {
+	if (body_) {
+		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
+	} else if (initialData_) {
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-		glm::vec2 pos = getUpstreamAttachmentPoint()
-					- glm::rotate(getChildAttachmentPoint(PI), (float)initialData_->attachmentDirectionParent);
+		glm::vec2 pos = computeParentSpacePosition();
 		return parentTransform + glm::vec3(
 				glm::rotate(pos, parentTransform.z),
 				initialData_->attachmentDirectionParent + initialData_->angleOffset);
 	} else {
-		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
+		assert(false && "no known method to compute world transformation!!!");
+		return glm::vec3(0);
 	}
 }
 

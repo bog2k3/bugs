@@ -18,6 +18,8 @@ const glm::vec3 debug_color(0.f, 1.f, 0.f);
 Bone::Bone(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_BONE, std::make_shared<BoneInitializationData>())
 	, boneInitialData_(std::static_pointer_cast<BoneInitializationData>(getInitializationData()))
+	, size_(0)
+	, density_(0)
 {
 	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
@@ -31,14 +33,14 @@ void Bone::commit() {
 	assert(!committed_);
 
 	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
-
-	glm::vec2 boxSize((float)initData->size, (float)initData->aspectRatio);
-	boxSize.x = sqrtf(boxSize.x/boxSize.y);
-	boxSize.y *= boxSize.x;
+	size_ = glm::vec2((float)initData->size, (float)initData->aspectRatio);
+	size_.x = sqrtf(size_.x * size_.y);	// l = sqrt(s*a)
+	size_.y = size_.x / size_.y;		// w = l/a
+	density_ = initData->density;
 
 	// create fixture:
 	b2PolygonShape shape;
-	shape.SetAsBox(boxSize.y * 0.5f, boxSize.x * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
+	shape.SetAsBox(size_.x * 0.5f, size_.y * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
 	b2FixtureDef fixDef;
 	fixDef.density = initData->density;
 	fixDef.friction = 0.2f;
@@ -49,24 +51,24 @@ void Bone::commit() {
 }
 glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 {
-	// this also takes aspect ratio into account as if the angle is expressed
-	// for an aspect ratio of 1:1, and then the resulting point is stretched along the edge.
-
-	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
-
+	glm::vec2 size = size_;
+	if (!committed_) {
+		std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
+		size.y = sqrtf(initData->size / initData->aspectRatio);
+		size.x = initData->aspectRatio * size.y;
+	}
+	float hw = size.y * 0.5f, hl = size.x * 0.5f;	// half width and length
 	// bring the angle between [-PI, +PI]
 	relativeAngle = limitAngle(relativeAngle, 7*PI/4);
-	float hw = sqrtf(initData->size / initData->aspectRatio) * 0.5f; // half width
-	float hl = initData->aspectRatio * hw; // half length
 	if (relativeAngle < PI/4) {
 		// front edge
-		return glm::vec2(hl, sinf(relativeAngle) / sinf(PI/4) * hw);
+		return glm::vec2(hl, sinf(relativeAngle) * hw);
 	} else if (relativeAngle < 3*PI/4 || relativeAngle > 5*PI/4) {
 		// left or right edge
-		return glm::vec2(cosf(relativeAngle) / cosf(PI/4) * hl, relativeAngle < PI ? hw : -hw);
+		return glm::vec2(cosf(relativeAngle) * hl, relativeAngle < PI ? hw : -hw);
 	} else {
 		// back edge
-		return glm::vec2(-hl, sinf(relativeAngle) / sinf(PI/4) * hw);
+		return glm::vec2(-hl, sinf(relativeAngle) * hw);
 	}
 }
 

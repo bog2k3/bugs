@@ -100,10 +100,11 @@ protected:
 	void remove(BodyPart* part);
 	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
 	std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
+	glm::vec2 getUpstreamAttachmentPoint() const;
 
 private:
 	void computeBodyPhysProps();
-	glm::vec2 getUpstreamAttachmentPoint() const;
+	glm::vec2 computeParentSpacePosition() const;
 	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 };

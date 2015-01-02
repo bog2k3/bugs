@@ -20,6 +20,7 @@ Gripper::Gripper(BodyPart* parent)
 	, gripperInitialData_(std::static_pointer_cast<GripperInitializationData>(getInitializationData()))
 	, active_(false)
 	, groundJoint_(nullptr)
+	, size_(0)
 {
 }
 
@@ -31,9 +32,10 @@ void Gripper::commit() {
 	assert(!committed_);
 
 	std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();
+	size_ = initData->size;
 
 	b2CircleShape shape;
-	shape.m_radius = sqrtf(initData->size * PI_INV);
+	shape.m_radius = sqrtf(size_ * PI_INV);
 	b2FixtureDef fdef;
 	fdef.density = initData->density;
 	fdef.friction = 0.3f;
@@ -73,7 +75,10 @@ void Gripper::draw(RenderContext& ctx) {
 
 glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 {
-	assert(!committed_);
-	std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();
-	return glm::rotate(glm::vec2(sqrtf(initData->size * PI_INV), 0), relativeAngle);
+	float size = size_;
+	if (!committed_) {
+		std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();
+		size = initData->size;
+	}
+	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);
 }

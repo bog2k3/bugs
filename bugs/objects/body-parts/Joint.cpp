@@ -98,8 +98,8 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle) const
 
 float Joint::getTotalRange() {
 	if (committed_) {
-		//return phiMax_ - phiMin_;
-		// get from the actual physic Joint
+		// return phiMax_ - phiMin_;
+		// get from the actual physics Joint
 	} else {
 		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
 		// save original values:

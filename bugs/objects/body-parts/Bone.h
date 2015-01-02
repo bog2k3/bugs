@@ -34,6 +34,8 @@ public:
 
 protected:
 	std::weak_ptr<BoneInitializationData> boneInitialData_;
+	glm::vec2 size_;
+	float density_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

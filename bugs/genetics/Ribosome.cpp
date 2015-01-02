@@ -23,6 +23,8 @@
 #include "Genome.h"
 using namespace std;
 
+static const float MUSCLE_OFFSET_ANGLE = PI * 0.25f;
+
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 	, crtPosition_{0}
@@ -146,18 +148,18 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 			// now generate the two muscles around the joint
 			// 1. Left
 			if (n->nChildren < DevelopmentNode::MAX_CHILDREN) {
-				float mLeftAngle = angle + PI/8;
-				glm::vec2 mLeftOffs = n->bodyPart->getChildAttachmentPoint(mLeftAngle);
+				float mLeftAngle = angle + MUSCLE_OFFSET_ANGLE;
 				Muscle* mLeft = new Muscle(n->bodyPart, linkJoint, +1);
-				mLeft->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
+				mLeft->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(mLeftAngle);
+				mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(-MUSCLE_OFFSET_ANGLE);
 				n->children[n->nChildren++] = new DevelopmentNode(n, mLeft);
 			}
 			// 2. Right
 			if (n->nChildren < DevelopmentNode::MAX_CHILDREN) {
-				float mRightAngle = angle - PI/8;
-				glm::vec2 mRightOffs = n->bodyPart->getChildAttachmentPoint(mRightAngle);
+				float mRightAngle = angle - MUSCLE_OFFSET_ANGLE;
 				Muscle* mRight = new Muscle(n->bodyPart, linkJoint, -1);
-				mRight->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
+				mRight->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(mRightAngle);
+				mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(+MUSCLE_OFFSET_ANGLE);
 				n->children[n->nChildren++] = new DevelopmentNode(n, mRight);
 			}
 
@@ -203,8 +205,6 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g) {
 }
 
 void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
-#warning "add parentOffset_ in BodyPart for GENE_ATTRIB_PARENT_OFFSET, and use it when computing final position"
-	// when changing part's size or aspect ratio, must update all direct children's attachment points (scale them appropriately)
 	for (auto n : activeSet_) {
 		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_attribute_type)g.attribute);
 		if (pAttrib)

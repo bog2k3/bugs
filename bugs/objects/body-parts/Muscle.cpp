@@ -76,10 +76,16 @@ void Muscle::commit() {
 	float l0 = initData->aspectRatio * w0; // relaxed length
 	float dx = l0 * (1 - contractionRatio);
 
-	// h is computed as the distance from the joint to the muscle's OX axis (in world coordinates) minus l0/2
-	glm::vec3 Tw = getWorldTransformation();
-	glm::vec2 OX = glm::rotate(glm::vec2(1, 0), Tw.z);	// OX axis in world space
-	float h = distPointLine(vec3xy(joint_->getWorldTransformation()), vec3xy(Tw), OX);
+	// h is computed as the distance alongside the axis from the parent's center to the joint's attachment angle,
+	// from the muscle's attachment point height to	the joint's attachment point height minus l0/2
+	// JA (joint attachment vector) - distance from parent to joint
+	// MA (muscle attachment vector) - distance from parent to muscle's attachment point
+	glm::vec3 parentTransform = parent_->getWorldTransformation();
+	glm::vec2 parentXY = vec3xy(parentTransform);
+	glm::vec2 JA = vec3xy(joint_->getWorldTransformation()) - parentXY;
+	glm::vec2 MA = glm::rotate(getUpstreamAttachmentPoint(), parentTransform.z);
+	float h = (JA - glm::dot(glm::normalize(JA), MA)).length() - l0*0.5f;
+
 	// r is the theoretical insertion distance (from joint)
 	float r = (dx*dx - 2*dx*h)/(2*(dx+h));
 
@@ -91,15 +97,14 @@ void Muscle::commit() {
 }
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
-	assert(!committed_);
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
 	// this also takes aspect ratio into account as if the angle is expressed
 	// for an aspect ratio of 1:1, and then the resulting point is stretched along the edge.
 
-	// bring the angle between [-PI, +PI]
-	relativeAngle = limitAngle(relativeAngle, 7*PI/4);
 	float hw = sqrtf(initData->size / initData->aspectRatio) * 0.5f; // half width
 	float hl = initData->aspectRatio * hw; // half length
+	// bring the angle between [-PI, +PI]
+	relativeAngle = limitAngle(relativeAngle, 7*PI/4);
 	if (relativeAngle < PI/4) {
 		// front edge
 		return glm::vec2(hl, sinf(relativeAngle) / sinf(PI/4) * hw);
@@ -113,17 +118,15 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
 }
 
 void Muscle::draw(RenderContext& ctx) {
-	if (!committed_) {
-		std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
-		glm::vec3 worldTransform = getWorldTransformation();
-		float w = sqrtf(initData->size / initData->aspectRatio);
-		float l = initData->aspectRatio * w;
-		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
-				glm::vec2(l, w), worldTransform.z, debug_color);
-		ctx.shape->drawLine(
-				vec3xy(worldTransform),
-				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
-				0,
-				debug_color);
-	}
+	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
+	float w = sqrtf(initData->size / initData->aspectRatio);
+	float l = initData->aspectRatio * w;
+	glm::vec3 worldTransform = getWorldTransformation();
+	ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
+			glm::vec2(l, w), worldTransform.z, debug_color);
+	ctx.shape->drawLine(
+			vec3xy(worldTransform),
+			vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
+			0,
+			debug_color);
 }

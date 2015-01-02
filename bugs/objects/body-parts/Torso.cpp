@@ -17,6 +17,8 @@ static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 Torso::Torso(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_TORSO, std::make_shared<TorsoInitializationData>())
 	, torsoInitialData_(std::static_pointer_cast<TorsoInitializationData>(getInitializationData()))
+	, size_(0)
+	, density_(0)
 {
 	std::shared_ptr<TorsoInitializationData> initData = torsoInitialData_.lock();
 	registerAttribute(GENE_ATTRIB_DENSITY, initData->density);
@@ -29,13 +31,16 @@ Torso::~Torso() {
 void Torso::commit() {
 	assert(!committed_);
 	std::shared_ptr<TorsoInitializationData> initData = torsoInitialData_.lock();
+	size_ = initData->size;
+	density_ = initData->density;
+
 	// create fixture....
 	b2CircleShape shape;
 	shape.m_p.Set(0, 0);
-	shape.m_radius = sqrtf(initData->size/PI);
+	shape.m_radius = sqrtf(size_/PI);
 
 	b2FixtureDef fixDef;
-	fixDef.density = initData->density;
+	fixDef.density = density_;
 	fixDef.friction = 0.2f;
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
@@ -58,7 +63,10 @@ void Torso::draw(RenderContext& ctx) {
 
 glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle) const
 {
-	assert(!committed_);
-	std::shared_ptr<TorsoInitializationData> initData = torsoInitialData_.lock();
-	return glm::rotate(glm::vec2(sqrtf(initData->size * PI_INV), 0), relativeAngle);
+	float size = size_;
+	if (!committed_) {
+		std::shared_ptr<TorsoInitializationData> initData = torsoInitialData_.lock();
+		size = initData->size;
+	}
+	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);
 }
