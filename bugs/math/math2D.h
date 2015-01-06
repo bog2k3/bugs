@@ -59,8 +59,29 @@ template<typename T> T constexpr clamp(T x, T a, T b) {
  * t is assumed to be in [0.0, 1.0]
  * use clamp on t before calling if unsure
  */
-float constexpr lerp(float a, float b, float t) {
+template<typename T> T constexpr lerp(T a, T b, float t) {
 	return a * (1-t) + b*t;
+}
+
+/**
+ * sample a value from an array by linearly interpolating across neighbor values
+ * The position is a float index, giving the center of the sample kernel
+ * The size of the kernel is 1.0
+ * the function doesn't do bound checking on the initial position,
+ * but it is safe to use on the first or last locations in the vector - will not sample neighbors outside the vector
+ */
+template<typename T> inline T lerp_lookup(const T* v, int nV, float position) {
+	int index = int(position);
+	float lerpFact = position - index;
+	float value = v[index];
+	if (lerpFact < 0.5f && index > 0) {
+		// lerp with previous value
+		value = lerp(v[index-1], value, lerpFact + 0.5f);
+	} else if (lerpFact > 0.5f && index < nV-1) {
+		// lerp with next value
+		value = lerp(value, v[index+1], lerpFact - 0.5f);
+	}
+	return value;
 }
 
 class Circle

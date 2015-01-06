@@ -216,14 +216,15 @@ void Muscle::draw(RenderContext& ctx) {
 	if (committed_) {
 		float w0 = sqrtf(initData->size / aspectRatio);
 		float l0 = aspectRatio * w0;
-		float crtSlice = getCurrentPhiSlice();
+		/*float crtSlice = getCurrentPhiSlice();
 		int crtSliceIdx = int(crtSlice);
 		crtSlice -= crtSliceIdx;
 		float dx = phiToDx_[crtSliceIdx];
 		if (crtSlice < 0.5f && crtSliceIdx > 0)
 			dx = lerp(phiToDx_[crtSliceIdx-1], dx, crtSlice + 0.5f);
 		else if (crtSlice > 0.5f && crtSliceIdx < nAngleSteps)
-			dx = lerp(dx, phiToDx_[crtSliceIdx+1], crtSlice - 0.5f);
+			dx = lerp(dx, phiToDx_[crtSliceIdx+1], crtSlice - 0.5f);*/
+		float dx = lerp_lookup(phiToDx_, nAngleSteps, getCurrentPhiSlice());
 		aspectRatio *= sqr((l0 - dx) / l0);
 	}
 #endif
@@ -251,17 +252,7 @@ float Muscle::getCurrentPhiSlice() {
 }
 
 void Muscle::command(float signal_strength) {
-	float slice = getCurrentPhiSlice();
-	int sliceIndex = int(slice);
-	float lerpFact = slice - sliceIndex;
-	float RSinAlphaHSinBeta = phiToRSinAlphaHSinBeta_[sliceIndex];
-	if (lerpFact < 0.5f && sliceIndex > 0) {
-		// lerp with previous value
-		RSinAlphaHSinBeta = lerp(phiToRSinAlphaHSinBeta_[sliceIndex-1], RSinAlphaHSinBeta, lerpFact + 0.5f);
-	} else if (lerpFact > 0.5f && sliceIndex < nAngleSteps-1) {
-		// lerp with next value
-		RSinAlphaHSinBeta = lerp(RSinAlphaHSinBeta, phiToRSinAlphaHSinBeta_[sliceIndex+1], lerpFact - 0.5f);
-	}
+	float RSinAlphaHSinBeta = lerp_lookup(phiToRSinAlphaHSinBeta_, nAngleSteps, getCurrentPhiSlice());
 	float torque = maxForce_ * clamp(signal_strength, 0.f, 1.f) * RSinAlphaHSinBeta;
 	joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);
 }
