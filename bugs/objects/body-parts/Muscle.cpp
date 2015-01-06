@@ -92,10 +92,10 @@ void Muscle::commit() {
 	 *
 	 *
 	 * equation to compute r:
-	 * r^2*(h^2*p^2 - dx^2) + r*(-dx*h*p - 2*h*CM) + 0.25*dx^4 - dx^2*h^2 = 0
-	 * delta = (-dx*h*p - 2*h*CM)^2 - 4*(h^2*p^2 - dx^2)*(0.25*dx^4 - dx^2*h^2)
+	 * dx^4+4*h^2*r^2*p^2 - 4*dx^2*h*r*p - 4*dx^2*(h^2+r^2-2*h*r*CM); = 0
+	 * delta = dx^2*(4*dx^2*h^2*CM^2 - 4*dx^2*h^2*p*CM + 4*h^4*p^2 - 4*dx^2*h^2 + dx^4)
 	 *
-	 *           dx*h*p + 2*h*CM +/- sqrt(delta)
+	 *           dx^2*h*p - 2*dx^2*h*CM +/- sqrt(delta)
 	 * r1,2 = -------------------------------------
 	 *                 2*(h^2*p^2 - dx^2)
 	 *
@@ -148,14 +148,6 @@ void Muscle::commit() {
 
 	cachedPhiMin_ = phi_min;
 
-	// delta:
-	/*float delta = sqr(-dx*h*p - 2*h*CM) - 4*(sqr(h*p)-sqr(dx))*(0.25f*sqr(sqr(dx)) - sqr(dx*h));
-	assert(delta >= 0);
-	float denom = 1.f / (2*(sqr(h*p) - sqr(dx)));
-	float sqrtDelta = sqrt(delta);
-	float bneg = dx*h*p + 2*h*CM;
-	float r1 = (bneg + sqrtDelta) * denom;
-	float r2 = (bneg - sqrtDelta) * denom;*/
 	float D = 4*sqr(h)*(sqr(dx)*(sqr(CM)-p*CM-1) + sqr(h*p)) + sqr(sqr(dx));
 	assert(D>=0);
 	float sqrtD = sqrt(D);
@@ -216,14 +208,6 @@ void Muscle::draw(RenderContext& ctx) {
 	if (committed_) {
 		float w0 = sqrtf(initData->size / aspectRatio);
 		float l0 = aspectRatio * w0;
-		/*float crtSlice = getCurrentPhiSlice();
-		int crtSliceIdx = int(crtSlice);
-		crtSlice -= crtSliceIdx;
-		float dx = phiToDx_[crtSliceIdx];
-		if (crtSlice < 0.5f && crtSliceIdx > 0)
-			dx = lerp(phiToDx_[crtSliceIdx-1], dx, crtSlice + 0.5f);
-		else if (crtSlice > 0.5f && crtSliceIdx < nAngleSteps)
-			dx = lerp(dx, phiToDx_[crtSliceIdx+1], crtSlice - 0.5f);*/
 		float dx = lerp_lookup(phiToDx_, nAngleSteps, getCurrentPhiSlice());
 		aspectRatio *= sqr((l0 - dx) / l0);
 	}
