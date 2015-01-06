@@ -17,6 +17,7 @@ struct JointInitializationData : public BodyPartInitializationData {
 
 	CummulativeValue phiMin;
 	CummulativeValue phiMax;
+	CummulativeValue resetTorque;
 };
 
 class b2RevoluteJoint;
@@ -31,6 +32,8 @@ public:
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 	glm::vec3 getWorldTransformation() const override;
 
+	void update(float dt);
+
 	float getTotalRange(); // returns the total angular range (in radians) of the joint.
 	float getLowerLimit();
 	float getUpperLimit();
@@ -42,6 +45,8 @@ protected:
 	std::weak_ptr<JointInitializationData> jointInitialData_;
 	b2RevoluteJoint* physJoint_;
 	float repauseAngle_;		// this is the angle toward which the joint tends to settle when muscles are idle
+	float resetTorque_;			// torque that resets the joint into repause position
+	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
 	void fixAngles();
 };

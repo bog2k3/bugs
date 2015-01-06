@@ -8,14 +8,60 @@
 #define PI_INV 0.31830988618f
 #define E 2.71828182845904523536
 
-template<typename T> inline T sqr(T const &x) { return x*x; }
-template<typename T> inline void xchg(T &x1, T &x2) { T aux = x1; x1 = x2; x2 = aux; }
-template<typename T> inline T min(T const &x, T const &y) { return x < y ? x : y; }
-template<typename T> inline T max(T const &x, T const &y) { return x > y ? x : y; }
+template<typename T> constexpr T sqr(T const &x) { return x*x; }
+template<typename T> constexpr void xchg(T &x1, T &x2) { T aux = x1; x1 = x2; x2 = aux; }
+template<typename T> constexpr T min(T const &x, T const &y) { return x < y ? x : y; }
+template<typename T> constexpr T max(T const &x, T const &y) { return x > y ? x : y; }
+template<typename T> constexpr T sign(T const& x) { return x > 0 ? T(+1) : (x < 0 ? T(-1) : T(0)); }
+template<typename T> constexpr T abs(T const& x) { return x < 0 ? -x : x; }
 
 inline glm::vec2 getNormalVector(glm::vec2 v) { return glm::vec2(-v.y, v.x); }
 
-inline float eqEps(float f1, float f2) { return glm::abs(f1 - f2) < EPS; }
+float constexpr eqEps(float f1, float f2) { return abs(f1 - f2) < EPS; }
+
+inline float cross2D(const glm::vec2 &v1, const glm::vec2 &v2) {
+	return (v1.x*v2.y) - (v1.y*v2.x);
+}
+
+/**
+ * brings an angle into a user defined range (bisector being the max angle where the circle is cut):
+ * 	[bisector-2*PI, bisector]
+ * for example, providing PI/2 as bisector, the angle will be brought into this interval:
+ * 	[-3*PI/2, PI/2]
+ */
+inline float limitAngle(float a, float bisector) {
+	while (a > bisector)
+		a -= 2*PI;
+	while (a < bisector - 2*PI)
+		a += 2*PI;
+	return a;
+}
+
+inline glm::vec2 vec3xy(glm::vec3 const &in) {
+	return glm::vec2(in.x, in.y);
+}
+
+/**
+ * computes the distance from point P to the line defined by lineOrigin and lineDirection.
+ * lineDirection is assumed to be normalized.
+ */
+inline float distPointLine(glm::vec2 P, glm::vec2 lineOrigin, glm::vec2 lineDirection) {
+	glm::vec2 OP = P - lineOrigin;
+	return glm::length(OP - lineDirection * glm::dot(OP, lineDirection));
+}
+
+template<typename T> T constexpr clamp(T x, T a, T b) {
+	return x < a ? a : (x > b ? b : x);
+}
+
+/**
+ * linearly interpolates between a and b by factor t
+ * t is assumed to be in [0.0, 1.0]
+ * use clamp on t before calling if unsure
+ */
+float constexpr lerp(float a, float b, float t) {
+	return a * (1-t) + b*t;
+}
 
 class Circle
 {
@@ -153,10 +199,10 @@ public:
 	bool intersectsBox(ArbitraryBox const &other) const;
 
 	// use the following indexes to refer to an individual axis:
-	static const int AXIS_BOTTOM;
-	static const int AXIS_RIGHT;
-	static const int AXIS_TOP;
-	static const int AXIS_LEFT;
+	static constexpr int AXIS_BOTTOM = 0;
+	static constexpr int AXIS_RIGHT = 1;
+	static constexpr int AXIS_TOP = 2;
+	static constexpr int AXIS_LEFT = 3;
 
 protected:
 	// the positive subspace of each axis is towards the interior of the box; 
@@ -167,34 +213,3 @@ protected:
 
 	ArbitraryBox(glm::vec2 vertices[4]);
 };
-
-inline float cross2D(const glm::vec2 &v1, const glm::vec2 &v2) {
-	return (v1.x*v2.y) - (v1.y*v2.x);
-}
-
-/**
- * brings an angle into a user defined range (bisector being the max angle where the circle is cut):
- * 	[bisector-2*PI, bisector]
- * for example, providing PI/2 as bisector, the angle will be brought into this interval:
- * 	[-3*PI/2, PI/2]
- */
-inline float limitAngle(float a, float bisector) {
-	while (a > bisector)
-		a -= 2*PI;
-	while (a < bisector - 2*PI)
-		a += 2*PI;
-	return a;
-}
-
-inline glm::vec2 vec3xy(glm::vec3 const &in) {
-	return glm::vec2(in.x, in.y);
-}
-
-/**
- * computes the distance from point P to the line defined by lineOrigin and lineDirection.
- * lineDirection is assumed to be normalized.
- */
-inline float distPointLine(glm::vec2 P, glm::vec2 lineOrigin, glm::vec2 lineDirection) {
-	glm::vec2 OP = P - lineOrigin;
-	return (OP - lineDirection * glm::dot(OP, lineDirection)).length();
-}

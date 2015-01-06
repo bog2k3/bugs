@@ -98,7 +98,7 @@ protected:
 	PART_TYPE type_;
 	BodyPart* parent_;
 
-	static const int MAX_CHILDREN = 15;
+	static constexpr int MAX_CHILDREN = 15;
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
 

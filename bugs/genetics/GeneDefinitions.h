@@ -42,6 +42,7 @@ enum gene_attribute_type {
 	GENE_ATTRIB_DENSITY,		// density - for bones
 	GENE_ATTRIB_JOINT_LOW_LIMIT,	// low angle limit for joint
 	GENE_ATTRIB_JOINT_HIGH_LIMIT,	// high angle limit for joint
+	GENE_ATTRIB_JOINT_RESET_TORQUE,	// torque that moves the joint back into rest position when no forces act on it
 
 	GENE_ATTRIB_END
 };

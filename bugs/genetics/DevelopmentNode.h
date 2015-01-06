@@ -20,7 +20,7 @@ public:
 	DevelopmentNode(DevelopmentNode* parent, BodyPart* part);
 	virtual ~DevelopmentNode();
 
-	static const int MAX_CHILDREN = 15;
+	static constexpr int MAX_CHILDREN = 15;
 
 	DevelopmentNode* parent;
 	DevelopmentNode* children[MAX_CHILDREN];

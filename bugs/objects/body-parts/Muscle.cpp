@@ -46,11 +46,6 @@
 
 static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 
-const float Muscle::contractionRatio = 0.7f;
-const float Muscle::forcePerWidthRatio = 100; // this is the theoretical force of a muscle 1 meter wide.
-const float Muscle::maxLinearContractionSpeed = 0.8f; // max meters/second linear contraction speed
-const int Muscle::nAngleSteps = 10;
-
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
 	, muscleInitialData_(std::static_pointer_cast<MuscleInitializationData>(getInitializationData()))
@@ -61,6 +56,9 @@ Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	, phiToRSinAlphaHSinBeta_{0}
 	, phiAngleStep_(0)
 	, cachedPhiMin_(0)
+#ifdef DEBUG_DRAW_MUSCLE
+	, phiToDx_{0}
+#endif
 {
 	// we need this for debug draw, since muscle doesn't create fixture, nor body
 	keepInitializationData_ = true;
@@ -132,20 +130,16 @@ void Muscle::commit() {
 	glm::vec2 M(vec3xy(getWorldTransformation()));
 	glm::vec2 J(vec3xy(joint_->getWorldTransformation()));
 	glm::vec2 h_v(J-M);
-	float h = h_v.length();
+	float h = glm::length(h_v);
 	// at this time, both M, J, h and phi0_v are expressed in world space
 	float phi_muscle = acosf(glm::dot(glm::normalize(-h_v), phi0_v));
 	// phi_muscle is now relative to phi0
 
 	// compute helper parameters:
 	float phi_min = joint_->getLowerLimit();	// relative to phi0
-	float phi_min_clamp = phi_min;
-	if (phi_min_clamp < phi_muscle - PI)
-		phi_min_clamp = phi_muscle - PI;	// clamp to the angle which gives the greatest muscle length
+	float phi_min_clamp = clamp(phi_min, phi_muscle - PI, 2*PI); // clamp to the angle which gives the greatest muscle length
 	float phi_MAX = joint_->getUpperLimit();	// relative to phi0
-	float phi_MAX_clamp = phi_MAX;
-	if (phi_MAX_clamp > phi_muscle)
-		phi_MAX_clamp = phi_muscle;		// clamp to the angle which gives the smallest muscle length
+	float phi_MAX_clamp = clamp(phi_MAX, -2*PI, phi_muscle); // clamp to the angle which gives the smallest muscle length
 	if (rotationSign_ < 0)
 		xchg(phi_min_clamp, phi_MAX_clamp);		// for negative rotation muscles, reverse the angles
 	float Cm = cosf((phi_muscle - phi_min_clamp) * rotationSign_);
@@ -155,18 +149,29 @@ void Muscle::commit() {
 	cachedPhiMin_ = phi_min;
 
 	// delta:
-	float delta = sqr(-dx*h*p - 2*h*CM) - 4*(sqr(h*p)-sqr(dx))*(0.25f*sqr(sqr(dx)) - sqr(dx*h));
+	/*float delta = sqr(-dx*h*p - 2*h*CM) - 4*(sqr(h*p)-sqr(dx))*(0.25f*sqr(sqr(dx)) - sqr(dx*h));
 	assert(delta >= 0);
 	float denom = 1.f / (2*(sqr(h*p) - sqr(dx)));
 	float sqrtDelta = sqrt(delta);
 	float bneg = dx*h*p + 2*h*CM;
 	float r1 = (bneg + sqrtDelta) * denom;
-	float r2 = (bneg - sqrtDelta) * denom;
+	float r2 = (bneg - sqrtDelta) * denom;*/
+	float D = 4*sqr(h)*(sqr(dx)*(sqr(CM)-p*CM-1) + sqr(h*p)) + sqr(sqr(dx));
+	assert(D>=0);
+	float sqrtD = sqrt(D);
+	float bneg = -2*sqr(dx)*h*CM + sqr(dx)*h*p;
+	float denom = 1.f / (2*sqr(h*p) - 2*sqr(dx));
+	float r1 = (bneg + dx*sqrtD) * denom;
+	float r2 = (bneg - dx*sqrtD) * denom;
 	float r = r1 < 0 ? r2 : (r2 < 0 ? r1 : min(r1, r2));	// use the smaller non-negative value
 
 	// now compute the rsinalpha and hcosbeta tables for 10 intermediate steps:
 	phiAngleStep_ = (phi_MAX - phi_min) / nAngleSteps;
 	glm::vec2 h_v_norm(glm::normalize(h_v));
+#ifdef DEBUG_DRAW_MUSCLE
+	glm::vec2 t0_v(h_v + glm::rotate(phi0_v, phi_min_clamp) * r);	// longest tendon length
+	float t0 = glm::length(t0_v);
+#endif
 	for (int i=0; i<nAngleSteps; i++) {
 		float phi = phi_min + phiAngleStep_ * i;
 		glm::vec2 r_v_norm(glm::rotate(phi0_v, phi));
@@ -174,6 +179,9 @@ void Muscle::commit() {
 		float alpha = acosf(glm::dot(t_v_norm, r_v_norm));
 		float beta = acosf(glm::dot(h_v_norm, t_v_norm));
 		phiToRSinAlphaHSinBeta_[i] = r * sinf(alpha) + h * sinf(beta);
+#ifdef DEBUG_DRAW_MUSCLE
+		phiToDx_[i] = t0 - glm::length(h_v + r_v_norm*r);
+#endif
 	}
 
 	// must also compute max speed:
@@ -203,8 +211,24 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
 
 void Muscle::draw(RenderContext& ctx) {
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
-	float w = sqrtf(initData->size / initData->aspectRatio);
-	float l = initData->aspectRatio * w;
+	float aspectRatio = initData->aspectRatio;
+#ifdef DEBUG_DRAW_MUSCLE
+	if (committed_) {
+		float w0 = sqrtf(initData->size / aspectRatio);
+		float l0 = aspectRatio * w0;
+		float crtSlice = getCurrentPhiSlice();
+		int crtSliceIdx = int(crtSlice);
+		crtSlice -= crtSliceIdx;
+		float dx = phiToDx_[crtSliceIdx];
+		if (crtSlice < 0.5f && crtSliceIdx > 0)
+			dx = lerp(phiToDx_[crtSliceIdx-1], dx, crtSlice + 0.5f);
+		else if (crtSlice > 0.5f && crtSliceIdx < nAngleSteps)
+			dx = lerp(dx, phiToDx_[crtSliceIdx+1], crtSlice - 0.5f);
+		aspectRatio *= sqr((l0 - dx) / l0);
+	}
+#endif
+	float w = sqrtf(initData->size / aspectRatio);
+	float l = aspectRatio * w;
 	glm::vec3 worldTransform = getWorldTransformation();
 	ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
 			glm::vec2(l, w), worldTransform.z, debug_color);
@@ -215,12 +239,29 @@ void Muscle::draw(RenderContext& ctx) {
 			debug_color);
 }
 
+float Muscle::getCurrentPhiSlice() {
+	float angleSlice = (joint_->getJointAngle() - cachedPhiMin_) / phiAngleStep_;
+	int iAngleSlice = (int) angleSlice;
+	angleSlice -= iAngleSlice;
+	if (iAngleSlice >= nAngleSteps)
+		iAngleSlice = nAngleSteps - 1;
+	if (iAngleSlice < 0)
+		iAngleSlice = 0;
+	return iAngleSlice + angleSlice;
+}
+
 void Muscle::command(float signal_strength) {
-	int angleSlice = (int) (joint_->getJointAngle() - cachedPhiMin_) / phiAngleStep_;
-	if (angleSlice >= nAngleSteps)
-		angleSlice = nAngleSteps - 1;
-	if (angleSlice < 0)
-		angleSlice = 0;
-	float torque = maxForce_ * glm::clamp(signal_strength, 0.f, 1.f) * phiToRSinAlphaHSinBeta_[angleSlice];
-	joint_->addTorque(torque, maxJointAngularSpeed_);
+	float slice = getCurrentPhiSlice();
+	int sliceIndex = int(slice);
+	float lerpFact = slice - sliceIndex;
+	float RSinAlphaHSinBeta = phiToRSinAlphaHSinBeta_[sliceIndex];
+	if (lerpFact < 0.5f && sliceIndex > 0) {
+		// lerp with previous value
+		RSinAlphaHSinBeta = lerp(phiToRSinAlphaHSinBeta_[sliceIndex-1], RSinAlphaHSinBeta, lerpFact + 0.5f);
+	} else if (lerpFact > 0.5f && sliceIndex < nAngleSteps-1) {
+		// lerp with next value
+		RSinAlphaHSinBeta = lerp(RSinAlphaHSinBeta, phiToRSinAlphaHSinBeta_[sliceIndex+1], lerpFact - 0.5f);
+	}
+	float torque = maxForce_ * clamp(signal_strength, 0.f, 1.f) * RSinAlphaHSinBeta;
+	joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);
 }

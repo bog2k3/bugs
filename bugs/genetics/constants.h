@@ -2,8 +2,8 @@
 #define __constants_h__
 
 namespace constants {
-// chance that even a stable gene will be affected by mutation/deletion
 
+	// chance that even a stable gene will be affected by mutation/deletion
 	const double global_alteration_override_chance	=	0.0001;
 	const double global_chance_new_chromosome		=	0.005;
 

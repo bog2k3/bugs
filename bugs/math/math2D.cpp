@@ -1,13 +1,6 @@
 #include <algorithm>
 #include "math2D.h"
 
-using namespace glm;
-
-const int ArbitraryBox::AXIS_BOTTOM = 0;
-const int ArbitraryBox::AXIS_RIGHT = 1;
-const int ArbitraryBox::AXIS_TOP = 2;
-const int ArbitraryBox::AXIS_LEFT = 3;
-
 bool AlignedBox::intersectsCircle(Circle const &circle) const
 {
 	bool circleBetweenUpDown = 
@@ -33,7 +26,7 @@ bool AlignedBox::intersectsCircle(Circle const &circle) const
 			? bottomLeft.x : topRight.x;
 		cornerY = (circle.vCenter.y < bottomLeft.y)
 			? bottomLeft.y : topRight.y;
-		return glm::distance(vec2(cornerX,cornerY), circle.vCenter) <= circle.Radius;
+		return glm::distance(glm::vec2(cornerX,cornerY), circle.vCenter) <= circle.Radius;
 	}
 }
 
@@ -64,18 +57,18 @@ bool ArbitraryBox::intersectsBox(ArbitraryBox const &other) const
 	return !axis_found;
 }
 
-ArbitraryBox ArbitraryBox::empty(vec2 const &position)
+ArbitraryBox ArbitraryBox::empty(glm::vec2 const &position)
 {
-	vec2 verts[4] = {
-		position+vec2(-1e-30, -1e-30),
-		position+vec2(+1e-30, -1e-30),
-		position+vec2(+1e-30, +1e-30),
-		position+vec2(-1e-30, +1e-30),
+	glm::vec2 verts[4] = {
+		position+glm::vec2(-1e-30, -1e-30),
+		position+glm::vec2(+1e-30, -1e-30),
+		position+glm::vec2(+1e-30, +1e-30),
+		position+glm::vec2(-1e-30, +1e-30),
 	};
 	return ArbitraryBox(verts);
 }
 
-ArbitraryBox::ArbitraryBox(vec2 vertices[4])
+ArbitraryBox::ArbitraryBox(glm::vec2 vertices[4])
 {
 	std::copy(&vertices[0], &vertices[3], this->vertices);
 	axes[0] = new Axis(Axis::fromPoints(vertices[0], vertices[1]));
@@ -87,21 +80,21 @@ ArbitraryBox::ArbitraryBox(vec2 vertices[4])
 ArbitraryBox ArbitraryBox::fromAlignedBox(AlignedBox const &box, float rotation)
 {
 	//TODO must fix this to take rotation into account
-	vec2 verts[4] = {
+	glm::vec2 verts[4] = {
 		box.bottomLeft,
-		vec2(box.topRight.x, box.bottomLeft.y),
+		glm::vec2(box.topRight.x, box.bottomLeft.y),
 		box.topRight,
-		vec2(box.bottomLeft.x, box.topRight.y),
+		glm::vec2(box.bottomLeft.x, box.topRight.y),
 	};
 	return ArbitraryBox(verts);
 }
 
-ArbitraryBox ArbitraryBox::fromDirectionPointAndSize(vec2 direction, vec2 const &point, vec2 const &size)
+ArbitraryBox ArbitraryBox::fromDirectionPointAndSize(glm::vec2 direction, glm::vec2 const &point, glm::vec2 const &size)
 {
 	assert(direction.x != 0 || direction.y != 0); // don't allow degenerate boxes
 
-	direction = normalize(direction);
-	vec2 verts[4] = {
+	direction = glm::normalize(direction);
+	glm::vec2 verts[4] = {
 		point,
 		point + direction*size.x,
 		point + direction*size.x + getNormalVector(direction)*size.y,

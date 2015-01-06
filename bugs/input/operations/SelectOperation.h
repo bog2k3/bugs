@@ -20,7 +20,7 @@ namespace lifeApplication
 		virtual bool mouseDown(MouseButton button, int x, int y, int fwKeys);
 		virtual bool mouseUp(MouseButton button, int x, int y, int fwKeys);
 
-		static const DWORD SELECTION_COLOR;
+		static constexpr DWORD SELECTION_COLOR;
 
 	protected:
 		const OperationContext *pContext;

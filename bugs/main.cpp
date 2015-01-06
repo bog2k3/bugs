@@ -105,7 +105,7 @@ int main() {
 	float e = 0;
 	statsHdr();
 	stats(0, phi, 0, 0, e);
-	/**/
+	//*/
 
 	UpdateList updateList;
 	updateList.add(b);

@@ -26,10 +26,12 @@ Joint::Joint(BodyPart* parent)
 	, jointInitialData_(std::static_pointer_cast<JointInitializationData>(getInitializationData()))
 	, physJoint_(nullptr)
 	, repauseAngle_(0)
+	, resetTorque_(0)
 {
 	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
 	registerAttribute(GENE_ATTRIB_JOINT_LOW_LIMIT, initData->phiMin);
 	registerAttribute(GENE_ATTRIB_JOINT_HIGH_LIMIT, initData->phiMax);
+	registerAttribute(GENE_ATTRIB_JOINT_RESET_TORQUE, initData->resetTorque);
 }
 
 Joint::~Joint() {
@@ -68,6 +70,7 @@ void Joint::commit() {
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 
 	repauseAngle_ = initData->angleOffset;
+	resetTorque_ = initData->resetTorque;
 }
 
 glm::vec3 Joint::getWorldTransformation() const {
@@ -143,5 +146,31 @@ float Joint::getJointAngle() {
 }
 
 void Joint::addTorque(float t, float maxSpeed) {
+	vecTorques.push_back(std::make_pair(t, maxSpeed));
+}
 
+void Joint::update(float dt) {
+	// compute the resulting torque and speed and apply it to the joint
+	float minSpeed = 0, maxSpeed = 0;
+	float torque = 0;
+	for (int i=0; i<vecTorques.size(); i++) {
+		torque += vecTorques[i].first;
+		if (vecTorques[i].second < minSpeed)
+			minSpeed = vecTorques[i].second;
+		else if (vecTorques[i].second > maxSpeed)
+			maxSpeed = vecTorques[i].second;
+	}
+	float speed = torque > 0 ? maxSpeed : minSpeed;
+
+	// apply the torque and max speed:
+	physJoint_->SetMotorSpeed(speed);
+	physJoint_->SetMaxMotorTorque(torque);
+
+	// reset pending torques
+	vecTorques.clear();
+
+	// add the reset torque if joint is not within epsilon of repause angle:
+	if (!eqEps(getJointAngle(), PI/32)) {
+		addTorque(-resetTorque_*sign(getJointAngle()), -4*getJointAngle());
+	}
 }

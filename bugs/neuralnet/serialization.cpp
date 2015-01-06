@@ -1,8 +1,8 @@
 #include "serialization.h"
 #include <fstream>
 
-static const unsigned MAGIC_GENOME_HEADER = 0x6E9043AB;
-static const unsigned MAGIC_CHROMOSOME_HEADER = 0xC3904020;
+static constexpr unsigned MAGIC_GENOME_HEADER = 0x6E9043AB;
+static constexpr unsigned MAGIC_CHROMOSOME_HEADER = 0xC3904020;
 
 void writeMetaGenes(std::vector<MetaGene*> &mg, std::ofstream *fs) {
 	unsigned size =mg.size();

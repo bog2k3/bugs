@@ -30,7 +30,7 @@ protected:
 	const OperationContext* pContext;
 	bool isFlyActive;
 	bool isDragging;
-	static const unsigned nFilter = 5;
+	static constexpr unsigned nFilter = 5;
 	glm::vec2 lastDelta[nFilter];
 	float filterTimes[nFilter];
 	int lastIndex;

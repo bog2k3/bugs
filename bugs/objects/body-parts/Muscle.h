@@ -10,6 +10,8 @@
 
 #include "BodyPart.h"
 
+#define DEBUG_DRAW_MUSCLE
+
 class Joint;
 
 struct MuscleInitializationData : public BodyPartInitializationData {
@@ -36,19 +38,30 @@ public:
 	void command(float signal_strength);
 
 protected:
-	static const float contractionRatio;			// [1]
-	static const float forcePerWidthRatio;			// [N/m]
-	static const float maxLinearContractionSpeed;	// [m/s]
-	static const int nAngleSteps;					// [1]
+	static constexpr float contractionRatio = 0.5f;			// [1]
+	static constexpr float forcePerWidthRatio = 100;		// [N/m] the theoretical force of a muscle 1 meter wide.
+	static constexpr float maxLinearContractionSpeed = 0.8f;// [m/s] max meters/second linear contraction speed
+	static constexpr int nAngleSteps = 10;					// [1]
+
+	/**
+	 * returns a float.
+	 * [ret] - is current slice
+	 * {ret} is relative position in current slice [0.0, 1.0] - use this to interpolate
+	 */
+	float getCurrentPhiSlice();
 
 	std::weak_ptr<MuscleInitializationData> muscleInitialData_;
 	Joint* joint_;
 	float rotationSign_;
 	float maxForce_;
 	float maxJointAngularSpeed_;
-	float phiToRSinAlphaHSinBeta_[10];		// r*sin(alpha)+h*sin(beta) = f(phi) table
-	float phiAngleStep_;					// angle increment for each step of the nAngleSteps slices of phi range
+	float phiToRSinAlphaHSinBeta_[nAngleSteps];	// r*sin(alpha)+h*sin(beta) = f(phi) table
+	float phiAngleStep_;						// angle increment for each step of the nAngleSteps slices of phi range
 	float cachedPhiMin_;
+
+#ifdef DEBUG_DRAW_MUSCLE
+	float phiToDx_[nAngleSteps];
+#endif
 };
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

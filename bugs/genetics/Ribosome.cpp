@@ -23,7 +23,7 @@
 #include "Genome.h"
 using namespace std;
 
-static const float MUSCLE_OFFSET_ANGLE = PI * 0.25f;
+static constexpr float MUSCLE_OFFSET_ANGLE = PI * 0.25f;
 
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
