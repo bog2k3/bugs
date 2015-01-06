@@ -8,8 +8,10 @@
 #define PI_INV 0.31830988618f
 #define E 2.71828182845904523536
 
-template<typename T> inline T sqr(T x) { return x*x; }
+template<typename T> inline T sqr(T const &x) { return x*x; }
 template<typename T> inline void xchg(T &x1, T &x2) { T aux = x1; x1 = x2; x2 = aux; }
+template<typename T> inline T min(T const &x, T const &y) { return x < y ? x : y; }
+template<typename T> inline T max(T const &x, T const &y) { return x > y ? x : y; }
 
 inline glm::vec2 getNormalVector(glm::vec2 v) { return glm::vec2(-v.y, v.x); }
 

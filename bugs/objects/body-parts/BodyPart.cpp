@@ -80,17 +80,30 @@ void BodyPart::commit_tree() {
 			WorldObject::createPhysicsBody(initialData_->cachedProps);
 		commit();
 	}
-	// perform recursive commit on all children:
-	for (int i=0; i<nChildren_; i++)
-		children_[i]->commit_tree();
+	// perform recursive commit on all non-muscle children:
+	for (int i=0; i<nChildren_; i++) {
+		if (children_[i]->type_ != BODY_PART_MUSCLE)
+			children_[i]->commit_tree();
+	}
+	// muscles go after all other children:
+	for (int i=0; i<nChildren_; i++) {
+		if (children_[i]->type_ == BODY_PART_MUSCLE)
+			children_[i]->commit_tree();
+	}
 
 	if (type_ == BODY_PART_JOINT) {
 		commit();
 	}
+	committed_ = true;
+}
+
+void BodyPart::purge_initializationData_tree() {
+	assert(committed_);
 	if (!keepInitializationData_) {
 		initialData_.reset();
 	}
-	committed_ = true;
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->purge_initializationData_tree();
 }
 
 glm::vec2 BodyPart::computeParentSpacePosition() const {

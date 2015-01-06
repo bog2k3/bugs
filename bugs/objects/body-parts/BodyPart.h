@@ -84,6 +84,16 @@ public:
 	 */
 	void commit_tree();
 
+	/**
+	 * recursively free the initialization data from all body parts after committing the entire tree
+	 */
+	void purge_initializationData_tree();
+
+	PART_TYPE getType() const { return type_; }
+	int getChildrenCount() const { return nChildren_; }
+	BodyPart* getChild(int i) const { assert(i<nChildren_); return children_[i]; }
+	std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
+
 protected:
 	PART_TYPE type_;
 	BodyPart* parent_;
@@ -99,7 +109,6 @@ protected:
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
-	std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
 	glm::vec2 getUpstreamAttachmentPoint() const;
 
 private:

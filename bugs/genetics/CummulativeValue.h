@@ -18,6 +18,9 @@ struct CummulativeValue {
 			updateCache();
 		return cachedValue_;
 	}
+	float get() {
+		return (float)*this;
+	}
 	void changeAbs(float change) {
 		value_ += change;
 		n_++;

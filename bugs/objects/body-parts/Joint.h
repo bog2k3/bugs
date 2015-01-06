@@ -32,6 +32,11 @@ public:
 	glm::vec3 getWorldTransformation() const override;
 
 	float getTotalRange(); // returns the total angular range (in radians) of the joint.
+	float getLowerLimit();
+	float getUpperLimit();
+	float getJointAngle();
+
+	void addTorque(float t, float maxSpeed);
 
 protected:
 	std::weak_ptr<JointInitializationData> jointInitialData_;

@@ -37,12 +37,14 @@ Joint::~Joint() {
 }
 
 /**
- * if the angles are screwed, limit them to 0
+ * if the angles are screwed, limit them to [-PI/9, 0] (low) and [0, +PI/9] (high)
  */
 void Joint::fixAngles() {
 	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-	if (initData->phiMin > 0)
-		initData->phiMin = 0;
+	initData->phiMin = limitAngle(initData->phiMin, 0);
+	if (initData->phiMin < -PI*0.9f)
+		initData->phiMin = -PI*0.9f;
+	initData->phiMax = limitAngle(initData->phiMax, PI*0.9f);
 	if (initData->phiMax < 0)
 		initData->phiMax = 0;
 }
@@ -96,10 +98,27 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle) const
 	return glm::rotate(glm::vec2(sqrtf(getInitializationData()->size * PI_INV), 0), relativeAngle);
 }
 
+float Joint::getLowerLimit() {
+	if (committed_) {
+		return physJoint_->GetLowerLimit();
+	} else {
+		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
+		return max(min(initData->phiMin.get(), 0.f), -PI*0.9f);
+	}
+}
+
+float Joint::getUpperLimit() {
+	if (committed_) {
+		return physJoint_->GetUpperLimit();
+	} else {
+		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
+		return min(max(initData->phiMax.get(), 0.f), PI*0.9f);
+	}
+}
+
 float Joint::getTotalRange() {
 	if (committed_) {
-		// return phiMax_ - phiMin_;
-		// get from the actual physics Joint
+		return physJoint_->GetUpperLimit() - physJoint_->GetLowerLimit();
 	} else {
 		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
 		// save original values:
@@ -114,4 +133,15 @@ float Joint::getTotalRange() {
 
 		return ret;
 	}
+}
+
+float Joint::getJointAngle() {
+	if (committed_)
+		return physJoint_->GetJointAngle();
+	else
+		return 0;
+}
+
+void Joint::addTorque(float t, float maxSpeed) {
+
 }

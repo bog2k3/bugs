@@ -64,6 +64,8 @@ void Bug::update(float dt) {
 
 					// commit all changes and create the physics bodys and fixtures:
 					body_->commit_tree();
+					// discard all initialization data which is not useful any more:
+					body_->purge_initializationData_tree();
 				}
 			}
 		} else {

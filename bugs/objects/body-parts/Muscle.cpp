@@ -6,15 +6,16 @@
  *
  *
  *  Muscle width determines its max effective torque
- *  Muscle length determines the max speed of the joint
+ *  Muscle length determines the insertion point which has an effect on the max torque and max speed of the joint.
  *  max muscle contraction (%) is constant -> longer muscle's length during a full contraction varies more.
  *  muscle contraction speed (m/s) is constant => a longer muscle (which needs to vary its length more) is slower.
  *  muscle length spectrum correlates 1:1 to the joint's rotation limits.
  *  	- minimum muscle length (max contraction) corresponds to the joint being at its closest limit
  *  	- max muscle length (min contraction) corresponds to the joint being wide open
+ *  	=> this poses the problem to find the r (insertion point) that satisfies these conditions.
  *  the greater the ratio between muscle length variation and joint angle variation the greater the insertion point
- *  	(theoretical) of the muscle. This should have an effect on muscle's max effective torque (greater torque, but slower)
- *  muscle should know in which direction it actions the joint motor.
+ *  	(theoretical) of the muscle -> slower but more powerful coupling.
+ *  muscle knows (by constructor) in which direction it actions the joint motor.
  *  muscle command signal is clamped to [0.0 : 1.0]
  *  joint motor speed is muscle's max angular speed
  *  joint max torque is signal.value * muscle's max torque
@@ -25,14 +26,16 @@
  *  l = muscle max contracted length < l									[m]
  *  contractionRatio = l/l0 < 1												[1]
  *  dx (length difference) = l0 - l = l0 * (1 - contractionRatio)			[m]
- *  h (distance from muscle's end to joint - length of tendon) 				[m]
- *  r (insertion distance from joint center) = (dx^2 - 2*dx*h)/(2*(dx+h))	[m]
+ *  h (distance from muscle's origin to joint)				 				[m]
+ *  r (insertion distance from joint center)								[m]
  *  F (max muscle force) = constant * muscle.width							[N]
- *  tau (max torque) = F * h*r/sqrt(h^2+r^2)								[Nm]
+ *  tau (max torque) = F*sgn.val * r*sin(alpha) + F*sgn.val * h*sin(beta)	[Nm]
+ *  r*sin(alpha) and h*sin(beta) are precomputed at commit time and stored into tables as functions of phi (joint angle) [1]
  */
 
 #include "Muscle.h"
 #include "Joint.h"
+#include "Bone.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/RenderContext.h"
@@ -46,14 +49,18 @@ static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 const float Muscle::contractionRatio = 0.7f;
 const float Muscle::forcePerWidthRatio = 100; // this is the theoretical force of a muscle 1 meter wide.
 const float Muscle::maxLinearContractionSpeed = 0.8f; // max meters/second linear contraction speed
+const int Muscle::nAngleSteps = 10;
 
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
 	, muscleInitialData_(std::static_pointer_cast<MuscleInitializationData>(getInitializationData()))
 	, joint_(joint)
 	, rotationSign_(motorDirSign)
-	, maxTorque_(0)
+	, maxForce_(0)
 	, maxJointAngularSpeed_(0)
+	, phiToRSinAlphaHSinBeta_{0}
+	, phiAngleStep_(0)
+	, cachedPhiMin_(0)
 {
 	// we need this for debug draw, since muscle doesn't create fixture, nor body
 	keepInitializationData_ = true;
@@ -76,21 +83,98 @@ void Muscle::commit() {
 	float l0 = initData->aspectRatio * w0; // relaxed length
 	float dx = l0 * (1 - contractionRatio);
 
-	// h is computed as the distance alongside the axis from the parent's center to the joint's attachment angle,
-	// from the muscle's attachment point height to	the joint's attachment point height minus l0/2
-	// JA (joint attachment vector) - distance from parent to joint
-	// MA (muscle attachment vector) - distance from parent to muscle's attachment point
-	glm::vec3 parentTransform = parent_->getWorldTransformation();
-	glm::vec2 parentXY = vec3xy(parentTransform);
-	glm::vec2 JA = vec3xy(joint_->getWorldTransformation()) - parentXY;
-	glm::vec2 MA = glm::rotate(getUpstreamAttachmentPoint(), parentTransform.z);
-	float h = (JA - glm::dot(glm::normalize(JA), MA)).length() - l0*0.5f;
+	maxForce_ = w0 * forcePerWidthRatio;
 
-	// r is the theoretical insertion distance (from joint)
-	float r = (dx*dx - 2*dx*h)/(2*(dx+h));
+	/*
+	 * h is the vector from muscle to joint
+	 * r is the vector from the joint to insertion point
+	 * t is the vector from muscle to insertion point
+	 * alpha is the angle between r and t, the angle at which the muscle force is applied to the bone or gripper
+	 * beta is the angle between h and t, the angle at which the muscle pulls from its parent (reaction force)
+	 *
+	 *
+	 * equation to compute r:
+	 * r^2*(h^2*p^2 - dx^2) + r*(-dx*h*p - 2*h*CM) + 0.25*dx^4 - dx^2*h^2 = 0
+	 * delta = (-dx*h*p - 2*h*CM)^2 - 4*(h^2*p^2 - dx^2)*(0.25*dx^4 - dx^2*h^2)
+	 *
+	 *           dx*h*p + 2*h*CM +/- sqrt(delta)
+	 * r1,2 = -------------------------------------
+	 *                 2*(h^2*p^2 - dx^2)
+	 *
+	 * where:
+	 * p = CM-Cm
+	 * CM = cos(phi_muscle - phi_MAX)
+	 * Cm = cos(phi_muscle - phi_min)
+	 *
+	 * phi_muscle is the angle between -h and r0(phi0)
+	 * phi_MAX is the maximum joint angle relative to phi0
+	 * phi_min is the minimum joint angle relative to phi0
+	 * phi0 is the angle insertion axis when the joint is at its 0 position.
+	 * it is defined as the child-bone's local OX or OY axis (depending on the bone's aspect ratio),
+	 * rotated into world space and translated into J (the joint position)
+	 */
 
-	// and finally:
-	maxTorque_ = forcePerWidthRatio * w0 * h*r/sqrt(h*h+r*r);
+	// compute insertion axis (phi0):
+	BodyPart* targetPart = joint_->getChild(0);
+	bool useOY = false;
+	if (targetPart->getType() == BODY_PART_BONE) {
+		Bone* bone = dynamic_cast<Bone*>(targetPart);
+		std::shared_ptr<BoneInitializationData> ptr = std::dynamic_pointer_cast<BoneInitializationData>(bone->getInitializationData());
+		assert(ptr);
+		if (ptr->aspectRatio < 1.f)
+			useOY = true;
+	}
+	// this is the world angle of insertion axis in default joint position:
+	float phi0 = targetPart->getWorldTransformation().z + (useOY ? PI/2 : 0);
+	glm::vec2 phi0_v(glm::rotate(glm::vec2(1, 0), phi0));
+
+	// compute the muscle angle (phi_muscle):
+	glm::vec2 M(vec3xy(getWorldTransformation()));
+	glm::vec2 J(vec3xy(joint_->getWorldTransformation()));
+	glm::vec2 h_v(J-M);
+	float h = h_v.length();
+	// at this time, both M, J, h and phi0_v are expressed in world space
+	float phi_muscle = acosf(glm::dot(glm::normalize(-h_v), phi0_v));
+	// phi_muscle is now relative to phi0
+
+	// compute helper parameters:
+	float phi_min = joint_->getLowerLimit();	// relative to phi0
+	float phi_min_clamp = phi_min;
+	if (phi_min_clamp < phi_muscle - PI)
+		phi_min_clamp = phi_muscle - PI;	// clamp to the angle which gives the greatest muscle length
+	float phi_MAX = joint_->getUpperLimit();	// relative to phi0
+	float phi_MAX_clamp = phi_MAX;
+	if (phi_MAX_clamp > phi_muscle)
+		phi_MAX_clamp = phi_muscle;		// clamp to the angle which gives the smallest muscle length
+	if (rotationSign_ < 0)
+		xchg(phi_min_clamp, phi_MAX_clamp);		// for negative rotation muscles, reverse the angles
+	float Cm = cosf((phi_muscle - phi_min_clamp) * rotationSign_);
+	float CM = cosf((phi_muscle - phi_MAX_clamp) * rotationSign_);
+	float p = CM-Cm;
+
+	cachedPhiMin_ = phi_min;
+
+	// delta:
+	float delta = sqr(-dx*h*p - 2*h*CM) - 4*(sqr(h*p)-sqr(dx))*(0.25f*sqr(sqr(dx)) - sqr(dx*h));
+	assert(delta >= 0);
+	float denom = 1.f / (2*(sqr(h*p) - sqr(dx)));
+	float sqrtDelta = sqrt(delta);
+	float bneg = dx*h*p + 2*h*CM;
+	float r1 = (bneg + sqrtDelta) * denom;
+	float r2 = (bneg - sqrtDelta) * denom;
+	float r = r1 < 0 ? r2 : (r2 < 0 ? r1 : min(r1, r2));	// use the smaller non-negative value
+
+	// now compute the rsinalpha and hcosbeta tables for 10 intermediate steps:
+	phiAngleStep_ = (phi_MAX - phi_min) / nAngleSteps;
+	glm::vec2 h_v_norm(glm::normalize(h_v));
+	for (int i=0; i<nAngleSteps; i++) {
+		float phi = phi_min + phiAngleStep_ * i;
+		glm::vec2 r_v_norm(glm::rotate(phi0_v, phi));
+		glm::vec2 t_v_norm(glm::normalize(h_v + r_v_norm*r));
+		float alpha = acosf(glm::dot(t_v_norm, r_v_norm));
+		float beta = acosf(glm::dot(h_v_norm, t_v_norm));
+		phiToRSinAlphaHSinBeta_[i] = r * sinf(alpha) + h * sinf(beta);
+	}
 
 	// must also compute max speed:
 	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * maxLinearContractionSpeed;
@@ -129,4 +213,14 @@ void Muscle::draw(RenderContext& ctx) {
 			vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 			0,
 			debug_color);
+}
+
+void Muscle::command(float signal_strength) {
+	int angleSlice = (int) (joint_->getJointAngle() - cachedPhiMin_) / phiAngleStep_;
+	if (angleSlice >= nAngleSteps)
+		angleSlice = nAngleSteps - 1;
+	if (angleSlice < 0)
+		angleSlice = 0;
+	float torque = maxForce_ * glm::clamp(signal_strength, 0.f, 1.f) * phiToRSinAlphaHSinBeta_[angleSlice];
+	joint_->addTorque(torque, maxJointAngularSpeed_);
 }
