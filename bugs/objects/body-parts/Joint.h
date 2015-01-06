@@ -10,6 +10,7 @@
 
 #include <glm/fwd.hpp>
 #include "BodyPart.h"
+#include "../../updatable.h"
 
 struct JointInitializationData : public BodyPartInitializationData {
 	virtual ~JointInitializationData() noexcept = default;
@@ -50,5 +51,7 @@ protected:
 
 	void fixAngles();
 };
+
+template<> void update(Joint*& j, float dt);
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

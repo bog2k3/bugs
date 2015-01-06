@@ -12,6 +12,7 @@
 #include <vector>
 #include "../genetics/Genome.h"
 #include "../updatable.h"
+#include "../UpdateList.h"
 
 class ISensor;
 class IMotor;
@@ -48,6 +49,7 @@ protected:
 	float scaledEnergy_;
 	Torso* body_;
 	ZygoteShell* zygoteShell_;
+	UpdateList bodyPartsUpdateList_;
 
 	friend class Ribosome;
 };

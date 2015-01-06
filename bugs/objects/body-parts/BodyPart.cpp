@@ -25,6 +25,7 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 	, keepInitializationData_(false)
 	, dontCreateBody_(false)
 	, initialData_(initialData)
+	, updateList_(nullptr)
 {
 	assert (initialData != nullptr);
 	if (parent) {
@@ -158,4 +159,13 @@ void BodyPart::registerAttribute(gene_attribute_type type, CummulativeValue& val
 
 CummulativeValue* BodyPart::getAttribute(gene_attribute_type attrib) {
 	return mapAttributes_[attrib];
+}
+
+UpdateList* BodyPart::getUpdateList() const {
+	if (updateList_)
+		return updateList_;
+	else if (parent_)
+		return parent_->getUpdateList();
+	else
+		return nullptr;
 }

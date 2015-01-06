@@ -38,6 +38,7 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(zygoteSize);
 	body_ = new Torso(zygoteShell_);
+	body_->setUpdateList(bodyPartsUpdateList_);
 	ribosome_ = new Ribosome(this);
 }
 
@@ -69,6 +70,7 @@ void Bug::update(float dt) {
 				}
 			}
 		} else {
+			bodyPartsUpdateList_.update(dt);
 			if (scale_ < 1) {
 				// juvenile, growing
 				// growth happens by scaling up size and scaling down energy proportionally;

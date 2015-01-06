@@ -11,13 +11,14 @@
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../log.h"
+#include "../../UpdateList.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
 JointInitializationData::JointInitializationData()
-	: phiMin(-PI/8), phiMax(PI * 0.9f) {
+	: phiMin(-PI/8), phiMax(PI * 0.9f), resetTorque(0.05f) {
 	size = 0.2e-4f;
 }
 
@@ -65,12 +66,15 @@ void Joint::commit() {
 	def.lowerAngle = initData->phiMin;
 	def.upperAngle = initData->phiMax;
 	def.userData = (void*)this;
+	def.enableMotor = true;
 	// def.collideConnected = true;
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 
 	repauseAngle_ = initData->angleOffset;
 	resetTorque_ = initData->resetTorque;
+
+	getUpdateList()->add(this);
 }
 
 glm::vec3 Joint::getWorldTransformation() const {
@@ -149,11 +153,15 @@ void Joint::addTorque(float t, float maxSpeed) {
 	vecTorques.push_back(std::make_pair(t, maxSpeed));
 }
 
+template<> void update(Joint*& j, float dt) {
+	j->update(dt);
+}
+
 void Joint::update(float dt) {
 	// compute the resulting torque and speed and apply it to the joint
 	float minSpeed = 0, maxSpeed = 0;
 	float torque = 0;
-	for (int i=0; i<vecTorques.size(); i++) {
+	for (unsigned i=0; i<vecTorques.size(); i++) {
 		torque += vecTorques[i].first;
 		if (vecTorques[i].second < minSpeed)
 			minSpeed = vecTorques[i].second;
@@ -164,7 +172,7 @@ void Joint::update(float dt) {
 
 	// apply the torque and max speed:
 	physJoint_->SetMotorSpeed(speed);
-	physJoint_->SetMaxMotorTorque(torque);
+	physJoint_->SetMaxMotorTorque(abs(torque));
 
 	// reset pending torques
 	vecTorques.clear();

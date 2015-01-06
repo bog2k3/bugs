@@ -40,6 +40,8 @@ struct BodyPartInitializationData {
 	CummulativeValue size;							// surface area
 };
 
+class UpdateList;
+
 class BodyPart : public WorldObject {
 public:
 	BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
@@ -93,6 +95,7 @@ public:
 	int getChildrenCount() const { return nChildren_; }
 	BodyPart* getChild(int i) const { assert(i<nChildren_); return children_[i]; }
 	std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
+	void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
 
 protected:
 	PART_TYPE type_;
@@ -110,12 +113,14 @@ protected:
 	void remove(BodyPart* part);
 	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint() const;
+	UpdateList* getUpdateList() const;
 
 private:
 	void computeBodyPhysProps();
 	glm::vec2 computeParentSpacePosition() const;
 	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
+	UpdateList* updateList_;
 };
 
 

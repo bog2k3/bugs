@@ -36,4 +36,6 @@ private:
 	std::vector<updatable_wrap> list_;
 };
 
+template <> void update(UpdateList* &l, float dt);
+
 #endif /* UPDATELIST_H_ */
