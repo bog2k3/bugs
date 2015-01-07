@@ -16,7 +16,6 @@ struct BoneInitializationData : public BodyPartInitializationData {
 	virtual ~BoneInitializationData() noexcept = default;
 	BoneInitializationData();
 
-	CummulativeValue density;
 	CummulativeValue aspectRatio;
 };
 

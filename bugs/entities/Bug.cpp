@@ -32,11 +32,8 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	, body_(nullptr)
 	, zygoteShell_(nullptr)
 {
-	// pe masura ce se dezvolta, fiecare noua parte consuma energie.
-	// energia disponibila in zigot si energia necesara dezvoltarii determina scala initiala dupa decodare.
-
 	// create embryo shell:
-	zygoteShell_ = new ZygoteShell(zygoteSize);
+	zygoteShell_ = new ZygoteShell(zygoteSize);		// zygote mass determines the overall bug size after decoding -> must have equal overal mass
 	body_ = new Torso(zygoteShell_);
 	body_->setUpdateList(bodyPartsUpdateList_);
 	ribosome_ = new Ribosome(this);
@@ -58,15 +55,14 @@ void Bug::update(float dt) {
 				tRibosomeStep_ -= DECODE_PERIOD;
 				isDeveloping_ = ribosome_->step();
 				if (!isDeveloping_) {
+					zygoteShell_->updateCachedDynamicPropsFromBody();
+					// commit all changes and create the physics bodys and fixtures:
+					body_->commit_tree();
+
 					// delete embryo shell
 					body_->changeParent(nullptr);
 					delete zygoteShell_;
 					zygoteShell_ = nullptr;
-
-					// commit all changes and create the physics bodys and fixtures:
-					body_->commit_tree();
-					// discard all initialization data which is not useful any more:
-					body_->purge_initializationData_tree();
 				}
 			}
 		} else {
@@ -75,6 +71,11 @@ void Bug::update(float dt) {
 				// juvenile, growing
 				// growth happens by scaling up size and scaling down energy proportionally;
 				// growth speed is dictated by genes
+
+				if (scale_ >= 1) {
+					// finished developing, discard all initialization data which is not useful any more:
+					body_->purge_initializationData_tree();
+				}
 			} else {
 				// adult life
 				// unused energy is stored by growing the torso

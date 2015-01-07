@@ -22,6 +22,8 @@ WorldObject::WorldObject()
 
 WorldObject::~WorldObject() {
 	World::getInstance()->removeObject(this);
+	if (body_)
+		body_->GetWorld()->DestroyBody(body_);
 }
 
 void WorldObject::createPhysicsBody(PhysicsProperties const &props) {

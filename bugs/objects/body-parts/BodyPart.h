@@ -29,15 +29,14 @@ enum PART_TYPE {
 
 struct BodyPartInitializationData {
 	virtual ~BodyPartInitializationData() = default;
-	BodyPartInitializationData()
-		: size(1.e-4f) {
-	}
+	BodyPartInitializationData();
 	PhysicsProperties cachedProps;
 
 	CummulativeValue attachmentDirectionParent;		// the attachment direction in parent's space
 	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
 	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
 	CummulativeValue size;							// surface area
+	CummulativeValue density;
 };
 
 class UpdateList;

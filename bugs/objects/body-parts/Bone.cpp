@@ -17,8 +17,8 @@
 const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
 BoneInitializationData::BoneInitializationData()
-	: density(BodyConst::initialBoneDensity)
-	, aspectRatio(BodyConst::initialBoneAspectRatio) {
+	: aspectRatio(BodyConst::initialBoneAspectRatio) {
+	density.reset(BodyConst::initialBoneDensity);
 }
 
 Bone::Bone(BodyPart* parent)

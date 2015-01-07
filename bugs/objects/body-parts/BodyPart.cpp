@@ -6,6 +6,7 @@
  */
 
 #include "BodyPart.h"
+#include "BodyConst.h"
 #include "../../math/box2glm.h"
 #include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
@@ -15,6 +16,11 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <assert.h>
+
+BodyPartInitializationData::BodyPartInitializationData()
+	: size(BodyConst::initialBodyPartSize)
+	, density(BodyConst::initialBodyPartDensity) {
+}
 
 BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
 	: type_(type)
@@ -120,6 +126,7 @@ void BodyPart::computeBodyPhysProps() {
 	// parent's initialData_->cachedProps are assumed to be in world space at this time
 	PhysicsProperties parentProps = parent_ ? parent_->initialData_->cachedProps : PhysicsProperties();
 	initialData_->cachedProps.velocity = parentProps.velocity;
+	initialData_->cachedProps.angularVelocity = parentProps.angularVelocity;
 	// compute parent space position:
 	glm::vec2 pos = computeParentSpacePosition();
 	// compute world space position:

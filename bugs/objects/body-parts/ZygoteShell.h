@@ -15,8 +15,14 @@ public:
 	ZygoteShell(float size);
 	~ZygoteShell() override;
 
-	void commit() override {}; // nothing to do here, the zygote does not change after creation
+	void commit() override;
 	void draw(RenderContext& ctx) override;
+
+	/**
+	 * this updates the BodyPartInitializationData::cachedProps from the actual zygot physics body,
+	 * in order for these to be inherited by all other body parts
+	 */
+	void updateCachedDynamicPropsFromBody();
 
 private:
 };

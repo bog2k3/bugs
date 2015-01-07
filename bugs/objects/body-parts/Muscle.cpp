@@ -49,6 +49,7 @@ static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 
 MuscleInitializationData::MuscleInitializationData()
 	: aspectRatio(BodyConst::initialMuscleAspectRatio) {
+	density.reset(BodyConst::MuscleDensity);
 }
 
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)

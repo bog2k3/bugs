@@ -13,13 +13,6 @@
 
 class b2WeldJoint;
 
-struct GripperInitializationData : public BodyPartInitializationData {
-	virtual ~GripperInitializationData() noexcept = default;
-	GripperInitializationData();
-
-	CummulativeValue density;
-};
-
 class Gripper : public BodyPart {
 public:
 	// the position and rotation in props are relative to the parent
@@ -34,7 +27,6 @@ public:
 	bool isActive() { return active_; }
 
 protected:
-	std::weak_ptr<GripperInitializationData> gripperInitialData_;
 	bool active_;
 	b2WeldJoint* groundJoint_;
 	float size_;

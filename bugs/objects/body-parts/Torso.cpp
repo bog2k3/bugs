@@ -15,8 +15,8 @@
 
 static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 
-TorsoInitializationData::TorsoInitializationData()
-	: density(BodyConst::initialTorsoDensity) {
+TorsoInitializationData::TorsoInitializationData() {
+	density.reset(BodyConst::initialTorsoDensity);
 }
 
 Torso::Torso(BodyPart* parent)

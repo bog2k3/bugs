@@ -16,17 +16,13 @@
 
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
-GripperInitializationData::GripperInitializationData()
-	: density(BodyConst::GripperDensity) {
-}
-
 Gripper::Gripper(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_GRIPPER, std::make_shared<GripperInitializationData>())
-	, gripperInitialData_(std::static_pointer_cast<GripperInitializationData>(getInitializationData()))
+	: BodyPart(parent, BODY_PART_GRIPPER, std::make_shared<BodyPartInitializationData>())
 	, active_(false)
 	, groundJoint_(nullptr)
 	, size_(0)
 {
+	getInitializationData()->density.reset(BodyConst::GripperDensity);
 }
 
 Gripper::~Gripper() {
@@ -36,7 +32,7 @@ Gripper::~Gripper() {
 void Gripper::commit() {
 	assert(!committed_);
 
-	std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();
+	std::shared_ptr<BodyPartInitializationData> initData = getInitializationData();
 	size_ = initData->size;
 
 	b2CircleShape shape;
@@ -82,7 +78,7 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 {
 	float size = size_;
 	if (!committed_) {
-		std::shared_ptr<GripperInitializationData> initData = gripperInitialData_.lock();
+		std::shared_ptr<BodyPartInitializationData> initData = getInitializationData();
 		size = initData->size;
 	}
 	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);

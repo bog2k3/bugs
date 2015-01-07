@@ -15,7 +15,6 @@ struct TorsoInitializationData : public BodyPartInitializationData {
 	TorsoInitializationData();
 
 	// torso energy capacity is proportional to its mass=size*density
-	CummulativeValue density;
 };
 
 class Torso : public BodyPart {
