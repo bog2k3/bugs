@@ -88,6 +88,9 @@ public:
 	/* returns the mass of the part and its entire subtree */
 	float getMass_tree();
 
+	/* scale the part and all its children by a given amount */
+	void applyScale_tree(float scale);
+
 	/**
 	 * recursively free the initialization data from all body parts after committing the entire tree
 	 */
@@ -123,6 +126,7 @@ private:
 	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;
+	float lastCommitSize_inv_;
 };
 
 

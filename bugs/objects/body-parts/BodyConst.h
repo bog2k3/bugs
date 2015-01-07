@@ -12,6 +12,10 @@
 
 class BodyConst {
 public:
+	// optimization values:
+	static constexpr float SizeThresholdToCommit			= 1.1f;			// [*]
+	static constexpr float SizeThresholdToCommit_inv = 1.f / SizeThresholdToCommit;
+
 	// fixed values:
 	static constexpr float ZygoteDensity					= 1.e+3f;		// [kg/m^2]
 	static constexpr float GripperDensity					= 0.7e+3f;		// [kg/m^2]

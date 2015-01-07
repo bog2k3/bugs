@@ -67,6 +67,8 @@ void Bug::update(float dt) {
 					body_->changeParent(nullptr);
 					delete zygoteShell_;
 					zygoteShell_ = nullptr;
+
+					body_->applyScale_tree(1.2f);
 				}
 			}
 		} else {
@@ -75,6 +77,8 @@ void Bug::update(float dt) {
 				// juvenile, growing
 				// growth happens by scaling up size and scaling down energy proportionally;
 				// growth speed is dictated by genes
+
+				//body_->applyScale_tree(1.01f);
 
 				if (false /* reached adulthood scale?*/) {
 					// finished developing, discard all initialization data which is not useful any more:

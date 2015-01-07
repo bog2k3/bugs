@@ -32,6 +32,7 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 	, dontCreateBody_(false)
 	, initialData_(initialData)
 	, updateList_(nullptr)
+	, lastCommitSize_inv_(0)
 {
 	assert (initialData != nullptr);
 	if (parent) {
@@ -79,11 +80,13 @@ glm::vec2 BodyPart::getUpstreamAttachmentPoint() const {
 }
 
 void BodyPart::commit_tree() {
-	assert(!committed_);
-	computeBodyPhysProps();
+	assert(initialData_);
+	if (!committed_)
+		computeBodyPhysProps();
+	lastCommitSize_inv_ = 1.f / initialData_->size;
 	// perform commit on local node:
 	if (type_ != BODY_PART_JOINT) {
-		if (!dontCreateBody_)
+		if (!body_ && !dontCreateBody_)
 			WorldObject::createPhysicsBody(initialData_->cachedProps);
 		commit();
 	}
@@ -178,5 +181,30 @@ UpdateList* BodyPart::getUpdateList() const {
 }
 
 float BodyPart::getMass_tree() {
+	float mass;
+	if (initialData_)
+		mass = initialData_->size * initialData_->density;
+	else if (body_)
+		mass = body_->GetMass();
+	else
+		assert(false && "no known method to compute the mass of the body part!!!");
 
+	for (int i=0; i<nChildren_; i++)
+		mass += children_[i]->getMass_tree();
+	return mass;
+}
+
+void BodyPart::applyScale_tree(float scale) {
+	assert(initialData_ && "applyScale_tree cannot be called after purging the initialization data!");
+	initialData_->size.reset(initialData_->size * scale);
+	if (initialData_->size * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
+			|| initialData_->size * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
+	{
+		lastCommitSize_inv_ = 1.f / initialData_->size;
+		commit();
+	}
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->applyScale_tree(scale);
+
+#error "must also move bodies when changing fixture size"
 }

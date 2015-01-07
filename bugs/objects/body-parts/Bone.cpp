@@ -36,7 +36,9 @@ Bone::~Bone() {
 }
 
 void Bone::commit() {
-	assert(!committed_);
+	if (committed_) {
+		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+	}
 
 	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
 	size_ = glm::vec2((float)initData->size, (float)initData->aspectRatio);

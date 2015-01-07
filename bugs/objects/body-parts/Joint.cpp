@@ -56,8 +56,12 @@ void Joint::getNormalizedLimits(float &low, float &high) {
 }
 
 void Joint::commit() {
-	assert(!committed_);
 	assert(nChildren_ == 1);
+
+	if (committed_) {
+		physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
+		physJoint_ = nullptr;
+	}
 
 	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
 

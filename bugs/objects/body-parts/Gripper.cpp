@@ -30,7 +30,9 @@ Gripper::~Gripper() {
 }
 
 void Gripper::commit() {
-	assert(!committed_);
+	if (committed_) {
+		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+	};
 
 	std::shared_ptr<BodyPartInitializationData> initData = getInitializationData();
 	size_ = initData->size;
