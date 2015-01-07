@@ -32,7 +32,7 @@ enum gene_sensor_type {
 	GENE_SENSOR_END
 };
 
-enum gene_attribute_type {
+enum gene_part_attribute_type {
 	GENE_ATTRIB_INVALID = 0,
 	GENE_ATTRIB_ATTACHMENT_ANGLE,	// modifies the original growth angle
 	GENE_ATTRIB_LOCAL_ROTATION,		// rotates the part around its own center
@@ -45,6 +45,18 @@ enum gene_attribute_type {
 	GENE_ATTRIB_JOINT_RESET_TORQUE,	// torque that moves the joint back into rest position when no forces act on it
 
 	GENE_ATTRIB_END
+};
+
+enum gene_body_attribute_type {
+	GENE_BODY_ATTRIB_INVALID = 0,
+	GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO,	// fraction of zygote mass that will be transformed into fat
+												// during development, to act as the initial energy supply of the bug
+	GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO,		// minimum fat to body mass ratio that enables growth and reproduction.
+												// If fat mass ratio falls below this threshold, growth is stalled until
+												// the balance is restored. Also, an egg will not be generated if
+												// the remaining fat ratio falls below this threshold.
+	GENE_BODY_ATTRIB_ADULT_LEAN_MASS,			// target lean body mass (excluding fat) of adult body. The body grows
+												// until it reaches this target, then growth stops.
 };
 
 #endif /* GENETICS_GENEDEFINITIONS_H_ */

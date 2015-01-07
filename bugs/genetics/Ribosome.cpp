@@ -206,7 +206,7 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g) {
 
 void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 	for (auto n : activeSet_) {
-		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_attribute_type)g.attribute);
+		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_part_attribute_type)g.attribute);
 		if (pAttrib)
 			pAttrib->changeAbs(g.value);
 	}
@@ -214,7 +214,7 @@ void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 
 void Ribosome::decodeGeneralAttrib(GeneGeneralAttribute const& g) {
 	root_->applyRecursive([&g] (DevelopmentNode* n) {
-		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_attribute_type)g.attribute);
+		CummulativeValue* pAttrib = n->bodyPart->getAttribute((gene_part_attribute_type)g.attribute);
 		if (pAttrib)
 			pAttrib->changeRel(g.value);
 	});

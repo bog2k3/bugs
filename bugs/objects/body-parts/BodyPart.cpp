@@ -160,11 +160,11 @@ void BodyPart::draw(RenderContext& ctx) {
 	ctx.shape->drawLine(pos + glm::vec2(0, -0.01f), pos + glm::vec2(0, 0.01f), 0, glm::vec3(1.f, 0.2f, 0.2f));
 }
 
-void BodyPart::registerAttribute(gene_attribute_type type, CummulativeValue& value) {
+void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue& value) {
 	mapAttributes_[type] = &value;
 }
 
-CummulativeValue* BodyPart::getAttribute(gene_attribute_type attrib) {
+CummulativeValue* BodyPart::getAttribute(gene_part_attribute_type attrib) {
 	return mapAttributes_[attrib];
 }
 
@@ -175,4 +175,8 @@ UpdateList* BodyPart::getUpdateList() const {
 		return parent_->getUpdateList();
 	else
 		return nullptr;
+}
+
+float BodyPart::getMass_tree() {
+
 }

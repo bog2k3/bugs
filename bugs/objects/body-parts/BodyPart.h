@@ -78,12 +78,15 @@ public:
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
-	CummulativeValue* getAttribute(gene_attribute_type attrib);
+	CummulativeValue* getAttribute(gene_part_attribute_type attrib);
 
 	/*
 	 * this will commit recursively in the entire body tree
 	 */
 	void commit_tree();
+
+	/* returns the mass of the part and its entire subtree */
+	float getMass_tree();
 
 	/**
 	 * recursively free the initialization data from all body parts after committing the entire tree
@@ -110,14 +113,14 @@ protected:
 
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
-	void registerAttribute(gene_attribute_type type, CummulativeValue& value);
+	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint() const;
 	UpdateList* getUpdateList() const;
 
 private:
 	void computeBodyPhysProps();
 	glm::vec2 computeParentSpacePosition() const;
-	std::map<gene_attribute_type, CummulativeValue*> mapAttributes_;
+	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;
 };

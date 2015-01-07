@@ -17,7 +17,6 @@
 
 const float DECODE_FREQUENCY = 1.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
-const float ZYGOTE_ENERGY_DENSITY = 1000; // Joules per m^2
 
 Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	: genome_(genome)
@@ -26,17 +25,20 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	, isAlive_(true)
 	, isDeveloping_(true)
 	, tRibosomeStep_(0)
-	, energy_(zygoteSize * ZYGOTE_ENERGY_DENSITY)
-	, scale_(0.05f)
-	, scaledEnergy_(0)
 	, body_(nullptr)
 	, zygoteShell_(nullptr)
 {
 	// create embryo shell:
-	zygoteShell_ = new ZygoteShell(zygoteSize);		// zygote mass determines the overall bug size after decoding -> must have equal overal mass
+	zygoteShell_ = new ZygoteShell(zygoteSize);
+	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
+
 	body_ = new Torso(zygoteShell_);
 	body_->setUpdateList(bodyPartsUpdateList_);
 	ribosome_ = new Ribosome(this);
+
+	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
+	mapBodyAttributes_[GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO] = &minFatMasRatio_;
+	mapBodyAttributes_[GENE_BODY_ATTRIB_ADULT_LEAN_MASS] = &adultLeanMass_;
 }
 
 Bug::~Bug() {
@@ -55,6 +57,8 @@ void Bug::update(float dt) {
 				tRibosomeStep_ -= DECODE_PERIOD;
 				isDeveloping_ = ribosome_->step();
 				if (!isDeveloping_) {
+					float currentMass = body_->getMass_tree();
+
 					zygoteShell_->updateCachedDynamicPropsFromBody();
 					// commit all changes and create the physics bodys and fixtures:
 					body_->commit_tree();
@@ -67,12 +71,12 @@ void Bug::update(float dt) {
 			}
 		} else {
 			bodyPartsUpdateList_.update(dt);
-			if (scale_ < 1) {
+			if (true /* not adult scale yet*/) {
 				// juvenile, growing
 				// growth happens by scaling up size and scaling down energy proportionally;
 				// growth speed is dictated by genes
 
-				if (scale_ >= 1) {
+				if (false /* reached adulthood scale?*/) {
 					// finished developing, discard all initialization data which is not useful any more:
 					body_->purge_initializationData_tree();
 				}

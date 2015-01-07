@@ -8,11 +8,14 @@
 #ifndef ENTITIES_BUG_H_
 #define ENTITIES_BUG_H_
 
-#include <glm/fwd.hpp>
-#include <vector>
 #include "../genetics/Genome.h"
+#include "../genetics/GeneDefinitions.h"
 #include "../updatable.h"
 #include "../UpdateList.h"
+#include "../genetics/CummulativeValue.h"
+#include <glm/fwd.hpp>
+#include <vector>
+#include <map>
 
 class ISensor;
 class IMotor;
@@ -44,12 +47,14 @@ protected:
 	bool isAlive_;
 	bool isDeveloping_;
 	float tRibosomeStep_; // time since last ribosome step
-	float energy_;
-	float scale_;
-	float scaledEnergy_;
 	Torso* body_;
 	ZygoteShell* zygoteShell_;
 	UpdateList bodyPartsUpdateList_;
+	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
+
+	CummulativeValue initialFatMassRatio_;
+	CummulativeValue minFatMasRatio_;
+	CummulativeValue adultLeanMass_;
 
 	friend class Ribosome;
 };

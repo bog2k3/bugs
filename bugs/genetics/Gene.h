@@ -8,6 +8,7 @@
 
 #include "../math/tools.h"
 #include "constants.h"
+#include "GeneDefinitions.h"
 #include <stdint.h>
 #include <map>
 #include <vector>
@@ -17,8 +18,9 @@ enum gene_type {
 	GENE_TYPE_LOCATION,			// defines the effective location for the next genes
 	GENE_TYPE_DEVELOPMENT,		// developmental gene - commands the growth of the body
 	GENE_TYPE_PART_ATTRIBUTE,	// body part attribute - establishes characteristics of certain body parts
-	GENE_TYPE_GENERAL_ATTRIB,	// general body attribute - controls the overall features of all
-								//		body parts of a specific type.
+	GENE_TYPE_GENERAL_ATTRIB,	// general attribute - controls the overall features of all	body parts of a specific type.
+	GENE_TYPE_BODY_ATTRIBUTE,	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+								// such as metabolic parameters
 	GENE_TYPE_NEURON,			// creates a new neuron
 	GENE_TYPE_SYNAPSE,			// creates a synapse between neurons
 	GENE_TYPE_TRANSFER,			// controls the transfer function of a neuron
@@ -67,22 +69,25 @@ struct GeneLocation {
 };
 
 struct GeneCommand {
-	int command;
-	int part_type;
+	gene_development_command command;
+	gene_part_type part_type;
 	Atom<float> angle;			// angle is relative to the previous element's orientation
-#warning "make this work:"
-	Atom<float> childAngle;		// child can be rotated further from the relative growth angle.
 };
 
 struct GeneLocalAttribute {
 	Atom<float> value;
-	int attribute;
+	gene_part_attribute_type attribute;
 	bool relativeValue;
 };
 
 struct GeneGeneralAttribute {
-	int attribute;
+	gene_part_attribute_type attribute;
 	Atom<float> value;					// this is always relative
+};
+
+struct GeneBodyAttribute {
+	gene_body_attribute_type attribute;
+	Atom<float> value;
 };
 
 struct GeneSynapse {
@@ -109,6 +114,7 @@ public:
 		GeneCommand gene_command;
 		GeneLocalAttribute gene_local_attribute;
 		GeneGeneralAttribute gene_general_attribute;
+		GeneBodyAttribute gene_body_attribute;
 		GeneSynapse gene_synapse;
 		GeneTransferFunction gene_transfer_function;
 		GeneMuscleCommand gene_muscle_command;
@@ -120,6 +126,7 @@ public:
 		GeneData(GeneSynapse gs) : gene_synapse(gs) {}
 		GeneData(GeneTransferFunction gt) : gene_transfer_function(gt) {}
 		GeneData(GeneMuscleCommand gm) : gene_muscle_command(gm) {}
+		GeneData(GeneBodyAttribute gba) : gene_body_attribute(gba) {}
 	} data;
 
 	Gene(gene_type type, GeneData data)
@@ -140,6 +147,7 @@ public:
 	Gene(GeneSynapse gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
 	Gene(GeneTransferFunction gt) : Gene(GENE_TYPE_TRANSFER, gt) {}
 	Gene(GeneMuscleCommand gm) : Gene(GENE_TYPE_MUSCLE_COMMAND, gm) {}
+	Gene(GeneBodyAttribute gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
 
 	Gene(const Gene& original)
 		: type(original.type)
