@@ -18,7 +18,7 @@ const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 ZygoteShell::ZygoteShell(float size)
 	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
 {
-	getInitializationData()->size = size;
+	getInitializationData()->size.reset(size);
 }
 
 ZygoteShell::~ZygoteShell() {
@@ -27,7 +27,7 @@ ZygoteShell::~ZygoteShell() {
 
 void ZygoteShell::draw(RenderContext& ctx) {
 	if (committed_) {
-		// nothing, physics draws
+		// should never happen actually
 	} else {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);

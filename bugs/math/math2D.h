@@ -2,11 +2,7 @@
 
 #include <glm/vec2.hpp>
 #include <glm/geometric.hpp>
-
-#define EPS 1.e-30f
-#define PI 3.1415926535897932384626433832795f
-#define PI_INV 0.31830988618f
-#define E 2.71828182845904523536
+#include "constants.h"
 
 template<typename T> constexpr T sqr(T const &x) { return x*x; }
 template<typename T> constexpr void xchg(T &x1, T &x2) { T aux = x1; x1 = x2; x2 = aux; }

@@ -6,6 +6,7 @@
  */
 
 #include "Gripper.h"
+#include "BodyConst.h"
 #include "../../World.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../math/math2D.h"
@@ -14,6 +15,10 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
+
+GripperInitializationData::GripperInitializationData()
+	: density(BodyConst::GripperDensity) {
+}
 
 Gripper::Gripper(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_GRIPPER, std::make_shared<GripperInitializationData>())

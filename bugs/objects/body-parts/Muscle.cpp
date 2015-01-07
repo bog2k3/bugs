@@ -36,6 +36,7 @@
 #include "Muscle.h"
 #include "Joint.h"
 #include "Bone.h"
+#include "BodyConst.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/RenderContext.h"
@@ -45,6 +46,10 @@
 #include <Box2D/Box2D.h>
 
 static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
+
+MuscleInitializationData::MuscleInitializationData()
+	: aspectRatio(BodyConst::initialMuscleAspectRatio) {
+}
 
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
@@ -79,9 +84,9 @@ void Muscle::commit() {
 	// here we compute the characteristics of the muscle
 	float w0 = sqrtf(initData->size / initData->aspectRatio); // relaxed width
 	float l0 = initData->aspectRatio * w0; // relaxed length
-	float dx = l0 * (1 - contractionRatio);
+	float dx = l0 * (1 - BodyConst::MuscleContractionRatio);
 
-	maxForce_ = w0 * forcePerWidthRatio;
+	maxForce_ = w0 * BodyConst::MuscleForcePerWidthRatio;
 
 	/*
 	 * h is the vector from muscle to joint
@@ -177,7 +182,7 @@ void Muscle::commit() {
 	}
 
 	// must also compute max speed:
-	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * maxLinearContractionSpeed;
+	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * BodyConst::MuscleMaxLinearContractionSpeed;
 }
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {

@@ -6,6 +6,7 @@
  */
 
 #include "Bone.h"
+#include "BodyConst.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/RenderContext.h"
@@ -14,6 +15,11 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 const glm::vec3 debug_color(0.f, 1.f, 0.f);
+
+BoneInitializationData::BoneInitializationData()
+	: density(BodyConst::initialBoneDensity)
+	, aspectRatio(BodyConst::initialBoneAspectRatio) {
+}
 
 Bone::Bone(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_BONE, std::make_shared<BoneInitializationData>())

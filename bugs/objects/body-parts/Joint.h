@@ -49,7 +49,7 @@ protected:
 	float resetTorque_;			// torque that resets the joint into repause position
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
-	void fixAngles();
+	void getNormalizedLimits(float &low, float &high);
 };
 
 template<> void update(Joint*& j, float dt);

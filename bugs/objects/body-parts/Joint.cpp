@@ -6,6 +6,7 @@
  */
 
 #include "Joint.h"
+#include "BodyConst.h"
 #include "../../World.h"
 #include "../../math/box2glm.h"
 #include "../../math/math2D.h"
@@ -18,8 +19,10 @@
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
 JointInitializationData::JointInitializationData()
-	: phiMin(-PI/8), phiMax(PI * 0.9f), resetTorque(0.05f) {
-	size = 0.2e-4f;
+	: phiMin(BodyConst::initialJointMinPhi)
+	, phiMax(BodyConst::initialJointMaxPhi)
+	, resetTorque(BodyConst::initialJointResetTorque) {
+	size.reset(0.2e-4f);
 }
 
 Joint::Joint(BodyPart* parent)
@@ -42,14 +45,14 @@ Joint::~Joint() {
 /**
  * if the angles are screwed, limit them to [-PI/9, 0] (low) and [0, +PI/9] (high)
  */
-void Joint::fixAngles() {
+void Joint::getNormalizedLimits(float &low, float &high) {
 	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-	initData->phiMin = limitAngle(initData->phiMin, 0);
-	if (initData->phiMin < -PI*0.9f)
-		initData->phiMin = -PI*0.9f;
-	initData->phiMax = limitAngle(initData->phiMax, PI*0.9f);
-	if (initData->phiMax < 0)
-		initData->phiMax = 0;
+	low = limitAngle(initData->phiMin, 0);
+	if (low < -PI*0.9f)
+		low = -PI*0.9f;
+	high = limitAngle(initData->phiMax, PI*0.9f);
+	if (high < 0)
+		high = 0;
 }
 
 void Joint::commit() {
@@ -58,13 +61,14 @@ void Joint::commit() {
 
 	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
 
-	fixAngles();
+	float lowAngle, highAngle;
+	getNormalizedLimits(lowAngle, highAngle);
 
 	b2RevoluteJointDef def;
 	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(initData->cachedProps.position));
 	def.enableLimit = true;
-	def.lowerAngle = initData->phiMin;
-	def.upperAngle = initData->phiMax;
+	def.lowerAngle = lowAngle;
+	def.upperAngle = highAngle;
 	def.userData = (void*)this;
 	def.enableMotor = true;
 	// def.collideConnected = true;
@@ -128,17 +132,10 @@ float Joint::getTotalRange() {
 		return physJoint_->GetUpperLimit() - physJoint_->GetLowerLimit();
 	} else {
 		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-		// save original values:
-		float fm = initData->phiMin, fM = initData->phiMax;
-		// fix the angles:
-		fixAngles();
+		float lowAngle, highAngle;
+		getNormalizedLimits(lowAngle, highAngle);
 		// compute range:
-		float ret = initData->phiMax - initData->phiMin;
-		// restore original values:
-		initData->phiMax = fM;
-		initData->phiMin = fm;
-
-		return ret;
+		return highAngle - lowAngle;
 	}
 }
 

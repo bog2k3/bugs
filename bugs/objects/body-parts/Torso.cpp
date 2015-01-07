@@ -6,6 +6,7 @@
  */
 
 #include "Torso.h"
+#include "BodyConst.h"
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/RenderContext.h"
@@ -13,6 +14,10 @@
 #include <Box2D/Box2D.h>
 
 static const glm::vec3 debug_color(1.f, 1.f, 0.f);
+
+TorsoInitializationData::TorsoInitializationData()
+	: density(BodyConst::initialTorsoDensity) {
+}
 
 Torso::Torso(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_TORSO, std::make_shared<TorsoInitializationData>())

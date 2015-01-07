@@ -16,8 +16,7 @@ class Joint;
 
 struct MuscleInitializationData : public BodyPartInitializationData {
 	virtual ~MuscleInitializationData() noexcept = default;
-	MuscleInitializationData() : aspectRatio(2.0f) {
-	}
+	MuscleInitializationData();
 
 	CummulativeValue aspectRatio;	// length/width
 };
@@ -38,10 +37,7 @@ public:
 	void command(float signal_strength);
 
 protected:
-	static constexpr float contractionRatio = 0.5f;			// [1]
-	static constexpr float forcePerWidthRatio = 100;		// [N/m] the theoretical force of a muscle 1 meter wide.
-	static constexpr float maxLinearContractionSpeed = 0.8f;// [m/s] max meters/second linear contraction speed
-	static constexpr int nAngleSteps = 10;					// [1]
+	static constexpr int nAngleSteps = 10;
 
 	/**
 	 * returns a float.

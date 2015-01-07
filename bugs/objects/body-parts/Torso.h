@@ -12,9 +12,9 @@
 
 struct TorsoInitializationData : public BodyPartInitializationData {
 	virtual ~TorsoInitializationData() noexcept = default;
-	TorsoInitializationData() : density(1.f) {
-	}
+	TorsoInitializationData();
 
+	// torso energy capacity is proportional to its mass=size*density
 	CummulativeValue density;
 };
 
