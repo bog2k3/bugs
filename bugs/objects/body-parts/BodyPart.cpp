@@ -139,8 +139,8 @@ void BodyPart::computeBodyPhysProps() {
 	initialData_->cachedProps.angle = parentProps.angle + initialData_->attachmentDirectionParent + initialData_->angleOffset;
 }
 
-glm::vec3 BodyPart::getWorldTransformation() const {
-	if (body_) {
+glm::vec3 BodyPart::getWorldTransformation(bool force_recompute /*=false*/) const {
+	if (body_ && !force_recompute) {
 		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
 	} else if (initialData_) {
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
@@ -202,9 +202,14 @@ void BodyPart::applyScale_tree(float scale) {
 	{
 		lastCommitSize_inv_ = 1.f / initialData_->size;
 		commit();
+		/*if (body_)
+			body_->SetTransform(g2b(vec3xy(getWorldTransformation(true))), body_->GetAngle());*/
+#error "must also move bodies when changing fixture size"
+		// this is not easy since the bodies may be in a different position from the default, the joints may
+		// be bent away from their default angle.
+		// must figure out a way, and preserve the original properties of the joints (min and max angles, distance between bodies,
+		// anchor points).
 	}
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->applyScale_tree(scale);
-
-#error "must also move bodies when changing fixture size"
 }

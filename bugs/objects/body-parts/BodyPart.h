@@ -64,7 +64,7 @@ public:
 	 */
 	//glm::vec2 getUpstreamAttachmentPoint();
 
-	virtual glm::vec3 getWorldTransformation() const;
+	virtual glm::vec3 getWorldTransformation(bool force_recompute=false) const;
 
 	/*
 	 * This is called after the body is completely developed and no more changes will occur on body parts
