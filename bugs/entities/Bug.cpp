@@ -14,6 +14,7 @@
 #include "../math/math2D.h"
 #include "../objects/body-parts/ZygoteShell.h"
 #include "../objects/body-parts/Torso.h"
+#include "../objects/body-parts/BodyConst.h"
 
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
@@ -27,6 +28,9 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	, tRibosomeStep_(0)
 	, body_(nullptr)
 	, zygoteShell_(nullptr)
+	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
+	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
+	, adultLeanMass_(BodyConst::initialAdultLeanMass)
 {
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(zygoteSize);
@@ -58,6 +62,12 @@ void Bug::update(float dt) {
 				isDeveloping_ = ribosome_->step();
 				if (!isDeveloping_) {
 					float currentMass = body_->getMass_tree();
+					float zygMass = zygoteShell_->getMass();
+
+					// compute fat amount and scale up the torso to the correct size
+					float fatMass = zygMass * initialFatMassRatio_ / (initialFatMassRatio_+1);
+					body_->setFatMass(fatMass);
+					body_->applyScale_tree((zygMass-fatMass)/currentMass);
 
 					zygoteShell_->updateCachedDynamicPropsFromBody();
 					// commit all changes and create the physics bodys and fixtures:
@@ -70,11 +80,11 @@ void Bug::update(float dt) {
 				}
 			}
 		} else {
-			static float crtScale = 1.f;
+			/*static float crtScale = 1.f;
 			if (crtScale < 10) {
 				crtScale += 0.001f * dt;
 				body_->applyScale_tree(crtScale);
-			}
+			}*/
 			bodyPartsUpdateList_.update(dt);
 			if (true /* not adult scale yet*/) {
 				// juvenile, growing

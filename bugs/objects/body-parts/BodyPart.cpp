@@ -219,21 +219,23 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 	assert(initialData_ && "applyScale_tree cannot be called after purging the initialization data!");
 	initialData_->size.reset(initialData_->size * scale);
 	bool committed_now = false, should_commit_joint = false;
-	if (initialData_->size * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
-			|| initialData_->size * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
-	{
-		lastCommitSize_inv_ = 1.f / initialData_->size;
-		if (type_ != BODY_PART_JOINT) {
-			commit();
-			committed_now = true;
-		} else
-			should_commit_joint = true;
+	if (committed_) {
+		if (initialData_->size * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
+				|| initialData_->size * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
+		{
+			lastCommitSize_inv_ = 1.f / initialData_->size;
+			if (type_ != BODY_PART_JOINT) {
+				commit();
+				committed_now = true;
+			} else
+				should_commit_joint = true;
+		}
 	}
 	bool child_changed = false;
 	for (int i=0; i<nChildren_; i++) {
 		child_changed |= children_[i]->applyScale_treeImpl(scale, committed_now);
 	}
-	if (type_ == BODY_PART_JOINT && (should_commit_joint || parentChanged || child_changed)) {
+	if (type_ == BODY_PART_JOINT && committed_ && (should_commit_joint || parentChanged || child_changed)) {
 		// must commit a joint whenever the threshold is reached, or parent or child has committed
 		commit();
 		committed_now = true;

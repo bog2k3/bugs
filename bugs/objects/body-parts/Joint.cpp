@@ -22,7 +22,7 @@ JointInitializationData::JointInitializationData()
 	: phiMin(BodyConst::initialJointMinPhi)
 	, phiMax(BodyConst::initialJointMaxPhi)
 	, resetTorque(BodyConst::initialJointResetTorque) {
-	size.reset(0.2e-4f);
+	size.reset(BodyConst::initialJointSize);
 }
 
 Joint::Joint(BodyPart* parent)

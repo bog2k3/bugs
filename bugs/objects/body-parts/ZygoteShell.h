@@ -24,7 +24,10 @@ public:
 	 */
 	void updateCachedDynamicPropsFromBody();
 
+	float getMass() { return mass_; }
+
 private:
+	float mass_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_ZYGOTESHELL_H_ */
