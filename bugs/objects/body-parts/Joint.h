@@ -12,6 +12,8 @@
 #include "BodyPart.h"
 #include "../../updatable.h"
 
+#define DEBUG_DRAW_JOINT
+
 struct JointInitializationData : public BodyPartInitializationData {
 	virtual ~JointInitializationData() noexcept = default;
 	JointInitializationData();

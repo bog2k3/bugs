@@ -58,11 +58,7 @@ void Joint::getNormalizedLimits(float &low, float &high) {
 void Joint::commit() {
 	assert(nChildren_ == 1);
 
-	JointInitializationData* pdata = (JointInitializationData*) getInitializationData().get();
-
-	// float prevAngle = 0;
 	if (committed_) {
-		// prevAngle = physJoint_->GetJointAngle();
 		physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
 		physJoint_ = nullptr;
 	}
@@ -108,14 +104,17 @@ glm::vec3 Joint::getWorldTransformation() const {
 		return BodyPart::getWorldTransformation();
 	else {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
-			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetJointAngle());
+			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());
 	}
 }
 
 void Joint::draw(RenderContext& ctx) {
+#ifndef DEBUG_DRAW_JOINT
 	if (committed_) {
 		// nothing, physics draws
-	} else {
+	} else
+#endif
+	{
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(getInitializationData()->size/PI), 0, 12, debug_color);
