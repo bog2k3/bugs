@@ -83,6 +83,8 @@ void BodyPart::commit_tree() {
 	assert(initialData_);
 	if (!committed_)
 		computeBodyPhysProps();
+	else
+		reverseUpdateCachedProps();
 	lastCommitSize_inv_ = 1.f / initialData_->size;
 	// perform commit on local node:
 	if (type_ != BODY_PART_JOINT) {
@@ -116,11 +118,26 @@ void BodyPart::purge_initializationData_tree() {
 		children_[i]->purge_initializationData_tree();
 }
 
-glm::vec2 BodyPart::computeParentSpacePosition() const {
+glm::vec2 BodyPart::getParentSpacePosition() const {
 	return getUpstreamAttachmentPoint() - glm::rotate(
 			getChildAttachmentPoint(PI - initialData_->angleOffset),
 			(float)initialData_->attachmentDirectionParent + initialData_->angleOffset);
 #warning "must take into account lateral offset"
+}
+
+void BodyPart::reverseUpdateCachedProps() {
+	// reverse the magic here: get values from the physics engine and put them in our cached props
+	// in order to facilitate a recommit with changed data.
+	glm::vec3 worldTransform = getWorldTransformation();
+	initialData_->cachedProps.angle = worldTransform.z;
+	initialData_->cachedProps.position = vec3xy(worldTransform);
+	if (body_) {
+		initialData_->cachedProps.velocity = b2g(body_->GetLinearVelocity());
+		initialData_->cachedProps.angularVelocity = body_->GetAngularVelocity();
+	} else if (parent_) {
+		initialData_->cachedProps.velocity = parent_->initialData_->cachedProps.velocity;
+		initialData_->cachedProps.angularVelocity = parent_->initialData_->cachedProps.angularVelocity;
+	}
 }
 
 void BodyPart::computeBodyPhysProps() {
@@ -131,7 +148,7 @@ void BodyPart::computeBodyPhysProps() {
 	initialData_->cachedProps.velocity = parentProps.velocity;
 	initialData_->cachedProps.angularVelocity = parentProps.angularVelocity;
 	// compute parent space position:
-	glm::vec2 pos = computeParentSpacePosition();
+	glm::vec2 pos = getParentSpacePosition();
 	// compute world space position:
 	pos = parentProps.position + glm::rotate(pos, parentProps.angle);
 	initialData_->cachedProps.position = pos;
@@ -139,12 +156,12 @@ void BodyPart::computeBodyPhysProps() {
 	initialData_->cachedProps.angle = parentProps.angle + initialData_->attachmentDirectionParent + initialData_->angleOffset;
 }
 
-glm::vec3 BodyPart::getWorldTransformation(bool force_recompute /*=false*/) const {
-	if (body_ && !force_recompute) {
+glm::vec3 BodyPart::getWorldTransformation() const {
+	if (body_) {
 		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
 	} else if (initialData_) {
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-		glm::vec2 pos = computeParentSpacePosition();
+		glm::vec2 pos = getParentSpacePosition();
 		return parentTransform + glm::vec3(
 				glm::rotate(pos, parentTransform.z),
 				initialData_->attachmentDirectionParent + initialData_->angleOffset);
@@ -195,21 +212,37 @@ float BodyPart::getMass_tree() {
 }
 
 void BodyPart::applyScale_tree(float scale) {
+	applyScale_treeImpl(scale, false);
+}
+
+bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 	assert(initialData_ && "applyScale_tree cannot be called after purging the initialization data!");
 	initialData_->size.reset(initialData_->size * scale);
+	bool committed_now = false, should_commit_joint = false;
 	if (initialData_->size * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
 			|| initialData_->size * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
 	{
 		lastCommitSize_inv_ = 1.f / initialData_->size;
-		commit();
-		/*if (body_)
-			body_->SetTransform(g2b(vec3xy(getWorldTransformation(true))), body_->GetAngle());*/
-#error "must also move bodies when changing fixture size"
-		// this is not easy since the bodies may be in a different position from the default, the joints may
-		// be bent away from their default angle.
-		// must figure out a way, and preserve the original properties of the joints (min and max angles, distance between bodies,
-		// anchor points).
+		if (type_ != BODY_PART_JOINT) {
+			commit();
+			committed_now = true;
+		} else
+			should_commit_joint = true;
 	}
-	for (int i=0; i<nChildren_; i++)
-		children_[i]->applyScale_tree(scale);
+	bool child_changed = false;
+	for (int i=0; i<nChildren_; i++) {
+		child_changed |= children_[i]->applyScale_treeImpl(scale, committed_now);
+	}
+	if (type_ == BODY_PART_JOINT && (should_commit_joint || parentChanged || child_changed)) {
+		// must commit a joint whenever the threshold is reached, or parent or child has committed
+		commit();
+		committed_now = true;
+	}
+
+	return committed_now;
+}
+
+float BodyPart::getDefaultAngle() {
+	assert(initialData_ && "getDefaultAngle cannot be called after purging initialization data!");
+	return initialData_->attachmentDirectionParent + initialData_->angleOffset;
 }

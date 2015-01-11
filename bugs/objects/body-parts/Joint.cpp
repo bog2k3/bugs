@@ -58,7 +58,11 @@ void Joint::getNormalizedLimits(float &low, float &high) {
 void Joint::commit() {
 	assert(nChildren_ == 1);
 
+	JointInitializationData* pdata = (JointInitializationData*) getInitializationData().get();
+
+	// float prevAngle = 0;
 	if (committed_) {
+		// prevAngle = physJoint_->GetJointAngle();
 		physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
 		physJoint_ = nullptr;
 	}
@@ -69,13 +73,27 @@ void Joint::commit() {
 	getNormalizedLimits(lowAngle, highAngle);
 
 	b2RevoluteJointDef def;
-	def.Initialize(parent_->getBody(), children_[0]->getBody(), g2b(initData->cachedProps.position));
+	def.bodyA = parent_->getBody();
+	def.bodyB = children_[0]->getBody();
 	def.enableLimit = true;
 	def.lowerAngle = lowAngle;
 	def.upperAngle = highAngle;
 	def.userData = (void*)this;
 	def.enableMotor = true;
-	// def.collideConnected = true;
+	def.referenceAngle = getDefaultAngle() + children_[0]->getDefaultAngle();
+
+	float radius = sqrtf(getInitializationData()->size/PI);
+	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(getInitializationData()->attachmentDirectionParent);
+	float parentAnchorLength = glm::length(parentAnchor);
+	parentAnchor *= 1 + radius/parentAnchorLength;	// move away from the edge by joint radius
+	def.localAnchorA = g2b(parentAnchor);
+
+	glm::vec2 childAnchor = children_[0]->getChildAttachmentPoint(PI - children_[0]->getInitializationData()->angleOffset);
+	float childAnchorLength = glm::length(childAnchor);
+	childAnchor *= 1 + radius/childAnchorLength;
+	def.localAnchorB = g2b(childAnchor);
+
+	def.collideConnected = true;
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 
@@ -85,9 +103,9 @@ void Joint::commit() {
 	getUpdateList()->add(this);
 }
 
-glm::vec3 Joint::getWorldTransformation(bool force_recompute/*=false*/) const {
-	if (!committed_ || force_recompute)
-		return BodyPart::getWorldTransformation(force_recompute);
+glm::vec3 Joint::getWorldTransformation() const {
+	if (!committed_)
+		return BodyPart::getWorldTransformation();
 	else {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
 			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetJointAngle());

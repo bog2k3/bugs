@@ -15,7 +15,7 @@
 #include "../objects/body-parts/ZygoteShell.h"
 #include "../objects/body-parts/Torso.h"
 
-const float DECODE_FREQUENCY = 1.f; // genes per second
+const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
 Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
@@ -67,11 +67,14 @@ void Bug::update(float dt) {
 					body_->changeParent(nullptr);
 					delete zygoteShell_;
 					zygoteShell_ = nullptr;
-
-					body_->applyScale_tree(1.2f);
 				}
 			}
 		} else {
+			static float crtScale = 1.f;
+			if (crtScale < 10) {
+				crtScale += 0.001f * dt;
+				body_->applyScale_tree(crtScale);
+			}
 			bodyPartsUpdateList_.update(dt);
 			if (true /* not adult scale yet*/) {
 				// juvenile, growing
@@ -108,6 +111,15 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	gc.part_type = GENE_PART_BONE;
 	g.first.push_back(gc);
 
+	gl.location[0].set(1);
+	gl.location[1].set(1);
+	gl.location[2].set(1<<15);
+	g.first.push_back(gl);
+	GeneLocalAttribute gla;
+	gla.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	gla.value.set(PI/8);
+	g.first.push_back(gla);
+
 	// second bone:
 	gl.location[0].set(1);
 	gl.location[1].set(1);
@@ -125,36 +137,35 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(gc);
 
 	// body size (sq meters)
-	GeneLocalAttribute ga;
 	gl.location[0].set(1 << 15);
 	g.first.push_back(gl);
-	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(0.1f * 0.1f);
-	g.first.push_back(ga);
+	gla.attribute = GENE_ATTRIB_SIZE;
+	gla.value.set(0.1f * 0.1f);
+	g.first.push_back(gla);
 
 	// first bone size:
 	gl.location[0].set(1);
 	gl.location[2].set(1 << 15);
 	g.first.push_back(gl);
-	ga.value.set(0.08f * 0.01f);
-	g.first.push_back(ga);
+	gla.value.set(0.08f * 0.01f);
+	g.first.push_back(gla);
 
 	// first bone aspect
-	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
-	ga.value.set(4);
-	g.first.push_back(ga);
+	gla.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	gla.value.set(4);
+	g.first.push_back(gla);
 
 	// second bone size:
 	gl.location[2].set(1);
 	g.first.push_back(gl);
-	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(0.08f * 0.01f);
-	g.first.push_back(ga);
+	gla.attribute = GENE_ATTRIB_SIZE;
+	gla.value.set(0.08f * 0.01f);
+	g.first.push_back(gla);
 
 	// second bone aspect
-	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
-	ga.value.set(4);
-	g.first.push_back(ga);
+	gla.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	gla.value.set(4);
+	g.first.push_back(gla);
 
 	// first muscle size
 	// ...

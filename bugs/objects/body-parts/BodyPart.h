@@ -64,7 +64,7 @@ public:
 	 */
 	//glm::vec2 getUpstreamAttachmentPoint();
 
-	virtual glm::vec3 getWorldTransformation(bool force_recompute=false) const;
+	virtual glm::vec3 getWorldTransformation() const;
 
 	/*
 	 * This is called after the body is completely developed and no more changes will occur on body parts
@@ -102,6 +102,10 @@ public:
 	std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
 	void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
 
+	/** returns the default (rest) angle of this part relative to its parent
+	 */
+	float getDefaultAngle();
+
 protected:
 	PART_TYPE type_;
 	BodyPart* parent_;
@@ -122,7 +126,9 @@ protected:
 
 private:
 	void computeBodyPhysProps();
-	glm::vec2 computeParentSpacePosition() const;
+	void reverseUpdateCachedProps();
+	glm::vec2 getParentSpacePosition() const;
+	bool applyScale_treeImpl(float scale, bool parentChanged);
 	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;
