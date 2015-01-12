@@ -9,6 +9,7 @@
 #define OBJECTS_BODY_PARTS_MUSCLE_H_
 
 #include "BodyPart.h"
+#include "../../entities/IMotor.h"
 
 #define DEBUG_DRAW_MUSCLE
 
@@ -21,7 +22,7 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 	CummulativeValue aspectRatio;	// length/width
 };
 
-class Muscle: public BodyPart {
+class Muscle: public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent:
 	Muscle(BodyPart* parent, Joint* joint, int motorDirSign);
@@ -34,7 +35,7 @@ public:
 	/**
 	 * command the muscle to contract. signal_strength will be clamped to [0.0, 1.0]
 	 */
-	void command(float signal_strength);
+	void action(float signal_strength) override;
 
 protected:
 	static constexpr int nAngleSteps = 10;

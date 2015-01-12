@@ -241,7 +241,7 @@ float Muscle::getCurrentPhiSlice() {
 	return iAngleSlice + angleSlice;
 }
 
-void Muscle::command(float signal_strength) {
+void Muscle::action(float signal_strength) {
 	float RSinAlphaHSinBeta = lerp_lookup(phiToRSinAlphaHSinBeta_, nAngleSteps, getCurrentPhiSlice());
 	float torque = maxForce_ * clamp(signal_strength, 0.f, 1.f) * RSinAlphaHSinBeta;
 	joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);

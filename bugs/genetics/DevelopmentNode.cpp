@@ -10,11 +10,10 @@
 #include <assert.h>
 
 DevelopmentNode::DevelopmentNode(DevelopmentNode* parent, BodyPart* part)
-	: parent{parent}
-	, children{nullptr}
-	, bodyPart{part}
-	, isJoint{part->getType() == BODY_PART_JOINT}
-	, nChildren{0}
+	: parent_{parent}
+	, children_{nullptr}
+	, bodyPart_{part}
+	, nChildren_{0}
 {
 }
 
@@ -27,14 +26,20 @@ void DevelopmentNode::matchLocation(const Atom<LocationLevelType>* location, int
 	if (*location & (1<<15)) {
 		out->push_back(this);
 	}
-	for (int i=0; i<nChildren; i++) {
+	for (int i=0; i<nChildren_; i++) {
 		if (*location & (1 << i))
-			children[i]->matchLocation(location+1, nLevel-1, out);
+			children_[i]->matchLocation(location+1, nLevel-1, out);
 	}
 }
 
 void DevelopmentNode::applyRecursive(std::function<void(DevelopmentNode* pCurrent)> pred) {
 	pred(this);
-	for (int i=0; i<nChildren; i++)
-		children[i]->applyRecursive(pred);
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->applyRecursive(pred);
+}
+
+void DevelopmentNode::addMotorLine(int line) {
+	motorLines_.push_back(line);
+	if (parent_)
+		parent_->addMotorLine(line);
 }

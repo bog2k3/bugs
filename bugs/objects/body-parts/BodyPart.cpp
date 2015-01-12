@@ -198,7 +198,7 @@ UpdateList* BodyPart::getUpdateList() const {
 }
 
 float BodyPart::getMass_tree() {
-	float mass;
+	float mass = 0;
 	if (initialData_)
 		mass = initialData_->size * initialData_->density;
 	else if (body_)
