@@ -12,7 +12,7 @@
 
 class ZygoteShell: public BodyPart {
 public:
-	ZygoteShell(float size);
+	ZygoteShell(glm::vec2 position, float size);
 	~ZygoteShell() override;
 
 	void commit() override;

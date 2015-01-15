@@ -9,6 +9,7 @@
 #include "BodyConst.h"
 #include "../../math/math2D.h"
 #include "../../math/box2glm.h"
+#include "../../math/tools.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/RenderContext.h"
 #include <glm/gtx/rotate_vector.hpp>
@@ -18,7 +19,7 @@
 
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
-ZygoteShell::ZygoteShell(float size)
+ZygoteShell::ZygoteShell(glm::vec2 position, float size)
 	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
 	, mass_(size*BodyConst::ZygoteDensity)
 {
@@ -26,6 +27,8 @@ ZygoteShell::ZygoteShell(float size)
 	getInitializationData()->density.reset(BodyConst::ZygoteDensity);
 
 	commit_tree();
+
+	body_->SetTransform(g2b(position), randf()*2*PI);
 }
 
 ZygoteShell::~ZygoteShell() {

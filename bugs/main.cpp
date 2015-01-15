@@ -57,7 +57,7 @@ int main() {
 	physicsDraw.SetFlags(
 				  b2Draw::e_shapeBit
 				//| b2Draw::e_centerOfMassBit
-				| b2Draw::e_jointBit
+				// | b2Draw::e_jointBit
 				//| b2Draw::e_aabbBit
 			);
 	physWld.SetDebugDraw(&physicsDraw);
@@ -69,8 +69,6 @@ int main() {
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
-
-	Bug* b = Bug::newBasicBug(glm::vec2(0, 0));
 
 	/*
 	 * joint motor test:
@@ -107,8 +105,16 @@ int main() {
 	stats(0, phi, 0, 0, e);
 	//*/
 
+	Bug* b1 = Bug::newBasicBug(glm::vec2(0, 0));
+	Bug* b2 = Bug::newBasicBug(glm::vec2(0.4f, 0));
+	Bug* b3 = Bug::newBasicBug(glm::vec2(-0.4f, 0));
+	Bug* b4 = Bug::newBasicBug(glm::vec2(0, 0.4f));
+
 	UpdateList updateList;
-	updateList.add(b);
+	updateList.add(b1);
+	updateList.add(b2);
+	updateList.add(b3);
+	updateList.add(b4);
 
 	DrawList drawList;
 	drawList.add(World::getInstance());

@@ -47,6 +47,10 @@ void Gripper::commit() {
 	body_->CreateFixture(&fdef);
 }
 
+void Gripper::action(float intensity) {
+	setActive(intensity > 0.5f);
+}
+
 void Gripper::setActive(bool active) {
 	if (active_ == active)
 		return;

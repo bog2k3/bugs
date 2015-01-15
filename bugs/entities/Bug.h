@@ -13,6 +13,7 @@
 #include "../updatable.h"
 #include "../UpdateList.h"
 #include "../genetics/CummulativeValue.h"
+#
 #include <glm/fwd.hpp>
 #include <vector>
 #include <map>
@@ -50,8 +51,9 @@ protected:
 	Torso* body_;
 	ZygoteShell* zygoteShell_;
 	UpdateList bodyPartsUpdateList_;
-	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
+	float lifeTime_;
 
+	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
 	CummulativeValue initialFatMassRatio_;
 	CummulativeValue minFatMasRatio_;
 	CummulativeValue adultLeanMass_;

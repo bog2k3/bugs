@@ -9,11 +9,11 @@
 #define OBJECTS_BODY_PARTS_GRIPPER_H_
 
 #include "BodyPart.h"
-#include <memory>
+#include "../../entities/IMotor.h"
 
 class b2WeldJoint;
 
-class Gripper : public BodyPart {
+class Gripper : public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent
 	Gripper(BodyPart* parent);
@@ -23,10 +23,15 @@ public:
 	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 
-	void setActive(bool active);
-	bool isActive() { return active_; }
+	/**
+	 * command the motor with the given intensity;
+	 * intensity depends on the type and properties of the motor
+	 */
+	virtual void action(float intensity);
 
 protected:
+	void setActive(bool active);
+
 	bool active_;
 	b2WeldJoint* groundJoint_;
 	float size_;

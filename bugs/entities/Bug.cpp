@@ -6,6 +6,8 @@
  */
 
 #include "Bug.h"
+#include "IMotor.h"
+#include "ISensor.h"
 #include "../neuralnet/Network.h"
 #include "../genetics/Gene.h"
 #include "../genetics/GeneDefinitions.h"
@@ -28,12 +30,13 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	, tRibosomeStep_(0)
 	, body_(nullptr)
 	, zygoteShell_(nullptr)
+	, lifeTime_(0)
 	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
 {
 	// create embryo shell:
-	zygoteShell_ = new ZygoteShell(zygoteSize);
+	zygoteShell_ = new ZygoteShell(position, zygoteSize);
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
 
 	body_ = new Torso(zygoteShell_);
@@ -80,6 +83,18 @@ void Bug::update(float dt) {
 				}
 			}
 		} else {
+
+			lifeTime_ += dt;
+			const float musclePeriod = 2.f; // seconds
+			float sval = sinf(sinf(2*PI/musclePeriod * lifeTime_));
+			float mval1 = sval > 0 ? sval : 0;
+			float mval2 = sval < 0 ? -sval : 0;
+			motors_[0]->action(mval1);
+			motors_[1]->action(mval2);
+			float svalg = sinf(sinf(2*PI/musclePeriod * (lifeTime_+0.5f)));
+			motors_[6]->action((-svalg + 0.7f)*0.7f);	// the gripper
+
+
 			/*static float crtScale = 1.f;
 			if (crtScale < 10) {
 				crtScale += 0.001f * dt;

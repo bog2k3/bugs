@@ -12,7 +12,7 @@ class OutputSocket;
 
 class ISensor {
 public:
-	virtual void ~ISensor() {}
+	virtual ~ISensor() {}
 
 	/**
 	 * frame update

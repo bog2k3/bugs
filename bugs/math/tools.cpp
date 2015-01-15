@@ -17,6 +17,11 @@ double randd() {
 	return (double)rand() / RAND_MAX;
 }
 
+float randf() {
+	check_init_rand_seed();
+	return (float)rand() / RAND_MAX;
+}
+
 double srandd() {
 	return 2.0*randd() - 1.0;
 }

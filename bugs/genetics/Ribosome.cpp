@@ -176,8 +176,13 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		case GENE_PART_BONE:
 			bp = new Bone(n);
 			break;
-		case GENE_PART_GRIPPER:
-			bp = new Gripper(n);
+		case GENE_PART_GRIPPER: {
+			Gripper* g = new Gripper(n);
+			int motorLineId = bug_->motors_.size();
+			bug_->motors_.push_back(g);
+			g->addMotorLine(motorLineId);
+			bp = g;
+		}
 			break;
 		case GENE_PART_SENSOR:
 			// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));

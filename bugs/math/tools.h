@@ -1,6 +1,7 @@
 #ifndef __tools_h__
 #define __tools_h__
 
+float randf(); // generates a random number between 0.0 and 1.0 inclusive
 double randd(); // generates a random number between 0.0 and 1.0 inclusive
 double srandd(); // generates a signed number between -1.0 and +1.0 inclusive
 int randi(int max); // generates a random number between 0 and max inclusive, with equal chances for all numbers, including max
