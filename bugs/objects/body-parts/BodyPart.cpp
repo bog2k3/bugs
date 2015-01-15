@@ -51,6 +51,35 @@ BodyPart::~BodyPart() {
 		children_[i]->changeParent(nullptr);
 }
 
+void BodyPart::matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<BodyPart*> *out) {
+	assert(nLevel >= 0);
+	if (*location & (1<<15)) {
+		out->push_back(this);
+	}
+	for (int i=0; i<nChildren_; i++) {
+		if (*location & (1 << i))
+			children_[i]->matchLocation(location+1, nLevel-1, out);
+	}
+}
+
+void BodyPart::applyRecursive(std::function<void(BodyPart* pCurrent)> pred) {
+	pred(this);
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->applyRecursive(pred);
+}
+
+void BodyPart::addMotorLine(int line) {
+	motorLines_.push_back(line);
+	if (parent_)
+		parent_->addMotorLine(line);
+}
+
+void BodyPart::addSensorLine(int line) {
+	sensorLines_.push_back(line);
+	if (parent_)
+		parent_->addSensorLine(line);
+}
+
 void BodyPart::add(BodyPart* part) {
 	assert(nChildren_ < MAX_CHILDREN);
 	children_[nChildren_++] = part;

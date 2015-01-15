@@ -9,7 +9,7 @@
 #include "Gene.h"
 
 class Bug;
-class DevelopmentNode;
+class BodyPart;
 
 /**
  * decodes the entity's genome and builds it step by step. When finished the entity will have its final
@@ -28,9 +28,9 @@ public:
 private:
 	Bug* bug_;
 	unsigned crtPosition_;
-	DevelopmentNode* root_;
+	BodyPart* root_;
 	std::vector<GeneGeneralAttribute> generalAttribGenes;
-	std::vector<DevelopmentNode*> activeSet_;
+	std::vector<BodyPart*> activeSet_;
 
 	void decodeDevelopCommand(GeneCommand const& g);
 	void decodeDevelopGrowth(GeneCommand const& g);

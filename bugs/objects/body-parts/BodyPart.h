@@ -11,6 +11,7 @@
 #include "../WorldObject.h"
 #include "../../genetics/GeneDefinitions.h"
 #include "../../genetics/CummulativeValue.h"
+#include "../../genetics/Gene.h"
 #include <vector>
 #include <map>
 #include <memory>
@@ -48,7 +49,7 @@ public:
 
 	virtual void draw(RenderContext& ctx) override;
 
-	PART_TYPE getType() { return type_; }
+	inline PART_TYPE getType() const { return type_; }
 
 	void changeParent(BodyPart* newParent);
 
@@ -96,21 +97,26 @@ public:
 	 */
 	void purge_initializationData_tree();
 
-	PART_TYPE getType() const { return type_; }
-	int getChildrenCount() const { return nChildren_; }
-	BodyPart* getChild(int i) const { assert(i<nChildren_); return children_[i]; }
-	std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
+	inline int getChildrenCount() const { return nChildren_; }
+	inline BodyPart* getChild(int i) const { assert(i<nChildren_); return children_[i]; }
+	inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
 	void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
 
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
 	float getDefaultAngle();
 
+	void matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<BodyPart*> *out);
+	void applyRecursive(std::function<void(BodyPart* pCurrent)> pred);
+	void addMotorLine(int line);
+	void addSensorLine(int line);
+
+	static constexpr int MAX_CHILDREN = 15;
+
 protected:
 	PART_TYPE type_;
 	BodyPart* parent_;
 
-	static constexpr int MAX_CHILDREN = 15;
 	BodyPart* children_[MAX_CHILDREN];
 	int nChildren_;
 
@@ -129,6 +135,9 @@ private:
 	void reverseUpdateCachedProps();
 	glm::vec2 getParentSpacePosition() const;
 	bool applyScale_treeImpl(float scale, bool parentChanged);
+
+	std::vector<int> motorLines_; // a list of motor nerve lines that pass through this node
+	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-
 	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;

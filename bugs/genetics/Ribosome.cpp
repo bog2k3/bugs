@@ -9,9 +9,9 @@
 #include "../neuralnet/OutputSocket.h"
 #include "Gene.h"
 #include "GeneDefinitions.h"
-#include "DevelopmentNode.h"
 #include "CummulativeValue.h"
 #include "../entities/Bug.h"
+#include "../objects/body-parts/BodyPart.h"
 #include "../objects/body-parts/Torso.h"
 #include "../objects/body-parts/Bone.h"
 #include "../objects/body-parts/Gripper.h"
@@ -28,7 +28,7 @@ static constexpr float MUSCLE_OFFSET_ANGLE = PI * 0.25f;
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 	, crtPosition_{0}
-	, root_{new DevelopmentNode(nullptr, bug_->body_)}
+	, root_{bug_->body_}
 {
 }
 
@@ -54,8 +54,6 @@ bool Ribosome::step() {
 		// apply the general attribute genes:
 		for (auto &g : generalAttribGenes)
 			decodeGeneralAttrib(g);
-		// delete development tree:
-		delete root_;
 		return false;
 	}
 	Gene* g = nullptr;
@@ -127,9 +125,9 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 	// now grow a new part on each adequate element in nodes list
 	for (auto n : activeSet_) {
 		// grow only works on bones and torso
-		if (n->bodyPart_->getType() != BODY_PART_BONE && n->bodyPart_->getType() != BODY_PART_TORSO)
+		if (n->getType() != BODY_PART_BONE && n->getType() != BODY_PART_TORSO)
 			continue;
-		if (n->nChildren_ == DevelopmentNode::MAX_CHILDREN)
+		if (n->getChildrenCount() == BodyPart::MAX_CHILDREN)
 			continue;
 
 		float angle = g.angle;
@@ -141,36 +139,33 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 
 		if (partMustGenerateJoint(g.part_type)) {
 			// we cannot grow this part directly onto its parent, they must be connected by a joint
-			Joint* linkJoint = new Joint(n->bodyPart_);
+			Joint* linkJoint = new Joint(n);
 			linkJoint->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
-			DevelopmentNode* nodeJoint = n->children_[n->nChildren_++] = new DevelopmentNode(n, linkJoint);
 
 			// now generate the two muscles around the joint
 			// 1. Left
-			if (n->nChildren_ < DevelopmentNode::MAX_CHILDREN) {
+			if (n->getChildrenCount() < BodyPart::MAX_CHILDREN) {
 				float mLeftAngle = angle + MUSCLE_OFFSET_ANGLE;
-				Muscle* mLeft = new Muscle(n->bodyPart_, linkJoint, +1);
+				Muscle* mLeft = new Muscle(n, linkJoint, +1);
 				mLeft->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(mLeftAngle);
 				mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(-MUSCLE_OFFSET_ANGLE);
-				n->children_[n->nChildren_++] = new DevelopmentNode(n, mLeft);
 				int motorLineId = bug_->motors_.size();
 				bug_->motors_.push_back(mLeft);
-				n->children_[n->nChildren_-1]->addMotorLine(motorLineId);
+				mLeft->addMotorLine(motorLineId);
 			}
 			// 2. Right
-			if (n->nChildren_ < DevelopmentNode::MAX_CHILDREN) {
+			if (n->getChildrenCount() < BodyPart::MAX_CHILDREN) {
 				float mRightAngle = angle - MUSCLE_OFFSET_ANGLE;
-				Muscle* mRight = new Muscle(n->bodyPart_, linkJoint, -1);
+				Muscle* mRight = new Muscle(n, linkJoint, -1);
 				mRight->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(mRightAngle);
 				mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(+MUSCLE_OFFSET_ANGLE);
-				n->children_[n->nChildren_++] = new DevelopmentNode(n, mRight);
 				int motorLineId = bug_->motors_.size();
 				bug_->motors_.push_back(mRight);
-				n->children_[n->nChildren_-1]->addMotorLine(motorLineId);
+				mRight->addMotorLine(motorLineId);
 			}
 
 			// set n to point to the joint's node, since that's where the actual part will be attached:
-			n = nodeJoint;
+			n = linkJoint;
 			// recompute coordinates in joint's space:
 			angle = 0;
 			// offset = n->bodyPart->getChildAttachmentPoint(0);
@@ -179,10 +174,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		BodyPart* bp = nullptr;
 		switch (g.part_type) {
 		case GENE_PART_BONE:
-			bp = new Bone(n->bodyPart_);
+			bp = new Bone(n);
 			break;
 		case GENE_PART_GRIPPER:
-			bp = new Gripper(n->bodyPart_);
+			bp = new Gripper(n);
 			break;
 		case GENE_PART_SENSOR:
 			// bp = new sensortype?(n->bodyPart, PhysicsProperties(offset, angle));
@@ -193,15 +188,14 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g) {
 		if (!bp)
 			continue;
 		bp->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
-		n->children_[n->nChildren_++] = new DevelopmentNode(n, bp);
 	}
 }
 void Ribosome::decodeDevelopSplit(GeneCommand const& g) {
 	// split may work on bones, joints and grippers only
 	for (auto n : activeSet_) {
-		if (   n->bodyPart_->getType() != BODY_PART_BONE
-			&& n->bodyPart_->getType() != BODY_PART_JOINT
-			&& n->bodyPart_->getType() != BODY_PART_GRIPPER
+		if (   n->getType() != BODY_PART_BONE
+			&& n->getType() != BODY_PART_JOINT
+			&& n->getType() != BODY_PART_GRIPPER
 			)
 			continue;
 	}
@@ -212,15 +206,15 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g) {
 
 void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 	for (auto n : activeSet_) {
-		CummulativeValue* pAttrib = n->bodyPart_->getAttribute((gene_part_attribute_type)g.attribute);
+		CummulativeValue* pAttrib = n->getAttribute((gene_part_attribute_type)g.attribute);
 		if (pAttrib)
 			pAttrib->changeAbs(g.value);
 	}
 }
 
 void Ribosome::decodeGeneralAttrib(GeneGeneralAttribute const& g) {
-	root_->applyRecursive([&g] (DevelopmentNode* n) {
-		CummulativeValue* pAttrib = n->bodyPart_->getAttribute((gene_part_attribute_type)g.attribute);
+	root_->applyRecursive([&g] (BodyPart* n) {
+		CummulativeValue* pAttrib = n->getAttribute((gene_part_attribute_type)g.attribute);
 		if (pAttrib)
 			pAttrib->changeRel(g.value);
 	});
