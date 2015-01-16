@@ -13,21 +13,6 @@
 #include <map>
 #include <vector>
 
-enum gene_type {
-	GENE_TYPE_INVALID = 0,
-	GENE_TYPE_LOCATION,			// defines the effective location for the next genes
-	GENE_TYPE_DEVELOPMENT,		// developmental gene - commands the growth of the body
-	GENE_TYPE_PART_ATTRIBUTE,	// body part attribute - establishes characteristics of certain body parts
-	GENE_TYPE_GENERAL_ATTRIB,	// general attribute - controls the overall features of all	body parts of a specific type.
-	GENE_TYPE_BODY_ATTRIBUTE,	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
-								// such as metabolic parameters
-	GENE_TYPE_NEURON,			// creates a new neuron
-	GENE_TYPE_SYNAPSE,			// creates a synapse between neurons
-	GENE_TYPE_TRANSFER,			// controls the transfer function of a neuron
-	GENE_TYPE_MUSCLE_COMMAND,	// creates a linkage from a neuron to a command neuron that sends signals to muscles
-	GENE_TYPE_END
-};
-
 class MetaGene {
 public:
 	double value;
@@ -85,24 +70,35 @@ struct GeneGeneralAttribute {
 	Atom<float> value;					// this is always relative
 };
 
-struct GeneBodyAttribute {
-	gene_body_attribute_type attribute;
+struct GeneNeuronCount {
 	Atom<float> value;
 };
 
 struct GeneSynapse {
-	Atom<int> delta;			// neuron index delta from the current neuron
+	Atom<int> from;		// negative means sensor, positive or 0 means neuron index
+	Atom<int> to;		// negative means motor, positive or 0 means neuron index
+	Atom<float> weight;
+};
+
+struct GeneFeedbackSynapse {
+	Atom<int> from;		// always positive - index of motor command neuron
+	Atom<int> to;		// always positive - index of neuron
 	Atom<float> weight;
 };
 
 struct GeneTransferFunction {
+	Atom<int> targetNeuron;
 	Atom<int> functionID;
 };
 
-struct GeneMuscleCommand {
-	Atom<int> muscleID;
-	Atom<int> neuronDelta;
-	Atom<float> weight;
+struct GeneNeuralConstant {
+	Atom<int> targetNeuron;
+	Atom<float> value;
+};
+
+struct GeneBodyAttribute {
+	gene_body_attribute_type attribute;
+	Atom<float> value;
 };
 
 class Gene {
@@ -114,19 +110,23 @@ public:
 		GeneCommand gene_command;
 		GeneLocalAttribute gene_local_attribute;
 		GeneGeneralAttribute gene_general_attribute;
-		GeneBodyAttribute gene_body_attribute;
+		GeneNeuronCount gene_neuron_count;
 		GeneSynapse gene_synapse;
 		GeneTransferFunction gene_transfer_function;
-		GeneMuscleCommand gene_muscle_command;
+		GeneNeuralConstant gene_neural_constant;
+		GeneFeedbackSynapse gene_feedback_synapse;
+		GeneBodyAttribute gene_body_attribute;
 
-		GeneData(GeneLocation gl) : gene_location(gl) {}
-		GeneData(GeneCommand gc) : gene_command(gc) {}
-		GeneData(GeneLocalAttribute gla) : gene_local_attribute(gla) {}
-		GeneData(GeneGeneralAttribute gga) : gene_general_attribute(gga) {}
-		GeneData(GeneSynapse gs) : gene_synapse(gs) {}
-		GeneData(GeneTransferFunction gt) : gene_transfer_function(gt) {}
-		GeneData(GeneMuscleCommand gm) : gene_muscle_command(gm) {}
-		GeneData(GeneBodyAttribute gba) : gene_body_attribute(gba) {}
+		GeneData(GeneLocation const &gl) : gene_location(gl) {}
+		GeneData(GeneCommand const &gc) : gene_command(gc) {}
+		GeneData(GeneLocalAttribute const &gla) : gene_local_attribute(gla) {}
+		GeneData(GeneGeneralAttribute const &gga) : gene_general_attribute(gga) {}
+		GeneData(GeneNeuronCount const &gnc) : gene_neuron_count(gnc) {}
+		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
+		GeneData(GeneFeedbackSynapse const &gfs) : gene_feedback_synapse(gfs) {}
+		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
+		GeneData(GeneNeuralConstant const &gnc) : gene_neural_constant(gnc) {}
+		GeneData(GeneBodyAttribute const &gba) : gene_body_attribute(gba) {}
 	} data;
 
 	Gene(gene_type type, GeneData data)
@@ -140,14 +140,16 @@ public:
 		update_meta_genes_vec();
 	}
 
-	Gene(GeneLocation gl) : Gene(GENE_TYPE_LOCATION, gl) {}
-	Gene(GeneCommand gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
-	Gene(GeneLocalAttribute gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
-	Gene(GeneGeneralAttribute gga) : Gene(GENE_TYPE_GENERAL_ATTRIB, gga) {}
-	Gene(GeneSynapse gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
-	Gene(GeneTransferFunction gt) : Gene(GENE_TYPE_TRANSFER, gt) {}
-	Gene(GeneMuscleCommand gm) : Gene(GENE_TYPE_MUSCLE_COMMAND, gm) {}
-	Gene(GeneBodyAttribute gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
+	Gene(GeneLocation const &gl) : Gene(GENE_TYPE_LOCATION, gl) {}
+	Gene(GeneCommand const &gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
+	Gene(GeneLocalAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
+	Gene(GeneGeneralAttribute const &gga) : Gene(GENE_TYPE_GENERAL_ATTRIB, gga) {}
+	Gene(GeneNeuronCount const &gnc) : Gene(GENE_TYPE_NEURON_COUNT, gnc) {}
+	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
+	Gene(GeneFeedbackSynapse const &gfs) : Gene(GENE_TYPE_FEEDBACK_SYNAPSE, gfs) {}
+	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER, gt) {}
+	Gene(GeneNeuralConstant const &gnc) : Gene(GENE_TYPE_NEURAL_CONST, gnc) {}
+	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
 
 	Gene(const Gene& original)
 		: type(original.type)

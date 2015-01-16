@@ -15,22 +15,28 @@ void Gene::update_meta_genes_vec() {
 	case GENE_TYPE_GENERAL_ATTRIB:
 		metaGenes.push_back(&data.gene_general_attribute.value.meta);
 		break;
-	case GENE_TYPE_MUSCLE_COMMAND:
-		metaGenes.push_back(&data.gene_muscle_command.muscleID.meta);
-		metaGenes.push_back(&data.gene_muscle_command.neuronDelta.meta);
-		metaGenes.push_back(&data.gene_muscle_command.weight.meta);
-		break;
-	case GENE_TYPE_NEURON:
-		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_local_attribute.value.meta);
 		break;
+	case GENE_TYPE_NEURON_COUNT:
+		metaGenes.push_back(&data.gene_neuron_count.value.meta);
+		break;
 	case GENE_TYPE_SYNAPSE:
-		metaGenes.push_back(&data.gene_synapse.delta.meta);
+		metaGenes.push_back(&data.gene_synapse.from.meta);
+		metaGenes.push_back(&data.gene_synapse.to.meta);
 		metaGenes.push_back(&data.gene_synapse.weight.meta);
 		break;
+	case GENE_TYPE_FEEDBACK_SYNAPSE:
+		metaGenes.push_back(&data.gene_feedback_synapse.from.meta);
+		metaGenes.push_back(&data.gene_feedback_synapse.to.meta);
+		metaGenes.push_back(&data.gene_feedback_synapse.weight.meta);
+		break;
 	case GENE_TYPE_TRANSFER:
+		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.meta);
 		metaGenes.push_back(&data.gene_transfer_function.functionID.meta);
+		break;
+	case GENE_TYPE_BODY_ATTRIBUTE:
+		metaGenes.push_back(&data.gene_body_attribute.value.meta);
 		break;
 	default:
 		break;

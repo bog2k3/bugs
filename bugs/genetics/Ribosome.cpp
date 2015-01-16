@@ -66,6 +66,14 @@ bool Ribosome::step() {
 	else
 		g = &bug_->genome_.second[crtPosition_];
 
+	/*
+	 * 1. Must automatically generate muscles for joints;
+	 * 2. Must automatically generate life time sensor
+	 * 3. Auto-generate output neurons to command actuators (muscles, grippers, etc)
+	 * 4. Auto-generate Mouth
+	 * 5. Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
+	 */
+
 	// now decode the gene
 	switch (g->type) {
 	case GENE_TYPE_LOCATION:
@@ -82,17 +90,17 @@ bool Ribosome::step() {
 		// postpone these genes and apply them at the end, because they must apply to the whole body
 		generalAttribGenes.push_back(g->data.gene_general_attribute);
 		break;
-	case GENE_TYPE_NEURON:
-		// add new neuron here
+	case GENE_TYPE_NEURON_COUNT:
+		decodeNeuronCount(g->data.gene_neuron_count);
 		break;
 	case GENE_TYPE_SYNAPSE:
 		decodeSynapse(g->data.gene_synapse);
 		break;
+	case GENE_TYPE_FEEDBACK_SYNAPSE:
+		decodeFeedbackSynapse(g->data.gene_feedback_synapse);
+		break;
 	case GENE_TYPE_TRANSFER:
 		decodeTransferFn(g->data.gene_transfer_function);
-		break;
-	case GENE_TYPE_MUSCLE_COMMAND:
-		decodeMuscleCommand(g->data.gene_muscle_command);
 		break;
 	default:
 		LOG("Invalid gene type : " << g->type);
@@ -225,14 +233,18 @@ void Ribosome::decodeGeneralAttrib(GeneGeneralAttribute const& g) {
 	});
 }
 
+void Ribosome::decodeNeuronCount(GeneNeuronCount const& g) {
+
+}
+
 void Ribosome::decodeSynapse(GeneSynapse const& g) {
 
 }
 
-void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
+void Ribosome::decodeFeedbackSynapse(GeneFeedbackSynapse const& g) {
 
 }
 
-void Ribosome::decodeMuscleCommand(GeneMuscleCommand const& g) {
+void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
 
 }

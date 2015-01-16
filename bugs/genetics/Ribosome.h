@@ -37,9 +37,10 @@ private:
 	void decodeDevelopSplit(GeneCommand const& g);
 	void decodePartAttrib(GeneLocalAttribute const& g);
 	void decodeGeneralAttrib(GeneGeneralAttribute const& g);
+	void decodeNeuronCount(GeneNeuronCount const& g);
 	void decodeSynapse(GeneSynapse const& g);
+	void decodeFeedbackSynapse(GeneFeedbackSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);
-	void decodeMuscleCommand(GeneMuscleCommand const& g);
 	bool partMustGenerateJoint(int part_type);
 };
 
