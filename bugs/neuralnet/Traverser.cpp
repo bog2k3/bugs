@@ -5,6 +5,8 @@
 
 #include <vector>
 #include <assert.h>
+
+#include "InputSocket.h"
 using namespace std;
 
 Traverser::Traverser(NeuralNet* pNet)
@@ -30,11 +32,11 @@ vector<Neuron*> Traverser::getNextLayer()
 		// step 1: get first round of neurons
 		for (unsigned int i=0; it != itE; ++it, ++i) {
 			OutputSocket* input_i = it->get();
-			vector<Input*> &list_attached_ins = input_i->getTargets();
-			vector<Input*>::iterator itA = list_attached_ins.begin(),
+			vector<InputSocket*> &list_attached_ins = input_i->getTargets();
+			vector<InputSocket*>::iterator itA = list_attached_ins.begin(),
 				itAE = list_attached_ins.end();
 			for (; itA != itAE; ++itA) {
-				Input* att_in = *itA;
+				InputSocket* att_in = *itA;
 				if (att_in->pParentNeuron->RID != RID) {
 					att_in->pParentNeuron->RID = RID;
 					crt_neurons.push_back(att_in->pParentNeuron);

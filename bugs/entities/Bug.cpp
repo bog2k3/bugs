@@ -108,7 +108,6 @@ void Bug::update(float dt) {
 		return;
 	}
 
-	lifeTimeSensor_.update(dt);
 	/*const float musclePeriod = 2.f; // seconds
 	float sval = sinf(sinf(2*PI/musclePeriod * lifeTime_));
 	float mval1 = sval > 0 ? sval : 0;
@@ -118,13 +117,9 @@ void Bug::update(float dt) {
 	float svalg = sinf(sinf(2*PI/musclePeriod * (lifeTime_+0.5f)));
 	motors_[6]->action((-svalg + 0.7f)*0.7f);	// the gripper*/
 
-
-	/*static float crtScale = 1.f;
-	if (crtScale < 10) {
-		crtScale += 0.001f * dt;
-		body_->applyScale_tree(crtScale);
-	}*/
+	lifeTimeSensor_.update(dt);
 	bodyPartsUpdateList_.update(dt);
+	neuralNet_->iterate();
 	if (true /* not adult scale yet*/) {
 		// juvenile, growing
 		// growth happens by scaling up size and scaling down energy proportionally;

@@ -20,6 +20,7 @@
 #include "../objects/body-parts/ZygoteShell.h"
 #include "../objects/body-parts/Muscle.h"
 #include "../log.h"
+#include "../neuralnet/InputSocket.h"
 
 #include "Genome.h"
 using namespace std;
@@ -67,7 +68,7 @@ void Ribosome::initializeNeuralNetwork() {
 		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
 	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
 	for (unsigned i=0; i<bug_->motors_.size(); i++)
-		bug_->neuralNet_->outputs.push_back(std::make_shared<Input>(nullptr, 1.f));	// create network outputs
+		bug_->neuralNet_->outputs.push_back(bug_->motors_[i]->getInputSocket());	// create network outputs
 	// create neurons:
 	int commandNeuronsStart = mapNeurons_.size();
 	int totalNeurons = commandNeuronsStart + bug_->motors_.size();
@@ -389,7 +390,7 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 			return; // invalid index
 	}
 
-	Input* i = new Input(pTo, weight);
+	InputSocket* i = new InputSocket(pTo, weight);
 	pTo->inputs.push_back(i);
 	pFrom->addTarget(i);
 }
@@ -414,7 +415,7 @@ void Ribosome::createFeedbackSynapse(int from, int to, int commandNeuronsOfs, fl
 			return; // invalid index
 	}
 
-	Input* i = new Input(pTo, weight);
+	InputSocket* i = new InputSocket(pTo, weight);
 	pTo->inputs.push_back(i);
 	pFrom->addTarget(i);
 }

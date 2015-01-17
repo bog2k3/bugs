@@ -8,15 +8,14 @@
 #ifndef ENTITIES_IMOTOR_H_
 #define ENTITIES_IMOTOR_H_
 
+class InputSocket;
+#include <memory>
+
 class IMotor {
 public:
 	virtual ~IMotor() {}
 
-	/**
-	 * command the motor with the given intensity;
-	 * intensity depends on the type and properties of the motor
-	 */
-	virtual void action(float intensity) = 0;
+	virtual std::shared_ptr<InputSocket> getInputSocket() = 0;
 };
 
 #endif /* ENTITIES_IMOTOR_H_ */

@@ -10,6 +10,7 @@
 
 #include "BodyPart.h"
 #include "../../entities/IMotor.h"
+#include "../../updatable.h"
 
 #define DEBUG_DRAW_MUSCLE
 
@@ -31,11 +32,9 @@ public:
 	void commit() override;
 	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
+	void update(float dt);
 
-	/**
-	 * command the muscle to contract. signal_strength will be clamped to [0.0, 1.0]
-	 */
-	void action(float signal_strength) override;
+	virtual std::shared_ptr<InputSocket> getInputSocket() override { return inputSocket_; }
 
 protected:
 	static constexpr int nAngleSteps = 10;
@@ -48,6 +47,7 @@ protected:
 	float getCurrentPhiSlice();
 
 	std::weak_ptr<MuscleInitializationData> muscleInitialData_;
+	std::shared_ptr<InputSocket> inputSocket_;
 	Joint* joint_;
 	float rotationSign_;
 	float maxForce_;
@@ -60,5 +60,7 @@ protected:
 	float phiToDx_[nAngleSteps];
 #endif
 };
+
+template<> void update(Muscle* &m, float dt);
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

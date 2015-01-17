@@ -40,6 +40,8 @@
 #include "../../math/math2D.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/RenderContext.h"
+#include "../../neuralnet/InputSocket.h"
+#include "../../UpdateList.h"
 #include <glm/vec3.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <math.h>
@@ -55,6 +57,7 @@ MuscleInitializationData::MuscleInitializationData()
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
 	, muscleInitialData_(std::static_pointer_cast<MuscleInitializationData>(getInitializationData()))
+	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
 	, joint_(joint)
 	, rotationSign_(motorDirSign)
 	, maxForce_(0)
@@ -72,9 +75,12 @@ Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
+
+	getUpdateList()->add(this);
 }
 
 Muscle::~Muscle() {
+	getUpdateList()->remove(this);
 }
 
 void Muscle::commit() {
@@ -241,8 +247,13 @@ float Muscle::getCurrentPhiSlice() {
 	return iAngleSlice + angleSlice;
 }
 
-void Muscle::action(float signal_strength) {
+template<> void update(Muscle* &m, float dt) {
+	m->update(dt);
+}
+
+void Muscle::update(float dt) {
+	float signal_strength = clamp(inputSocket_->value, 0.f, 1.f);
 	float RSinAlphaHSinBeta = lerp_lookup(phiToRSinAlphaHSinBeta_, nAngleSteps, getCurrentPhiSlice());
-	float torque = maxForce_ * clamp(signal_strength, 0.f, 1.f) * RSinAlphaHSinBeta;
+	float torque = maxForce_ * signal_strength * RSinAlphaHSinBeta;
 	joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);
 }

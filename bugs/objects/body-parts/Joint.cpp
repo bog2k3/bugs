@@ -36,10 +36,15 @@ Joint::Joint(BodyPart* parent)
 	registerAttribute(GENE_ATTRIB_JOINT_LOW_LIMIT, initData->phiMin);
 	registerAttribute(GENE_ATTRIB_JOINT_HIGH_LIMIT, initData->phiMax);
 	registerAttribute(GENE_ATTRIB_JOINT_RESET_TORQUE, initData->resetTorque);
+
+	getUpdateList()->add(this);
 }
 
 Joint::~Joint() {
 	// delete joint
+	//...
+
+	getUpdateList()->remove(this);
 }
 
 /**
@@ -95,8 +100,6 @@ void Joint::commit() {
 
 	repauseAngle_ = initData->angleOffset;
 	resetTorque_ = initData->resetTorque;
-
-	getUpdateList()->add(this);
 }
 
 glm::vec3 Joint::getWorldTransformation() const {

@@ -10,6 +10,8 @@
 #include "../../World.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../math/math2D.h"
+#include "../../neuralnet/InputSocket.h"
+#include "../../UpdateList.h"
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -18,15 +20,19 @@ const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
 Gripper::Gripper(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_GRIPPER, std::make_shared<BodyPartInitializationData>())
+	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
 	, active_(false)
 	, groundJoint_(nullptr)
 	, size_(0)
 {
 	getInitializationData()->density.reset(BodyConst::GripperDensity);
+
+	getUpdateList()->add(this);
 }
 
 Gripper::~Gripper() {
 	setActive(false);
+	getUpdateList()->remove(this);
 }
 
 void Gripper::commit() {
@@ -47,7 +53,12 @@ void Gripper::commit() {
 	body_->CreateFixture(&fdef);
 }
 
-void Gripper::action(float intensity) {
+template<> void update(Gripper* &g, float dt) {
+	g->update(dt);
+}
+
+void Gripper::update(float dt) {
+	float intensity = inputSocket_->value;
 	setActive(intensity > 0.5f);
 }
 

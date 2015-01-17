@@ -6,19 +6,19 @@
 
 #include <vector>
 
-class Input;
+class InputSocket;
 
 class OutputSocket {
 public:
-	void addTarget(Input* pTarget); // connect a new Input to this node
+	void addTarget(InputSocket* pTarget); // connect a new Input to this node
 	void push_value(float value); // push the output value to all connected Inputs
-	std::vector<Input*>& getTargets(); // retrieves the list of targets
+	std::vector<InputSocket*>& getTargets(); // retrieves the list of targets
 
 	OutputSocket()
 		: target_list()
 	{ }
 private:
-	std::vector<Input*> target_list; // the list of targets to which the Input is sent to
+	std::vector<InputSocket*> target_list; // the list of targets to which the Input is sent to
 };
 
 #endif //__OutputSocket_h__

@@ -1,7 +1,7 @@
 #include "Neuron.h"
-
 #include "../math/tools.h"
 #include <assert.h>
+#include "InputSocket.h"
 
 using namespace std;
 
@@ -17,11 +17,6 @@ Neuron::~Neuron() {
 	for (unsigned i=0, n=inputs.size(); i<n; ++i)
 		delete inputs[i];
 	inputs.clear();
-}
-
-void Input::push(float value)
-{
-	this->value = value;
 }
 
 void Neuron::update_value()
@@ -53,11 +48,11 @@ void Neuron::push_output()
 
 void Neuron::retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets)
 {
-	vector<Input*>& list_targets = output.getTargets();
-	vector<Input*>::iterator it = list_targets.begin(),
+	vector<InputSocket*>& list_targets = output.getTargets();
+	vector<InputSocket*>::iterator it = list_targets.begin(),
 		it_e = list_targets.end();
 	for (; it != it_e; ++it) {
-		Input* pOtherInput = *it;
+		InputSocket* pOtherInput = *it;
 		if (pOtherInput->pParentNeuron != NULL && pOtherInput->pParentNeuron->RID != opRID) {
 			pOtherInput->pParentNeuron->RID = opRID;
 			out_targets.push_back(pOtherInput->pParentNeuron);

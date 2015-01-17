@@ -10,23 +10,11 @@
 #include <vector>
 
 class Neuron;
-
-class Input {
-public:
-	float value;
-	float weight;
-	Neuron* pParentNeuron;
-
-	Input(Neuron* pParentNeuron, float weight) :
-		value(0), weight(weight), pParentNeuron(pParentNeuron) {
-	}
-
-	void push(float value); // pushes a new value into the input
-};
+class InputSocket;
 
 class Neuron {
 public:
-	std::vector<Input*> inputs;
+	std::vector<InputSocket*> inputs;
 	transfer_function transfFunc;
 	float value;
 	float neuralConstant;
