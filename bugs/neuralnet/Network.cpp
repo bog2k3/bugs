@@ -10,42 +10,6 @@ NeuralNet::NeuralNet()
 {
 }
 
-// clone the entire network with all neurons and synapses and stuff, updating all pointers
-NeuralNet::NeuralNet(const NeuralNet& original)
-{
-	map<Input*, Input*> mapInputs; // map for remapping inputs for the new network
-	
-	for (unsigned i=0, n=original.outputs.size(); i<n; ++i) {
-		Input* pNewInput = new Input(NULL);
-		outputs.push_back(pNewInput);
-
-		mapInputs[original.outputs[i]] = pNewInput;
-	}
-
-	for (unsigned i=0, n=original.neurons.size(); i<n; ++i) {
-		Neuron* pNewNeuron = new Neuron(*original.neurons[i]);
-		neurons.push_back(pNewNeuron);
-
-		for (unsigned j=0, nj=original.neurons[i]->inputs.size(); j<nj; ++j)
-			mapInputs[original.neurons[i]->inputs[j]] = pNewNeuron->inputs[j];
-	}
-
-	for (unsigned i=0, n=original.inputs.size(); i<n; ++i) {
-		OutputSocket* pNewOutputSock = new OutputSocket(*original.inputs[i]);
-		inputs.push_back(pNewOutputSock);
-		vector<Input*> &outputTargets = pNewOutputSock->getTargets();
-		for (unsigned j=0, nj=outputTargets.size(); j<nj; ++j) {
-			outputTargets[j] = mapInputs[outputTargets[j]];	// remap to new neurons' inputs
-		}
-	}
-
-	for (unsigned i=0, n=neurons.size(); i<n; ++i) {
-		vector<Input*> &outputTargets = neurons[i]->output.getTargets();
-		for (unsigned j=0, nj=outputTargets.size(); j<nj; ++j)
-			outputTargets[j] = mapInputs[outputTargets[j]]; // remap Neuron's targets to new neurons
-	}
-}
-
 NeuralNet::~NeuralNet() {
 	for (unsigned i=0,n=neurons.size(); i<n; ++i)
 		delete neurons[i];

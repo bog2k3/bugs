@@ -18,8 +18,12 @@
 #include <assert.h>
 
 BodyPartInitializationData::BodyPartInitializationData()
-	: size(BodyConst::initialBodyPartSize)
-	, density(BodyConst::initialBodyPartDensity) {
+	: attachmentDirectionParent(0)
+	, angleOffset(0)
+	, lateralOffset(0)
+	, size(BodyConst::initialBodyPartSize)
+	, density(BodyConst::initialBodyPartDensity)
+{
 }
 
 BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
@@ -211,10 +215,6 @@ void BodyPart::draw(RenderContext& ctx) {
 
 void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue& value) {
 	mapAttributes_[type] = &value;
-}
-
-CummulativeValue* BodyPart::getAttribute(gene_part_attribute_type attrib) {
-	return mapAttributes_[attrib];
 }
 
 UpdateList* BodyPart::getUpdateList() const {

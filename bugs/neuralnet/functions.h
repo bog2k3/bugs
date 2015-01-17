@@ -7,16 +7,15 @@
 typedef double (*transfer_function)(double value, double constant);
 
 enum transferFuncNames {
-	FN_INVAID = 0,
-	FN_SIN,
 	FN_ONE,
 	FN_LN,
-	FN_EXP,
-	FN_POW,
 	FN_SIGM,
 	FN_THRESHOLD,
-	FN_CONSTANT,
+	FN_SIN,
 	FN_RAND,
+	FN_EXP,
+	FN_POW,
+	FN_CONSTANT,
 
 	FN_MAXCOUNT			// this is the total number of functions + 1
 };

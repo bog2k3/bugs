@@ -7,6 +7,7 @@
 #include "../neuralnet/Network.h"
 #include "../neuralnet/Neuron.h"
 #include "../neuralnet/OutputSocket.h"
+#include "../neuralnet/functions.h"
 #include "Gene.h"
 #include "GeneDefinitions.h"
 #include "CummulativeValue.h"
@@ -28,7 +29,6 @@ static constexpr float MUSCLE_OFFSET_ANGLE = PI * 0.25f;
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 	, crtPosition_{0}
-	, root_{bug_->body_}
 {
 }
 
@@ -46,14 +46,81 @@ static bool isCircularGreater(unsigned long x1, unsigned long x2) {
 	return d1 < d2;
 }
 
+void Ribosome::initializeNeuralNetwork() {
+	// create and initialize the neural network:
+	bug_->neuralNet_ = new NeuralNet();
+	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
+	for (unsigned i=0; i<bug_->sensors_.size(); i++)
+		bug_->neuralNet_->inputs[i] = new OutputSocket();	// create network inputs
+	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
+	for (unsigned i=0; i<bug_->motors_.size(); i++)
+		bug_->neuralNet_->outputs[i] = new Input(nullptr, 1.f);	// create network outputs
+	// create neurons:
+	int commandNeuronsStart = mapNeurons_.size();
+	int totalNeurons = commandNeuronsStart + bug_->motors_.size();
+	bug_->neuralNet_->neurons.reserve(totalNeurons);
+	for (int i=0; i<commandNeuronsStart; i++)
+		bug_->neuralNet_->neurons[i] = new Neuron();
+	// create and initialize the output neurons:
+	for (int i=commandNeuronsStart; i<totalNeurons; i++) {
+		bug_->neuralNet_->neurons[i] = new Neuron();
+		bug_->neuralNet_->neurons[i]->neuralConstant = 0.f;
+		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[FN_ONE];
+		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart]);
+	}
+}
+
+void Ribosome::decodeDeferredGenes() {
+	int commandNeuronsStart = mapNeurons_.size();
+	// create all synapses
+	for (auto s : mapSynapses) {
+		int from = (s.first >> 32) & 0xFFFFFFFF;
+		int to = (s.first) & 0xFFFFFFFF;
+		createSynapse(from, to, commandNeuronsStart, s.second);
+	}
+	for (auto s : mapFeedbackSynapses) {
+		int from = (s.first >> 32) & 0xFFFFFFFF;
+		int to = (s.first) & 0xFFFFFFFF;
+		createFeedbackSynapse(from, to, commandNeuronsStart, s.second);
+	}
+	// now decode the deferred neural genes (neuron properties):
+	for (auto &g : neuralGenes)
+		decodeGene(*g, false);
+	// apply all neuron properties
+	for (auto n : mapNeurons_) {
+		int transferFnIndex = n.second.transfer.hasValue()
+				? (int)n.second.transfer
+				: FN_ONE;
+		bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)transferFnIndex];
+		float constant = n.second.constant.hasValue()
+				? n.second.constant
+				: 0.f;
+		bug_->neuralNet_->neurons[n.second.index]->neuralConstant = constant;
+	}
+
+	// apply the general attribute genes:
+	for (auto &g : generalAttribGenes)
+		decodeGeneralAttrib(*g);
+}
+
 bool Ribosome::step() {
 	bool hasFirst = crtPosition_ < bug_->genome_.first.size();
 	bool hasSecond = crtPosition_ < bug_->genome_.second.size();
 	if (!hasFirst && !hasSecond) {
-		// decoding sequence finished
-		// apply the general attribute genes:
-		for (auto &g : generalAttribGenes)
-			decodeGeneralAttrib(g);
+		// reached the end of the genome.
+		// finish up with neural network...
+		initializeNeuralNetwork();
+		//...and all deferred genes:
+		decodeDeferredGenes();
+
+		// clean up:
+		generalAttribGenes.clear();
+		neuralGenes.clear();
+		activeSet_.clear();
+		mapNeurons_.clear();
+		mapSynapses.clear();
+		mapFeedbackSynapses.clear();
+
 		return false;
 	}
 	Gene* g = nullptr;
@@ -75,40 +142,72 @@ bool Ribosome::step() {
 	 */
 
 	// now decode the gene
-	switch (g->type) {
-	case GENE_TYPE_LOCATION:
-		activeSet_.clear();
-		root_->matchLocation(g->data.gene_location.location, constants::MAX_GROWTH_DEPTH, &activeSet_);
-		break;
-	case GENE_TYPE_DEVELOPMENT:
-		decodeDevelopCommand(g->data.gene_command);
-		break;
-	case GENE_TYPE_PART_ATTRIBUTE:
-		decodePartAttrib(g->data.gene_local_attribute);
-		break;
-	case GENE_TYPE_GENERAL_ATTRIB:
-		// postpone these genes and apply them at the end, because they must apply to the whole body
-		generalAttribGenes.push_back(g->data.gene_general_attribute);
-		break;
-	case GENE_TYPE_NEURON_COUNT:
-		decodeNeuronCount(g->data.gene_neuron_count);
-		break;
-	case GENE_TYPE_SYNAPSE:
-		decodeSynapse(g->data.gene_synapse);
-		break;
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		decodeFeedbackSynapse(g->data.gene_feedback_synapse);
-		break;
-	case GENE_TYPE_TRANSFER:
-		decodeTransferFn(g->data.gene_transfer_function);
-		break;
-	default:
-		LOG("Invalid gene type : " << g->type);
-	}
+	decodeGene(*g, true);
 
 	// move to next position
 	crtPosition_++;
 	return true;
+}
+
+void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
+	if (virtualIndex >= 0) {	// does it refer to an actual neuron? (skip <0 input & output sockets)
+		if (!hasNeuron(virtualIndex))
+			mapNeurons_[virtualIndex] = NeuronInfo(mapNeurons_.size());
+	}
+}
+
+void Ribosome::updateNeuronTransfer(int virtualIndex, float transfer) {
+	if (hasNeuron(virtualIndex)) {
+		mapNeurons_[virtualIndex].transfer.changeAbs(transfer);
+	}
+}
+
+void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
+	if (hasNeuron(virtualIndex)) {
+		mapNeurons_[virtualIndex].constant.changeAbs(constant);
+	}
+}
+
+void Ribosome::decodeGene(Gene const& g, bool deferNeural) {
+	switch (g.type) {
+	case GENE_TYPE_LOCATION:
+		activeSet_.clear();
+		bug_->body_->matchLocation(g.data.gene_location.location, constants::MAX_GROWTH_DEPTH, &activeSet_);
+		break;
+	case GENE_TYPE_DEVELOPMENT:
+		decodeDevelopCommand(g.data.gene_command);
+		break;
+	case GENE_TYPE_PART_ATTRIBUTE:
+		decodePartAttrib(g.data.gene_local_attribute);
+		break;
+	case GENE_TYPE_GENERAL_ATTRIB:
+		// postpone these genes and apply them at the end, because they must apply to the whole body
+		generalAttribGenes.push_back(&g.data.gene_general_attribute);
+		break;
+	case GENE_TYPE_BODY_ATTRIBUTE:
+		bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
+		break;
+	case GENE_TYPE_SYNAPSE:
+		decodeSynapse(g.data.gene_synapse);
+		break;
+	case GENE_TYPE_FEEDBACK_SYNAPSE:
+		decodeFeedbackSynapse(g.data.gene_feedback_synapse);
+		break;
+	case GENE_TYPE_TRANSFER:
+		if (deferNeural)
+			neuralGenes.push_back(&g);
+		else
+			decodeTransferFn(g.data.gene_transfer_function);
+		break;
+	case GENE_TYPE_NEURAL_CONST:
+		if (deferNeural)
+			neuralGenes.push_back(&g);
+		else
+			decodeNeuralConst(g.data.gene_neural_constant);
+		break;
+	default:
+		ERROR("Unhandled gene type : " << g.type);
+	}
 }
 
 bool Ribosome::partMustGenerateJoint(int part_type) {
@@ -226,25 +325,88 @@ void Ribosome::decodePartAttrib(GeneLocalAttribute const& g) {
 }
 
 void Ribosome::decodeGeneralAttrib(GeneGeneralAttribute const& g) {
-	root_->applyRecursive([&g] (BodyPart* n) {
+	bug_->body_->applyRecursive([&g] (BodyPart* n) {
 		CummulativeValue* pAttrib = n->getAttribute((gene_part_attribute_type)g.attribute);
 		if (pAttrib)
 			pAttrib->changeRel(g.value);
 	});
 }
 
-void Ribosome::decodeNeuronCount(GeneNeuronCount const& g) {
-
-}
-
 void Ribosome::decodeSynapse(GeneSynapse const& g) {
-
+	// the number of neurons is derived from the synapse values
+	checkAndAddNeuronMapping(g.from);
+	checkAndAddNeuronMapping(g.to);
+	int64_t key = synKey(g.from, g.to);
+	mapSynapses[key].changeAbs(g.weight);
 }
 
 void Ribosome::decodeFeedbackSynapse(GeneFeedbackSynapse const& g) {
-
+	// the number of neurons is derived from the synapse values
+	checkAndAddNeuronMapping(g.to);
+	int64_t key = synKey(g.from, g.to);
+	mapFeedbackSynapses[key].changeAbs(g.weight);
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
+	updateNeuronTransfer(g.targetNeuron, g.functionID);
+}
 
+void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
+	updateNeuronConstant(g.targetNeuron, g.value);
+}
+
+void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weight) {
+	OutputSocket* pFrom = nullptr;
+	if (from < 0) { // this apparently comes from an input socket
+		if (-from <= (int)bug_->neuralNet_->inputs.size())
+			pFrom = bug_->neuralNet_->inputs[-from-1];	// map -1..-n to 0..n-1
+		else
+			return;	// invalid index
+	} else {
+		if (hasNeuron(from))
+			pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
+		else
+			return; // invalid index
+	}
+	Neuron* pTo;
+	if (to < 0) { // apparently a motor command output socket
+		if (-to <= (int)bug_->neuralNet_->outputs.size())
+			pTo = bug_->neuralNet_->neurons[commandNeuronsOfs - to - 1];
+		else
+			return; // invalid index
+	} else {
+		if (hasNeuron(to))
+			pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
+		else
+			return; // invalid index
+	}
+
+	Input* i = new Input(pTo, weight);
+	pTo->inputs.push_back(i);
+	pFrom->addTarget(i);
+}
+
+void Ribosome::createFeedbackSynapse(int from, int to, int commandNeuronsOfs, float weight) {
+	OutputSocket* pFrom = nullptr;
+	// from must be between [0, numOutputs-1]
+	if (from < 0 || from >= (int)bug_->neuralNet_->outputs.size())
+		return;	// invalid index
+	pFrom = &bug_->neuralNet_->neurons[commandNeuronsOfs + from]->output;
+
+	Neuron* pTo;
+	if (to < 0) { // apparently a motor command output socket
+		if (-to <= (int)bug_->neuralNet_->outputs.size())
+			pTo = bug_->neuralNet_->neurons[commandNeuronsOfs - to - 1];
+		else
+			return; // invalid index
+	} else {
+		if (hasNeuron(to))
+			pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
+		else
+			return; // invalid index
+	}
+
+	Input* i = new Input(pTo, weight);
+	pTo->inputs.push_back(i);
+	pFrom->addTarget(i);
 }

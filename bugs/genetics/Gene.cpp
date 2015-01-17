@@ -18,9 +18,6 @@ void Gene::update_meta_genes_vec() {
 	case GENE_TYPE_PART_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_local_attribute.value.meta);
 		break;
-	case GENE_TYPE_NEURON_COUNT:
-		metaGenes.push_back(&data.gene_neuron_count.value.meta);
-		break;
 	case GENE_TYPE_SYNAPSE:
 		metaGenes.push_back(&data.gene_synapse.from.meta);
 		metaGenes.push_back(&data.gene_synapse.to.meta);

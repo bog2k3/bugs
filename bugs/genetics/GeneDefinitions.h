@@ -16,7 +16,6 @@ enum gene_type {
 	GENE_TYPE_GENERAL_ATTRIB,	// general attribute - controls the overall features of all	body parts of a specific type.
 	GENE_TYPE_BODY_ATTRIBUTE,	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 								// such as metabolic parameters
-	GENE_TYPE_NEURON_COUNT,		// controls the number of neurons (cummulative, int)
 	GENE_TYPE_SYNAPSE,			// creates or alters a synapse between neurons (cummulative weight)
 	GENE_TYPE_FEEDBACK_SYNAPSE,	// creates or alters a feedback synapse (from motor command neuron to other neuron - cummulative)
 	GENE_TYPE_TRANSFER,			// controls the transfer function of a neuron (cummulative)

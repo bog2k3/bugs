@@ -5,36 +5,12 @@
 
 using namespace std;
 
-Neuron::Neuron(int ID)
-	: ID(ID)
-	, transfFunc(NULL)
+Neuron::Neuron()
+	: transfFunc(NULL)
 	, value(0)
-	, bias(0)
-	, transferConstant(0)
-	, isInput(false)
-	, isOutput(false)
+	, neuralConstant(0)
 	, RID(0)
 {
-}
-
-Neuron::Neuron(const Neuron& original)
-	: ID(original.ID)
-	, transfFunc(original.transfFunc)
-	, value(original.value)
-	, bias(original.bias)
-	, transferConstant(original.transferConstant)
-	, isInput(original.isInput)
-	, isOutput(original.isOutput)
-	, RID(0)
-	, output(original.output)
-{
-	// create inputs:
-	for(unsigned i=0, n=original.inputs.size(); i<n; ++i) {
-		Input* pIn = new Input(this);
-		pIn->value = original.inputs[i]->value;
-		pIn->weight = original.inputs[i]->weight;
-		inputs.push_back(pIn);
-	}
 }
 
 Neuron::~Neuron() {
@@ -43,28 +19,28 @@ Neuron::~Neuron() {
 	inputs.clear();
 }
 
-void Input::push(double value)
+void Input::push(float value)
 {
 	this->value = value;
 }
 
 void Neuron::update_value()
 {
-	double* input_array = new double[inputs.size()];
-	double* weight_array = new double[inputs.size()];
+	float* input_array = new float[inputs.size()];
+	float* weight_array = new float[inputs.size()];
 	for (unsigned i=0, n=inputs.size(); i<n; ++i) {
 		input_array[i] = inputs[i]->value;
 		weight_array[i] = inputs[i]->weight;
 	}
 	// compute value:
-	value = bias + compute_sum(inputs.size(), input_array, weight_array);
+	value = compute_sum(inputs.size(), input_array, weight_array);
 	delete [] input_array;
 	delete [] weight_array;
 }
 
-double Neuron::compute_sum(int count, double input_array[], double weight_array[])
+float Neuron::compute_sum(int count, float input_array[], float weight_array[])
 {
-	double s = 0;
+	float s = 0;
 	for (int i=0; i<count; i++)
 		s += input_array[i] * weight_array[i];
 	return s;
@@ -72,7 +48,7 @@ double Neuron::compute_sum(int count, double input_array[], double weight_array[
 
 void Neuron::push_output()
 {
-	output.push_value(transfFunc(value, transferConstant));
+	output.push_value(transfFunc(value, neuralConstant));
 }
 
 void Neuron::retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets)

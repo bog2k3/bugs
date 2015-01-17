@@ -70,10 +70,6 @@ struct GeneGeneralAttribute {
 	Atom<float> value;					// this is always relative
 };
 
-struct GeneNeuronCount {
-	Atom<float> value;
-};
-
 struct GeneSynapse {
 	Atom<int> from;		// negative means sensor, positive or 0 means neuron index
 	Atom<int> to;		// negative means motor, positive or 0 means neuron index
@@ -82,7 +78,7 @@ struct GeneSynapse {
 
 struct GeneFeedbackSynapse {
 	Atom<int> from;		// always positive - index of motor command neuron
-	Atom<int> to;		// always positive - index of neuron
+	Atom<int> to;		// negative means motor, positive or 0 means neuron index
 	Atom<float> weight;
 };
 
@@ -110,7 +106,6 @@ public:
 		GeneCommand gene_command;
 		GeneLocalAttribute gene_local_attribute;
 		GeneGeneralAttribute gene_general_attribute;
-		GeneNeuronCount gene_neuron_count;
 		GeneSynapse gene_synapse;
 		GeneTransferFunction gene_transfer_function;
 		GeneNeuralConstant gene_neural_constant;
@@ -121,7 +116,6 @@ public:
 		GeneData(GeneCommand const &gc) : gene_command(gc) {}
 		GeneData(GeneLocalAttribute const &gla) : gene_local_attribute(gla) {}
 		GeneData(GeneGeneralAttribute const &gga) : gene_general_attribute(gga) {}
-		GeneData(GeneNeuronCount const &gnc) : gene_neuron_count(gnc) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneFeedbackSynapse const &gfs) : gene_feedback_synapse(gfs) {}
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
@@ -144,7 +138,6 @@ public:
 	Gene(GeneCommand const &gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
 	Gene(GeneLocalAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
 	Gene(GeneGeneralAttribute const &gga) : Gene(GENE_TYPE_GENERAL_ATTRIB, gga) {}
-	Gene(GeneNeuronCount const &gnc) : Gene(GENE_TYPE_NEURON_COUNT, gnc) {}
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
 	Gene(GeneFeedbackSynapse const &gfs) : Gene(GENE_TYPE_FEEDBACK_SYNAPSE, gfs) {}
 	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER, gt) {}

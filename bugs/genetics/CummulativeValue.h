@@ -11,7 +11,7 @@
 #include <cassert>
 
 struct CummulativeValue {
-	CummulativeValue() : CummulativeValue(0) {}
+	CummulativeValue() : value_(0), cachedValue_(0), cacheUpdated_(false), n_(0), factor_(1.f) {}
 	explicit CummulativeValue(float initial) : value_(initial), cachedValue_(value_), cacheUpdated_(true), n_(1), factor_(1.f) {}
 	operator float() {
 		if (!cacheUpdated_)
@@ -33,8 +33,10 @@ struct CummulativeValue {
 	void reset(float initialValue) {
 		*this = CummulativeValue(initialValue);
 	}
+	inline bool hasValue() { return n_ > 0; }
 private:
 	void updateCache() {
+		assert(n_ > 0 && "trying to read empty (uninitialized) CummulativeValue !!!");
 		cachedValue_ = value_ * factor_ / n_;
 		cacheUpdated_ = true;
 	}

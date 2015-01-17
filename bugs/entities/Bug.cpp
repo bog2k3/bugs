@@ -202,18 +202,30 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	gla.attribute = GENE_ATTRIB_SIZE;
 	gla.value.set(0.5e-3f);
 	g.first.push_back(gla);
+
 	// second muscle size
 	gl.location[0].set(4);
 	g.first.push_back(gl);
 	g.first.push_back(gla);
 
 
-	// neural system
+	//body attributes
 
-	// neuron count:
-	GeneNeuronCount gn;
-	gn.value.set(9);
-	g.first.push_back(gn);
+	GeneBodyAttribute gba;
+	gba.attribute = GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO;
+	gba.value.set(0.5f);
+	g.first.push_back(gba);
+
+	gba.attribute = GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO;
+	gba.value.set(0.1f);
+	g.first.push_back(gba);
+
+	gba.attribute = GENE_BODY_ATTRIB_ADULT_LEAN_MASS;
+	gba.value.set(4.f);
+	g.first.push_back(gba);
+
+
+	// neural system
 
 	// neuron #0 transfer:
 	GeneTransferFunction gt;

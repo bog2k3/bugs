@@ -79,7 +79,9 @@ public:
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
-	CummulativeValue* getAttribute(gene_part_attribute_type attrib);
+	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib) {
+		return mapAttributes_[attrib];
+	}
 
 	/*
 	 * this will commit recursively in the entire body tree

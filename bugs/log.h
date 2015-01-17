@@ -19,8 +19,8 @@
 
 #define LOG(X) logger::getCurrent()->writeprefix(std::cout); std::cout << X
 #define LOGNP(X) std::cout << X
-#define LOGLN(X) LOG(X) << std::endl
-#define ERROR(X) std::cerr << "[ERROR]"; logger::getCurrent()->writeprefix(std::cerr); std::cerr << X << std::endl
+#define LOGLN(X) LOG(X) << "\n"
+#define ERROR(X) std::cerr << "[ERROR]"; logger::getCurrent()->writeprefix(std::cerr); std::cerr << X << "\n"
 
 #else
 #define LOG(X)

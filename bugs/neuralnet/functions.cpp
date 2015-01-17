@@ -14,7 +14,6 @@ int initNeuralFunctionMap() {
 	mapTransferFunctions[FN_RAND] = &transfer_fn_rand;
 	mapTransferFunctions[FN_SIGM] = &transfer_fn_sigmoid;
 
-	mapTransferFunctionNames[FN_INVAID] = "INVALID";
 	mapTransferFunctionNames[FN_SIN] = "SIN";
 	mapTransferFunctionNames[FN_LN] = "LOG";
 	mapTransferFunctionNames[FN_EXP] = "EXP";

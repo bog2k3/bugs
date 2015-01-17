@@ -19,9 +19,6 @@ public:
 
 	NeuralNet();
 
-	// clone the entire network with all neurons and synapses and stuff, updating all pointers
-	NeuralNet(const NeuralNet& original);
-
 	~NeuralNet();
 
 	// feeds the inputs into the network and performs one calculus iteration over all neurons, generating

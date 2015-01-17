@@ -5,40 +5,33 @@
 #ifndef __neuron_h__
 #define __neuron_h__
 
-#include <vector>
 #include "functions.h"
 #include "OutputSocket.h"
+#include <vector>
 
 class Neuron;
 
 class Input {
 public:
-	double value;
-	double weight;
+	float value;
+	float weight;
 	Neuron* pParentNeuron;
 
-	Input(Neuron* pParentNeuron) :
-		value(0), weight(0), pParentNeuron(pParentNeuron) {
+	Input(Neuron* pParentNeuron, float weight) :
+		value(0), weight(weight), pParentNeuron(pParentNeuron) {
 	}
 
-	void push(double value); // pushes a new value into the input
+	void push(float value); // pushes a new value into the input
 };
 
 class Neuron {
 public:
-	unsigned int ID;
 	std::vector<Input*> inputs;
 	transfer_function transfFunc;
-	double value;
-	double bias;
-	double transferConstant;
+	float value;
+	float neuralConstant;
 
-	bool isInput;
-	bool isOutput;
-
-	Neuron(int ID);
-
-	Neuron(const Neuron& original);
+	Neuron();
 
 	~Neuron();
 
@@ -57,7 +50,7 @@ public:
 	OutputSocket output; // this socket is connected to other inputs or to the network's main outputs
 
 protected:
-	double compute_sum(int count, double input_array[], double weight_array[]);
+	float compute_sum(int count, float input_array[], float weight_array[]);
 };
 
 #endif // __neuron_h__
