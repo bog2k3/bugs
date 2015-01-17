@@ -78,6 +78,8 @@ private:
 	inline int64_t synKey(int64_t from, int64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | to; }
 	void createSynapse(int from, int to, int commandNeuronsOfs, float weight);
 	void createFeedbackSynapse(int from, int to, int commandNeuronsOfs, float weight);
+
+	void cleanUp();
 };
 
 #endif //__ribosome_h__

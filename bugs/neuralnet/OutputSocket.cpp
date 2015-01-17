@@ -12,7 +12,7 @@ std::vector<Input*>& OutputSocket::getTargets() {
 	return target_list;
 }
 
-void OutputSocket::push_value(double value) {
+void OutputSocket::push_value(float value) {
 	std::vector<Input*>::iterator it = target_list.begin(),
 		itE = target_list.end();
 	for (; it != itE; ++it) {

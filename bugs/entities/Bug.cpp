@@ -31,7 +31,6 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	, tRibosomeStep_(0)
 	, body_(nullptr)
 	, zygoteShell_(nullptr)
-	, lifeTime_(0)
 	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
@@ -47,80 +46,99 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO] = &minFatMasRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_ADULT_LEAN_MASS] = &adultLeanMass_;
+
+	sensors_.push_back(&lifeTimeSensor_);
 }
 
 Bug::~Bug() {
+	if (zygoteShell_)
+		delete zygoteShell_;
+	else if (body_)
+		delete(body_);
+	if (ribosome_)
+		delete ribosome_;
 }
 
 template<> void update(Bug*& b, float dt) {
 	b->update(dt);
 }
 
+void Bug::updateEmbryonicDevelopment(float dt) {
+	// developing embryo
+	tRibosomeStep_ += dt;
+	if (tRibosomeStep_ >= DECODE_PERIOD) {
+		tRibosomeStep_ -= DECODE_PERIOD;
+		isDeveloping_ = ribosome_->step();
+		if (!isDeveloping_) {	// finished development?
+			float currentMass = body_->getMass_tree();
+			float zygMass = zygoteShell_->getMass();
+
+			// compute fat amount and scale up the torso to the correct size
+			float fatMass = zygMass * initialFatMassRatio_ / (initialFatMassRatio_+1);
+			body_->setFatMass(fatMass);
+			body_->applyScale_tree((zygMass-fatMass)/currentMass);
+
+			zygoteShell_->updateCachedDynamicPropsFromBody();
+			// commit all changes and create the physics bodys and fixtures:
+			body_->commit_tree();
+
+			// delete embryo shell
+			body_->changeParent(nullptr);
+			delete zygoteShell_;
+			zygoteShell_ = nullptr;
+
+			delete ribosome_;
+			ribosome_ = nullptr;
+		}
+	}
+}
+
+void Bug::updateDeadDecaying(float dt) {
+	// dead, decaying
+	// body parts loose their nutrient value gradually until they are deleted
+}
+
 void Bug::update(float dt) {
-	if (isAlive_) {
-		if (isDeveloping_) {
-			// developing embryo
-			tRibosomeStep_ += dt;
-			if (tRibosomeStep_ >= DECODE_PERIOD) {
-				tRibosomeStep_ -= DECODE_PERIOD;
-				isDeveloping_ = ribosome_->step();
-				if (!isDeveloping_) {
-					float currentMass = body_->getMass_tree();
-					float zygMass = zygoteShell_->getMass();
+	if (!isAlive_) {
+		updateDeadDecaying(dt);
+		return;
+	}
+	if (isDeveloping_) {
+		updateEmbryonicDevelopment(dt);
+		return;
+	}
 
-					// compute fat amount and scale up the torso to the correct size
-					float fatMass = zygMass * initialFatMassRatio_ / (initialFatMassRatio_+1);
-					body_->setFatMass(fatMass);
-					body_->applyScale_tree((zygMass-fatMass)/currentMass);
-
-					zygoteShell_->updateCachedDynamicPropsFromBody();
-					// commit all changes and create the physics bodys and fixtures:
-					body_->commit_tree();
-
-					// delete embryo shell
-					body_->changeParent(nullptr);
-					delete zygoteShell_;
-					zygoteShell_ = nullptr;
-				}
-			}
-		} else {
-
-			lifeTime_ += dt;
-			/*const float musclePeriod = 2.f; // seconds
-			float sval = sinf(sinf(2*PI/musclePeriod * lifeTime_));
-			float mval1 = sval > 0 ? sval : 0;
-			float mval2 = sval < 0 ? -sval : 0;
-			motors_[0]->action(mval1);
-			motors_[1]->action(mval2);
-			float svalg = sinf(sinf(2*PI/musclePeriod * (lifeTime_+0.5f)));
-			motors_[6]->action((-svalg + 0.7f)*0.7f);	// the gripper*/
+	lifeTimeSensor_.update(dt);
+	/*const float musclePeriod = 2.f; // seconds
+	float sval = sinf(sinf(2*PI/musclePeriod * lifeTime_));
+	float mval1 = sval > 0 ? sval : 0;
+	float mval2 = sval < 0 ? -sval : 0;
+	motors_[0]->action(mval1);
+	motors_[1]->action(mval2);
+	float svalg = sinf(sinf(2*PI/musclePeriod * (lifeTime_+0.5f)));
+	motors_[6]->action((-svalg + 0.7f)*0.7f);	// the gripper*/
 
 
-			/*static float crtScale = 1.f;
-			if (crtScale < 10) {
-				crtScale += 0.001f * dt;
-				body_->applyScale_tree(crtScale);
-			}*/
-			bodyPartsUpdateList_.update(dt);
-			if (true /* not adult scale yet*/) {
-				// juvenile, growing
-				// growth happens by scaling up size and scaling down energy proportionally;
-				// growth speed is dictated by genes
+	/*static float crtScale = 1.f;
+	if (crtScale < 10) {
+		crtScale += 0.001f * dt;
+		body_->applyScale_tree(crtScale);
+	}*/
+	bodyPartsUpdateList_.update(dt);
+	if (true /* not adult scale yet*/) {
+		// juvenile, growing
+		// growth happens by scaling up size and scaling down energy proportionally;
+		// growth speed is dictated by genes
 
-				//body_->applyScale_tree(1.01f);
+		//body_->applyScale_tree(1.01f);
 
-				if (false /* reached adulthood scale?*/) {
-					// finished developing, discard all initialization data which is not useful any more:
-					body_->purge_initializationData_tree();
-				}
-			} else {
-				// adult life
-				// unused energy is stored by growing the torso
-			}
+		if (false /* reached adulthood scale?*/) {
+			// finished developing, discard all initialization data which is not useful any more:
+			body_->purge_initializationData_tree();
 		}
 	} else {
-		// dead, decaying
-		// body parts loose their nutrient value gradually until they are deleted
+		// adult life
+		// unused energy is stored by growing the torso
 	}
 }
 

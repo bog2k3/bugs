@@ -32,6 +32,19 @@ Ribosome::Ribosome(Bug* bug)
 {
 }
 
+Ribosome::~Ribosome() {
+	cleanUp();
+}
+
+void Ribosome::cleanUp() {
+	generalAttribGenes.clear();
+	neuralGenes.clear();
+	activeSet_.clear();
+	mapNeurons_.clear();
+	mapSynapses.clear();
+	mapFeedbackSynapses.clear();
+}
+
 // compares two unsigned longs as if they were expressed as coordinates in a circular scale
 // (where the largest number comes right before 0 and is considered smaller than 0)
 // X1 is greater than X2 on this scale if X1 is to the left of X2 (the coordinates grow in
@@ -51,22 +64,22 @@ void Ribosome::initializeNeuralNetwork() {
 	bug_->neuralNet_ = new NeuralNet();
 	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
 	for (unsigned i=0; i<bug_->sensors_.size(); i++)
-		bug_->neuralNet_->inputs[i] = new OutputSocket();	// create network inputs
+		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
 	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
 	for (unsigned i=0; i<bug_->motors_.size(); i++)
-		bug_->neuralNet_->outputs[i] = new Input(nullptr, 1.f);	// create network outputs
+		bug_->neuralNet_->outputs.push_back(std::make_shared<Input>(nullptr, 1.f));	// create network outputs
 	// create neurons:
 	int commandNeuronsStart = mapNeurons_.size();
 	int totalNeurons = commandNeuronsStart + bug_->motors_.size();
 	bug_->neuralNet_->neurons.reserve(totalNeurons);
 	for (int i=0; i<commandNeuronsStart; i++)
-		bug_->neuralNet_->neurons[i] = new Neuron();
+		bug_->neuralNet_->neurons.push_back(new Neuron());
 	// create and initialize the output neurons:
 	for (int i=commandNeuronsStart; i<totalNeurons; i++) {
-		bug_->neuralNet_->neurons[i] = new Neuron();
+		bug_->neuralNet_->neurons.push_back(new Neuron());
 		bug_->neuralNet_->neurons[i]->neuralConstant = 0.f;
 		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[FN_ONE];
-		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart]);
+		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart].get());
 	}
 }
 
@@ -114,12 +127,7 @@ bool Ribosome::step() {
 		decodeDeferredGenes();
 
 		// clean up:
-		generalAttribGenes.clear();
-		neuralGenes.clear();
-		activeSet_.clear();
-		mapNeurons_.clear();
-		mapSynapses.clear();
-		mapFeedbackSynapses.clear();
+		cleanUp();
 
 		return false;
 	}
@@ -359,7 +367,7 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 	OutputSocket* pFrom = nullptr;
 	if (from < 0) { // this apparently comes from an input socket
 		if (-from <= (int)bug_->neuralNet_->inputs.size())
-			pFrom = bug_->neuralNet_->inputs[-from-1];	// map -1..-n to 0..n-1
+			pFrom = bug_->neuralNet_->inputs[-from-1].get();	// map -1..-n to 0..n-1
 		else
 			return;	// invalid index
 	} else {

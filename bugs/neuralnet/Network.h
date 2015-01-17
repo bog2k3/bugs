@@ -6,11 +6,12 @@
 #ifndef __network_h__
 #define __network_h__
 
-#include <vector>
-
 #include "../genetics/Genome.h"
 #include "Neuron.h"
 #include "OutputSocket.h"
+
+#include <vector>
+#include <memory>
 
 class NeuralNet {
 public:
@@ -28,8 +29,8 @@ public:
 	void iterate(std::vector<double> inputs_values, std::vector<double> &outputs_values, int requiredOutputs);
 
 	std::vector<Neuron*> neurons;
-	std::vector<OutputSocket*> inputs; // list of input sockets that feed data to neurons
-	std::vector<Input*> outputs; // list of output sockets that output data from the network
+	std::vector<std::shared_ptr<OutputSocket>> inputs; // list of input sockets that feed data to neurons
+	std::vector<std::shared_ptr<Input>> outputs; // list of output sockets that output data from the network
 
 protected:
 

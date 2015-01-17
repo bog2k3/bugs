@@ -13,7 +13,8 @@
 #include "../updatable.h"
 #include "../UpdateList.h"
 #include "../genetics/CummulativeValue.h"
-#
+#include "LifetimeSensor.h"
+
 #include <glm/fwd.hpp>
 #include <vector>
 #include <map>
@@ -51,7 +52,7 @@ protected:
 	Torso* body_;
 	ZygoteShell* zygoteShell_;
 	UpdateList bodyPartsUpdateList_;
-	float lifeTime_;
+	LifetimeSensor lifeTimeSensor_;
 
 	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
 	CummulativeValue initialFatMassRatio_;
@@ -59,6 +60,9 @@ protected:
 	CummulativeValue adultLeanMass_;
 
 	friend class Ribosome;
+
+	void updateEmbryonicDevelopment(float dt);
+	void updateDeadDecaying(float dt);
 };
 
 template<> void update(Bug*& b, float dt);

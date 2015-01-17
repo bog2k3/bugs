@@ -26,11 +26,10 @@ vector<Neuron*> Traverser::getNextLayer()
 
 	if (crt_neurons.empty()) {
 		// THIS IS THE FIRST STEP, we take the NeuralNet inputs and move to their targets
-		vector<OutputSocket*>::iterator it = pNetwork->inputs.begin(),
-			itE = pNetwork->inputs.end();
+		auto it = pNetwork->inputs.begin(), itE = pNetwork->inputs.end();
 		// step 1: get first round of neurons
 		for (unsigned int i=0; it != itE; ++it, ++i) {
-			OutputSocket* input_i = *it;
+			OutputSocket* input_i = it->get();
 			vector<Input*> &list_attached_ins = input_i->getTargets();
 			vector<Input*>::iterator itA = list_attached_ins.begin(),
 				itAE = list_attached_ins.end();
