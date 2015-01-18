@@ -112,9 +112,9 @@ int main() {
 
 	UpdateList updateList;
 	updateList.add(b1);
-	updateList.add(b2);
-	updateList.add(b3);
-	updateList.add(b4);
+	//updateList.add(b2);
+	//updateList.add(b3);
+	//updateList.add(b4);
 
 	DrawList drawList;
 	drawList.add(World::getInstance());

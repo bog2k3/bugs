@@ -6,7 +6,6 @@
 #ifndef __network_h__
 #define __network_h__
 
-#include "../genetics/Genome.h"
 #include "Neuron.h"
 #include "OutputSocket.h"
 
@@ -15,11 +14,7 @@
 
 class NeuralNet {
 public:
-
-#define MAX_NETWORK_DEFAULT_INPUTS 16
-
 	NeuralNet();
-
 	~NeuralNet();
 
 	// feeds the inputs into the network and performs one calculus iteration over all neurons, generating
@@ -32,9 +27,8 @@ public:
 	std::vector<std::shared_ptr<OutputSocket>> inputs; // list of input sockets that feed data to neurons
 	std::vector<std::shared_ptr<InputSocket>> outputs; // list of output sockets that output data from the network
 
-protected:
-
-	friend class Ribosome;
+private:
+	std::vector<Neuron*> crtLayer;
 };
 
 #endif //__network_h__

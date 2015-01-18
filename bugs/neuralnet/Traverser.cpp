@@ -21,10 +21,13 @@ Traverser::Traverser(NeuralNet* pNet)
 Traverser::~Traverser() {
 }
 
-vector<Neuron*> Traverser::getNextLayer()
+void Traverser::getNextLayer(vector<Neuron*> &out)
 {
-	if (finished)
-		return crt_neurons; // which should be empty
+	out.clear();
+
+	if (finished) {
+		return;
+	}
 
 	if (crt_neurons.empty()) {
 		// THIS IS THE FIRST STEP, we take the NeuralNet inputs and move to their targets
@@ -43,14 +46,15 @@ vector<Neuron*> Traverser::getNextLayer()
 				}
 			}
 		}
-		return crt_neurons;
+		// also add all neurons that don't have inputs
+		for (int i=0; i<pNetwork->neurons.size(); i++)
+			if (pNetwork->neurons[i]->inputs.size() == 0)
+				crt_neurons.push_back(pNetwork->neurons[i]);
 	} else {
 		// step 2 and above: move from the current list of neurons up the chain, until all neurons are visited
 		vector<Neuron*> next_neurons;
 		vector<Neuron*> temp_list;
-		vector<Neuron*>::iterator itN = crt_neurons.begin(),
-			itNE = crt_neurons.end();
-		for (; itN != itNE; ++itN) {
+		for (auto itN=crt_neurons.begin(); itN != crt_neurons.end(); ++itN) {
 			Neuron* pNeuron = *itN;
 			temp_list.clear();
 			pNeuron->retrieve_targets(RID, temp_list);
@@ -60,8 +64,8 @@ vector<Neuron*> Traverser::getNextLayer()
 		if (crt_neurons.empty()) {
 			finished = true;
 		}
-		return crt_neurons;
 	}
+	out.insert(out.end(), crt_neurons.begin(), crt_neurons.end());
 }
 
 vector<Neuron*> Traverser::getIsolatedNeurons()

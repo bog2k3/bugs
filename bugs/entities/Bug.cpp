@@ -277,7 +277,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(gt);
 	// neuron #5 constant:
 	gnc.targetNeuron.set(5);
-	gnc.value.set(0.49f);
+	gnc.value.set(0.39f);
 	g.first.push_back(gnc);
 
 	// neuron #6 transfer:
@@ -305,8 +305,15 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 
 	const float musclePeriod = 2.f; // seconds
 
-	// synapse i[-1] (time) to 1
 	GeneSynapse gs;
+
+	// synapse 0 to 1
+	gs.from.set(0);
+	gs.to.set(1);
+	gs.weight.set(2*PI/musclePeriod);
+	g.first.push_back(gs);
+
+	// synapse i[-1] (time) to 1
 	gs.from.set(-1);
 	gs.to.set(1);
 	gs.weight.set(2*PI/musclePeriod);
@@ -318,15 +325,21 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	gs.weight.set(2*PI/musclePeriod);
 	g.first.push_back(gs);
 
-	// synapse 0 to 1
-	gs.from.set(0);
-	gs.to.set(1);
-	gs.weight.set(2*PI/musclePeriod);
+	// synapse 1 to 3
+	gs.from.set(1);
+	gs.to.set(3);
+	gs.weight.set(1.f);
 	g.first.push_back(gs);
 
 	// synapse 2 to 4
 	gs.from.set(2);
 	gs.to.set(4);
+	gs.weight.set(1.f);
+	g.first.push_back(gs);
+
+	// synapse 5 to 6
+	gs.from.set(5);
+	gs.to.set(6);
 	gs.weight.set(1.f);
 	g.first.push_back(gs);
 
@@ -354,27 +367,15 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	gs.weight.set(1.f);
 	g.first.push_back(gs);
 
-	// synapse 1 to 3
-	gs.from.set(1);
-	gs.to.set(3);
-	gs.weight.set(1.f);
-	g.first.push_back(gs);
-
 	// synapse 3 to 6
 	gs.from.set(3);
 	gs.to.set(6);
 	gs.weight.set(-0.7f);
 	g.first.push_back(gs);
 
-	// synapse 5 to 6
-	gs.from.set(5);
-	gs.to.set(6);
-	gs.weight.set(1.f);
-	g.first.push_back(gs);
-
-	// synapse 6 to o[-3] (gripper)
+	// synapse 6 to o[-7] (gripper)
 	gs.from.set(6);
-	gs.to.set(-3);
+	gs.to.set(-7);
 	gs.weight.set(1.f);
 	g.first.push_back(gs);
 

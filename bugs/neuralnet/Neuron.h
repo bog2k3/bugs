@@ -8,13 +8,14 @@
 #include "functions.h"
 #include "OutputSocket.h"
 #include <vector>
+#include <memory>
 
 class Neuron;
 class InputSocket;
 
 class Neuron {
 public:
-	std::vector<InputSocket*> inputs;
+	std::vector<std::unique_ptr<InputSocket>> inputs;
 	transfer_function transfFunc;
 	float value;
 	float neuralConstant;
@@ -32,13 +33,9 @@ public:
 	void push_output();
 
 	// retrieves the list of targets
-	void retrieve_targets(unsigned long opRID,
-			std::vector<Neuron*> &out_targets);
+	void retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets);
 
 	OutputSocket output; // this socket is connected to other inputs or to the network's main outputs
-
-protected:
-	float compute_sum(int count, float input_array[], float weight_array[]);
 };
 
 #endif // __neuron_h__

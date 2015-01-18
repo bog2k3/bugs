@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 // standard model for all neural transfer functions:
-typedef double (*transfer_function)(double value, double constant);
+typedef float (*transfer_function)(float value, float constant);
 
 enum transferFuncNames {
 	FN_ONE,
@@ -21,33 +21,32 @@ enum transferFuncNames {
 };
 
 extern std::map<transferFuncNames, transfer_function> mapTransferFunctions;
-extern std::map<transferFuncNames, std::string> mapTransferFunctionNames;
 
 // sin(value)
-double transfer_fn_sin(double value, double constant);
+float transfer_fn_sin(float value, float constant);
 
 // value
-double transfer_fn_one(double value, double constant);
+float transfer_fn_one(float value, float constant);
 
 // ln(value)
-double transfer_fn_ln(double value, double constant);
+float transfer_fn_ln(float value, float constant);
 
 // constant^value
-double transfer_fn_exp(double value, double constant);
+float transfer_fn_exp(float value, float constant);
 
 // value^constant
-double transfer_fn_pow(double value, double constant);
+float transfer_fn_pow(float value, float constant);
 
 // tanh(value*(constant+1))
-double transfer_fn_sigmoid(double value, double constant);
+float transfer_fn_sigmoid(float value, float constant);
 
 // value > constant ? value : constant
-double transfer_fn_threshold(double value, double constant);
+float transfer_fn_threshold(float value, float constant);
 
 // always constant
-double transfer_fn_constant(double value, double constant);
+float transfer_fn_constant(float value, float constant);
 
 // rand(value+constant)
-double transfer_fn_rand(double value, double constant);
+float transfer_fn_rand(float value, float constant);
 
 #endif // #ifndef __functions_h__

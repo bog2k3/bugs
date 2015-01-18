@@ -16,7 +16,7 @@ public:
 	// from the NeuralNet's inputs to all connected neurons, then to all neurons connected to the last
 	// neurons and so on, until all neurons are visited.
 	// the NeuralNet has been completely traversed when this function returns an empty vector.
-	std::vector<Neuron*> getNextLayer();
+	void getNextLayer(std::vector<Neuron*> &out);
 
 	// after finishing with getNextLayer, this function returns isolated neurons (if any exist).
 	// some neurons may not be connected to any other neurons (they have no inputs) so, they are isolated

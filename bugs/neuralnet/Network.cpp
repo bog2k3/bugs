@@ -22,11 +22,9 @@ void NeuralNet::iterate()
 {
 	// step 1 and above: move from the first layer of neurons up the chain, until all neurons are visited
 	Traverser trav(this);
-	vector<Neuron*> crtLayer;
 	do {
-		crtLayer = trav.getNextLayer();
-		vector<Neuron*>::iterator itN = crtLayer.begin(), itNE = crtLayer.end();
-		for (; itN != itNE; ++itN) {
+		trav.getNextLayer(crtLayer);
+		for (auto itN=crtLayer.begin(); itN != crtLayer.end(); ++itN) {
 			Neuron* pNeuron = *itN;
 			pNeuron->update_value();
 			pNeuron->push_output();

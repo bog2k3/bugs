@@ -4,54 +4,64 @@
 #include "../math/tools.h"
 
 std::map<transferFuncNames, transfer_function> mapTransferFunctions;
-std::map<transferFuncNames, std::string> mapTransferFunctionNames;
 
 int initNeuralFunctionMap() {
-	mapTransferFunctions[FN_SIN] = &transfer_fn_sin;
+	mapTransferFunctions[FN_ONE] = &transfer_fn_one;
 	mapTransferFunctions[FN_LN] = &transfer_fn_ln;
+	mapTransferFunctions[FN_SIGM] = &transfer_fn_sigmoid;
+	mapTransferFunctions[FN_THRESHOLD] = &transfer_fn_threshold;
+	mapTransferFunctions[FN_SIN] = &transfer_fn_sin;
+	mapTransferFunctions[FN_RAND] = &transfer_fn_rand;
 	mapTransferFunctions[FN_EXP] = &transfer_fn_exp;
 	mapTransferFunctions[FN_POW] = &transfer_fn_pow;
-	mapTransferFunctions[FN_RAND] = &transfer_fn_rand;
-	mapTransferFunctions[FN_SIGM] = &transfer_fn_sigmoid;
-
-	mapTransferFunctionNames[FN_SIN] = "SIN";
-	mapTransferFunctionNames[FN_LN] = "LOG";
-	mapTransferFunctionNames[FN_EXP] = "EXP";
-	mapTransferFunctionNames[FN_POW] = "POW";
-	mapTransferFunctionNames[FN_RAND] = "RAND";
-	mapTransferFunctionNames[FN_SIGM] = "SIGM";
+	mapTransferFunctions[FN_CONSTANT] = &transfer_fn_constant;
 
 	return 0;
 }
 
 int dummyToInitMap = initNeuralFunctionMap();
 
+// value
+float transfer_fn_one(float value, float constant) {
+	return value;
+}
+
+// value > constant ? value : constant
+float transfer_fn_threshold(float value, float constant) {
+	return value > constant ? value : constant;
+}
+
+// always constant
+float transfer_fn_constant(float value, float constant) {
+	return constant;
+}
+
 // sin(value)
-double transfer_fn_sin(double value, double arg) {
+float transfer_fn_sin(float value, float arg) {
 	return sin(value);
 }
 
 // ln(value)
-double transfer_fn_ln(double value, double arg) {
+float transfer_fn_ln(float value, float arg) {
 	return log(value);
 }
 
-// e^value
-double transfer_fn_exp(double value, double arg) {
-	return pow(E, value);
+// arg^value
+float transfer_fn_exp(float value, float arg) {
+	return pow(arg, value);
 }
 
 // value^arg
-double transfer_fn_pow(double value, double arg) {
+float transfer_fn_pow(float value, float arg) {
 	return pow(value, arg);
 }
 
 // rand(value)
-double transfer_fn_rand(double value, double arg) {
-	return randd() * value;
+float transfer_fn_rand(float value, float arg) {
+	return randf() * value;
 }
 
 // tanh(value*(arg+1))
-double transfer_fn_sigmoid(double value, double arg) {
-	return tanh(value*(arg+1));
+float transfer_fn_sigmoid(float value, float arg) {
+	return tanhf(value*(arg+1));
 }

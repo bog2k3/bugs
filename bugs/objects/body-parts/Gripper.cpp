@@ -15,6 +15,7 @@
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include "../../log.h"
 
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
@@ -59,6 +60,7 @@ template<> void update(Gripper* &g, float dt) {
 
 void Gripper::update(float dt) {
 	float intensity = inputSocket_->value;
+	LOGLN("intensity:" << intensity);
 	setActive(intensity > 0.5f);
 }
 

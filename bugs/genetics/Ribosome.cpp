@@ -73,8 +73,9 @@ void Ribosome::initializeNeuralNetwork() {
 	int commandNeuronsStart = mapNeurons_.size();
 	int totalNeurons = commandNeuronsStart + bug_->motors_.size();
 	bug_->neuralNet_->neurons.reserve(totalNeurons);
-	for (int i=0; i<commandNeuronsStart; i++)
+	for (int i=0; i<commandNeuronsStart; i++) {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
+	}
 	// create and initialize the output neurons:
 	for (int i=commandNeuronsStart; i<totalNeurons; i++) {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
@@ -88,13 +89,13 @@ void Ribosome::decodeDeferredGenes() {
 	int commandNeuronsStart = mapNeurons_.size();
 	// create all synapses
 	for (auto s : mapSynapses) {
-		int from = (s.first >> 32) & 0xFFFFFFFF;
-		int to = (s.first) & 0xFFFFFFFF;
+		int32_t from = s.first >> 32;
+		int32_t to = (s.first) & 0xFFFFFFFF;
 		createSynapse(from, to, commandNeuronsStart, s.second);
 	}
 	for (auto s : mapFeedbackSynapses) {
-		int from = (s.first >> 32) & 0xFFFFFFFF;
-		int to = (s.first) & 0xFFFFFFFF;
+		int32_t from = s.first >> 32;
+		int32_t to = (s.first) & 0xFFFFFFFF;
 		createFeedbackSynapse(from, to, commandNeuronsStart, s.second);
 	}
 	// now decode the deferred neural genes (neuron properties):
@@ -102,14 +103,10 @@ void Ribosome::decodeDeferredGenes() {
 		decodeGene(*g, false);
 	// apply all neuron properties
 	for (auto n : mapNeurons_) {
-		int transferFnIndex = n.second.transfer.hasValue()
-				? (int)n.second.transfer
-				: FN_ONE;
-		bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)transferFnIndex];
-		float constant = n.second.constant.hasValue()
-				? n.second.constant
-				: 0.f;
-		bug_->neuralNet_->neurons[n.second.index]->neuralConstant = constant;
+		if (n.second.transfer.hasValue())
+			bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)n.second.transfer.get()];
+		if (n.second.constant.hasValue())
+			bug_->neuralNet_->neurons[n.second.index]->neuralConstant = n.second.constant;
 	}
 
 	// apply the general attribute genes:
@@ -160,8 +157,10 @@ bool Ribosome::step() {
 
 void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
 	if (virtualIndex >= 0) {	// does it refer to an actual neuron? (skip <0 input & output sockets)
-		if (!hasNeuron(virtualIndex))
-			mapNeurons_[virtualIndex] = NeuronInfo(mapNeurons_.size());
+		if (!hasNeuron(virtualIndex)) {
+			int realIndex = mapNeurons_.size();
+			mapNeurons_[virtualIndex] = NeuronInfo(realIndex);
+		}
 	}
 }
 
@@ -372,10 +371,8 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 		else
 			return;	// invalid index
 	} else {
-		if (hasNeuron(from))
-			pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
-		else
-			return; // invalid index
+		assert(hasNeuron(from));	// should be there, since synapses dictate neurons
+		pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
 	}
 	Neuron* pTo;
 	if (to < 0) { // apparently a motor command output socket
@@ -384,14 +381,12 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 		else
 			return; // invalid index
 	} else {
-		if (hasNeuron(to))
-			pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
-		else
-			return; // invalid index
+		assert(hasNeuron(to));
+		pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
 	}
 
 	InputSocket* i = new InputSocket(pTo, weight);
-	pTo->inputs.push_back(i);
+	pTo->inputs.push_back(std::unique_ptr<InputSocket>(i));
 	pFrom->addTarget(i);
 }
 
@@ -409,13 +404,11 @@ void Ribosome::createFeedbackSynapse(int from, int to, int commandNeuronsOfs, fl
 		else
 			return; // invalid index
 	} else {
-		if (hasNeuron(to))
-			pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
-		else
-			return; // invalid index
+		assert(hasNeuron(to));
+		pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
 	}
 
 	InputSocket* i = new InputSocket(pTo, weight);
-	pTo->inputs.push_back(i);
+	pTo->inputs.push_back(std::unique_ptr<InputSocket>(i));
 	pFrom->addTarget(i);
 }
