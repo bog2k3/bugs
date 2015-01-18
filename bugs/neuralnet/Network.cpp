@@ -7,6 +7,7 @@
 using namespace std;
 
 NeuralNet::NeuralNet()
+	: pTraverser(new Traverser(this))
 {
 }
 
@@ -16,14 +17,15 @@ NeuralNet::~NeuralNet() {
 	neurons.clear();
 	inputs.clear();
 	outputs.clear();
+	delete pTraverser;
 }
 
 void NeuralNet::iterate()
 {
+	pTraverser->reset();
 	// step 1 and above: move from the first layer of neurons up the chain, until all neurons are visited
-	Traverser trav(this);
 	do {
-		trav.getNextLayer(crtLayer);
+		pTraverser->getNextLayer(crtLayer);
 		for (auto itN=crtLayer.begin(); itN != crtLayer.end(); ++itN) {
 			Neuron* pNeuron = *itN;
 			pNeuron->update_value();

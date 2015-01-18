@@ -277,7 +277,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(gt);
 	// neuron #5 constant:
 	gnc.targetNeuron.set(5);
-	gnc.value.set(0.39f);
+	gnc.value.set(0.4f);
 	g.first.push_back(gnc);
 
 	// neuron #6 transfer:

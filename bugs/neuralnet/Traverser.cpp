@@ -21,8 +21,13 @@ Traverser::Traverser(NeuralNet* pNet)
 Traverser::~Traverser() {
 }
 
-void Traverser::getNextLayer(vector<Neuron*> &out)
-{
+void Traverser::reset() {
+	crt_neurons.clear();
+	finished = false;
+	RID = new_RID();
+}
+
+void Traverser::getNextLayer(vector<Neuron*> &out) {
 	out.clear();
 
 	if (finished) {
@@ -47,7 +52,7 @@ void Traverser::getNextLayer(vector<Neuron*> &out)
 			}
 		}
 		// also add all neurons that don't have inputs
-		for (int i=0; i<pNetwork->neurons.size(); i++)
+		for (unsigned i=0; i<pNetwork->neurons.size(); i++)
 			if (pNetwork->neurons[i]->inputs.size() == 0)
 				crt_neurons.push_back(pNetwork->neurons[i]);
 	} else {

@@ -60,7 +60,6 @@ template<> void update(Gripper* &g, float dt) {
 
 void Gripper::update(float dt) {
 	float intensity = inputSocket_->value;
-	LOGLN("intensity:" << intensity);
 	setActive(intensity > 0.5f);
 }
 

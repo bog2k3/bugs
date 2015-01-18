@@ -12,6 +12,8 @@
 #include <vector>
 #include <memory>
 
+class Traverser;
+
 class NeuralNet {
 public:
 	NeuralNet();
@@ -29,6 +31,7 @@ public:
 
 private:
 	std::vector<Neuron*> crtLayer;
+	Traverser* pTraverser;
 };
 
 #endif //__network_h__
