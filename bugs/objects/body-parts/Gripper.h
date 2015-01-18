@@ -20,7 +20,6 @@ public:
 	Gripper(BodyPart* parent);
 	~Gripper() override;
 
-	void commit() override;
 	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 
@@ -29,12 +28,13 @@ public:
 	std::shared_ptr<InputSocket> getInputSocket() override { return inputSocket_; }
 
 protected:
-	void setActive(bool active);
-
 	std::shared_ptr<InputSocket> inputSocket_;
 	bool active_;
 	b2WeldJoint* groundJoint_;
 	float size_;
+
+	void setActive(bool active);
+	void commit() override;
 };
 
 template<> void update(Gripper* &g, float dt);

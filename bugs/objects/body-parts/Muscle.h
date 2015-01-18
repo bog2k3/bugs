@@ -29,7 +29,6 @@ public:
 	Muscle(BodyPart* parent, Joint* joint, int motorDirSign);
 	virtual ~Muscle() override;
 
-	void commit() override;
 	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 	void update(float dt);
@@ -38,13 +37,6 @@ public:
 
 protected:
 	static constexpr int nAngleSteps = 10;
-
-	/**
-	 * returns a float.
-	 * [ret] - is current slice
-	 * {ret} is relative position in current slice [0.0, 1.0] - use this to interpolate
-	 */
-	float getCurrentPhiSlice();
 
 	std::weak_ptr<MuscleInitializationData> muscleInitialData_;
 	std::shared_ptr<InputSocket> inputSocket_;
@@ -59,6 +51,14 @@ protected:
 #ifdef DEBUG_DRAW_MUSCLE
 	float phiToDx_[nAngleSteps];
 #endif
+
+	/**
+	 * returns a float.
+	 * [ret] - is current slice
+	 * {ret} is relative position in current slice [0.0, 1.0] - use this to interpolate
+	 */
+	float getCurrentPhiSlice();
+	void commit() override;
 };
 
 template<> void update(Muscle* &m, float dt);

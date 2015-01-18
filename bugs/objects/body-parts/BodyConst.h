@@ -25,8 +25,11 @@ public:
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
 	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.8f;			// [m/s] max meters/second linear contraction speed
 	static constexpr float FatDensity						= 8.f;			// [kg/m^2]
+	static constexpr float FatDensityInv					= 1.f/FatDensity;	// [m^2/kg]
 	static constexpr float FatEnergyDensity					= 0.5e+4f;		// [J/kg]
+	static constexpr float FatEnergyDensityInv				= 1.f / FatEnergyDensity;	// [kg/J]
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
+	static constexpr float MuscleEnergyConstant				= 10.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]

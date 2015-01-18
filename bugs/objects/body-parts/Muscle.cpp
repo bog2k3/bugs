@@ -256,4 +256,8 @@ void Muscle::update(float dt) {
 	float RSinAlphaHSinBeta = lerp_lookup(phiToRSinAlphaHSinBeta_, nAngleSteps, getCurrentPhiSlice());
 	float torque = maxForce_ * signal_strength * RSinAlphaHSinBeta;
 	joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);
+
+	// compute energy consumption
+	float usedEnergy = maxForce_ * signal_strength * BodyConst::MuscleEnergyConstant * dt;
+	consumeEnergy(usedEnergy);
 }

@@ -30,7 +30,6 @@ public:
 	Joint(BodyPart* parent);
 	~Joint() override;
 
-	void commit() override;
 	void draw(RenderContext& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 	glm::vec3 getWorldTransformation() const override;
@@ -52,6 +51,8 @@ protected:
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
 	void getNormalizedLimits(float &low, float &high);
+	void commit() override;
+	void die() override;
 };
 
 template<> void update(Joint*& j, float dt);

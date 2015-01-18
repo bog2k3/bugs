@@ -217,12 +217,13 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue
 	mapAttributes_[type] = &value;
 }
 
-UpdateList* BodyPart::getUpdateList() const {
+UpdateList* BodyPart::getUpdateList() {
 	if (updateList_)
 		return updateList_;
-	else if (parent_)
-		return parent_->getUpdateList();
-	else
+	else if (parent_) {
+		updateList_ = parent_->getUpdateList();
+		return updateList_;
+	} else
 		return nullptr;
 }
 
@@ -276,4 +277,15 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 float BodyPart::getDefaultAngle() {
 	assert(initialData_ && "getDefaultAngle cannot be called after purging initialization data!");
 	return initialData_->attachmentDirectionParent + initialData_->angleOffset;
+}
+
+void BodyPart::consumeEnergy(float amount) {
+	if (parent_)
+		parent_->consumeEnergy(amount);
+}
+
+void BodyPart::die_tree() {
+	die();
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->die_tree();
 }

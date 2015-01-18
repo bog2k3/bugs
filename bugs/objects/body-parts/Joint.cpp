@@ -203,3 +203,7 @@ void Joint::update(float dt) {
 		addTorque(-resetTorque_*sign(getJointAngle()), -4*getJointAngle());
 	}
 }
+
+void Joint::die() {
+	physJoint_->EnableMotor(false);
+}

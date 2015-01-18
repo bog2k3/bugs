@@ -38,9 +38,9 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(position, zygoteSize);
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
+	zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
 	body_ = new Torso(zygoteShell_);
-	body_->setUpdateList(bodyPartsUpdateList_);
 	ribosome_ = new Ribosome(this);
 
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
@@ -75,7 +75,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			// compute fat amount and scale up the torso to the correct size
 			float fatMass = zygMass * initialFatMassRatio_ / (initialFatMassRatio_+1);
-			body_->setFatMass(fatMass);
+			body_->setInitialFatMass(fatMass);
 			body_->applyScale_tree((zygMass-fatMass)/currentMass);
 
 			zygoteShell_->updateCachedDynamicPropsFromBody();
@@ -108,22 +108,21 @@ void Bug::update(float dt) {
 		return;
 	}
 
-	/*const float musclePeriod = 2.f; // seconds
-	float sval = sinf(sinf(2*PI/musclePeriod * lifeTime_));
-	float mval1 = sval > 0 ? sval : 0;
-	float mval2 = sval < 0 ? -sval : 0;
-	motors_[0]->action(mval1);
-	motors_[1]->action(mval2);
-	float svalg = sinf(sinf(2*PI/musclePeriod * (lifeTime_+0.5f)));
-	motors_[6]->action((-svalg + 0.7f)*0.7f);	// the gripper*/
-
 	lifeTimeSensor_.update(dt);
 	bodyPartsUpdateList_.update(dt);
 	neuralNet_->iterate();
-	if (true /* not adult scale yet*/) {
+
+	if (body_->getFatMass() <= 0) {
+		// we just depleted our energy supply and died
+		isAlive_ = false;
+		body_->die_tree();
+		return;
+	}
+
+#warning "optimize this - only check every N frames since recursive is expensive"
+	if (body_->getMass_tree() < adultLeanMass_) {
 		// juvenile, growing
-		// growth happens by scaling up size and scaling down energy proportionally;
-		// growth speed is dictated by genes
+		// max growth speed is dictated by genes
 
 		//body_->applyScale_tree(1.01f);
 

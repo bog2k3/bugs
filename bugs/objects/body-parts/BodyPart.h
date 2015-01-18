@@ -68,15 +68,6 @@ public:
 	virtual glm::vec3 getWorldTransformation() const;
 
 	/*
-	 * This is called after the body is completely developed and no more changes will occur on body parts
-	 * except in rare circumstances.
-	 * At this point the physics fixtures must be created and all temporary data purged.
-	 * The physicsProperties of the body are transform to world coordinates before this method is called;
-	 * The physicsProperties are deleted after the commit is finished.
-	 */
-	virtual void commit() = 0;
-
-	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
 	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib) {
@@ -93,6 +84,9 @@ public:
 
 	/* scale the part and all its children by a given amount */
 	void applyScale_tree(float scale);
+
+	// tells the entire hierarchy that the body died
+	void die_tree();
 
 	/**
 	 * recursively free the initialization data from all body parts after committing the entire tree
@@ -126,11 +120,22 @@ protected:
 	bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
 	bool dontCreateBody_;			// set to true to prevent creating an actual physics body
 
+	/*
+	 * This is called after the body is completely developed and no more changes will occur on body parts
+	 * except in rare circumstances.
+	 * At this point the physics fixtures must be created and all temporary data purged.
+	 * The physicsProperties of the body are transform to world coordinates before this method is called;
+	 * The physicsProperties are deleted after the commit is finished.
+	 */
+	virtual void commit() = 0;
+	virtual void consumeEnergy(float amount);
+	virtual void die() {}
+
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint() const;
-	UpdateList* getUpdateList() const;
+	UpdateList* getUpdateList();
 
 private:
 	void computeBodyPhysProps();
