@@ -289,3 +289,7 @@ void BodyPart::die_tree() {
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->die_tree();
 }
+
+void BodyPart::reattachChildren() {
+	//TODO ...
+}

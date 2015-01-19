@@ -137,6 +137,8 @@ protected:
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint() const;
 	UpdateList* getUpdateList();
+	// call this if the fixture changed for any reason:
+	void reattachChildren();
 
 private:
 	void computeBodyPhysProps();

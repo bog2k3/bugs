@@ -28,7 +28,9 @@ Torso::Torso(BodyPart* parent)
 }
 
 Torso::~Torso() {
-#warning("delete fixture")
+	if (committed_) {
+		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+	}
 	getUpdateList()->remove(this);
 }
 
@@ -103,9 +105,8 @@ void Torso::update(float dt) {
 	if (crtSize * lastCommittedTotalSizeInv_ > BodyConst::SizeThresholdToCommit
 			|| crtSize * lastCommittedTotalSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
 		commit();
-#warning "this is flawed, must also reconfigure attachments' positions - like apply_scale()"
+		reattachChildren();
 	}
-	LOGLN("fatMass:"<<fatMass_<<"\tinstantEnergyUse:"<<frameUsedEnergy_/dt);
 	frameUsedEnergy_ = 0;
 }
 

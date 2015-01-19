@@ -94,7 +94,7 @@ void Joint::commit() {
 	childAnchor *= 1 + radius/childAnchorLength;
 	def.localAnchorB = g2b(childAnchor);
 
-	def.collideConnected = true;
+	//def.collideConnected = true;
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 
