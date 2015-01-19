@@ -10,6 +10,8 @@
 
 #include "BodyPart.h"
 
+class b2WeldJoint;
+
 class Mouth: public BodyPart {
 public:
 	Mouth(BodyPart* parent);
@@ -20,6 +22,7 @@ public:
 
 protected:
 	float linearSize_;
+	b2WeldJoint* pJoint;
 
 	void commit() override;
 };

@@ -151,7 +151,8 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	gc.part_type = GENE_PART_BONE;
 	g.first.push_back(gc);
 
-	gl.location[0].set(1);
+	// bone 1 attribute
+	gl.location[0].set(1<<1);
 	gl.location[1].set(1);
 	gl.location[2].set(1<<15);
 	g.first.push_back(gl);
@@ -161,7 +162,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(gla);
 
 	// second bone:
-	gl.location[0].set(1);
+	gl.location[0].set(1<<1);
 	gl.location[1].set(1);
 	gl.location[2].set(1 << 15);
 	g.first.push_back(gl);
@@ -184,7 +185,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(gla);
 
 	// first bone size:
-	gl.location[0].set(1);
+	gl.location[0].set(1<<1);
 	gl.location[2].set(1 << 15);
 	g.first.push_back(gl);
 	gla.value.set(0.08f * 0.01f);
@@ -208,7 +209,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(gla);
 
 	// first muscle size
-	gl.location[0].set(2);
+	gl.location[0].set(1<<2);
 	gl.location[1].set(1 << 15);
 	g.first.push_back(gl);
 	gla.attribute = GENE_ATTRIB_SIZE;
@@ -216,7 +217,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	g.first.push_back(gla);
 
 	// second muscle size
-	gl.location[0].set(4);
+	gl.location[0].set(1<<3);
 	g.first.push_back(gl);
 	g.first.push_back(gla);
 

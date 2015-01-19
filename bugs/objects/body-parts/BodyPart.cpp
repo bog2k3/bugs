@@ -291,5 +291,9 @@ void BodyPart::die_tree() {
 }
 
 void BodyPart::reattachChildren() {
-	//TODO ...
+	if (committed_) {
+		for (int i=0; i<nChildren_; i++) {
+			children_[i]->commit();
+		}
+	}
 }

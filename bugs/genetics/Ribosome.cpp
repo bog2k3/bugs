@@ -19,6 +19,7 @@
 #include "../objects/body-parts/Joint.h"
 #include "../objects/body-parts/ZygoteShell.h"
 #include "../objects/body-parts/Muscle.h"
+#include "../objects/body-parts/Mouth.h"
 #include "../log.h"
 #include "../neuralnet/InputSocket.h"
 
@@ -31,6 +32,12 @@ Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 	, crtPosition_{0}
 {
+	// create default body parts:
+	// 1. mouth
+	new Mouth(bug_->body_);		// this will be the location 0x1
+
+	// 2. Egg-layer
+	// ...
 }
 
 Ribosome::~Ribosome() {

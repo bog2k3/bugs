@@ -31,6 +31,7 @@ public:
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
 	static constexpr float MuscleEnergyConstant				= 10.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
 	static constexpr float MouthAspectRatio					= 0.15f;		// [*] length/width
+	static constexpr float MouthDensity						= 0.8f;			// [kg/m^2]
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
@@ -42,6 +43,7 @@ public:
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialJointSize					= 0.8e-4f;		// [m^2]
+	static constexpr float initialMouthSize					= 0.3e-3f;		// [m^2]
 
 	// default values for whole-body attributes:
 	static constexpr float initialFatMassRatio				= 0.3f;			// [*]
