@@ -101,3 +101,8 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 	}
 	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);
 }
+
+void Gripper::die() {
+	setActive(false);
+}
+

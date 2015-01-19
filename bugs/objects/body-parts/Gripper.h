@@ -35,6 +35,7 @@ protected:
 
 	void setActive(bool active);
 	void commit() override;
+	void die() override;
 };
 
 template<> void update(Gripper* &g, float dt);
