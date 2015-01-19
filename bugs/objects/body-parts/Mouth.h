@@ -12,8 +12,16 @@
 
 class Mouth: public BodyPart {
 public:
-	Mouth();
-	virtual ~Mouth();
+	Mouth(BodyPart* parent);
+	virtual ~Mouth() override;
+
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
+	void draw(RenderContext& ctx) override;
+
+protected:
+	float linearSize_;
+
+	void commit() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_MOUTH_H_ */

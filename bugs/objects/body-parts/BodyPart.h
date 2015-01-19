@@ -26,6 +26,7 @@ enum PART_TYPE {
 	BODY_PART_GRIPPER,
 	BODY_PART_ZYGOTE_SHELL,
 	BODY_PART_SENSOR,
+	BODY_PART_MOUTH,
 };
 
 struct BodyPartInitializationData {

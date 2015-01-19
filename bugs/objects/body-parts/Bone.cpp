@@ -65,19 +65,7 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 		size.y = sqrtf(initData->size / initData->aspectRatio);
 		size.x = initData->aspectRatio * size.y;
 	}
-	float hw = size.y * 0.5f, hl = size.x * 0.5f;	// half width and length
-	// bring the angle between [-PI, +PI]
-	relativeAngle = limitAngle(relativeAngle, 7*PI/4);
-	if (relativeAngle < PI/4) {
-		// front edge
-		return glm::vec2(hl, sinf(relativeAngle) * hw);
-	} else if (relativeAngle < 3*PI/4 || relativeAngle > 5*PI/4) {
-		// left or right edge
-		return glm::vec2(cosf(relativeAngle) * hl, relativeAngle < PI ? hw : -hw);
-	} else {
-		// back edge
-		return glm::vec2(-hl, sinf(relativeAngle) * hw);
-	}
+	return rayIntersectBox(size.y, size.x, relativeAngle);
 }
 
 void Bone::draw(RenderContext& ctx) {
