@@ -25,15 +25,15 @@ public:
 	static World* getInstance();
 	virtual ~World();
 
-	b2Body* getBodyAtPos(glm::vec2 pos);
-	void getObjectsInBox(AlignedBox box, std::vector<WorldObject*> &outVec);
+	b2Body* getBodyAtPos(glm::vec2 pos) override;
+	void getObjectsInBox(glm::vec2 bottomLeft, glm::vec2 topRight, std::vector<WorldObject*> &outVec) override;
 
 	/// Called for each fixture found in the query AABB.
 	/// @return false to terminate the query.
-	virtual bool ReportFixture(b2Fixture* fixture);
+	bool ReportFixture(b2Fixture* fixture) override;
 
-	void addObject(WorldObject* obj);
-	void removeObject(WorldObject* obj);
+	void addObject(WorldObject* obj) override;
+	void removeObject(WorldObject* obj) override;
 
 	void setPhysics(b2World* physWld);
 	b2World* getPhysics() { return physWld; }

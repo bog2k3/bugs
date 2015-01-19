@@ -54,10 +54,10 @@ b2Body* World::getBodyAtPos(glm::vec2 pos) {
 	b2QueryResult.clear();	// reset
 	return ret;
 }
-void World::getObjectsInBox(AlignedBox box, std::vector<WorldObject*> &outVec) {
+void World::getObjectsInBox(glm::vec2 bottomLeft, glm::vec2 topRight, std::vector<WorldObject*> &outVec) {
 	b2AABB aabb;
-	aabb.lowerBound = g2b(box.bottomLeft);
-	aabb.upperBound = g2b(box.topRight);
+	aabb.lowerBound = g2b(bottomLeft);
+	aabb.upperBound = g2b(topRight);
 	physWld->QueryAABB(this, aabb);
 	while (!b2QueryResult.empty()) {
 		outVec.push_back((WorldObject*)b2QueryResult.back()->GetBody()->GetUserData());

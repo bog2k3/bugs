@@ -6,6 +6,8 @@
  */
 
 #include "Mouth.h"
+#include "BodyConst.h"
+#include "../../math/math2D.h"
 
 Mouth::Mouth(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_MOUTH, std::make_shared<BodyPartInitializationData>())
@@ -23,8 +25,8 @@ glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) const {
 	if (!committed_) {
 		float size = getInitializationData()->size;
 		float width = sqrtf(size / BodyConst::MouthAspectRatio);
-		float height = BodyConst::MouthAspectRatio * width;
-		return rayIntersectBox(width, height, relativeAngle);
+		float length = BodyConst::MouthAspectRatio * width;
+		return rayIntersectBox(width, length, relativeAngle);
 	}
 	return glm::vec2(0);
 }

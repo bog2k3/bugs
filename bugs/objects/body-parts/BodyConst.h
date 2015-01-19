@@ -30,16 +30,17 @@ public:
 	static constexpr float FatEnergyDensityInv				= 1.f / FatEnergyDensity;	// [kg/J]
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
 	static constexpr float MuscleEnergyConstant				= 10.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
+	static constexpr float MouthAspectRatio					= 0.15f;		// [*] length/width
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
 	static constexpr float initialBodyPartDensity			= 10.f;			// [kg/m^2]
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
-	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]
+	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.9f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
-	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]
+	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialJointSize					= 0.8e-4f;		// [m^2]
 
 	// default values for whole-body attributes:
