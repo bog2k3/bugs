@@ -95,7 +95,7 @@ void Torso::consumeEnergy(float amount) {
 #warning "optimization: have a ready-to-use energy buffer instead of using fat all the time. use fat to replenish buffer. food replenishes buffer too."
 }
 
-template<> void update(Torso* &t, float dt) {
+template<> void update(Torso* t, float dt) {
 	t->update(dt);
 }
 

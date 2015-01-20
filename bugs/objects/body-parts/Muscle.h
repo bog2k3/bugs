@@ -61,6 +61,6 @@ protected:
 	void commit() override;
 };
 
-template<> void update(Muscle* &m, float dt);
+template<> void update(Muscle* m, float dt);
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

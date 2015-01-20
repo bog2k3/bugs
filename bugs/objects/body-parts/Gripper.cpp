@@ -54,7 +54,7 @@ void Gripper::commit() {
 	body_->CreateFixture(&fdef);
 }
 
-template<> void update(Gripper* &g, float dt) {
+template<> void update(Gripper* g, float dt) {
 	g->update(dt);
 }
 
@@ -105,4 +105,3 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 void Gripper::die() {
 	setActive(false);
 }
-

@@ -13,7 +13,7 @@ LifetimeSensor::LifetimeSensor()
 	, socket(std::make_shared<OutputSocket>()) {
 }
 
-template<> void update(LifetimeSensor* const &s, float dt) {
+template<> void update(LifetimeSensor* s, float dt) {
 	s->update(dt);
 }
 

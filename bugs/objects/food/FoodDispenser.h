@@ -10,27 +10,31 @@
 
 #include "../WorldObject.h"
 #include "../../updatable.h"
+#include "../../Event.h"
+#include "../../UpdateList.h"
 
 class FoodDispenser: public WorldObject {
 public:
 	FoodDispenser(glm::vec2 position, float direction);
 	virtual ~FoodDispenser();
 
-	void draw(RenderContext& ctx) override;
+	Event<void(FoodDispenser*)> onDestroy;
 
+	void draw(RenderContext& ctx) override;
 	void update(float dt);
 
 protected:
+	float radius_;
 	glm::vec2 position_;
 	float direction_;
 	float period_;
 	float timer_;
-	glm::vec2 spawnPosition_;
-	glm::vec2 spawnDirection_;
 	float spawnVelocity_;
 	float spawnMass_;
+
+	UpdateList updateList_;
 };
 
-template<> void update(FoodDispenser*& disp, float dt);
+template<> void update(FoodDispenser* disp, float dt);
 
 #endif /* OBJECTS_FOOD_FOODDISPENSER_H_ */

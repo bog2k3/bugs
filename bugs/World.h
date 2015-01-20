@@ -20,7 +20,7 @@
 class b2World;
 class b2Body;
 
-class World : public IOperationSpatialLocator, public IWorldManager, public b2QueryCallback {
+class World : public IOperationSpatialLocator, protected IWorldManager, public b2QueryCallback {
 public:
 	static World* getInstance();
 	virtual ~World();
@@ -32,9 +32,6 @@ public:
 	/// @return false to terminate the query.
 	bool ReportFixture(b2Fixture* fixture) override;
 
-	void addObject(WorldObject* obj) override;
-	void removeObject(WorldObject* obj) override;
-
 	void setPhysics(b2World* physWld);
 	b2World* getPhysics() { return physWld; }
 	b2Body* getGroundBody() { return groundBody; }
@@ -44,9 +41,12 @@ protected:
 	b2World* physWld;
 	b2Body* groundBody;
 	std::vector<WorldObject*> objects;
-
 	std::deque<b2Fixture*> b2QueryResult;
 
+	void addObject(WorldObject* obj) override;
+	void removeObject(WorldObject* obj) override;
+
+	friend class WorldObject;
 	friend void draw<World*>(World*& wld, RenderContext& ctx);
 };
 

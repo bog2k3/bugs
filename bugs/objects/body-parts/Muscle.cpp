@@ -247,7 +247,7 @@ float Muscle::getCurrentPhiSlice() {
 	return iAngleSlice + angleSlice;
 }
 
-template<> void update(Muscle* &m, float dt) {
+template<> void update(Muscle* m, float dt) {
 	m->update(dt);
 }
 

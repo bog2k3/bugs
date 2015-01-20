@@ -3,8 +3,8 @@
 #include "IOperation.h"
 #include <assert.h>
 
-OperationsStack::OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, IWorldManager* wldManager, b2World* physics)
-	: m_context(new OperationContext(pViewport, this, locator, wldManager, physics))
+OperationsStack::OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, b2World* physics)
+	: m_context(new OperationContext(pViewport, this, locator, physics))
 	, m_stack()
 {
 }

@@ -9,15 +9,36 @@
 #define UPDATABLE_H_
 
 #include <memory>
+#include "Event.h"
+
+template<typename T> class Event;
 
 template <typename T>
-void update(T &t, float dt);
+void update(T *t, float dt);
+
+template <typename T>
+void setOnDestroyCallback(T* t, std::function<void(T*)> callback);
 
 class updatable_wrap {
 public:
 	template<typename T>
-	updatable_wrap(T t)
+	decltype(T::onDestroy)* subscribe(T* t) {
+		subscriptionId = t->onDestroy.add([this](T* t) {
+			onDestroy.trigger(this);
+		});
+		return nullptr;
+	}
+	void subscribe(...) {
+	}
+
+	template<typename T>
+	updatable_wrap(T* t)
 		: self_(new model_t<T>(t)) {
+		subscribe(t);
+	}
+
+	~updatable_wrap() {
+		must unsubscribe...
 	}
 
 	updatable_wrap(const updatable_wrap& w) : self_(w.self_->copy()) {}
@@ -32,17 +53,21 @@ public:
 		self_->update_(dt);
 	}
 
+	Event<void(updatable_wrap*)> onDestroy;
+	int subscriptionId;
+
 private:
 	struct concept_t {
-		virtual ~concept_t() = default;
+		virtual ~concept_t() noexcept = default;
 		virtual void update_(float dt) = 0;
 		virtual concept_t* copy()=0;
 		virtual bool equal_value(const concept_t* x) const = 0;
 	};
 	template<typename T>
 	struct model_t : concept_t {
-		T data_;
-		model_t(T x) : data_(std::move(x)) {}
+		T* data_;
+		~model_t() noexcept override {};
+		model_t(T* x) : data_(x) {}
 		void update_(float dt) override {
 			::update(data_, dt);
 		}

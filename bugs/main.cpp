@@ -4,6 +4,7 @@
 #include "renderOpenGL/Shape2D.h"
 #include "renderOpenGL/Renderer.h"
 #include "renderOpenGL/Viewport.h"
+#include "renderOpenGL/GLText.h"
 #include "input/GLFWInput.h"
 #include "input/InputEvent.h"
 #include "input/operations/OperationsStack.h"
@@ -11,6 +12,7 @@
 #include "input/operations/OperationSpring.h"
 #include "objects/body-parts/Bone.h"
 #include "objects/body-parts/Joint.h"
+#include "objects/food/FoodDispenser.h"
 #include "World.h"
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
@@ -24,7 +26,7 @@
 #include <Box2D/Box2D.h>
 
 #include <sstream>
-#include "renderOpenGL/GLText.h"
+#include <functional>
 
 template<> void draw(b2World*& wld, RenderContext &ctx) {
 	wld->DrawDebugData();
@@ -64,57 +66,26 @@ int main() {
 
 	World::getInstance()->setPhysics(&physWld);
 
-	OperationsStack opStack(&vp1, World::getInstance(), World::getInstance(), &physWld);
+	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 	GLFWInput::initialize(gltGetWindow());
 	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	/*
-	 * joint motor test:
-	 *
-	b2BodyDef bdef;
-	bdef.angularDamping = bdef.linearDamping = 0.4f;
-	bdef.type = b2_dynamicBody;
-	bdef.position.Set(-1.f, 0.f);
-	b2Body* b1 = physWld.CreateBody(&bdef);
-	bdef.position.Set(+0.5f, 0.f);
-	//bdef.angle = PI/2;
-	b2Body* b2 = physWld.CreateBody(&bdef);
-
-	b2FixtureDef fdef;
-	fdef.density = 1.f;
-	fdef.restitution = 0.6f;
-	b2PolygonShape shp;
-	shp.SetAsBox(0.9f, 0.2f);
-	fdef.shape = &shp;
-	b1->CreateFixture(&fdef);
-	shp.SetAsBox(0.2f, 1.9f);
-	b2->CreateFixture(&fdef);
-
-	b2RevoluteJointDef jdef;
-	jdef.Initialize(b1, b2, b2Vec2(0, 0));
-	jdef.enableMotor = true;
-	jdef.maxMotorTorque = 0.5f;
-	jdef.motorSpeed = PI/2;
-	b2RevoluteJoint* j = (b2RevoluteJoint*)physWld.CreateJoint(&jdef);
-
-	float phi = j->GetJointAngle();
-	float e = 0;
-	statsHdr();
-	stats(0, phi, 0, 0, e);
-	//*/
+	UpdateList updateList;
 
 	Bug* b1 = Bug::newBasicBug(glm::vec2(0, 0));
-	Bug* b2 = Bug::newBasicBug(glm::vec2(0.4f, 0));
-	Bug* b3 = Bug::newBasicBug(glm::vec2(-0.4f, 0));
-	Bug* b4 = Bug::newBasicBug(glm::vec2(0, 0.4f));
-
-	UpdateList updateList;
 	updateList.add(b1);
+	Bug* b2 = Bug::newBasicBug(glm::vec2(0.4f, 0));
 	updateList.add(b2);
+	Bug* b3 = Bug::newBasicBug(glm::vec2(-0.4f, 0));
 	updateList.add(b3);
+	Bug* b4 = Bug::newBasicBug(glm::vec2(0, 0.4f));
 	updateList.add(b4);
+	FoodDispenser* foodDisp1 = new FoodDispenser(glm::vec2(-1, 0.5f), 0);
+	updateList.add(foodDisp1);
+	FoodDispenser* foodDisp2 = new FoodDispenser(glm::vec2(+1, -0.5f), 0);
+	updateList.add(foodDisp2);
 
 	DrawList drawList;
 	drawList.add(World::getInstance());
@@ -134,15 +105,6 @@ int main() {
 		}
 		// wait until previous frame finishes rendering and show frame output:
 		gltEnd();
-
-		/*float lastPhi = phi;
-		phi = j->GetJointAngle();
-		float omega = (phi - lastPhi) / dt;
-		float tau = j->GetMotorTorque(1.f/dt);
-		e += tau * (phi-lastPhi);
-		stats(t, phi, omega, tau, e);
-		*/
-
 		// draw builds the render queue for the current frame
 		drawList.draw(renderContext);
 

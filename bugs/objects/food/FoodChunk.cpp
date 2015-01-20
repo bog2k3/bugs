@@ -13,6 +13,7 @@
 FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass)
 	: size_(mass * WorldConst::FoodChunkDensityInv)
 	, amountLeft_(mass)
+	, lifeTime_(0)
 {
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
 	createPhysicsBody(props);
@@ -30,8 +31,19 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 
 FoodChunk::~FoodChunk() {
 	body_->DestroyFixture(&body_->GetFixtureList()[0]);
+	onDestroy.trigger(this);
 }
 
 void FoodChunk::draw(RenderContext& ctx) {
 	// TODO put a sign of amountLeft on it
+}
+
+template<> void update(FoodChunk* f, float dt) {
+	f->update(dt);
+}
+
+void FoodChunk::update(float dt) {
+	lifeTime_ += dt;
+	if (lifeTime_ >= WorldConst::FoodChunkLifeTime)
+		delete this;
 }

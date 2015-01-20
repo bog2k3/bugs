@@ -9,6 +9,8 @@
 #define OBJECTS_FOOD_FOODCHUNK_H_
 
 #include "../WorldObject.h"
+#include "../../updatable.h"
+#include "../../Event.h"
 
 class FoodChunk: public WorldObject {
 public:
@@ -16,10 +18,16 @@ public:
 	virtual ~FoodChunk() override;
 
 	void draw(RenderContext& ctx) override;
+	void update(float dt);
+
+	Event<void(FoodChunk*)> onDestroy;
 
 protected:
 	float size_;
 	float amountLeft_;
+	float lifeTime_;
 };
+
+template<> void update(FoodChunk* f, float dt);
 
 #endif /* OBJECTS_FOOD_FOODCHUNK_H_ */

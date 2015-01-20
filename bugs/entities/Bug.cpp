@@ -59,7 +59,7 @@ Bug::~Bug() {
 		delete ribosome_;
 }
 
-template<> void update(Bug*& b, float dt) {
+template<> void update(Bug* b, float dt) {
 	b->update(dt);
 }
 

@@ -174,7 +174,7 @@ void Joint::addTorque(float t, float maxSpeed) {
 	vecTorques.push_back(std::make_pair(t, maxSpeed));
 }
 
-template<> void update(Joint*& j, float dt) {
+template<> void update(Joint* j, float dt) {
 	j->update(dt);
 }
 
