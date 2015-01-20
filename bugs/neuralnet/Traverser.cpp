@@ -14,7 +14,7 @@ Traverser::Traverser(NeuralNet* pNet)
 	, pNetwork(pNet)
 	, finished(false)
 {
-#pragma message("WARNING : traversals must be exclusive due to Neuron's RID being shared by all contexts. Must use common mutex on constructor")
+#warning "traversals must be exclusive due to Neuron's RID being shared by all contexts. Must use common mutex on constructor"
 	assert(pNetwork != NULL);
 }
 

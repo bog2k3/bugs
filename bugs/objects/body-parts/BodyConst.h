@@ -31,7 +31,7 @@ public:
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
 	static constexpr float MuscleEnergyConstant				= 10.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
 	static constexpr float MouthAspectRatio					= 0.15f;		// [*] length/width
-	static constexpr float MouthDensity						= 0.8f;			// [kg/m^2]
+	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]

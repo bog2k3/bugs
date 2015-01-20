@@ -33,6 +33,9 @@ Bone::Bone(BodyPart* parent)
 }
 
 Bone::~Bone() {
+	if (committed_) {
+		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+	}
 }
 
 void Bone::commit() {
