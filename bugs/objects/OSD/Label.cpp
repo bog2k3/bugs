@@ -1,3 +1,4 @@
+#if (0)
 #include "Label.h"
 
 Label::Label(wstring text, D3DCOLOR color)
@@ -70,3 +71,4 @@ void Label::setText( wstring text )
 {
 	m_text = text;
 }
+#endif

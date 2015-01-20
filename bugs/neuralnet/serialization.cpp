@@ -1,3 +1,4 @@
+#if (0)
 #include "serialization.h"
 #include <fstream>
 
@@ -108,3 +109,5 @@ bool Serialization::loadGenome(std::string filename, Genome &outGenome)
 	}
 	return true;
 }
+
+#endif

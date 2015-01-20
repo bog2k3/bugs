@@ -1,3 +1,4 @@
+#if(0)
 #include "stdafx.h"
 #include "BSPTree.h"
 #include "utils/ThreadSlotDispatcher.h"
@@ -121,3 +122,4 @@ namespace lifeApplication
 		delete poolWorldObjVectors;
 	}
 }
+#endif
