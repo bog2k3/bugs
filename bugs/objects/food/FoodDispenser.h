@@ -19,6 +19,15 @@ public:
 	void draw(RenderContext& ctx) override;
 
 	void update(float dt);
+
+protected:
+	float direction_;
+	float period_;
+	float timer_;
+	glm::vec2 spawnPosition_;
+	glm::vec2 spawnDirection_;
+	float spawnVelocity_;
+	float spawnMass_;
 };
 
 template<> void update(FoodDispenser*& disp, float dt);
