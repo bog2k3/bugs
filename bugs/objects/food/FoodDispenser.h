@@ -21,6 +21,7 @@ public:
 	void update(float dt);
 
 protected:
+	glm::vec2 position_;
 	float direction_;
 	float period_;
 	float timer_;
