@@ -59,10 +59,6 @@ Bug::~Bug() {
 		delete ribosome_;
 }
 
-template<> void update(Bug* b, float dt) {
-	b->update(dt);
-}
-
 void Bug::updateEmbryonicDevelopment(float dt) {
 	// developing embryo
 	tRibosomeStep_ += dt;

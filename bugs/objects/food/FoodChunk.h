@@ -28,6 +28,4 @@ protected:
 	float lifeTime_;
 };
 
-template<> void update(FoodChunk* f, float dt);
-
 #endif /* OBJECTS_FOOD_FOODCHUNK_H_ */

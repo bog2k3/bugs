@@ -65,6 +65,4 @@ protected:
 	void updateDeadDecaying(float dt);
 };
 
-template<> void update(Bug* b, float dt);
-
 #endif /* ENTITIES_BUG_H_ */

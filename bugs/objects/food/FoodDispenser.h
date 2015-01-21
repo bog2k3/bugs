@@ -35,6 +35,4 @@ protected:
 	UpdateList updateList_;
 };
 
-template<> void update(FoodDispenser* disp, float dt);
-
 #endif /* OBJECTS_FOOD_FOODDISPENSER_H_ */

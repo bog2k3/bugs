@@ -8,22 +8,31 @@
 #include "UpdateList.h"
 #include "Event.h"
 
-template <> void update(UpdateList* l, float dt) {
-	l->update(dt);
+UpdateList::~UpdateList() {
+	// remove subscriptions from all objects in order to save them from crashing:
+	for (auto pair : mapObjToRemoveSubscriptionCB) {
+		pair.second();
+	}
 }
 
-void UpdateList::add(updatable_wrap &&w) {
-	w.onDestroy.add(std::bind(&UpdateList::remove, this, w));
-	list_.push_back(std::move(w));
-}
-
-void UpdateList::remove(updatable_wrap w) {
-	list_.erase(std::remove_if(list_.begin(), list_.end(), [&w] (const updatable_wrap& x) {
-		return x.equal_value(w);
-	}), list_.end());
+void UpdateList::remove(void* obj) {
+	vToRemote_.push_back(obj);
 }
 
 void UpdateList::update(float dt) {
+	int preSize = list_.size();
+	// remove pending elements:
+	for (void* obj : vToRemote_) {
+		list_.erase(std::remove_if(list_.begin(), list_.end(), [obj] (const updatable_wrap& x) {
+			if (x.equals(obj))
+				LOGLN("found in list: " << obj);
+			return x.equals(obj);
+		}), list_.end());
+	}
+	if ((int)list_.size() != preSize)
+		LOGLN("list size changed by " << (int)list_.size() - preSize);
+	vToRemote_.clear();
+	// do update :
 	for (auto &w : list_)
 		w.update(dt);
 }

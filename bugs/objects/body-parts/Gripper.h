@@ -38,6 +38,4 @@ protected:
 	void die() override;
 };
 
-template<> void update(Gripper*, float dt);
-
 #endif /* OBJECTS_BODY_PARTS_GRIPPER_H_ */

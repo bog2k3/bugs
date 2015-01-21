@@ -36,6 +36,4 @@ protected:
 	void die() override;
 };
 
-template<> void update(Torso* t, float dt);
-
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */

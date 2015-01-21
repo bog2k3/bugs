@@ -55,6 +55,4 @@ protected:
 	void die() override;
 };
 
-template<> void update(Joint* j, float dt);
-
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

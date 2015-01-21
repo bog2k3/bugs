@@ -85,7 +85,7 @@ int main() {
 	FoodDispenser* foodDisp1 = new FoodDispenser(glm::vec2(-1, 0.5f), 0);
 	updateList.add(foodDisp1);
 	FoodDispenser* foodDisp2 = new FoodDispenser(glm::vec2(+1, -0.5f), 0);
-	updateList.add(foodDisp2);
+	//updateList.add(foodDisp2);
 
 	DrawList drawList;
 	drawList.add(World::getInstance());

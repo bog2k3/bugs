@@ -54,10 +54,6 @@ void Gripper::commit() {
 	body_->CreateFixture(&fdef);
 }
 
-template<> void update(Gripper* g, float dt) {
-	g->update(dt);
-}
-
 void Gripper::update(float dt) {
 	float intensity = inputSocket_->value;
 	setActive(intensity > 0.5f);

@@ -24,6 +24,4 @@ protected:
 	std::shared_ptr<OutputSocket> socket;
 };
 
-template<> void update(LifetimeSensor* s, float dt);
-
 #endif /* ENTITIES_LIFETIMESENSOR_H_ */

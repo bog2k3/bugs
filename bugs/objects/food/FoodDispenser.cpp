@@ -41,10 +41,6 @@ void FoodDispenser::draw(RenderContext& ctx) {
 
 }
 
-template<> void update(FoodDispenser* disp, float dt) {
-	disp->update(dt);
-}
-
 void FoodDispenser::update(float dt) {
 	timer_ += dt;
 	updateList_.update(dt);
