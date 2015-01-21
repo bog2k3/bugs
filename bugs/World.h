@@ -10,7 +10,6 @@
 
 #include "objects/WorldObject.h"
 #include "input/operations/IOperationSpatialLocator.h"
-#include "input/IWorldManager.h"
 #include "renderOpenGL/RenderContext.h"
 #include "drawable.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
@@ -20,7 +19,7 @@
 class b2World;
 class b2Body;
 
-class World : public IOperationSpatialLocator, protected IWorldManager, public b2QueryCallback {
+class World : public IOperationSpatialLocator, public b2QueryCallback {
 public:
 	static World* getInstance();
 	virtual ~World();
@@ -36,15 +35,47 @@ public:
 	b2World* getPhysics() { return physWld; }
 	b2Body* getGroundBody() { return groundBody; }
 
+	// Factory methods:
+	template<typename T, typename TP1>
+	std::shared_ptr<T> createObject(TP1 const &p1) {
+		auto ptr = std::make_shared<T>(p1);
+		addObject(ptr);
+		return ptr;
+	}
+	template<typename T, typename TP1, typename TP2>
+	std::shared_ptr<T> createObject(TP1 const &p1, TP2 const &p2) {
+		auto ptr = std::make_shared<T>(p1, p2);
+		addObject(ptr);
+		return ptr;
+	}
+	template<typename T, typename TP1, typename TP2, typename TP3>
+	std::shared_ptr<T> createObject(TP1 &p1, TP2 &p2, TP3 &p3) {
+		auto ptr = std::make_shared<T>(p1, p2, p3);
+		addObject(ptr);
+		return ptr;
+	}
+	template<typename T, typename TP1, typename TP2, typename TP3, typename TP4>
+	std::shared_ptr<T> createObject(TP1 &p1, TP2 &p2, TP3 &p3, TP4 &p4) {
+		auto ptr = std::make_shared<T>(p1, p2, p3, p4);
+		addObject(ptr);
+		return ptr;
+	}
+	template<typename T, typename TP1, typename TP2, typename TP3, typename TP4, typename TP5>
+	std::shared_ptr<T> createObject(TP1 const &p1, TP2 const &p2, TP3 const &p3, TP4 const &p4, TP5 const &p5) {
+		auto ptr = std::make_shared<T>(p1, p2, p3, p4, p5);
+		addObject(ptr);
+		return ptr;
+	}
+
 protected:
 	World();
 	b2World* physWld;
 	b2Body* groundBody;
-	std::vector<WorldObject*> objects;
+	std::vector<std::shared_ptr<WorldObject>> objects;
 	std::deque<b2Fixture*> b2QueryResult;
 
-	void addObject(WorldObject* obj) override;
-	void removeObject(WorldObject* obj) override;
+	void addObject(std::shared_ptr<WorldObject> obj);
+	void removeObject(std::shared_ptr<WorldObject> obj);
 
 	friend class WorldObject;
 	friend void draw<World*>(World*& wld, RenderContext& ctx);

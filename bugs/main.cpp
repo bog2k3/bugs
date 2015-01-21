@@ -74,18 +74,18 @@ int main() {
 
 	UpdateList updateList;
 
-	Bug* b1 = Bug::newBasicBug(glm::vec2(0, 0));
-	updateList.add(b1);
-	Bug* b2 = Bug::newBasicBug(glm::vec2(0.4f, 0));
-	updateList.add(b2);
-	Bug* b3 = Bug::newBasicBug(glm::vec2(-0.4f, 0));
-	updateList.add(b3);
-	Bug* b4 = Bug::newBasicBug(glm::vec2(0, 0.4f));
-	updateList.add(b4);
-	FoodDispenser* foodDisp1 = new FoodDispenser(glm::vec2(-1, 0.5f), 0);
-	updateList.add(foodDisp1);
-	FoodDispenser* foodDisp2 = new FoodDispenser(glm::vec2(+1, -0.5f), 0);
-	//updateList.add(foodDisp2);
+	std::shared_ptr<Bug> b1(Bug::newBasicBug(glm::vec2(0, 0)));
+	updateList.add(std::weak_ptr<Bug>(b1));
+	std::shared_ptr<Bug> b2(Bug::newBasicBug(glm::vec2(0.4f, 0)));
+	updateList.add(std::weak_ptr<Bug>(b2));
+	std::shared_ptr<Bug> b3(Bug::newBasicBug(glm::vec2(-0.4f, 0)));
+	updateList.add(std::weak_ptr<Bug>(b3));
+	std::shared_ptr<Bug> b4(Bug::newBasicBug(glm::vec2(0, 0.4f)));
+	updateList.add(std::weak_ptr<Bug>(b4));
+	std::shared_ptr<FoodDispenser> foodDisp1(World::getInstance()->createObject<FoodDispenser>(glm::vec2(-1, 0.5f), 0));
+	updateList.add(std::weak_ptr<FoodDispenser>(foodDisp1));
+	std::shared_ptr<FoodDispenser> foodDisp2(World::getInstance()->createObject<FoodDispenser>(glm::vec2(+1, -0.5f), 0));
+	//updateList.add(std::weak_ptr<FoodDispenser>(foodDisp2));
 
 	DrawList drawList;
 	drawList.add(World::getInstance());

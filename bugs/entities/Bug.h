@@ -10,7 +10,6 @@
 
 #include "../genetics/Genome.h"
 #include "../genetics/GeneDefinitions.h"
-#include "../updatable.h"
 #include "../UpdateList.h"
 #include "../genetics/CummulativeValue.h"
 #include "LifetimeSensor.h"

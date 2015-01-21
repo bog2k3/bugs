@@ -9,7 +9,6 @@
 #define OBJECTS_BODY_PARTS_TORSO_H_
 
 #include "BodyPart.h"
-#include "../../updatable.h"
 
 #define DEBUG_DRAW_TORSO
 

@@ -13,16 +13,15 @@
 class updatable_wrap {
 public:
 	template<typename T>
-	updatable_wrap(T* t)
+	updatable_wrap(std::weak_ptr<T> t)
 		: self_(new model_t<T>(t)) {
 	}
 
 	updatable_wrap(const updatable_wrap& w) : self_(w.self_->copy()) {}
-	/*updatable_wrap(updatable_wrap &&w) : self_(std::move(w.self_)) {}*/
-	updatable_wrap operator = (updatable_wrap &&w) { return updatable_wrap(w); }
+	updatable_wrap operator = (updatable_wrap const &w) { return updatable_wrap(w); }
 
-	bool equals(void* obj) const {
-		return self_->equals(obj);
+	bool isAlive() {
+		return self_->isAlive();
 	}
 
 	void update(float dt) {
@@ -34,21 +33,22 @@ private:
 		virtual ~concept_t() noexcept = default;
 		virtual void update_(float dt) = 0;
 		virtual concept_t* copy()=0;
-		virtual bool equals(void* x) const = 0;
+		virtual bool isAlive() const = 0;
 	};
 	template<typename T>
 	struct model_t : concept_t {
-		T* obj_;
+		std::weak_ptr<T> obj_;
 		~model_t() noexcept override {};
-		model_t(T* x) : obj_(x) {}
+		model_t(std::weak_ptr<T> x) : obj_(x) {}
 		void update_(float dt) override {
-			obj_->update(dt);
+			if (auto sptr = obj_.lock())
+				sptr->update(dt);
 		}
 		concept_t* copy() override {
 			return new model_t<T>(obj_);
 		}
-		bool equals(void* x) const override {
-			return (void*)obj_ == x;
+		bool isAlive() const override {
+			return !obj_.expired();
 		}
 	};
 

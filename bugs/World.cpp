@@ -71,14 +71,14 @@ template<> void draw(World*& wld, RenderContext& ctx) {
 	}
 }
 
-void World::addObject(WorldObject* obj) {
+void World::addObject(std::shared_ptr<WorldObject> obj) {
 	objects.push_back(obj);
 }
 
-void World::removeObject(WorldObject* obj) {
+void World::removeObject(std::shared_ptr<WorldObject> obj) {
 	objects.erase(
-			std::remove_if(objects.begin(), objects.end(),
-					[obj] (WorldObject* const & x) { return x == obj; }),
-			objects.end()
-		);
+		std::remove_if(objects.begin(), objects.end(),
+			[obj] (std::shared_ptr<WorldObject> & x) { return x == obj; }),
+		objects.end()
+	);
 }

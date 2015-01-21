@@ -28,12 +28,11 @@ Gripper::Gripper(BodyPart* parent)
 {
 	getInitializationData()->density.reset(BodyConst::GripperDensity);
 
-	getUpdateList()->add(this);
+	getUpdateList()->add(weakThis<Gripper>());
 }
 
 Gripper::~Gripper() {
 	setActive(false);
-	getUpdateList()->remove(this);
 }
 
 void Gripper::commit() {

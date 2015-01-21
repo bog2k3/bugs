@@ -51,6 +51,7 @@ void FoodDispenser::update(float dt) {
 		float randomAngle = srandf() * WorldConst::FoodDispenserSpreadAngleHalf;
 		offset = glm::rotate(offset, direction_ + randomAngle);
 		glm::vec2 velocity = glm::normalize(offset) * spawnVelocity_;
-		updateList_.add(new FoodChunk(position_ + offset, direction_+randomAngle, velocity, 0, spawnMass_));
+		auto chunkptr = World::getInstance()->createObject<FoodChunk>(position_ + offset, direction_+randomAngle, velocity, 0, spawnMass_);
+		updateList_.add(std::weak_ptr<FoodChunk>(chunkptr));
 	}
 }

@@ -9,13 +9,11 @@
 #define OBJECTS_FOOD_FOODDISPENSER_H_
 
 #include "../WorldObject.h"
-#include "../../updatable.h"
 #include "../../Event.h"
 #include "../../UpdateList.h"
 
 class FoodDispenser: public WorldObject {
 public:
-	FoodDispenser(glm::vec2 position, float direction);
 	virtual ~FoodDispenser();
 
 	Event<void(FoodDispenser*)> onDestroy;
@@ -24,6 +22,10 @@ public:
 	void update(float dt);
 
 protected:
+	FoodDispenser(glm::vec2 position, float direction);
+	friend class World;
+	friend shared_ptr<FoodDispenser> std::make_shared(...);
+
 	float radius_;
 	glm::vec2 position_;
 	float direction_;

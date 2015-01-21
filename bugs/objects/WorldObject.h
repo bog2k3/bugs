@@ -9,6 +9,7 @@
 #define OBJECTS_WORLDOBJECT_H_
 
 #include <glm/vec2.hpp>
+#include <memory>
 
 // render classes:
 class RenderContext;
@@ -35,7 +36,7 @@ struct PhysicsProperties {
 	PhysicsProperties(const PhysicsProperties& o) = default;
 };
 
-class WorldObject {
+class WorldObject : public std::enable_shared_from_this<WorldObject> {
 public:
 	virtual ~WorldObject();
 	// creates a new world object.
@@ -48,6 +49,14 @@ public:
 	void createPhysicsBody(PhysicsProperties const &props);
 
 	b2Body* getBody() { return body_; }
+
+	// removes this object from the world and destroys it
+	void destroy();
+
+	template<typename T>
+	std::weak_ptr<T> weakThis() {
+		return std::weak_ptr<T>(std::dynamic_pointer_cast<T>(shared_from_this()));
+	}
 
 protected:
 	b2Body* body_;

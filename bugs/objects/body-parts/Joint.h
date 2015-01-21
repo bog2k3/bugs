@@ -8,9 +8,9 @@
 #ifndef OBJECTS_BODY_PARTS_JOINT_H_
 #define OBJECTS_BODY_PARTS_JOINT_H_
 
-#include <glm/fwd.hpp>
 #include "BodyPart.h"
-#include "../../updatable.h"
+#include <glm/fwd.hpp>
+#include <memory>
 
 #define DEBUG_DRAW_JOINT
 

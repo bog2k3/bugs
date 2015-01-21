@@ -9,7 +9,6 @@
 #define ENTITIES_LIFETIMESENSOR_H_
 
 #include "ISensor.h"
-#include "../updatable.h"
 
 class LifetimeSensor: public ISensor {
 public:

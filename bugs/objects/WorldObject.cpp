@@ -17,13 +17,15 @@
 WorldObject::WorldObject()
 	: body_(nullptr)
 {
-	World::getInstance()->addObject(this);
 }
 
 WorldObject::~WorldObject() {
-	World::getInstance()->removeObject(this);
 	if (body_)
 		body_->GetWorld()->DestroyBody(body_);
+}
+
+void WorldObject::destroy() {
+	World::getInstance()->removeObject(shared_from_this());
 }
 
 void WorldObject::createPhysicsBody(PhysicsProperties const &props) {

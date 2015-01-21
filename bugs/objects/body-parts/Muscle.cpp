@@ -76,11 +76,10 @@ Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
 
-	getUpdateList()->add(this);
+	getUpdateList()->add(weakThis<Muscle>());
 }
 
 Muscle::~Muscle() {
-	getUpdateList()->remove(this);
 }
 
 void Muscle::commit() {

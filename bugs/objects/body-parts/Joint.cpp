@@ -37,15 +37,14 @@ Joint::Joint(BodyPart* parent)
 	registerAttribute(GENE_ATTRIB_JOINT_HIGH_LIMIT, initData->phiMax);
 	registerAttribute(GENE_ATTRIB_JOINT_RESET_TORQUE, initData->resetTorque);
 
-	getUpdateList()->add(this);
+	getUpdateList()->add(weakThis<Joint>());
 }
 
 Joint::~Joint() {
-	// delete joint
-	//...
-
-	getUpdateList()->remove(this);
-}
+	if (committed_) {
+		physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
+		physJoint_ = nullptr;
+	}}
 
 /**
  * if the angles are screwed, limit them to [-PI/9, 0] (low) and [0, +PI/9] (high)

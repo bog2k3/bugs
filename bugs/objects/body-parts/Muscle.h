@@ -10,7 +10,6 @@
 
 #include "BodyPart.h"
 #include "../../entities/IMotor.h"
-#include "../../updatable.h"
 
 #define DEBUG_DRAW_MUSCLE
 

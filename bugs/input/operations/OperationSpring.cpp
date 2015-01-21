@@ -9,7 +9,6 @@
 #include "OperationContext.h"
 #include "../../renderOpenGL/Viewport.h"
 #include "../InputEvent.h"
-#include "../IWorldManager.h"
 #include "IOperationSpatialLocator.h"
 #include "../../objects/WorldObject.h"
 #include "../../math/box2glm.h"

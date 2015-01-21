@@ -9,7 +9,6 @@
 #define OBJECTS_FOOD_FOODCHUNK_H_
 
 #include "../WorldObject.h"
-#include "../../updatable.h"
 #include "../../Event.h"
 
 class FoodChunk: public WorldObject {

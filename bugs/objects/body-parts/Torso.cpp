@@ -24,14 +24,13 @@ Torso::Torso(BodyPart* parent)
 	, lastCommittedTotalSizeInv_(0)
 	, frameUsedEnergy_(0)
 {
-	getUpdateList()->add(this);
+	getUpdateList()->add(weakThis<Torso>());
 }
 
 Torso::~Torso() {
 	if (committed_) {
 		body_->DestroyFixture(&body_->GetFixtureList()[0]);
 	}
-	getUpdateList()->remove(this);
 }
 
 void Torso::commit() {

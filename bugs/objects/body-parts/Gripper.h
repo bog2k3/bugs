@@ -10,7 +10,7 @@
 
 #include "BodyPart.h"
 #include "../../entities/IMotor.h"
-#include "../../updatable.h"
+#include <memory>
 
 class b2WeldJoint;
 
