@@ -24,7 +24,6 @@ public:
 protected:
 	FoodDispenser(glm::vec2 position, float direction);
 	friend class World;
-	friend shared_ptr<FoodDispenser> std::make_shared(...);
 
 	float radius_;
 	glm::vec2 position_;

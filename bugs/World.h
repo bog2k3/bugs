@@ -38,31 +38,31 @@ public:
 	// Factory methods:
 	template<typename T, typename TP1>
 	std::shared_ptr<T> createObject(TP1 const &p1) {
-		auto ptr = std::make_shared<T>(p1);
+		auto ptr = std::shared_ptr<T>(new T(p1));
 		addObject(ptr);
 		return ptr;
 	}
 	template<typename T, typename TP1, typename TP2>
 	std::shared_ptr<T> createObject(TP1 const &p1, TP2 const &p2) {
-		auto ptr = std::make_shared<T>(p1, p2);
+		auto ptr = std::shared_ptr<T>(new T(p1, p2));
 		addObject(ptr);
 		return ptr;
 	}
 	template<typename T, typename TP1, typename TP2, typename TP3>
 	std::shared_ptr<T> createObject(TP1 &p1, TP2 &p2, TP3 &p3) {
-		auto ptr = std::make_shared<T>(p1, p2, p3);
+		auto ptr = std::shared_ptr<T>(new T(p1, p2, p3));
 		addObject(ptr);
 		return ptr;
 	}
 	template<typename T, typename TP1, typename TP2, typename TP3, typename TP4>
 	std::shared_ptr<T> createObject(TP1 &p1, TP2 &p2, TP3 &p3, TP4 &p4) {
-		auto ptr = std::make_shared<T>(p1, p2, p3, p4);
+		auto ptr = std::shared_ptr<T>(new T(p1, p2, p3, p4));
 		addObject(ptr);
 		return ptr;
 	}
 	template<typename T, typename TP1, typename TP2, typename TP3, typename TP4, typename TP5>
 	std::shared_ptr<T> createObject(TP1 const &p1, TP2 const &p2, TP3 const &p3, TP4 const &p4, TP5 const &p5) {
-		auto ptr = std::make_shared<T>(p1, p2, p3, p4, p5);
+		auto ptr = std::shared_ptr<T>(new T(p1, p2, p3, p4, p5));
 		addObject(ptr);
 		return ptr;
 	}
