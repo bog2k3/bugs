@@ -6,8 +6,8 @@
  */
 
 #include "Bug.h"
-#include "IMotor.h"
-#include "ISensor.h"
+#include "bug_stuff/IMotor.h"
+#include "bug_stuff/ISensor.h"
 #include "../neuralnet/Network.h"
 #include "../genetics/Gene.h"
 #include "../genetics/GeneDefinitions.h"
@@ -380,3 +380,6 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	return new Bug(g, 0.08f, position);
 }
 
+void Bug::draw(RenderContext const &ctx) {
+	// TODO drawlist or draw_tree ?
+}

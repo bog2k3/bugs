@@ -24,18 +24,15 @@ Torso::Torso(BodyPart* parent)
 	, lastCommittedTotalSizeInv_(0)
 	, frameUsedEnergy_(0)
 {
-	getUpdateList()->add(weakThis<Torso>());
+	getUpdateList()->add(this);
 }
 
 Torso::~Torso() {
-	if (committed_) {
-		body_->DestroyFixture(&body_->GetFixtureList()[0]);
-	}
 }
 
 void Torso::commit() {
 	if (committed_) {
-		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 
 	size_ = getInitializationData()->size;
@@ -55,7 +52,7 @@ void Torso::commit() {
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
 
-	body_->CreateFixture(&fixDef);
+	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 
 void Torso::draw(RenderContext& ctx) {

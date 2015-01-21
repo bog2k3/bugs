@@ -12,7 +12,7 @@
 #include "input/operations/OperationSpring.h"
 #include "objects/body-parts/Bone.h"
 #include "objects/body-parts/Joint.h"
-#include "objects/food/FoodDispenser.h"
+#include "entities/food/FoodDispenser.h"
 #include "World.h"
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
@@ -74,18 +74,19 @@ int main() {
 
 	UpdateList updateList;
 
-	std::shared_ptr<Bug> b1(Bug::newBasicBug(glm::vec2(0, 0)));
-	updateList.add(std::weak_ptr<Bug>(b1));
-	std::shared_ptr<Bug> b2(Bug::newBasicBug(glm::vec2(0.4f, 0)));
-	updateList.add(std::weak_ptr<Bug>(b2));
-	std::shared_ptr<Bug> b3(Bug::newBasicBug(glm::vec2(-0.4f, 0)));
-	updateList.add(std::weak_ptr<Bug>(b3));
-	std::shared_ptr<Bug> b4(Bug::newBasicBug(glm::vec2(0, 0.4f)));
-	updateList.add(std::weak_ptr<Bug>(b4));
-	std::shared_ptr<FoodDispenser> foodDisp1(World::getInstance()->createObject<FoodDispenser>(glm::vec2(-1, 0.5f), 0));
-	updateList.add(std::weak_ptr<FoodDispenser>(foodDisp1));
-	std::shared_ptr<FoodDispenser> foodDisp2(World::getInstance()->createObject<FoodDispenser>(glm::vec2(+1, -0.5f), 0));
-	//updateList.add(std::weak_ptr<FoodDispenser>(foodDisp2));
+	Bug* b1(Bug::newBasicBug(glm::vec2(0, 0)));
+	World::getInstance()->takeOwnershipOf(b1);
+	Bug* b2(Bug::newBasicBug(glm::vec2(0.4f, 0)));
+	World::getInstance()->takeOwnershipOf(b2);
+	Bug* b3(Bug::newBasicBug(glm::vec2(-0.4f, 0)));
+	World::getInstance()->takeOwnershipOf(b3);
+	Bug* b4(Bug::newBasicBug(glm::vec2(0, 0.4f)));
+	World::getInstance()->takeOwnershipOf(b4);
+
+	FoodDispenser* foodDisp1(new FoodDispenser(glm::vec2(-1, 0.5f), 0));
+	World::getInstance()->takeOwnershipOf(foodDisp1);
+	FoodDispenser* foodDisp2(new FoodDispenser(glm::vec2(+1, -0.5f), 0));
+	World::getInstance()->takeOwnershipOf(foodDisp2);
 
 	DrawList drawList;
 	drawList.add(World::getInstance());

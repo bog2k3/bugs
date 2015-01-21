@@ -21,27 +21,26 @@ ScaleDisplay::ScaleDisplay(glm::vec2 pos, int maxPixelsPerUnit)
 {
 }
 
-template<>
-void draw(ScaleDisplay& s, RenderContext& ctx) {
+void ScaleDisplay::draw(RenderContext const& ctx) {
 	float pixelsPerUnit = ctx.viewport->getCamera()->getZoomLevel();
 	int exponent = 0;
 
-	if (pixelsPerUnit > s.m_MaxSize) {
+	if (pixelsPerUnit > m_MaxSize) {
 		// small scale
-		while (pixelsPerUnit > s.m_MaxSize) {
+		while (pixelsPerUnit > m_MaxSize) {
 			exponent--;
 			pixelsPerUnit /= 10;
 		}
-	} else if (pixelsPerUnit < s.m_MaxSize) {
+	} else if (pixelsPerUnit < m_MaxSize) {
 		// large scale
-		while (pixelsPerUnit*10 <= s.m_MaxSize) {
+		while (pixelsPerUnit*10 <= m_MaxSize) {
 			exponent++;
 			pixelsPerUnit *= 10;
 		}
 	}
 
 	float segIncrement = 1.0f;
-	int segments = (int) floor(s.m_MaxSize / pixelsPerUnit);
+	int segments = (int) floor(m_MaxSize / pixelsPerUnit);
 	if (segments == 1) {
 		segments = 5;
 		segIncrement = 0.2f;
@@ -53,32 +52,27 @@ void draw(ScaleDisplay& s, RenderContext& ctx) {
 		segIncrement = 0.5f;
 	}
 	int nVertex = 1 + segments * 3;
-	float cx = (float)s.pos_.x + s.segmentsXOffset;
-	float cy = (float)s.pos_.y - 1;
+	float cx = (float)pos_.x + segmentsXOffset;
+	float cy = (float)pos_.y - 1;
 	glm::vec2 vList[31]; // 31 is max vertex for max_seg=10
 	for (int i=0; i<segments; i++) {
-		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? s.segmentHeight : s.segmentHeight / 2;
+		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? segmentHeight : segmentHeight / 2;
 		vList[i*3+0] = glm::vec2(cx, cy-localSegHeight);
 		vList[i*3+1] = glm::vec2(cx, cy);
 		cx += (float)pixelsPerUnit * segIncrement;
 		vList[i*3+2] = glm::vec2(cx, cy);
 	}
-	vList[nVertex-1] = glm::vec2(cx, cy-s.segmentHeight);
+	vList[nVertex-1] = glm::vec2(cx, cy-segmentHeight);
 
 	ctx.shape->drawLineStripViewport(vList, nVertex, 0, LINE_COLOR, *ctx.viewport);
 
 	char scaleLabel[100];
 
 	snprintf(scaleLabel, 100, "(10^%d)", exponent);
-	ctx.text->print(scaleLabel, s.pos_.x, s.pos_.y, 14, TEXT_COLOR);
+	ctx.text->print(scaleLabel, pos_.x, pos_.y, 14, TEXT_COLOR);
 	for (int i=0; i<segments+1; i++) {
 		snprintf(scaleLabel, 100, "%g", i*segIncrement);
-		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? 0 : s.segmentHeight / 2;
-		ctx.text->print(scaleLabel, s.pos_.x - localSegHeight +s.segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement), s.pos_.y - 10 + localSegHeight, 12, TEXT_COLOR);
+		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? 0 : segmentHeight / 2;
+		ctx.text->print(scaleLabel, pos_.x - localSegHeight +segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement), pos_.y - 10 + localSegHeight, 12, TEXT_COLOR);
 	}
-}
-
-template<>
-void draw(ScaleDisplay*& s, RenderContext& ctx) {
-	draw(*s, ctx);
 }

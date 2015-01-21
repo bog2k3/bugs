@@ -9,7 +9,7 @@
 #define OBJECTS_BODY_PARTS_MUSCLE_H_
 
 #include "BodyPart.h"
-#include "../../entities/IMotor.h"
+#include "../../entities/bug_stuff/IMotor.h"
 
 #define DEBUG_DRAW_MUSCLE
 

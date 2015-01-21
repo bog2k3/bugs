@@ -9,7 +9,6 @@
 #define PHYSICSDEBUGDRAW_H_
 
 #include "renderOpenGL/RenderContext.h"
-#include "objects/WorldObject.h"
 #include <Box2D/Common/b2Draw.h>
 
 class PhysicsDebugDraw : public b2Draw {

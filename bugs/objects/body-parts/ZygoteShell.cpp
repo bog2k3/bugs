@@ -28,7 +28,7 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float size)
 
 	commit_tree();
 
-	body_->SetTransform(g2b(position), randf()*2*PI);
+	physBody_.b2Body_->SetTransform(g2b(position), randf()*2*PI);
 }
 
 ZygoteShell::~ZygoteShell() {
@@ -45,7 +45,7 @@ void ZygoteShell::commit() {
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
 
-	body_->CreateFixture(&fixDef);
+	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 
 void ZygoteShell::draw(RenderContext& ctx) {
@@ -58,8 +58,8 @@ void ZygoteShell::draw(RenderContext& ctx) {
 
 void ZygoteShell::updateCachedDynamicPropsFromBody() {
 	PhysicsProperties &props = getInitializationData()->cachedProps;
-	props.angle = body_->GetAngle();
-	props.angularVelocity = body_->GetAngularVelocity();
-	props.position = b2g(body_->GetPosition());
-	props.velocity = b2g(body_->GetLinearVelocity());
+	props.angle = physBody_.b2Body_->GetAngle();
+	props.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
+	props.position = b2g(physBody_.b2Body_->GetPosition());
+	props.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
 }

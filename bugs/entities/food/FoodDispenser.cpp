@@ -23,27 +23,25 @@ FoodDispenser::FoodDispenser(glm::vec2 position, float direction)
 	, spawnMass_(WorldConst::FoodDispenserSpawnMass)
 {
 	PhysicsProperties props(position, direction, false, glm::vec2(0), 0);
-	createPhysicsBody(props);
+	physBody_.create(props);
 
 	// create fixture
 	b2CircleShape shp;
 	shp.m_radius = radius_;
 	b2FixtureDef fdef;
 	fdef.shape = &shp;
-	body_->CreateFixture(&fdef);
+	physBody_.b2Body_->CreateFixture(&fdef);
 }
 
 FoodDispenser::~FoodDispenser() {
-	onDestroy.trigger(this);
 }
 
-void FoodDispenser::draw(RenderContext& ctx) {
+void FoodDispenser::draw(RenderContext const& ctx) {
 
 }
 
 void FoodDispenser::update(float dt) {
 	timer_ += dt;
-	updateList_.update(dt);
 	if (timer_ > period_) {
 		// create one food chunk
 		timer_ = 0;
@@ -51,7 +49,7 @@ void FoodDispenser::update(float dt) {
 		float randomAngle = srandf() * WorldConst::FoodDispenserSpreadAngleHalf;
 		offset = glm::rotate(offset, direction_ + randomAngle);
 		glm::vec2 velocity = glm::normalize(offset) * spawnVelocity_;
-		auto chunkptr = World::getInstance()->createObject<FoodChunk>(position_ + offset, direction_+randomAngle, velocity, 0, spawnMass_);
-		updateList_.add(std::weak_ptr<FoodChunk>(chunkptr));
+		FoodChunk* chunk = new FoodChunk(position_ + offset, direction_+randomAngle, velocity, 0, spawnMass_);
+		World::getInstance()->takeOwnershipOf(chunk);
 	}
 }

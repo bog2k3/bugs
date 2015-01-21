@@ -13,13 +13,6 @@ void UpdateList::add(updatable_wrap &&w) {
 }
 
 void UpdateList::update(float dt) {
-	int validSize = list_.size();
-	// do update :
-	for (int i=0; i<validSize; i++) {
-		if (list_[i].isAlive())
-			list_[i].update(dt);
-		else
-			list_[i] = list_[--validSize];
-	}
-	list_.erase(list_.begin()+validSize, list_.end());
+	for (auto &w : list_)
+			w.update(dt);
 }

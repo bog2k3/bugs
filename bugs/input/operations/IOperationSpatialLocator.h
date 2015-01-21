@@ -18,7 +18,6 @@ public:
 	virtual ~IOperationSpatialLocator() {}
 
 	virtual b2Body* getBodyAtPos(glm::vec2 pos) = 0;
-	virtual void getObjectsInBox(glm::vec2 bottomLeft, glm::vec2 topRight, std::vector<WorldObject*> &outVec) = 0;
 };
 
 #endif /* INPUT_IOPERATIONSPATIALLOCATOR_H_ */

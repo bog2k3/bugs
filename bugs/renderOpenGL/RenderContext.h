@@ -14,9 +14,9 @@ class GLText;
 
 class RenderContext {
 public:
-	const Viewport* viewport;
-	Shape2D* shape;
-	GLText* text;
+	const Viewport* const viewport;
+	Shape2D* const shape;
+	GLText* const text;
 
 	RenderContext()
 		: viewport(nullptr)

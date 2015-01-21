@@ -37,13 +37,14 @@ Joint::Joint(BodyPart* parent)
 	registerAttribute(GENE_ATTRIB_JOINT_HIGH_LIMIT, initData->phiMax);
 	registerAttribute(GENE_ATTRIB_JOINT_RESET_TORQUE, initData->resetTorque);
 
-	getUpdateList()->add(weakThis<Joint>());
+	getUpdateList()->add(this);
 }
 
 Joint::~Joint() {
 	if (committed_) {
-		physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
-		physJoint_ = nullptr;
+#warning "must make sure this won't crash:"
+		if (parent_)
+			parent_->getBody().b2Body_->GetWorld()->DestroyJoint(physJoint_);
 	}}
 
 /**
@@ -73,8 +74,8 @@ void Joint::commit() {
 	getNormalizedLimits(lowAngle, highAngle);
 
 	b2RevoluteJointDef def;
-	def.bodyA = parent_->getBody();
-	def.bodyB = children_[0]->getBody();
+	def.bodyA = parent_->getBody().b2Body_;
+	def.bodyB = children_[0]->getBody().b2Body_;
 	def.enableLimit = true;
 	def.lowerAngle = lowAngle;
 	def.upperAngle = highAngle;

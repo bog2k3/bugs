@@ -27,6 +27,7 @@ class b2RevoluteJoint;
 
 class Joint : public BodyPart {
 public:
+	Joint(BodyPart* parent);
 	~Joint() override;
 
 	void draw(RenderContext& ctx) override;
@@ -49,7 +50,6 @@ protected:
 	float resetTorque_;			// torque that resets the joint into repause position
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
-	Joint(BodyPart* parent);
 	friend class World;
 	void getNormalizedLimits(float &low, float &high);
 	void commit() override;

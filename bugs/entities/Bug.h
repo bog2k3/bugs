@@ -8,11 +8,12 @@
 #ifndef ENTITIES_BUG_H_
 #define ENTITIES_BUG_H_
 
+#include "Entity.h"
 #include "../genetics/Genome.h"
 #include "../genetics/GeneDefinitions.h"
 #include "../UpdateList.h"
 #include "../genetics/CummulativeValue.h"
-#include "LifetimeSensor.h"
+#include "bug_stuff/LifetimeSensor.h"
 
 #include <glm/fwd.hpp>
 #include <vector>
@@ -25,12 +26,13 @@ class Ribosome;
 class Torso;
 class ZygoteShell;
 
-class Bug {
+class Bug : public Entity {
 public:
 	explicit Bug(Genome const &genome, float zygoteSize, glm::vec2 position);
 	virtual ~Bug();
 
-	void update(float dt);
+	void update(float dt) override;
+	void draw(RenderContext const &ctx) override;
 
 	const Genome& getGenome() { return genome_; }
 

@@ -24,9 +24,6 @@ Mouth::Mouth(BodyPart* parent)
 	getInitializationData()->size.reset(BodyConst::initialMouthSize);
 }
 Mouth::~Mouth() {
-	if (committed_) {
-		body_->DestroyFixture(&body_->GetFixtureList()[0]);
-	}
 }
 
 glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) const {
@@ -41,8 +38,8 @@ glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) const {
 
 void Mouth::commit() {
 	if (committed_) {
-		body_->DestroyFixture(&body_->GetFixtureList()[0]);
-		body_->GetWorld()->DestroyJoint(pJoint);
+		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
+		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
 		pJoint = nullptr;
 	}
 
@@ -59,16 +56,16 @@ void Mouth::commit() {
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
 
-	body_->CreateFixture(&fixDef);
+	physBody_.b2Body_->CreateFixture(&fixDef);
 
 	b2WeldJointDef jdef;
-	jdef.bodyA = parent_->getBody();
-	jdef.bodyB = body_;
+	jdef.bodyA = parent_->getBody().b2Body_;
+	jdef.bodyB = physBody_.b2Body_;
 	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(getInitializationData()->attachmentDirectionParent);
 	jdef.localAnchorA = g2b(parentAnchor);
 	glm::vec2 childAnchor = getChildAttachmentPoint(PI - getInitializationData()->angleOffset);
 	jdef.localAnchorB = g2b(childAnchor);
-	pJoint = (b2WeldJoint*)body_->GetWorld()->CreateJoint(&jdef);
+	pJoint = (b2WeldJoint*)physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
 }
 
 void Mouth::draw(RenderContext& ctx) {

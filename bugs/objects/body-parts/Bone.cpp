@@ -34,13 +34,13 @@ Bone::Bone(BodyPart* parent)
 
 Bone::~Bone() {
 	if (committed_) {
-		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 }
 
 void Bone::commit() {
 	if (committed_) {
-		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 
 	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
@@ -58,7 +58,7 @@ void Bone::commit() {
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
 
-	body_->CreateFixture(&fixDef);
+	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 {

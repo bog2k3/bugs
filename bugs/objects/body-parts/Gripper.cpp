@@ -28,7 +28,7 @@ Gripper::Gripper(BodyPart* parent)
 {
 	getInitializationData()->density.reset(BodyConst::GripperDensity);
 
-	getUpdateList()->add(weakThis<Gripper>());
+	getUpdateList()->add(this);
 }
 
 Gripper::~Gripper() {
@@ -37,7 +37,7 @@ Gripper::~Gripper() {
 
 void Gripper::commit() {
 	if (committed_) {
-		body_->DestroyFixture(&body_->GetFixtureList()[0]);
+		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	};
 
 	std::shared_ptr<BodyPartInitializationData> initData = getInitializationData();
@@ -50,7 +50,7 @@ void Gripper::commit() {
 	fdef.friction = 0.3f;
 	fdef.restitution = 0.2f;
 	fdef.shape = &shape;
-	body_->CreateFixture(&fdef);
+	physBody_.b2Body_->CreateFixture(&fdef);
 }
 
 void Gripper::update(float dt) {
@@ -65,11 +65,11 @@ void Gripper::setActive(bool active) {
 	if (active) {
 		b2WeldJointDef jd;
 		jd.bodyA = World::getInstance()->getGroundBody();
-		jd.localAnchorA = body_->GetWorldPoint(b2Vec2_zero);
-		jd.bodyB = body_;
+		jd.localAnchorA = physBody_.b2Body_->GetWorldPoint(b2Vec2_zero);
+		jd.bodyB = physBody_.b2Body_;
 		groundJoint_ = (b2WeldJoint*)World::getInstance()->getPhysics()->CreateJoint(&jd);
 	} else {
-		body_->GetWorld()->DestroyJoint(groundJoint_);
+		physBody_.b2Body_->GetWorld()->DestroyJoint(groundJoint_);
 		groundJoint_ = nullptr;
 	}
 }

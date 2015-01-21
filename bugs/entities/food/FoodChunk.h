@@ -8,20 +8,25 @@
 #ifndef OBJECTS_FOOD_FOODCHUNK_H_
 #define OBJECTS_FOOD_FOODCHUNK_H_
 
-#include "../WorldObject.h"
+#include "../Entity.h"
 #include "../../Event.h"
+#include "../../objects/PhysicsBody.h"
 
-class FoodChunk: public WorldObject {
+class FoodChunk: public Entity {
 public:
 	FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass);
 	virtual ~FoodChunk() override;
+	FunctionalityFlags getFunctionalityFlags() override {
+		return Entity::FF_UPDATABLE | Entity::FF_DRAWABLE;
+	}
 
-	void draw(RenderContext& ctx) override;
-	void update(float dt);
+	void update(float dt) override;
+	void draw(RenderContext const& rc) override;
 
 	Event<void(FoodChunk*)> onDestroy;
 
 protected:
+	PhysicsBody physBody_;
 	float size_;
 	float amountLeft_;
 	float lifeTime_;

@@ -8,10 +8,10 @@
 #ifndef OBJECTS_BODY_PARTS_BODYPART_H_
 #define OBJECTS_BODY_PARTS_BODYPART_H_
 
-#include "../WorldObject.h"
 #include "../../genetics/GeneDefinitions.h"
 #include "../../genetics/CummulativeValue.h"
 #include "../../genetics/Gene.h"
+#include "../PhysicsBody.h"
 #include <vector>
 #include <map>
 #include <memory>
@@ -42,13 +42,14 @@ struct BodyPartInitializationData {
 };
 
 class UpdateList;
+class RenderContext;
 
-class BodyPart : public WorldObject {
+class BodyPart {
 public:
 	BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
-	virtual ~BodyPart() override;
+	virtual ~BodyPart();
 
-	virtual void draw(RenderContext& ctx) override;
+	virtual void draw(RenderContext& ctx);
 
 	inline PART_TYPE getType() const { return type_; }
 
@@ -98,6 +99,7 @@ public:
 	inline BodyPart* getChild(int i) const { assert(i<nChildren_); return children_[i]; }
 	inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
 	void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
+	PhysicsBody const& getBody() { return physBody_; }
 
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
@@ -111,6 +113,7 @@ public:
 	static constexpr int MAX_CHILDREN = 15;
 
 protected:
+	PhysicsBody physBody_;
 	PART_TYPE type_;
 	BodyPart* parent_;
 

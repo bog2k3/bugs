@@ -17,7 +17,7 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 	, lifeTime_(0)
 {
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
-	createPhysicsBody(props);
+	physBody_.create(props);
 
 	// now create the fixture
 	b2CircleShape shp;
@@ -27,24 +27,23 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 	fdef.friction = 0.2f;
 	fdef.restitution = 0.3f;
 	fdef.shape = &shp;
-	body_->CreateFixture(&fdef);
+	physBody_.b2Body_->CreateFixture(&fdef);
 
 	LOGLN("create " << this);
 }
 
 FoodChunk::~FoodChunk() {
-	body_->DestroyFixture(&body_->GetFixtureList()[0]);
 	onDestroy.trigger(this);
 }
 
-void FoodChunk::draw(RenderContext& ctx) {
+void FoodChunk::draw(RenderContext const& ctx) {
 	// TODO put a sign of amountLeft on it
 }
 
 void FoodChunk::update(float dt) {
 	lifeTime_ += dt;
 	if (lifeTime_ >= WorldConst::FoodChunkLifeTime) {
-		LOGLN("delete " << this);
 		delete this;
+// #error "the above should not compile"
 	}
 }

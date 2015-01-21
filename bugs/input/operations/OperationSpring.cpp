@@ -10,7 +10,6 @@
 #include "../../renderOpenGL/Viewport.h"
 #include "../InputEvent.h"
 #include "IOperationSpatialLocator.h"
-#include "../../objects/WorldObject.h"
 #include "../../math/box2glm.h"
 #include <Box2D/Box2D.h>
 

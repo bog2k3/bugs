@@ -6,7 +6,7 @@
  */
 
 #include "LifetimeSensor.h"
-#include "../neuralnet/OutputSocket.h"
+#include "../../neuralnet/OutputSocket.h"
 
 LifetimeSensor::LifetimeSensor()
 	: time_(0)

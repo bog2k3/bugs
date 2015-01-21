@@ -28,7 +28,7 @@ World* World::getInstance() {
 }
 
 World::~World() {
-	// TODO Auto-generated destructor stub
+	// TODO delete all entities
 }
 
 bool World::ReportFixture(b2Fixture* fixture) {
@@ -54,31 +54,8 @@ b2Body* World::getBodyAtPos(glm::vec2 pos) {
 	b2QueryResult.clear();	// reset
 	return ret;
 }
-void World::getObjectsInBox(glm::vec2 bottomLeft, glm::vec2 topRight, std::vector<WorldObject*> &outVec) {
-	b2AABB aabb;
-	aabb.lowerBound = g2b(bottomLeft);
-	aabb.upperBound = g2b(topRight);
-	physWld->QueryAABB(this, aabb);
-	while (!b2QueryResult.empty()) {
-		outVec.push_back((WorldObject*)b2QueryResult.back()->GetBody()->GetUserData());
-		b2QueryResult.pop_back();
-	}
-}
 
-template<> void draw(World*& wld, RenderContext& ctx) {
-	for (auto obj : wld->objects) {
-		obj->draw(ctx);
-	}
-}
-
-void World::addObject(std::shared_ptr<WorldObject> obj) {
-	objects.push_back(obj);
-}
-
-void World::removeObject(std::shared_ptr<WorldObject> obj) {
-	objects.erase(
-		std::remove_if(objects.begin(), objects.end(),
-			[obj] (std::shared_ptr<WorldObject> & x) { return x == obj; }),
-		objects.end()
-	);
+void World::takeOwnershipOf(Entity* e) {
+	entities.push_back(e);
+	// add to update and draw lists if appropriate
 }

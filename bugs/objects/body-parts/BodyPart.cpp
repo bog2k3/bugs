@@ -52,7 +52,7 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 BodyPart::~BodyPart() {
 	changeParent(nullptr);
 	for (int i=0; i<nChildren_; i++)
-		children_[i]->changeParent(nullptr);
+		delete children_[i];
 }
 
 void BodyPart::matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<BodyPart*> *out) {
@@ -121,8 +121,8 @@ void BodyPart::commit_tree() {
 	lastCommitSize_inv_ = 1.f / initialData_->size;
 	// perform commit on local node:
 	if (type_ != BODY_PART_JOINT) {
-		if (!body_ && !dontCreateBody_)
-			WorldObject::createPhysicsBody(initialData_->cachedProps);
+		if (!physBody_.b2Body_ && !dontCreateBody_)
+			physBody_.create(initialData_->cachedProps);
 		commit();
 	}
 	// perform recursive commit on all non-muscle children:
@@ -164,9 +164,9 @@ void BodyPart::reverseUpdateCachedProps() {
 	glm::vec3 worldTransform = getWorldTransformation();
 	initialData_->cachedProps.angle = worldTransform.z;
 	initialData_->cachedProps.position = vec3xy(worldTransform);
-	if (body_) {
-		initialData_->cachedProps.velocity = b2g(body_->GetLinearVelocity());
-		initialData_->cachedProps.angularVelocity = body_->GetAngularVelocity();
+	if (physBody_.b2Body_) {
+		initialData_->cachedProps.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
+		initialData_->cachedProps.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
 	} else if (parent_) {
 		initialData_->cachedProps.velocity = parent_->initialData_->cachedProps.velocity;
 		initialData_->cachedProps.angularVelocity = parent_->initialData_->cachedProps.angularVelocity;
@@ -190,8 +190,8 @@ void BodyPart::computeBodyPhysProps() {
 }
 
 glm::vec3 BodyPart::getWorldTransformation() const {
-	if (body_) {
-		return glm::vec3(b2g(body_->GetPosition()), body_->GetAngle());
+	if (physBody_.b2Body_) {
+		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
 	} else if (initialData_) {
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
 		glm::vec2 pos = getParentSpacePosition();
@@ -231,8 +231,8 @@ float BodyPart::getMass_tree() {
 	float mass = 0;
 	if (initialData_)
 		mass = initialData_->size * initialData_->density;
-	else if (body_)
-		mass = body_->GetMass();
+	else if (physBody_.b2Body_)
+		mass = physBody_.b2Body_->GetMass();
 	else
 		assert(false && "no known method to compute the mass of the body part!!!");
 
