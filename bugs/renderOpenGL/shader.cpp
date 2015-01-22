@@ -1,5 +1,5 @@
 #include "shader.hpp"
-#include "../log.h"
+#include "../utils/log.h"
 
 #include <GL/glew.h>
 

@@ -9,7 +9,7 @@
 #include "BodyConst.h"
 #include "../math/math2D.h"
 #include "../math/box2glm.h"
-#include "../math/tools.h"
+#include "../utils/rand.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include <glm/gtx/rotate_vector.hpp>

@@ -1,9 +1,9 @@
 #include "Ribosome.h"
 
 #include "../neuralnet/functions.h"
-#include "../math/tools.h"
+#include "../utils/rand.h"
 #include "../math/math2D.h"
-#include "../log.h"
+#include "../utils/log.h"
 #include "../neuralnet/Network.h"
 #include "../neuralnet/Neuron.h"
 #include "../neuralnet/OutputSocket.h"
@@ -20,7 +20,7 @@
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Muscle.h"
 #include "../body-parts/Mouth.h"
-#include "../log.h"
+#include "../utils/log.h"
 #include "../neuralnet/InputSocket.h"
 
 #include "Genome.h"

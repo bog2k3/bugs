@@ -6,7 +6,7 @@
 #ifndef __gene_h__
 #define __gene_h__
 
-#include "../math/tools.h"
+#include "../utils/rand.h"
 #include "constants.h"
 #include "GeneDefinitions.h"
 #include <stdint.h>

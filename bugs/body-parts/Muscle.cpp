@@ -41,7 +41,7 @@
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../neuralnet/InputSocket.h"
-#include "../UpdateList.h"
+#include "../utils/UpdateList.h"
 #include <glm/vec3.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <math.h>

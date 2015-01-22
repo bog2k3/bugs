@@ -14,12 +14,13 @@
 #include "body-parts/Joint.h"
 #include "entities/food/FoodDispenser.h"
 #include "World.h"
+#include "PhysContactListener.h"
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
-#include "log.h"
+#include "utils/log.h"
 #include "entities/Bug.h"
-#include "DrawList.h"
-#include "UpdateList.h"
+#include "utils/DrawList.h"
+#include "utils/UpdateList.h"
 #include "OSD/ScaleDisplay.h"
 
 #include <GLFW/glfw3.h>
@@ -60,6 +61,9 @@ int main() {
 			);
 	physWld.SetDebugDraw(&physicsDraw);
 
+	PhysContactListener contactListener;
+	physWld.SetContactListener(&contactListener);
+
 	World::getInstance()->setPhysics(&physWld);
 
 	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
@@ -81,6 +85,8 @@ int main() {
 	World::getInstance()->takeOwnershipOf(foodDisp1);
 	FoodDispenser* foodDisp2(new FoodDispenser(glm::vec2(+1, -0.5f), 0));
 	World::getInstance()->takeOwnershipOf(foodDisp2);
+	FoodDispenser* foodDisp3(new FoodDispenser(glm::vec2(0, -1.5f), 0));
+	World::getInstance()->takeOwnershipOf(foodDisp3);
 
 	DrawList drawList;
 	drawList.add(World::getInstance());

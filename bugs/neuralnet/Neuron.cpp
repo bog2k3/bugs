@@ -1,5 +1,5 @@
 #include "Neuron.h"
-#include "../math/tools.h"
+#include "../utils/rand.h"
 #include <assert.h>
 #include "InputSocket.h"
 

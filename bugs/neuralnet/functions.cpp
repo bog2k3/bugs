@@ -1,7 +1,7 @@
 #include "functions.h"
 #include <math.h>
 #include "../math/math2D.h"
-#include "../math/tools.h"
+#include "../utils/rand.h"
 
 std::map<transferFuncNames, transfer_function> mapTransferFunctions;
 

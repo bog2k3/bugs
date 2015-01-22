@@ -11,7 +11,7 @@
 #include "Entity.h"
 #include "../genetics/Genome.h"
 #include "../genetics/GeneDefinitions.h"
-#include "../UpdateList.h"
+#include "../utils/UpdateList.h"
 #include "../genetics/CummulativeValue.h"
 #include <glm/fwd.hpp>
 #include <vector>

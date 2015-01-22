@@ -6,7 +6,7 @@
  */
 
 #include "TextureLoader.h"
-#include "../log.h"
+#include "../utils/log.h"
 #include <GL/glew.h>
 #include <png.h>
 #include <memory.h>

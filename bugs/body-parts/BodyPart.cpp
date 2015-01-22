@@ -11,7 +11,7 @@
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../math/math2D.h"
-#include "../log.h"
+#include "../utils/log.h"
 #include "../genetics/GeneDefinitions.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>

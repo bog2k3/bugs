@@ -10,8 +10,8 @@
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
-#include "../UpdateList.h"
-#include "../log.h"
+#include "../utils/UpdateList.h"
+#include "../utils/log.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 

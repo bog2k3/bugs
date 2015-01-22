@@ -1,10 +1,5 @@
 #include "Network.h"
-
-#include "../math/tools.h"
 #include "Traverser.h"
-
-#include <map>
-using namespace std;
 
 NeuralNet::NeuralNet()
 	: pTraverser(new Traverser(this))

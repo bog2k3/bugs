@@ -8,7 +8,7 @@
 #include "FoodDispenser.h"
 #include "FoodChunk.h"
 #include "../WorldConst.h"
-#include "../../math/tools.h"
+#include "../../utils/rand.h"
 #include "../../World.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>

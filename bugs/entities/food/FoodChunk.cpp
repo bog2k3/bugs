@@ -18,15 +18,23 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
 	physBody_.create(props);
 
-	// now create the fixture
+	// now create the sensor fixture
 	b2CircleShape shp;
-	shp.m_radius = sqrtf(size_ * PI_INV);
+	shp.m_radius = sqrtf(size_ * WorldConst::FoodChunkSensorRatio * PI_INV);
 	b2FixtureDef fdef;
-	fdef.density = WorldConst::FoodChunkDensity;
-	fdef.friction = 0.2f;
-	fdef.restitution = 0.3f;
+	fdef.density = 0;
 	fdef.shape = &shp;
+	fdef.isSensor = true;
 	physBody_.b2Body_->CreateFixture(&fdef);
+
+	// and the kernel fixture:
+	shp.m_radius = sqrtf(size_ * PI_INV);
+	b2FixtureDef fdefK;
+	fdefK.density = WorldConst::FoodChunkDensity;
+	fdefK.friction = 0.2f;
+	fdefK.restitution = 0.3f;
+	fdefK.shape = &shp;
+	physBody_.b2Body_->CreateFixture(&fdefK);
 }
 
 FoodChunk::~FoodChunk() {

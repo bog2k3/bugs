@@ -9,7 +9,7 @@
 #define OBJECTS_FOOD_FOODCHUNK_H_
 
 #include "../Entity.h"
-#include "../../Event.h"
+#include "../../utils/Event.h"
 #include "../../PhysicsBody.h"
 
 class FoodChunk: public Entity {

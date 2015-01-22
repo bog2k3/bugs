@@ -11,11 +11,11 @@
 #include "../renderOpenGL/Shape2D.h"
 #include "../math/math2D.h"
 #include "../neuralnet/InputSocket.h"
-#include "../UpdateList.h"
+#include "../utils/UpdateList.h"
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include "../log.h"
+#include "../utils/log.h"
 
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
