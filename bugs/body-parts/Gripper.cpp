@@ -28,6 +28,10 @@ Gripper::Gripper(BodyPart* parent)
 {
 	getInitializationData()->density.reset(BodyConst::GripperDensity);
 
+	physBody_.userObjectType_ = ObjectTypes::BPART_GRIPPER;
+	physBody_.userPointer_ = this;
+	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+
 	getUpdateList()->add(this);
 }
 

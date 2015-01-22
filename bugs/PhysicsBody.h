@@ -10,6 +10,7 @@
 
 #include <glm/vec2.hpp>
 #include "utils/Event.h"
+#include "ObjectTypesAndFlags.h"
 
 class b2Body;
 
@@ -35,18 +36,25 @@ struct PhysicsProperties {
 
 class PhysicsBody {
 public:
-	PhysicsBody() : b2Body_(nullptr), categoryFlags_(0), collisionEventFlags_(0) {}
+	PhysicsBody(ObjectTypes userObjType, void* userPtr, CategoryFlags::type categFlags, CategoryFlags::type collisionMask);
+	PhysicsBody() : PhysicsBody(ObjectTypes::UNDEFINED, nullptr, 0, 0) {}
 	virtual ~PhysicsBody();
 
 	void create(PhysicsProperties const &props);
 
 	Event<void(PhysicsBody *other, float impulseMagnitude)> onCollision;
 
+	// the Box2D body:
 	b2Body* b2Body_;
+	// the type of object that owns this body
+	ObjectTypes userObjectType_;
+	// the pointer to the object that owns this body (type of object depends on userObjectType_)
+	void* userPointer_;
+
 	// bit field for the categories that this object belongs to:
-	uint32_t categoryFlags_;
+	CategoryFlags::type categoryFlags_;
 	// bit mask for what other categories of objects that this collides with should trigger onCollision events on this object
-	uint32_t collisionEventFlags_;
+	CategoryFlags::type collisionEventMask_;
 };
 
 #endif /* OBJECTS_PHYSICSBODY_H_ */

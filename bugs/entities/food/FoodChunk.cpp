@@ -15,6 +15,10 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 	, amountLeft_(mass)
 	, lifeTime_(0)
 {
+	physBody_.userObjectType_ = ObjectTypes::FOOD_CHUNK;
+	physBody_.userPointer_ = this;
+	physBody_.categoryFlags_ = CategoryFlags::FOOD;
+
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
 	physBody_.create(props);
 

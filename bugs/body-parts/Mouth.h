@@ -25,6 +25,7 @@ protected:
 	b2WeldJoint* pJoint;
 
 	void commit() override;
+	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
 };
 
 #endif /* OBJECTS_BODY_PARTS_MOUTH_H_ */

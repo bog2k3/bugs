@@ -24,6 +24,10 @@ Torso::Torso(BodyPart* parent)
 	, lastCommittedTotalSizeInv_(0)
 	, frameUsedEnergy_(0)
 {
+	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
+	physBody_.userPointer_ = this;
+	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+
 	getUpdateList()->add(this);
 }
 

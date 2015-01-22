@@ -10,6 +10,15 @@
 #include "math/box2glm.h"
 #include <Box2D/Box2D.h>
 
+PhysicsBody::PhysicsBody(ObjectTypes userObjType, void* userPtr, CategoryFlags::type categFlags, CategoryFlags::type collisionMask)
+	: b2Body_(nullptr)
+	, userObjectType_(userObjType)
+	, userPointer_(userPtr)
+	, categoryFlags_(categFlags)
+	, collisionEventMask_(collisionMask)
+{
+}
+
 void PhysicsBody::create(const PhysicsProperties& props) {
 	assert(b2Body_==nullptr);
 

@@ -106,6 +106,9 @@ int main() {
 		float dt = newTime - t;
 		t = newTime;
 
+		// override dt with fixed time step
+		dt = 1.f / 60;
+
 		if (dt > 0) {
 			updateList.update(dt);
 		}

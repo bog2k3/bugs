@@ -26,6 +26,10 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float size)
 	getInitializationData()->size.reset(size);
 	getInitializationData()->density.reset(BodyConst::ZygoteDensity);
 
+	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;
+	physBody_.userPointer_ = this;
+	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+
 	commit_tree();
 
 	physBody_.b2Body_->SetTransform(g2b(position), randf()*2*PI);

@@ -22,6 +22,12 @@ Mouth::Mouth(BodyPart* parent)
 	, pJoint(nullptr)
 {
 	getInitializationData()->size.reset(BodyConst::initialMouthSize);
+
+	physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
+	physBody_.userObjectType_ = ObjectTypes::BPART_MOUTH;
+	physBody_.userPointer_ = this;
+	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+	physBody_.collisionEventMask_ = CategoryFlags::FOOD;
 }
 Mouth::~Mouth() {
 }
@@ -84,4 +90,8 @@ void Mouth::draw(RenderContext const& ctx) {
 				0,
 				debug_color);
 	}
+}
+
+void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
+	// make the bug eat and put some weight on!
 }
