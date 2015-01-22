@@ -6,8 +6,8 @@
  */
 
 #include "PhysicsBody.h"
-#include "../World.h"
-#include "../math/box2glm.h"
+#include "World.h"
+#include "math/box2glm.h"
 #include <Box2D/Box2D.h>
 
 void PhysicsBody::create(const PhysicsProperties& props) {

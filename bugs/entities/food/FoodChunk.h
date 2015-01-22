@@ -10,14 +10,14 @@
 
 #include "../Entity.h"
 #include "../../Event.h"
-#include "../../objects/PhysicsBody.h"
+#include "../../PhysicsBody.h"
 
 class FoodChunk: public Entity {
 public:
 	FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass);
 	virtual ~FoodChunk() override;
 	FunctionalityFlags getFunctionalityFlags() override {
-		return Entity::FF_UPDATABLE | Entity::FF_DRAWABLE;
+		return FF_UPDATABLE | FF_DRAWABLE;
 	}
 
 	void update(float dt) override;

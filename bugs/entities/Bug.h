@@ -13,11 +13,10 @@
 #include "../genetics/GeneDefinitions.h"
 #include "../UpdateList.h"
 #include "../genetics/CummulativeValue.h"
-#include "bug_stuff/LifetimeSensor.h"
-
 #include <glm/fwd.hpp>
 #include <vector>
 #include <map>
+#include "Bug/LifetimeSensor.h"
 
 class ISensor;
 class IMotor;
@@ -30,6 +29,9 @@ class Bug : public Entity {
 public:
 	explicit Bug(Genome const &genome, float zygoteSize, glm::vec2 position);
 	virtual ~Bug();
+	FunctionalityFlags getFunctionalityFlags() override {
+		return FF_UPDATABLE | FF_DRAWABLE;
+	}
 
 	void update(float dt) override;
 	void draw(RenderContext const &ctx) override;

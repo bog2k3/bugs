@@ -1,10 +1,10 @@
 
 #include "ScaleDisplay.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../renderOpenGL/Viewport.h"
-#include "../../renderOpenGL/Camera.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../renderOpenGL/GLText.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../renderOpenGL/Viewport.h"
+#include "../renderOpenGL/Camera.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/GLText.h"
 #include <math.h>
 #include <glm/vec3.hpp>
 #include <stdio.h>

@@ -8,9 +8,9 @@
 #ifndef OBJECTS_BODY_PARTS_BODYPART_H_
 #define OBJECTS_BODY_PARTS_BODYPART_H_
 
-#include "../../genetics/GeneDefinitions.h"
-#include "../../genetics/CummulativeValue.h"
-#include "../../genetics/Gene.h"
+#include "../genetics/GeneDefinitions.h"
+#include "../genetics/CummulativeValue.h"
+#include "../genetics/Gene.h"
 #include "../PhysicsBody.h"
 #include <vector>
 #include <map>
@@ -49,7 +49,7 @@ public:
 	BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
 	virtual ~BodyPart();
 
-	virtual void draw(RenderContext& ctx);
+	virtual void draw(RenderContext const& ctx);
 
 	inline PART_TYPE getType() const { return type_; }
 
@@ -89,6 +89,9 @@ public:
 
 	// tells the entire hierarchy that the body died
 	void die_tree();
+
+	// draws the whole tree of body-parts
+	void draw_tree(RenderContext const& ctx);
 
 	/**
 	 * recursively free the initialization data from all body parts after committing the entire tree

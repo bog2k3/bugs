@@ -7,10 +7,10 @@
 
 #include "Bone.h"
 #include "BodyConst.h"
-#include "../../math/math2D.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../log.h"
+#include "../math/math2D.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../log.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -71,7 +71,7 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 	return rayIntersectBox(size.y, size.x, relativeAngle);
 }
 
-void Bone::draw(RenderContext& ctx) {
+void Bone::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {

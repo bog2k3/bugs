@@ -18,12 +18,14 @@ public:
 	static constexpr FunctionalityFlags FF_NONE			= 0;
 	static constexpr FunctionalityFlags FF_DRAWABLE		= 1;
 	static constexpr FunctionalityFlags FF_UPDATABLE	= 2;
+
+	// these flags MUST NOT change during the life time of the object, or else UNDEFINED BEHAVIOUR
 	virtual FunctionalityFlags getFunctionalityFlags() { return FF_NONE; }
 
 	virtual void update(float dt) {}
 	virtual void draw(RenderContext const& ctx) {}
 
-	void destroy() { markedForDeletion_ = true; }
+	void destroy();
 
 private:
 	bool markedForDeletion_ = false;

@@ -6,8 +6,6 @@
  */
 
 #include "Bug.h"
-#include "bug_stuff/IMotor.h"
-#include "bug_stuff/ISensor.h"
 #include "../neuralnet/Network.h"
 #include "../genetics/Gene.h"
 #include "../genetics/GeneDefinitions.h"
@@ -15,9 +13,11 @@
 #include "../genetics/Ribosome.h"
 #include "../neuralnet/functions.h"
 #include "../math/math2D.h"
-#include "../objects/body-parts/ZygoteShell.h"
-#include "../objects/body-parts/Torso.h"
-#include "../objects/body-parts/BodyConst.h"
+#include "../body-parts/ZygoteShell.h"
+#include "../body-parts/Torso.h"
+#include "../body-parts/BodyConst.h"
+#include "Bug/IMotor.h"
+#include "Bug/ISensor.h"
 
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
@@ -381,5 +381,5 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 }
 
 void Bug::draw(RenderContext const &ctx) {
-	// TODO drawlist or draw_tree ?
+	body_->draw_tree(ctx);
 }

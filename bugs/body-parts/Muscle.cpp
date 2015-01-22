@@ -37,11 +37,11 @@
 #include "Joint.h"
 #include "Bone.h"
 #include "BodyConst.h"
-#include "../../math/math2D.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../neuralnet/InputSocket.h"
-#include "../../UpdateList.h"
+#include "../math/math2D.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../neuralnet/InputSocket.h"
+#include "../UpdateList.h"
 #include <glm/vec3.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <math.h>
@@ -212,7 +212,7 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
 	}
 }
 
-void Muscle::draw(RenderContext& ctx) {
+void Muscle::draw(RenderContext const& ctx) {
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
 	float aspectRatio = initData->aspectRatio;
 #ifdef DEBUG_DRAW_MUSCLE

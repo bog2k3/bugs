@@ -5,7 +5,8 @@
  *      Author: bog
  */
 
-#include "LifetimeSensor.h"
+#include "../Bug/LifetimeSensor.h"
+
 #include "../../neuralnet/OutputSocket.h"
 
 LifetimeSensor::LifetimeSensor()

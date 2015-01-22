@@ -7,11 +7,11 @@
 
 #include "Torso.h"
 #include "BodyConst.h"
-#include "../../math/math2D.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../UpdateList.h"
-#include "../../log.h"
+#include "../math/math2D.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../UpdateList.h"
+#include "../log.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -55,7 +55,7 @@ void Torso::commit() {
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 
-void Torso::draw(RenderContext& ctx) {
+void Torso::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 #ifdef DEBUG_DRAW_TORSO

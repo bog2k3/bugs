@@ -12,6 +12,8 @@
 
 class RenderContext;
 
+template<typename T> void draw(T* t, RenderContext const& ctx);
+
 class drawable_wrap {
 public:
 	template<typename T>
@@ -36,22 +38,31 @@ private:
 		virtual ~concept_t() noexcept = default;
 		virtual void draw_(RenderContext const& ctx) = 0;
 		virtual concept_t* copy()=0;
-		virtual bool equal_value(const concept_t* x) const = 0;
 		virtual void* getRawPtr() = 0;
 	};
 	template<typename T>
 	struct model_t : concept_t {
 		T* obj_;
-		model_t(T x) : obj_(std::move(x)) {}
+		model_t(T* x) : obj_(x) {}
 		~model_t() noexcept {};
 		void draw_(RenderContext const& ctx) override {
-			obj_->draw(ctx);
+			drawImpl(obj_, ctx, true);
 		}
 		concept_t* copy() override {
 			return new model_t<T>(obj_);
 		}
 		void* getRawPtr() {
 			return obj_;
+		}
+
+		template<typename T1>
+		static decltype(&T1::draw) drawImpl(T1* t, RenderContext const& ctx, bool dummyToUseMember) {
+			t->draw(ctx);
+			return nullptr;
+		}
+		template<typename T1>
+		static void drawImpl(T1* t, RenderContext const& ctx, ...) {
+			::draw(t, ctx);
 		}
 	};
 

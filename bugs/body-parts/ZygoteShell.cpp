@@ -7,11 +7,11 @@
 
 #include "ZygoteShell.h"
 #include "BodyConst.h"
-#include "../../math/math2D.h"
-#include "../../math/box2glm.h"
-#include "../../math/tools.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../renderOpenGL/RenderContext.h"
+#include "../math/math2D.h"
+#include "../math/box2glm.h"
+#include "../math/tools.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/RenderContext.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -48,7 +48,7 @@ void ZygoteShell::commit() {
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 
-void ZygoteShell::draw(RenderContext& ctx) {
+void ZygoteShell::draw(RenderContext const& ctx) {
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
 	ctx.shape->drawLine(pos,

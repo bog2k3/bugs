@@ -9,8 +9,8 @@
 #define OBJECTS_BODY_PARTS_GRIPPER_H_
 
 #include "BodyPart.h"
-#include "../../entities/bug_stuff/IMotor.h"
 #include <memory>
+#include "../entities/Bug/IMotor.h"
 
 class b2WeldJoint;
 
@@ -20,7 +20,7 @@ public:
 	Gripper(BodyPart* parent);
 	~Gripper() override;
 
-	void draw(RenderContext& ctx) override;
+	void draw(RenderContext const& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 
 	void update(float dt);

@@ -34,7 +34,7 @@ struct PhysicsProperties {
 
 class PhysicsBody {
 public:
-	PhysicsBody() = default;
+	PhysicsBody() : b2Body_(nullptr) {}
 	virtual ~PhysicsBody();
 
 	void create(PhysicsProperties const &props);

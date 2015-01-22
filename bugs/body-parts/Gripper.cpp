@@ -7,15 +7,15 @@
 
 #include "Gripper.h"
 #include "BodyConst.h"
-#include "../../World.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../math/math2D.h"
-#include "../../neuralnet/InputSocket.h"
-#include "../../UpdateList.h"
+#include "../World.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../math/math2D.h"
+#include "../neuralnet/InputSocket.h"
+#include "../UpdateList.h"
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include "../../log.h"
+#include "../log.h"
 
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
@@ -74,7 +74,7 @@ void Gripper::setActive(bool active) {
 	}
 }
 
-void Gripper::draw(RenderContext& ctx) {
+void Gripper::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {

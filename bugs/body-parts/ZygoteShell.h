@@ -16,7 +16,7 @@ public:
 	~ZygoteShell() override;
 
 	void commit() override;
-	void draw(RenderContext& ctx) override;
+	void draw(RenderContext const& ctx) override;
 
 	/**
 	 * this updates the BodyPartInitializationData::cachedProps from the actual zygot physics body,

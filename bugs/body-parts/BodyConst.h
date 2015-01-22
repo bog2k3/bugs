@@ -8,7 +8,7 @@
 #ifndef OBJECTS_BODY_PARTS_BODYCONST_H_
 #define OBJECTS_BODY_PARTS_BODYCONST_H_
 
-#include "../../math/constants.h"
+#include "../math/constants.h"
 
 class BodyConst {
 public:

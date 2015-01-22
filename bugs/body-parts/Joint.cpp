@@ -7,12 +7,12 @@
 
 #include "Joint.h"
 #include "BodyConst.h"
-#include "../../World.h"
-#include "../../math/box2glm.h"
-#include "../../math/math2D.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../log.h"
-#include "../../UpdateList.h"
+#include "../World.h"
+#include "../math/box2glm.h"
+#include "../math/math2D.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../log.h"
+#include "../UpdateList.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -111,7 +111,7 @@ glm::vec3 Joint::getWorldTransformation() const {
 	}
 }
 
-void Joint::draw(RenderContext& ctx) {
+void Joint::draw(RenderContext const& ctx) {
 #ifndef DEBUG_DRAW_JOINT
 	if (committed_) {
 		// nothing, physics draws

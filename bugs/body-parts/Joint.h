@@ -30,7 +30,7 @@ public:
 	Joint(BodyPart* parent);
 	~Joint() override;
 
-	void draw(RenderContext& ctx) override;
+	void draw(RenderContext const& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 	glm::vec3 getWorldTransformation() const override;
 

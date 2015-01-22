@@ -8,7 +8,7 @@
 #ifndef ENTITIES_LIFETIMESENSOR_H_
 #define ENTITIES_LIFETIMESENSOR_H_
 
-#include "ISensor.h"
+#include "../Bug/ISensor.h"
 
 class LifetimeSensor: public ISensor {
 public:

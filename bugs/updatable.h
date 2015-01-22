@@ -10,6 +10,8 @@
 
 #include <memory>
 
+template<typename T> void update(T* t, float dt);
+
 class updatable_wrap {
 public:
 	template<typename T>
@@ -20,6 +22,10 @@ public:
 	updatable_wrap(const updatable_wrap& w) : self_(w.self_->copy()) {}
 	updatable_wrap operator = (updatable_wrap const &w) { return updatable_wrap(w); }
 
+	bool equal_value(updatable_wrap const& w) const {
+		return self_->getRawPtr() == w.self_->getRawPtr();
+	}
+
 	void update(float dt) {
 		self_->update_(dt);
 	}
@@ -29,6 +35,7 @@ private:
 		virtual ~concept_t() noexcept = default;
 		virtual void update_(float dt) = 0;
 		virtual concept_t* copy()=0;
+		virtual void* getRawPtr() = 0;
 	};
 	template<typename T>
 	struct model_t : concept_t {
@@ -36,10 +43,23 @@ private:
 		~model_t() noexcept override {};
 		model_t(T* x) : obj_(x) {}
 		void update_(float dt) override {
-			obj_->update(dt);
+			updateImpl(obj_, dt, true);
 		}
 		concept_t* copy() override {
 			return new model_t<T>(obj_);
+		}
+		void* getRawPtr() override {
+			return obj_;
+		}
+
+		template<typename T1>
+		static decltype(&T1::update) updateImpl(T1* t, float dt, bool dummyToUseMember) {
+			t->update(dt);
+			return nullptr;
+		}
+		template<typename T1>
+		static void updateImpl(T1* t, float dt, ...) {
+			::update(t, dt);
 		}
 	};
 

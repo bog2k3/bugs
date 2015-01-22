@@ -8,8 +8,8 @@
 #ifndef OBJECTS_BODY_PARTS_MUSCLE_H_
 #define OBJECTS_BODY_PARTS_MUSCLE_H_
 
+#include "../entities/Bug/IMotor.h"
 #include "BodyPart.h"
-#include "../../entities/bug_stuff/IMotor.h"
 
 #define DEBUG_DRAW_MUSCLE
 
@@ -28,7 +28,7 @@ public:
 	Muscle(BodyPart* parent, Joint* joint, int motorDirSign);
 	virtual ~Muscle() override;
 
-	void draw(RenderContext& ctx) override;
+	void draw(RenderContext const& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 	void update(float dt);
 

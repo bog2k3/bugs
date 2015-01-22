@@ -34,13 +34,24 @@ public:
 	b2Body* getGroundBody() { return groundBody; }
 
 	void takeOwnershipOf(Entity* e);
+	void destroyEntity(Entity* e);
+
+	void update(float dt);
+	void draw(RenderContext const& ctx);
 
 protected:
 	World();
 	b2World* physWld;
 	b2Body* groundBody;
 	std::vector<Entity*> entities;
+	std::vector<Entity*> entsToUpdate;
+	std::vector<Entity*> entsToDraw;
+	std::vector<Entity*> entsToDestroy;
+	std::vector<Entity*> entsToTakeOver;
 	std::deque<b2Fixture*> b2QueryResult;
+
+	void destroyPending();
+	void takeOverPending();
 };
 
 #endif /* WORLD_H_ */

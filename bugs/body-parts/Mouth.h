@@ -18,7 +18,7 @@ public:
 	virtual ~Mouth() override;
 
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
-	void draw(RenderContext& ctx) override;
+	void draw(RenderContext const& ctx) override;
 
 protected:
 	float linearSize_;

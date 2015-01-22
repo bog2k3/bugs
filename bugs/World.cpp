@@ -6,6 +6,7 @@
  */
 
 #include "World.h"
+#include "entities/Entity.h"
 #include "math/math2D.h"
 #include "math/box2glm.h"
 #include <glm/glm.hpp>
@@ -56,6 +57,52 @@ b2Body* World::getBodyAtPos(glm::vec2 pos) {
 }
 
 void World::takeOwnershipOf(Entity* e) {
-	entities.push_back(e);
-	// add to update and draw lists if appropriate
+	entsToTakeOver.push_back(e);
+}
+
+void World::destroyEntity(Entity* e) {
+	entsToDestroy.push_back(e);
+}
+
+void World::destroyPending() {
+	for (auto e : entsToDestroy) {
+		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
+		if (flags & Entity::FF_UPDATABLE)
+			entsToUpdate.erase(std::find(entsToUpdate.begin(), entsToUpdate.end(), e));
+		if (flags & Entity::FF_DRAWABLE)
+			entsToDraw.erase(std::find(entsToDraw.begin(), entsToDraw.end(), e));
+		entities.erase(std::find(entities.begin(), entities.end(), e));
+		delete e;
+	}
+	entsToDestroy.clear();
+}
+
+void World::takeOverPending() {
+	for (auto e : entsToTakeOver) {
+		entities.push_back(e);
+		// add to update and draw lists if appropriate
+		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
+		if (flags & Entity::FF_DRAWABLE)
+			entsToDraw.push_back(e);
+		if (flags & Entity::FF_UPDATABLE)
+			entsToUpdate.push_back(e);
+	}
+	entsToTakeOver.clear();
+}
+
+void World::update(float dt) {
+	// delete pending entities:
+	destroyPending();
+
+	// take over pending entities:
+	takeOverPending();
+
+	// do the actual update on entities:
+	for (auto e : entsToUpdate)
+		e->update(dt);
+}
+
+void World::draw(RenderContext const& ctx) {
+	for (auto e : entsToDraw)
+		e->draw(ctx);
 }

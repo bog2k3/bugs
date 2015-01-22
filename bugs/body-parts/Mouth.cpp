@@ -7,10 +7,10 @@
 
 #include "Mouth.h"
 #include "BodyConst.h"
-#include "../../math/math2D.h"
-#include "../../math/box2glm.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../renderOpenGL/Shape2D.h"
+#include "../math/math2D.h"
+#include "../math/box2glm.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../renderOpenGL/Shape2D.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -68,7 +68,7 @@ void Mouth::commit() {
 	pJoint = (b2WeldJoint*)physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
 }
 
-void Mouth::draw(RenderContext& ctx) {
+void Mouth::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {

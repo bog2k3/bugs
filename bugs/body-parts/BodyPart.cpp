@@ -7,12 +7,12 @@
 
 #include "BodyPart.h"
 #include "BodyConst.h"
-#include "../../math/box2glm.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../renderOpenGL/Shape2D.h"
-#include "../../math/math2D.h"
-#include "../../log.h"
-#include "../../genetics/GeneDefinitions.h"
+#include "../math/box2glm.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../math/math2D.h"
+#include "../log.h"
+#include "../genetics/GeneDefinitions.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <assert.h>
@@ -204,7 +204,7 @@ glm::vec3 BodyPart::getWorldTransformation() const {
 	}
 }
 
-void BodyPart::draw(RenderContext& ctx) {
+void BodyPart::draw(RenderContext const& ctx) {
 	if (committed_)
 		return;
 	glm::vec3 trans = getWorldTransformation();
@@ -296,4 +296,10 @@ void BodyPart::reattachChildren() {
 			children_[i]->commit();
 		}
 	}
+}
+
+void BodyPart::draw_tree(RenderContext const& ctx) {
+	draw(ctx);
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->draw_tree(ctx);
 }

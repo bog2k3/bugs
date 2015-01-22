@@ -10,8 +10,8 @@
 #include "input/operations/OperationsStack.h"
 #include "input/operations/OperationPan.h"
 #include "input/operations/OperationSpring.h"
-#include "objects/body-parts/Bone.h"
-#include "objects/body-parts/Joint.h"
+#include "body-parts/Bone.h"
+#include "body-parts/Joint.h"
 #include "entities/food/FoodDispenser.h"
 #include "World.h"
 #include "PhysicsDebugDraw.h"
@@ -20,7 +20,7 @@
 #include "entities/Bug.h"
 #include "DrawList.h"
 #include "UpdateList.h"
-#include "objects/OSD/ScaleDisplay.h"
+#include "OSD/ScaleDisplay.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -28,17 +28,13 @@
 #include <sstream>
 #include <functional>
 
-template<> void draw(b2World*& wld, RenderContext &ctx) {
+template<> void draw(b2World* wld, RenderContext const &ctx) {
 	wld->DrawDebugData();
 }
 
-/*void statsHdr() {
-	std::cout << "t,phi,omega,tau,e\n";
+template<> void update(b2World* wld, float dt) {
+	wld->Step(dt, 6, 2);
 }
-
-void stats(float t, float phi, float omega, float tau, float e) {
-	std::cout<<t<<","<<phi<<","<<omega<<","<<tau<<","<<e<<"\n";
-}*/
 
 int main() {
 	LOGGER("app_main");
@@ -72,8 +68,6 @@ int main() {
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	UpdateList updateList;
-
 	Bug* b1(Bug::newBasicBug(glm::vec2(0, 0)));
 	World::getInstance()->takeOwnershipOf(b1);
 	Bug* b2(Bug::newBasicBug(glm::vec2(0.4f, 0)));
@@ -91,7 +85,13 @@ int main() {
 	DrawList drawList;
 	drawList.add(World::getInstance());
 	drawList.add(&physWld);
-	drawList.add(ScaleDisplay(glm::vec2(15, 25), 300));
+	ScaleDisplay scale(glm::vec2(15, 25), 300);
+	drawList.add(&scale);
+
+	UpdateList updateList;
+	updateList.add(&opStack);
+	updateList.add(&physWld);
+	updateList.add(World::getInstance());
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
@@ -100,8 +100,6 @@ int main() {
 		t = newTime;
 
 		if (dt > 0) {
-			opStack.update(dt);
-			physWld.Step(dt, 6, 2);
 			updateList.update(dt);
 		}
 		// wait until previous frame finishes rendering and show frame output:

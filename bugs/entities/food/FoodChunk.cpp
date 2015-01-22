@@ -8,7 +8,6 @@
 #include "FoodChunk.h"
 #include "../WorldConst.h"
 #include "../../math/math2D.h"
-#include "../../log.h"
 #include <Box2D/Box2D.h>
 
 FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass)
@@ -28,8 +27,6 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 	fdef.restitution = 0.3f;
 	fdef.shape = &shp;
 	physBody_.b2Body_->CreateFixture(&fdef);
-
-	LOGLN("create " << this);
 }
 
 FoodChunk::~FoodChunk() {
@@ -43,7 +40,6 @@ void FoodChunk::draw(RenderContext const& ctx) {
 void FoodChunk::update(float dt) {
 	lifeTime_ += dt;
 	if (lifeTime_ >= WorldConst::FoodChunkLifeTime) {
-		delete this;
-// #error "the above should not compile"
+		destroy();
 	}
 }

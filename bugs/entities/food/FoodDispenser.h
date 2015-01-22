@@ -9,12 +9,13 @@
 #define OBJECTS_FOOD_FOODDISPENSER_H_
 
 #include "../Entity.h"
-#include "../../objects/PhysicsBody.h"
+#include "../../PhysicsBody.h"
 
 class FoodDispenser: public Entity {
 public:
 	FoodDispenser(glm::vec2 position, float direction);
 	virtual ~FoodDispenser();
+	FunctionalityFlags getFunctionalityFlags() override { return FF_UPDATABLE; }
 
 	void draw(RenderContext const& ctx) override;
 	void update(float dt) override;

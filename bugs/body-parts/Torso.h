@@ -17,7 +17,7 @@ public:
 	Torso(BodyPart* parent);
 	~Torso() override;
 
-	void draw(RenderContext& ctx) override;
+	void draw(RenderContext const& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 	void setInitialFatMass(float fat);
 	void update(float dt);
