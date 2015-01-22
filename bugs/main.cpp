@@ -97,6 +97,7 @@ int main() {
 	UpdateList updateList;
 	updateList.add(&opStack);
 	updateList.add(&physWld);
+	updateList.add(&contactListener);
 	updateList.add(World::getInstance());
 
 	float t = glfwGetTime();
