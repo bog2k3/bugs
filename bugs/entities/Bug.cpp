@@ -16,6 +16,7 @@
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Torso.h"
 #include "../body-parts/BodyConst.h"
+#include "../utils/log.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
 
@@ -117,6 +118,8 @@ void Bug::update(float dt) {
 		body_->die_tree();
 		return;
 	}
+
+	LOGLN("leanMass: "<<body_->getMass_tree() - body_->getFatMass()<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
 	if (body_->getMass_tree() - body_->getFatMass() < adultLeanMass_) {
 		// juvenile, growing
@@ -387,6 +390,7 @@ void Bug::draw(RenderContext const &ctx) {
 }
 
 void Bug::onFoodEaten(float mass) {
+	LOGLN("EAT "<<mass<<"======================");
 	float fatMassRatio = body_->getFatMass() / body_->getMass_tree();
 	float growthMass = 0;
 	if (fatMassRatio >= minFatMasRatio_)

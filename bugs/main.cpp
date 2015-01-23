@@ -75,11 +75,11 @@ int main() {
 	Bug* b1(Bug::newBasicBug(glm::vec2(0, 0)));
 	World::getInstance()->takeOwnershipOf(b1);
 	Bug* b2(Bug::newBasicBug(glm::vec2(0.4f, 0)));
-	World::getInstance()->takeOwnershipOf(b2);
+	//World::getInstance()->takeOwnershipOf(b2);
 	Bug* b3(Bug::newBasicBug(glm::vec2(-0.4f, 0)));
-	World::getInstance()->takeOwnershipOf(b3);
+	//World::getInstance()->takeOwnershipOf(b3);
 	Bug* b4(Bug::newBasicBug(glm::vec2(0, 0.4f)));
-	World::getInstance()->takeOwnershipOf(b4);
+	//World::getInstance()->takeOwnershipOf(b4);
 
 	FoodDispenser* foodDisp1(new FoodDispenser(glm::vec2(-1, 0.5f), 0));
 	World::getInstance()->takeOwnershipOf(foodDisp1);

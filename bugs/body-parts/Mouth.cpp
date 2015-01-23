@@ -138,5 +138,6 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 void Mouth::update(float dt) {
 	float massProcessed = min(usedBuffer_, processingSpeed_*dt);
 	usedBuffer_ -= massProcessed;
-	parent_->addProcessedFood(massProcessed);
+	if (massProcessed > 0)
+		parent_->addProcessedFood(massProcessed);
 }

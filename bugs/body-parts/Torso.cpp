@@ -90,7 +90,9 @@ void Torso::draw(RenderContext const& ctx) {
 
 glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle) const
 {
-	float size = getInitializationData()->size + fatMass_*BodyConst::FatDensityInv;
+	float size = getInitializationData()->size;
+	float fatSize = fatMass_*BodyConst::FatDensityInv;
+	size += fatSize;
 	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);
 }
 

@@ -28,7 +28,15 @@ public:
 
 	void consumeEnergy(float amount) override;
 	void addProcessedFood(float mass) override;
-	float getMass_tree() override { return cachedMassTree_; }
+	float getMass_tree() override {
+		if (cachedMassTree_ == 0)
+			cachedMassTree_ = BodyPart::getMass_tree();
+		return cachedMassTree_;
+	}
+	void applyScale_tree(float scale) override {
+		cachedMassTree_ = 0;	// reset the cached value to force a recomputation
+		BodyPart::applyScale_tree(scale);
+	}
 
 	void setMouth(Mouth* m) { mouth_ = m; }
 	void replenishEnergyFromMass(float mass);

@@ -87,7 +87,7 @@ public:
 	virtual float getMass_tree();
 
 	/* scale the part and all its children by a given amount */
-	void applyScale_tree(float scale);
+	virtual void applyScale_tree(float scale);
 
 	// tells the entire hierarchy that the body died
 	void die_tree();

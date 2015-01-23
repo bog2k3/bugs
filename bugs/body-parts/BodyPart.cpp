@@ -108,8 +108,10 @@ void BodyPart::remove(BodyPart* part) {
 glm::vec2 BodyPart::getUpstreamAttachmentPoint() const {
 	if (!parent_)
 		return glm::vec2(0);
-	else
-		return parent_->getChildAttachmentPoint(initialData_->attachmentDirectionParent);
+	else {
+		glm::vec2 point(parent_->getChildAttachmentPoint(initialData_->attachmentDirectionParent));
+		return point;
+	}
 }
 
 void BodyPart::commit_tree() {
@@ -152,9 +154,10 @@ void BodyPart::purge_initializationData_tree() {
 }
 
 glm::vec2 BodyPart::getParentSpacePosition() const {
-	return getUpstreamAttachmentPoint() - glm::rotate(
-			getChildAttachmentPoint(PI - initialData_->angleOffset),
-			(float)initialData_->attachmentDirectionParent + initialData_->angleOffset);
+	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
+	glm::vec2 localOffset = getChildAttachmentPoint(PI - initialData_->angleOffset);
+	float angle = initialData_->attachmentDirectionParent + initialData_->angleOffset;
+	return upstreamAttach - glm::rotate(localOffset, angle);
 #warning "must take into account lateral offset"
 }
 
