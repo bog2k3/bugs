@@ -43,6 +43,7 @@ public:
 	void create(PhysicsProperties const &props);
 
 	Event<void(PhysicsBody *other, float impulseMagnitude)> onCollision;
+	Event<void(PhysicsBody* caller)> onDestroy;
 
 	// the Box2D body:
 	b2Body* b2Body_;

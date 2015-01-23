@@ -28,6 +28,7 @@ public:
 
 	void consumeEnergy(float amount) override;
 	void addProcessedFood(float mass) override;
+	// body mass doesn't include fat mass as long as initializationData is available. b2Body mass does include fat too.
 	float getMass_tree() override {
 		if (cachedMassTree_ == 0)
 			cachedMassTree_ = BodyPart::getMass_tree();

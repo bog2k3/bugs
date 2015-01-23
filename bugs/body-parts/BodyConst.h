@@ -49,7 +49,7 @@ public:
 	static constexpr float initialMouthSize					= 0.3e-3f;		// [m^2]
 
 	// default values for whole-body attributes:
-	static constexpr float initialFatMassRatio				= 0.3f;			// [*]
+	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat
 	static constexpr float initialMinFatMassRatio			= 0.1f;			// [*] below this fraction, growth is halted
 	static constexpr float initialAdultLeanMass				= 6.f;			// [kg]
 	static constexpr float initialGrowthMassRatio			= 0.5f;			// [*] what fraction of food is used for growth (the rest turns into energy and fat)

@@ -11,10 +11,12 @@
 #include "../InputEvent.h"
 #include "IOperationSpatialLocator.h"
 #include "../../math/box2glm.h"
+#include "../../PhysicsBody.h"
 #include <Box2D/Box2D.h>
 
 OperationSpring::OperationSpring(InputEvent::MOUSE_BUTTON boundButton)
 	: pContext(nullptr), boundButton(boundButton), isActive(false), mouseJoint(nullptr), mouseBody(nullptr)
+	, onDestroySubscription(-1)
 {
 }
 
@@ -46,38 +48,39 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 			break;
 		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
 		b2Body* pressedObj = pContext->locator->getBodyAtPos(wldClickPos);
-		if (pressedObj != nullptr) {
-			isActive = true;
-			b2BodyDef bdef;
-			bdef.type = b2_staticBody;
-			bdef.position = g2b(wldClickPos);
-			mouseBody = pContext->physics->CreateBody(&bdef);
-			b2CircleShape shape;
-			shape.m_radius = 0.05f;
-			b2FixtureDef fdef;
-			fdef.shape = &shape;
-			b2Fixture* fix = mouseBody->CreateFixture(&fdef);
-			b2Filter filter;
-			filter.maskBits = 0;
-			fix->SetFilterData(filter);
-			b2MouseJointDef def;
-			def.target = g2b(wldClickPos);
-			def.bodyA = mouseBody;
-			def.bodyB = pressedObj;
-			def.bodyB->SetAwake(true);
-			def.maxForce = 100;
-			mouseJoint = (b2MouseJoint*)pContext->physics->CreateJoint(&def);
-		}
+		if (pressedObj == nullptr)
+			return;
+		PhysicsBody* phPtr = (PhysicsBody*)pressedObj->GetUserData();
+		onDestroySubscription = phPtr->onDestroy.add(std::bind(&OperationSpring::onOtherBodyDestroyed, this, std::placeholders::_1));
+		isActive = true;
+
+		b2BodyDef bdef;
+		bdef.type = b2_staticBody;
+		bdef.position = g2b(wldClickPos);
+		mouseBody = pContext->physics->CreateBody(&bdef);
+		b2CircleShape shape;
+		shape.m_radius = 0.05f;
+
+		b2FixtureDef fdef;
+		fdef.shape = &shape;
+		b2Fixture* fix = mouseBody->CreateFixture(&fdef);
+		b2Filter filter;
+		filter.maskBits = 0;
+		fix->SetFilterData(filter);
+
+		b2MouseJointDef def;
+		def.target = g2b(wldClickPos);
+		def.bodyA = mouseBody;
+		def.bodyB = pressedObj;
+		def.bodyB->SetAwake(true);
+		def.maxForce = 100;
+		mouseJoint = (b2MouseJoint*)pContext->physics->CreateJoint(&def);
 		break;
 	}
 	case InputEvent::EV_MOUSE_UP: {
 		if (ev.mouseButton != boundButton || !isActive)
 			break;
-		isActive = false;
-		pContext->physics->DestroyJoint(mouseJoint);
-		mouseJoint = nullptr;
-		pContext->physics->DestroyBody(mouseBody);
-		mouseBody = nullptr;
+		releaseJoint();
 		break;
 	}
 	case InputEvent::EV_MOUSE_MOVED: {
@@ -90,6 +93,25 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 	default:
 		break;
 	}
+}
+
+void OperationSpring::onOtherBodyDestroyed(PhysicsBody* body) {
+	releaseJoint();
+}
+
+void OperationSpring::releaseJoint() {
+	if (!isActive)
+		return;
+	if (onDestroySubscription > 0) {
+		PhysicsBody* phPtr = (PhysicsBody*)mouseBody->GetUserData();
+		phPtr->onDestroy.remove(onDestroySubscription);
+		onDestroySubscription = -1;
+	}
+	isActive = false;
+	pContext->physics->DestroyJoint(mouseJoint);
+	mouseJoint = nullptr;
+	pContext->physics->DestroyBody(mouseBody);
+	mouseBody = nullptr;
 }
 
 void OperationSpring::update(float dt) {

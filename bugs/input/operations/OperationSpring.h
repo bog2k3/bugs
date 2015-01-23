@@ -10,7 +10,7 @@
 
 #include "IOperation.h"
 
-class WorldObject;
+class PhysicsBody;
 class b2MouseJoint;
 class b2Body;
 
@@ -32,6 +32,10 @@ protected:
 	bool isActive;
 	b2MouseJoint* mouseJoint;
 	b2Body* mouseBody;
+	int onDestroySubscription;
+
+	void onOtherBodyDestroyed(PhysicsBody* body);
+	void releaseJoint();
 };
 
 #endif /* INPUT_OPERATIONS_OPERATIONSPRING_H_ */

@@ -74,7 +74,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			float zygMass = zygoteShell_->getMass();
 
 			// compute fat amount and scale up the torso to the correct size
-			float fatMass = zygMass * initialFatMassRatio_ / (initialFatMassRatio_+1);
+			float fatMass = zygMass * initialFatMassRatio_;
 			body_->setInitialFatMass(fatMass);
 			body_->applyScale_tree((zygMass-fatMass)/currentMass);
 
@@ -119,7 +119,7 @@ void Bug::update(float dt) {
 		return;
 	}
 
-	LOGLN("leanMass: "<<body_->getMass_tree() - body_->getFatMass()<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
+	LOGLN("leanMass: "<<body_->getMass_tree()<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
 	if (body_->getMass_tree() - body_->getFatMass() < adultLeanMass_) {
 		// juvenile, growing

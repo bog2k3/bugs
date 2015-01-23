@@ -21,13 +21,13 @@ static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 Torso::Torso(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_TORSO, std::make_shared<BodyPartInitializationData>())
 	, size_(0.f)
-	, fatMass_(0.1)
+	, fatMass_(0)
 	, lastCommittedTotalSizeInv_(0)
 	, frameUsedEnergy_(0)
-	, mouth_(nullptr)
 	, energyBuffer_(0)
 	, maxEnergyBuffer_(0)
 	, cachedMassTree_(0)
+	, mouth_(nullptr)
 {
 	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
 	physBody_.userPointer_ = this;

@@ -35,6 +35,7 @@ void PhysicsBody::create(const PhysicsProperties& props) {
 }
 
 PhysicsBody::~PhysicsBody() {
+	onDestroy.trigger(this);
 	if (b2Body_)
 		b2Body_->GetWorld()->DestroyBody(b2Body_);
 }
