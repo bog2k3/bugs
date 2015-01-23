@@ -10,6 +10,8 @@
 
 #include "BodyPart.h"
 
+class Mouth;
+
 #define DEBUG_DRAW_TORSO
 
 class Torso : public BodyPart {
@@ -22,14 +24,26 @@ public:
 	void setInitialFatMass(float fat);
 	void update(float dt);
 	inline float getFatMass() { return fatMass_; }
+	inline float getBufferedEnergy() { return energyBuffer_; }
 
 	void consumeEnergy(float amount) override;
+	void addProcessedFood(float mass) override;
+	float getMass_tree() override { return cachedMassTree_; }
+
+	void setMouth(Mouth* m) { mouth_ = m; }
+	void replenishEnergyFromMass(float mass);
+
+	Event<void(float mass)> onFoodEaten;
 
 protected:
 	float size_;
 	float fatMass_;
 	float lastCommittedTotalSizeInv_;
 	float frameUsedEnergy_;
+	float energyBuffer_;
+	float maxEnergyBuffer_;
+	float cachedMassTree_;
+	Mouth* mouth_;
 
 	void commit() override;
 	void die() override;

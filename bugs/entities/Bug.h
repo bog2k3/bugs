@@ -61,11 +61,13 @@ protected:
 	CummulativeValue initialFatMassRatio_;
 	CummulativeValue minFatMasRatio_;
 	CummulativeValue adultLeanMass_;
+	CummulativeValue growthRatio_;
 
 	friend class Ribosome;
 
 	void updateEmbryonicDevelopment(float dt);
 	void updateDeadDecaying(float dt);
+	void onFoodEaten(float mass);
 };
 
 #endif /* ENTITIES_BUG_H_ */

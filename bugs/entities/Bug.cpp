@@ -34,6 +34,7 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
+	, growthRatio_(BodyConst::initialGrowthMassRatio)
 {
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(position, zygoteSize);
@@ -41,11 +42,13 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
 	body_ = new Torso(zygoteShell_);
+	body_->onFoodEaten.add(std::bind(&Bug::onFoodEaten, this, std::placeholders::_1));
 	ribosome_ = new Ribosome(this);
 
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO] = &minFatMasRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_ADULT_LEAN_MASS] = &adultLeanMass_;
+	mapBodyAttributes_[GENE_BODY_ATTRIB_GROWTH_MASS_RATIO] = &growthRatio_;
 
 	sensors_.push_back(&lifeTimeSensor_);
 }
@@ -108,15 +111,14 @@ void Bug::update(float dt) {
 	bodyPartsUpdateList_.update(dt);
 	neuralNet_->iterate();
 
-	if (body_->getFatMass() <= 0) {
+	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
 		// we just depleted our energy supply and died
 		isAlive_ = false;
 		body_->die_tree();
 		return;
 	}
 
-#warning "optimize this - only check every N frames since recursive is expensive"
-	if (body_->getMass_tree() < adultLeanMass_) {
+	if (body_->getMass_tree() - body_->getFatMass() < adultLeanMass_) {
 		// juvenile, growing
 		// max growth speed is dictated by genes
 
@@ -382,4 +384,15 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 
 void Bug::draw(RenderContext const &ctx) {
 	body_->draw_tree(ctx);
+}
+
+void Bug::onFoodEaten(float mass) {
+	float fatMassRatio = body_->getFatMass() / body_->getMass_tree();
+	float growthMass = 0;
+	if (fatMassRatio >= minFatMasRatio_)
+		growthMass = growthRatio_ * mass;
+#warning "growth mass must apply only to lean body mass -> must not scale fat"
+#warning "also max growth rate is dicated by genes, so it's not instant"
+
+	body_->replenishEnergyFromMass(mass - growthMass);
 }

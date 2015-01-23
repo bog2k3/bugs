@@ -23,13 +23,17 @@ public:
 	void update(float dt) override;
 	void draw(RenderContext const& rc) override;
 
+	float getInitialMass() { return initialMass_; }
+	float getMassLeft() { return amountLeft_; }
+	void consume(float massAmount);
+
 	Event<void(FoodChunk*)> onDestroy;
 
 protected:
 	PhysicsBody physBody_;
 	float size_;
+	float initialMass_;
 	float amountLeft_;
-	float lifeTime_;
 };
 
 #endif /* OBJECTS_FOOD_FOODCHUNK_H_ */

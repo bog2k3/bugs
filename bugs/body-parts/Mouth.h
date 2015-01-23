@@ -19,9 +19,15 @@ public:
 
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
 	void draw(RenderContext const& ctx) override;
+	void update(float dt);
+
+	void setProcessingSpeed(float massPerTime);
 
 protected:
-	float linearSize_;
+	float width_;
+	float bufferSize_;
+	float usedBuffer_;
+	float processingSpeed_;		// [kg/s]
 	b2WeldJoint* pJoint;
 
 	void commit() override;

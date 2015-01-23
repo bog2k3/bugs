@@ -21,6 +21,7 @@ public:
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
 	static constexpr float MuscleDensity					= 13.f;			// [kg/m^2]
 	static constexpr float TorsoDensity						= 7.f;			// [kg/m^2]
+	static constexpr float TorsoEnergyDensity				= 100.f;		// [J/m^2] how much ready-to-use energy the torso can store
 	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*]
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
 	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.8f;			// [m/s] max meters/second linear contraction speed
@@ -32,6 +33,8 @@ public:
 	static constexpr float MuscleEnergyConstant				= 1.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
 	static constexpr float MouthAspectRatio					= 0.15f;		// [*] length/width
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
+	static constexpr float MouthBufferDensity				= 5.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
+	static constexpr float FoodProcessingSpeedDensity		= 1.e-3f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
@@ -49,6 +52,7 @@ public:
 	static constexpr float initialFatMassRatio				= 0.3f;			// [*]
 	static constexpr float initialMinFatMassRatio			= 0.1f;			// [*] below this fraction, growth is halted
 	static constexpr float initialAdultLeanMass				= 6.f;			// [kg]
+	static constexpr float initialGrowthMassRatio			= 0.5f;			// [*] what fraction of food is used for growth (the rest turns into energy and fat)
 };
 
 

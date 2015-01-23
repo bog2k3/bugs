@@ -12,8 +12,8 @@
 
 FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass)
 	: size_(mass * WorldConst::FoodChunkDensityInv)
+	, initialMass_(mass)
 	, amountLeft_(mass)
-	, lifeTime_(0)
 {
 	physBody_.userObjectType_ = ObjectTypes::FOOD_CHUNK;
 	physBody_.userPointer_ = this;
@@ -50,8 +50,11 @@ void FoodChunk::draw(RenderContext const& ctx) {
 }
 
 void FoodChunk::update(float dt) {
-	lifeTime_ += dt;
-	if (lifeTime_ >= WorldConst::FoodChunkLifeTime) {
+	consume(dt * WorldConst::FoodChunkDecaySpeed);
+}
+
+void FoodChunk::consume(float massAmount) {
+	amountLeft_ -= massAmount;
+	if (amountLeft_ <= 0)
 		destroy();
-	}
 }

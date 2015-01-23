@@ -34,7 +34,7 @@ Ribosome::Ribosome(Bug* bug)
 {
 	// create default body parts:
 	// 1. mouth
-	new Mouth(bug_->body_);		// this will be the location 0x1
+	bug->body_->setMouth(new Mouth(bug_->body_));		// this will be the location 0x1
 
 	// 2. Egg-layer
 	// ...

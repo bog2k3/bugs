@@ -69,6 +69,8 @@ public:
 
 	virtual glm::vec3 getWorldTransformation() const;
 
+	virtual void addProcessedFood(float mass) { if (parent_) parent_->addProcessedFood(mass); }
+
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
@@ -82,7 +84,7 @@ public:
 	void commit_tree();
 
 	/* returns the mass of the part and its entire subtree */
-	float getMass_tree();
+	virtual float getMass_tree();
 
 	/* scale the part and all its children by a given amount */
 	void applyScale_tree(float scale);

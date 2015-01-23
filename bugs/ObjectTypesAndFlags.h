@@ -12,7 +12,7 @@
 
 // all the objects that have a PhysicsBody should have an entry here:
 enum class ObjectTypes : uint32_t {
-	UNDEFINED,
+	UNDEFINED		= 0,
 	BPART_BONE,
 	BPART_GRIPPER,
 	BPART_MOUTH,

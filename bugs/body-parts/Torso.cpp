@@ -7,6 +7,7 @@
 
 #include "Torso.h"
 #include "BodyConst.h"
+#include "Mouth.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
@@ -23,6 +24,10 @@ Torso::Torso(BodyPart* parent)
 	, fatMass_(0.1)
 	, lastCommittedTotalSizeInv_(0)
 	, frameUsedEnergy_(0)
+	, mouth_(nullptr)
+	, energyBuffer_(0)
+	, maxEnergyBuffer_(0)
+	, cachedMassTree_(0)
 {
 	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
 	physBody_.userPointer_ = this;
@@ -57,6 +62,11 @@ void Torso::commit() {
 	fixDef.shape = &shape;
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
+
+	mouth_->setProcessingSpeed(size_ * BodyConst::FoodProcessingSpeedDensity);
+	maxEnergyBuffer_ = size_ * BodyConst::TorsoEnergyDensity;
+
+	cachedMassTree_ = BodyPart::getMass_tree();
 }
 
 void Torso::draw(RenderContext const& ctx) {
@@ -91,21 +101,46 @@ void Torso::setInitialFatMass(float fat) {
 
 void Torso::consumeEnergy(float amount) {
 	frameUsedEnergy_ += amount;
-
-#warning "optimization: have a ready-to-use energy buffer instead of using fat all the time. use fat to replenish buffer. food replenishes buffer too."
 }
 
 void Torso::update(float dt) {
-	fatMass_ -= frameUsedEnergy_ * BodyConst::FatEnergyDensityInv;
-	float crtSize = fatMass_ * BodyConst::FatDensityInv + size_;
-	if (crtSize * lastCommittedTotalSizeInv_ > BodyConst::SizeThresholdToCommit
-			|| crtSize * lastCommittedTotalSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
-		commit();
-		reattachChildren();
+	energyBuffer_ -= frameUsedEnergy_;
+	if (energyBuffer_ < 0) {
+		// must use up some fat to compensate since our energy buffer is empty
+		float requiredEnergy = -energyBuffer_;
+		fatMass_ -= requiredEnergy * BodyConst::FatEnergyDensityInv;
+		energyBuffer_ = 0;
+		if (fatMass_ > 0) {
+			// fill up energy buffer as well
+			float fatMassToUse = min(fatMass_, maxEnergyBuffer_ * BodyConst::FatEnergyDensityInv);
+			fatMass_ -= fatMassToUse;
+			energyBuffer_ += fatMassToUse * BodyConst::FatEnergyDensity;
+		}
+		float crtSize = fatMass_ * BodyConst::FatDensityInv + size_;
+		if (crtSize * lastCommittedTotalSizeInv_ > BodyConst::SizeThresholdToCommit
+				|| crtSize * lastCommittedTotalSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
+			commit();
+			reattachChildren();
+		}
 	}
 	frameUsedEnergy_ = 0;
 }
 
 void Torso::die() {
 	commit();
+}
+
+void Torso::addProcessedFood(float mass) {
+	onFoodEaten.trigger(mass);
+}
+
+void Torso::replenishEnergyFromMass(float mass) {
+	float massToFillBuffer = (maxEnergyBuffer_ - energyBuffer_) * BodyConst::FatEnergyDensityInv;
+	float massUsed = min(mass, massToFillBuffer);
+	energyBuffer_ += massUsed * BodyConst::FatEnergyDensity;
+	mass -= massUsed;
+	if (mass > 0) {
+		// this mass will be stored as fat
+		fatMass_ += mass;
+	}
 }
