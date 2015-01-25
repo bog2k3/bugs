@@ -73,8 +73,9 @@ enum gene_body_attribute_type {
 												// the remaining fat ratio falls below this threshold.
 	GENE_BODY_ATTRIB_ADULT_LEAN_MASS,			// target lean body mass (excluding fat) of adult body. The body grows
 												// until it reaches this target, then growth stops.
-	GENE_BODY_ATTRIB_GROWTH_MASS_RATIO,			// what fraction of the ingested food is used for growth (if fat is above threshold).
-												// the rest of the food is converted into energy and fat
+	GENE_BODY_ATTRIB_GROWTH_SPEED,				// [kg/s] speed at which growth happens
+	GENE_BODY_ATTRIB_EGG_MASS,					// [kg] how big eggs should be?
+	GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO	// [*] what fraction of growth food goes into creating eggs?
 };
 
 #endif /* GENETICS_GENEDEFINITIONS_H_ */

@@ -27,7 +27,7 @@ class ZygoteShell;
 
 class Bug : public Entity {
 public:
-	explicit Bug(Genome const &genome, float zygoteSize, glm::vec2 position);
+	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position);
 	virtual ~Bug();
 	FunctionalityFlags getFunctionalityFlags() override {
 		return FF_UPDATABLE | FF_DRAWABLE;
@@ -56,18 +56,25 @@ protected:
 	ZygoteShell* zygoteShell_;
 	UpdateList bodyPartsUpdateList_;
 	LifetimeSensor lifeTimeSensor_;
+	float growthMassBuffer_;	// stores processed food to be used for growth (at the speed dictated by genes)
+	float maxGrowthMassBuffer_;	// max growth buffer capacity (depends on max growth speed)
+	float realCachedMass_;		// lean body mass cached; stored here for reasons of float precision
+	float eggMassBuffer_;		// holds mass to make eggs from
 
 	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
 	CummulativeValue initialFatMassRatio_;
 	CummulativeValue minFatMasRatio_;
 	CummulativeValue adultLeanMass_;
-	CummulativeValue growthRatio_;
+	CummulativeValue growthSpeed_;
+	CummulativeValue reproductiveMassRatio_;
+	CummulativeValue eggMass_;
 
 	friend class Ribosome;
 
 	void updateEmbryonicDevelopment(float dt);
 	void updateDeadDecaying(float dt);
 	void onFoodEaten(float mass);
+	void fixAllGeneValues();
 };
 
 #endif /* ENTITIES_BUG_H_ */

@@ -8,6 +8,7 @@
 #ifndef INPUT_GLFWINPUT_H_
 #define INPUT_GLFWINPUT_H_
 
+#include "../utils/Event.h"
 #include <functional>
 #include <glm/vec2.hpp>
 #include <vector>
@@ -21,9 +22,8 @@ public:
 
 	// returns true if application should continue, and false if it should shut down (user closed window)
 	static bool checkInput();
-	static void setListener(std::function<void(InputEvent&)> listener) {
-		GLFWInput::listener = listener;
-	}
+
+	static Event<void(InputEvent&)> onInputEvent;
 
 private:
 	static void glfwMouseScroll(GLFWwindow* win,double x, double y);
@@ -31,7 +31,6 @@ private:
 	static void glfwMousePos(GLFWwindow* win, double x, double y);
 	static void glfwKey(GLFWwindow* win, int key, int scancode, int action, int mods);
 
-	static std::function<void(InputEvent&)> listener;
 	static std::vector<InputEvent> eventQueue;
 	static GLFWwindow *window;
 	static glm::vec2 lastMousePos;

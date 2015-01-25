@@ -32,6 +32,7 @@ protected:
 	bool isActive;
 	b2MouseJoint* mouseJoint;
 	b2Body* mouseBody;
+	b2Body* pressedObj;
 	int onDestroySubscription;
 
 	void onOtherBodyDestroyed(PhysicsBody* body);

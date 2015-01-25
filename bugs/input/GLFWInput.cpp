@@ -7,13 +7,13 @@
 
 #include "GLFWInput.h"
 #include "InputEvent.h"
+#include "../utils/log.h"
 #include <GLFW/glfw3.h>
 
-std::function<void(InputEvent&)> GLFWInput::listener = nullptr;
 GLFWwindow* GLFWInput::window = nullptr;
 std::vector<InputEvent> GLFWInput::eventQueue;
 glm::vec2 GLFWInput::lastMousePos;
-
+Event<void(InputEvent&)> GLFWInput::onInputEvent;
 
 void GLFWInput::initialize(GLFWwindow* pWindow) {
 	window = pWindow;
@@ -25,10 +25,8 @@ void GLFWInput::initialize(GLFWwindow* pWindow) {
 
 bool GLFWInput::checkInput() {
 	glfwPollEvents();
-	if (listener) {
-		for (InputEvent& ev : eventQueue) {
-			listener(ev);
-		}
+	for (InputEvent& ev : eventQueue) {
+		onInputEvent.trigger(ev);
 	}
 	eventQueue.clear();
 	return glfwWindowShouldClose(window) == 0;
@@ -47,6 +45,8 @@ void GLFWInput::glfwMousePos(GLFWwindow* win, double x, double y) {
 	eventQueue.push_back(InputEvent(InputEvent::EV_MOUSE_MOVED, x, y, delta.x, delta.y, 0, InputEvent::MB_NONE, 0));
 }
 void GLFWInput::glfwKey(GLFWwindow* win, int key, int scancode, int action, int mods) {
+	if (action == GLFW_REPEAT)
+		return;
 	InputEvent::EVENT_TYPE evType = action == GLFW_PRESS ? InputEvent::EV_KEY_DOWN : InputEvent::EV_KEY_UP;
 	eventQueue.push_back(InputEvent(evType, 0, 0, 0, 0, 0, InputEvent::MB_NONE, key));
 }

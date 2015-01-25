@@ -23,7 +23,7 @@
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
-Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
+Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	: genome_(genome)
 	, neuralNet_(new NeuralNet())
 	, ribosome_(nullptr)
@@ -32,13 +32,19 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	, tRibosomeStep_(0)
 	, body_(nullptr)
 	, zygoteShell_(nullptr)
+	, growthMassBuffer_(0)
+	, maxGrowthMassBuffer_(0)
+	, realCachedMass_(0)
+	, eggMassBuffer_(0)
 	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
-	, growthRatio_(BodyConst::initialGrowthMassRatio)
+	, growthSpeed_(BodyConst::initialGrowthSpeed)
+	, reproductiveMassRatio_(BodyConst::initialReproductiveMassRatio)
+	, eggMass_(BodyConst::initialEggMass)
 {
 	// create embryo shell:
-	zygoteShell_ = new ZygoteShell(position, zygoteSize);
+	zygoteShell_ = new ZygoteShell(position, zygoteMass);
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
 	zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
@@ -49,7 +55,9 @@ Bug::Bug(Genome const &genome, float zygoteSize, glm::vec2 position)
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO] = &minFatMasRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_ADULT_LEAN_MASS] = &adultLeanMass_;
-	mapBodyAttributes_[GENE_BODY_ATTRIB_GROWTH_MASS_RATIO] = &growthRatio_;
+	mapBodyAttributes_[GENE_BODY_ATTRIB_GROWTH_SPEED] = &growthSpeed_;
+	mapBodyAttributes_[GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO] = &reproductiveMassRatio_;
+	mapBodyAttributes_[GENE_BODY_ATTRIB_EGG_MASS] = &eggMass_;
 
 	sensors_.push_back(&lifeTimeSensor_);
 }
@@ -73,10 +81,13 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			float currentMass = body_->getMass_tree();
 			float zygMass = zygoteShell_->getMass();
 
+			fixAllGeneValues();
+
 			// compute fat amount and scale up the torso to the correct size
 			float fatMass = zygMass * initialFatMassRatio_;
 			body_->setInitialFatMass(fatMass);
 			body_->applyScale_tree((zygMass-fatMass)/currentMass);
+			realCachedMass_ = zygMass - fatMass;
 
 			zygoteShell_->updateCachedDynamicPropsFromBody();
 			// commit all changes and create the physics bodys and fixtures:
@@ -91,6 +102,16 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			ribosome_ = nullptr;
 		}
 	}
+}
+
+void Bug::fixAllGeneValues() {
+	initialFatMassRatio_.reset(clamp(initialFatMassRatio_.get(), 0.f, 1.f));
+	minFatMasRatio_.reset(clamp(minFatMasRatio_.get(), 0.f, 1.f));
+	adultLeanMass_.reset(clamp(adultLeanMass_.get(), 0.f, 1.e+20f));
+	growthSpeed_.reset(clamp(growthSpeed_.get(), 0.f, 1.e+20f));
+	reproductiveMassRatio_.reset(clamp(reproductiveMassRatio_.get(), 0.f, 1.f));
+	eggMass_.reset(clamp(eggMass_.get(), 0.f, 1.e+20f));
+	maxGrowthMassBuffer_ = growthSpeed_ * 100;	// can hold enough growth mass for 100 seconds
 }
 
 void Bug::updateDeadDecaying(float dt) {
@@ -119,21 +140,33 @@ void Bug::update(float dt) {
 		return;
 	}
 
+	// check if there's enough mass to form an egg:
+	if (eggMassBuffer_ >= eggMass_) {
+		eggMassBuffer_ -= eggMass_;
+		// make an egg:
+		// .... .....
+		LOGLN("MAKE EGG! !!!!! ! !");
+	}
+
 	LOGLN("leanMass: "<<body_->getMass_tree()<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
-	if (body_->getMass_tree() - body_->getFatMass() < adultLeanMass_) {
+	if (realCachedMass_ < adultLeanMass_) {
 		// juvenile, growing
 		// max growth speed is dictated by genes
+		float massToGrow = growthSpeed_ * dt;
+		if (massToGrow > growthMassBuffer_)
+			massToGrow = growthMassBuffer_;
+		growthMassBuffer_ -= massToGrow;
+		realCachedMass_ += massToGrow;
+		body_->applyScale_tree(realCachedMass_ / body_->getMass_tree());
 
-		//body_->applyScale_tree(1.01f);
-
-		if (false /* reached adulthood scale?*/) {
+		if (realCachedMass_ >= adultLeanMass_ /* reached adulthood scale?*/) {
 			// finished developing, discard all initialization data which is not useful any more:
-			body_->purge_initializationData_tree();
+			// body_->purge_initializationData_tree();
+			// but we still use it when changeing fat amount...
 		}
 	} else {
 		// adult life
-		// unused energy is stored by growing the torso
 	}
 }
 
@@ -382,7 +415,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 
 	g.second = g.first; // make a duplicate of all genes into the second chromosome
 
-	return new Bug(g, 0.08f, position);
+	return new Bug(g, 2*BodyConst::initialEggMass, position);
 }
 
 void Bug::draw(RenderContext const &ctx) {
@@ -390,13 +423,26 @@ void Bug::draw(RenderContext const &ctx) {
 }
 
 void Bug::onFoodEaten(float mass) {
+	/*
+	 * if fat is below critical ratio, all food goes to replenish it
+	 * else if not at full size, a fraction of food is used for filling up the growth buffer.
+	 * the rest of the food turns into energy and fat.
+	 */
 	LOGLN("EAT "<<mass<<"======================");
 	float fatMassRatio = body_->getFatMass() / body_->getMass_tree();
 	float growthMass = 0;
-	if (fatMassRatio >= minFatMasRatio_)
-		growthMass = growthRatio_ * mass;
-#warning "growth mass must apply only to lean body mass -> must not scale fat"
-#warning "also max growth rate is dicated by genes, so it's not instant"
-
-	body_->replenishEnergyFromMass(mass - growthMass);
+	float eggMass = 0;
+	if (fatMassRatio >= minFatMasRatio_) {
+		eggMass = mass * reproductiveMassRatio_;
+		eggMassBuffer_ += eggMass;
+		if (realCachedMass_ < adultLeanMass_) {
+			growthMass = mass - eggMass;
+			float transferedMass = maxGrowthMassBuffer_ - growthMassBuffer_;
+			if (growthMass < transferedMass)
+				transferedMass = growthMass;
+			growthMassBuffer_ += transferedMass;
+			growthMass -= transferedMass;
+		}
+	}
+	body_->replenishEnergyFromMass(mass - eggMass - growthMass);
 }

@@ -56,7 +56,7 @@ MuscleInitializationData::MuscleInitializationData()
 
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
-	, muscleInitialData_(std::static_pointer_cast<MuscleInitializationData>(getInitializationData()))
+	, muscleInitialData_(std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData()))
 	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
 	, joint_(joint)
 	, rotationSign_(motorDirSign)
@@ -193,23 +193,9 @@ void Muscle::commit() {
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
-	// this also takes aspect ratio into account as if the angle is expressed
-	// for an aspect ratio of 1:1, and then the resulting point is stretched along the edge.
-
-	float hw = sqrtf(initData->size / initData->aspectRatio) * 0.5f; // half width
-	float hl = initData->aspectRatio * hw; // half length
-	// bring the angle between [-PI, +PI]
-	relativeAngle = limitAngle(relativeAngle, 7*PI/4);
-	if (relativeAngle < PI/4) {
-		// front edge
-		return glm::vec2(hl, sinf(relativeAngle) / sinf(PI/4) * hw);
-	} else if (relativeAngle < 3*PI/4 || relativeAngle > 5*PI/4) {
-		// left or right edge
-		return glm::vec2(cosf(relativeAngle) / cosf(PI/4) * hl, relativeAngle < PI ? hw : -hw);
-	} else {
-		// back edge
-		return glm::vec2(-hl, sinf(relativeAngle) / sinf(PI/4) * hw);
-	}
+	float w = sqrtf(initData->size / initData->aspectRatio);
+	float l = initData->aspectRatio * w;
+	return rayIntersectBox(l, w, relativeAngle);
 }
 
 void Muscle::draw(RenderContext const& ctx) {

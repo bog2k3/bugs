@@ -1,12 +1,14 @@
 #include "OperationsStack.h"
 #include "OperationContext.h"
 #include "IOperation.h"
+#include "../GLFWInput.h"
 #include <assert.h>
 
 OperationsStack::OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, b2World* physics)
 	: m_context(new OperationContext(pViewport, this, locator, physics))
 	, m_stack()
 {
+	GLFWInput::onInputEvent.add(std::bind(&OperationsStack::handleInputEvent, this, std::placeholders::_1));
 }
 
 OperationsStack::~OperationsStack()

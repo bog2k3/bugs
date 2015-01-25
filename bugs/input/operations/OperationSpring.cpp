@@ -16,6 +16,7 @@
 
 OperationSpring::OperationSpring(InputEvent::MOUSE_BUTTON boundButton)
 	: pContext(nullptr), boundButton(boundButton), isActive(false), mouseJoint(nullptr), mouseBody(nullptr)
+	, pressedObj(nullptr)
 	, onDestroySubscription(-1)
 {
 }
@@ -47,7 +48,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 		if (ev.mouseButton != boundButton)
 			break;
 		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
-		b2Body* pressedObj = pContext->locator->getBodyAtPos(wldClickPos);
+		pressedObj = pContext->locator->getBodyAtPos(wldClickPos);
 		if (pressedObj == nullptr)
 			return;
 		PhysicsBody* phPtr = (PhysicsBody*)pressedObj->GetUserData();
@@ -103,11 +104,12 @@ void OperationSpring::releaseJoint() {
 	if (!isActive)
 		return;
 	if (onDestroySubscription > 0) {
-		PhysicsBody* phPtr = (PhysicsBody*)mouseBody->GetUserData();
+		PhysicsBody* phPtr = (PhysicsBody*)pressedObj->GetUserData();
 		phPtr->onDestroy.remove(onDestroySubscription);
 		onDestroySubscription = -1;
 	}
 	isActive = false;
+	pressedObj = nullptr;
 	pContext->physics->DestroyJoint(mouseJoint);
 	mouseJoint = nullptr;
 	pContext->physics->DestroyBody(mouseBody);

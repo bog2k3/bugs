@@ -19,11 +19,11 @@
 
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
-ZygoteShell::ZygoteShell(glm::vec2 position, float size)
+ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
 	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
-	, mass_(size*BodyConst::ZygoteDensity)
+	, mass_(mass)
 {
-	getInitializationData()->size.reset(size);
+	getInitializationData()->size.reset(mass*BodyConst::ZygoteDensityInv);
 	getInitializationData()->density.reset(BodyConst::ZygoteDensity);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;

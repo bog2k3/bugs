@@ -27,7 +27,7 @@ JointInitializationData::JointInitializationData()
 
 Joint::Joint(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_JOINT, std::make_shared<JointInitializationData>())
-	, jointInitialData_(std::static_pointer_cast<JointInitializationData>(getInitializationData()))
+	, jointInitialData_(std::dynamic_pointer_cast<JointInitializationData>(getInitializationData()))
 	, physJoint_(nullptr)
 	, repauseAngle_(0)
 	, resetTorque_(0)

@@ -23,7 +23,7 @@ BoneInitializationData::BoneInitializationData()
 
 Bone::Bone(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_BONE, std::make_shared<BoneInitializationData>())
-	, boneInitialData_(std::static_pointer_cast<BoneInitializationData>(getInitializationData()))
+	, boneInitialData_(std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData()))
 	, size_(0)
 	, density_(0)
 {

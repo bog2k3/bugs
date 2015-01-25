@@ -34,7 +34,15 @@ public:
 	template<typename T1>
 	void trigger(T1 const &t1) {
 		for (auto c : callbackList_)
-			c(t1);
+			if (c)
+				c(t1);
+	}
+
+	template<typename T1>
+	void trigger(T1 &t1) {
+		for (auto c : callbackList_)
+			if (c)
+				c(t1);
 	}
 
 	template<typename T1>

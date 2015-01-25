@@ -29,12 +29,23 @@
 #include <sstream>
 #include <functional>
 
+bool skipRendering = false;
+
 template<> void draw(b2World* wld, RenderContext const &ctx) {
 	wld->DrawDebugData();
 }
 
 template<> void update(b2World* wld, float dt) {
 	wld->Step(dt, 6, 2);
+}
+
+void onInputEventHandler(InputEvent& ev) {
+	if (ev.key == GLFW_KEY_SPACE) {
+		if (ev.type == InputEvent::EV_KEY_DOWN)
+			skipRendering = true;
+		else if (ev.type == InputEvent::EV_KEY_UP)
+			skipRendering = false;
+	}
 }
 
 int main() {
@@ -68,7 +79,7 @@ int main() {
 
 	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 	GLFWInput::initialize(gltGetWindow());
-	GLFWInput::setListener(std::bind(&OperationsStack::handleInputEvent, &opStack, std::placeholders::_1));
+	GLFWInput::onInputEvent.add(onInputEventHandler);
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
@@ -112,19 +123,22 @@ int main() {
 		if (dt > 0) {
 			updateList.update(dt);
 		}
-		// wait until previous frame finishes rendering and show frame output:
-		gltEnd();
-		// draw builds the render queue for the current frame
-		drawList.draw(renderContext);
 
-		std::stringstream ss;
-		ss << "Salut Lume!\n[Powered by Box2D]";
-		renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 16, glm::vec3(0.2f, 0.4, 1.0f));
+		if (!skipRendering) {
+			// wait until previous frame finishes rendering and show frame output:
+			gltEnd();
+			// draw builds the render queue for the current frame
+			drawList.draw(renderContext);
 
-		// do the actual openGL render for the previous frame (which is independent of our world)
-		gltBegin();
-		renderer.render();
-		// now rendering is on-going, move on to the next update:
+			std::stringstream ss;
+			ss << "Salut Lume!\n[Powered by Box2D]";
+			renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 16, glm::vec3(0.2f, 0.4, 1.0f));
+
+			// do the actual openGL render for the previous frame (which is independent of our world)
+			gltBegin();
+			renderer.render();
+			// now rendering is on-going, move on to the next update:
+		}
 	}
 
 	delete renderContext.shape;

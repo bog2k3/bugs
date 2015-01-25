@@ -40,13 +40,10 @@ Mouth::~Mouth() {
 }
 
 glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) const {
-	if (!committed_) {
-		float size = getInitializationData()->size;
-		float width = sqrtf(size / BodyConst::MouthAspectRatio);
-		float length = BodyConst::MouthAspectRatio * width;
-		return rayIntersectBox(width, length, relativeAngle) * (-0.7f);
-	}
-	return glm::vec2(0);
+	float size = getInitializationData()->size;
+	float width = sqrtf(size / BodyConst::MouthAspectRatio);
+	float length = BodyConst::MouthAspectRatio * width;
+	return rayIntersectBox(width, length, relativeAngle);// * (-0.7f);
 }
 
 void Mouth::setProcessingSpeed(float massPerTime) {

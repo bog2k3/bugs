@@ -18,6 +18,7 @@ public:
 
 	// fixed values:
 	static constexpr float ZygoteDensity					= 10.f;			// [kg/m^2]
+	static constexpr float ZygoteDensityInv					= 1.f / ZygoteDensity; // [m^2/kg]
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
 	static constexpr float MuscleDensity					= 13.f;			// [kg/m^2]
 	static constexpr float TorsoDensity						= 7.f;			// [kg/m^2]
@@ -33,8 +34,8 @@ public:
 	static constexpr float MuscleEnergyConstant				= 1.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
 	static constexpr float MouthAspectRatio					= 0.15f;		// [*] length/width
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
-	static constexpr float MouthBufferDensity				= 5.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
-	static constexpr float FoodProcessingSpeedDensity		= 1.e-3f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
+	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
+	static constexpr float FoodProcessingSpeedDensity		= 10.e-3f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
@@ -52,7 +53,9 @@ public:
 	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat
 	static constexpr float initialMinFatMassRatio			= 0.1f;			// [*] below this fraction, growth is halted
 	static constexpr float initialAdultLeanMass				= 6.f;			// [kg]
-	static constexpr float initialGrowthMassRatio			= 0.5f;			// [*] what fraction of food is used for growth (the rest turns into energy and fat)
+	static constexpr float initialGrowthSpeed				= 5.e-3f;		// [kg/s] how fast lean mass can be added to the body
+	static constexpr float initialEggMass					= 0.2f;			// [kg] mass of zygote
+	static constexpr float initialReproductiveMassRatio		= 0.5f;			// [*] fraction of growth mass that is invested in creating eggs
 };
 
 
