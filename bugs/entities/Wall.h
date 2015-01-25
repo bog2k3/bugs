@@ -8,10 +8,17 @@
 #ifndef ENTITIES_WALL_H_
 #define ENTITIES_WALL_H_
 
-class Wall {
+#include "Entity.h"
+#include "../PhysicsBody.h"
+#include <glm/vec2.hpp>
+
+class Wall : public Entity {
 public:
-	Wall();
+	Wall(glm::vec2 from, glm::vec2 to, float width);
 	virtual ~Wall();
+
+protected:
+	PhysicsBody body_;
 };
 
 #endif /* ENTITIES_WALL_H_ */

@@ -20,6 +20,9 @@ enum class ObjectTypes : uint32_t {
 	BPART_ZYGOTE,
 	FOOD_CHUNK,
 	FOOD_DISPENSER,
+	WALL,
+	EGG,
+
 };
 
 struct CategoryFlags {
@@ -28,6 +31,7 @@ struct CategoryFlags {
 	static constexpr type BODYPART					= 1<< 0;
 	static constexpr type FOOD						= 1<< 1;
 	static constexpr type STATIC					= 1<< 2;
+	static constexpr type EGG						= 1<< 3;
 
 
 	static constexpr type ALL						= 0xFFFFFFFF;

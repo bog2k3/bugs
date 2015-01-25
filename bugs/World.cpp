@@ -9,6 +9,7 @@
 #include "entities/Entity.h"
 #include "math/math2D.h"
 #include "math/box2glm.h"
+#include "utils/log.h"
 #include <glm/glm.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
@@ -29,7 +30,9 @@ World* World::getInstance() {
 }
 
 World::~World() {
-	// TODO delete all entities
+	for (Entity* e : entities)
+		delete e;
+	entities.clear();
 }
 
 bool World::ReportFixture(b2Fixture* fixture) {
@@ -67,10 +70,20 @@ void World::destroyEntity(Entity* e) {
 void World::destroyPending() {
 	for (auto e : entsToDestroy) {
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
-		if (flags & Entity::FF_UPDATABLE)
-			entsToUpdate.erase(std::find(entsToUpdate.begin(), entsToUpdate.end(), e));
-		if (flags & Entity::FF_DRAWABLE)
-			entsToDraw.erase(std::find(entsToDraw.begin(), entsToDraw.end(), e));
+		if (flags & Entity::FF_UPDATABLE) {
+			auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
+			if (it != entsToUpdate.end())
+				entsToUpdate.erase(it);
+			else
+				ERROR("updatable entity not found in vector!!!");
+		}
+		if (flags & Entity::FF_DRAWABLE) {
+			auto it = std::find(entsToDraw.begin(), entsToDraw.end(), e);
+			if (it != entsToDraw.end())
+				entsToDraw.erase(it);
+			else
+				ERROR("drawable entity not found in vector!!!");
+		}
 		entities.erase(std::find(entities.begin(), entities.end(), e));
 		delete e;
 	}

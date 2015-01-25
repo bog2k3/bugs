@@ -15,8 +15,26 @@ inline glm::vec2 getNormalVector(glm::vec2 v) { return glm::vec2(-v.y, v.x); }
 
 float constexpr eqEps(float f1, float f2) { return abs(f1 - f2) < EPS; }
 
-inline float cross2D(const glm::vec2 &v1, const glm::vec2 &v2) {
+constexpr float cross2D(const glm::vec2 &v1, const glm::vec2 &v2) {
 	return (v1.x*v2.y) - (v1.y*v2.x);
+}
+
+/*
+ * computes the angle from (0,0) in direction p. p is assumed to be normalized
+ */
+inline float pointDirectionNormalized(glm::vec2 const &p) {
+	float sina = cross2D(glm::vec2(1,0), p);
+	if (p.x < 0)
+		return asinf(sina) + PI*0.5f*sign(sina);
+	else
+		return asinf(sina);
+}
+
+/*
+ * computes the angle from (0,0) in direction p. p can have any arbitrary length
+ */
+inline float pointDirection(glm::vec2 const &p) {
+	return pointDirectionNormalized(glm::normalize(p));
 }
 
 /**

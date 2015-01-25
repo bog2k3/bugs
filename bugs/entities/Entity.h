@@ -27,6 +27,9 @@ public:
 
 	void destroy();
 
+protected:
+	Entity() = default;
+
 private:
 	bool markedForDeletion_ = false;
 	friend class World;

@@ -12,13 +12,14 @@
 #include "input/operations/OperationSpring.h"
 #include "body-parts/Bone.h"
 #include "body-parts/Joint.h"
-#include "entities/food/FoodDispenser.h"
 #include "World.h"
 #include "PhysContactListener.h"
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
 #include "utils/log.h"
 #include "entities/Bug.h"
+#include "entities/food/FoodDispenser.h"
+#include "entities/Wall.h"
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
 #include "OSD/ScaleDisplay.h"
@@ -42,9 +43,7 @@ template<> void update(b2World* wld, float dt) {
 void onInputEventHandler(InputEvent& ev) {
 	if (ev.key == GLFW_KEY_SPACE) {
 		if (ev.type == InputEvent::EV_KEY_DOWN)
-			skipRendering = true;
-		else if (ev.type == InputEvent::EV_KEY_UP)
-			skipRendering = false;
+			skipRendering ^= true;
 	}
 }
 
@@ -83,21 +82,26 @@ int main() {
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	Bug* b1(Bug::newBasicBug(glm::vec2(0, 0)));
-	World::getInstance()->takeOwnershipOf(b1);
-	Bug* b2(Bug::newBasicBug(glm::vec2(0.4f, 0)));
-	//World::getInstance()->takeOwnershipOf(b2);
-	Bug* b3(Bug::newBasicBug(glm::vec2(-0.4f, 0)));
-	//World::getInstance()->takeOwnershipOf(b3);
-	Bug* b4(Bug::newBasicBug(glm::vec2(0, 0.4f)));
-	//World::getInstance()->takeOwnershipOf(b4);
+	float worldRadius = 5.f;
 
-	FoodDispenser* foodDisp1(new FoodDispenser(glm::vec2(-1, 0.5f), 0));
-	World::getInstance()->takeOwnershipOf(foodDisp1);
-	FoodDispenser* foodDisp2(new FoodDispenser(glm::vec2(+1, -0.5f), 0));
-	World::getInstance()->takeOwnershipOf(foodDisp2);
-	FoodDispenser* foodDisp3(new FoodDispenser(glm::vec2(0, -1.5f), 0));
-	World::getInstance()->takeOwnershipOf(foodDisp3);
+	Wall* w1 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f);
+	World::getInstance()->takeOwnershipOf(w1);
+	Wall* w2 = new Wall(glm::vec2(-worldRadius, +worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
+	World::getInstance()->takeOwnershipOf(w2);
+	Wall* w3 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(-worldRadius, +worldRadius), 0.2f);
+	World::getInstance()->takeOwnershipOf(w3);
+	Wall* w4 = new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
+	World::getInstance()->takeOwnershipOf(w4);
+
+	for (int i=0; i<35; i++) {
+		FoodDispenser* foodDisp = new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0);
+		World::getInstance()->takeOwnershipOf(foodDisp);
+	}
+
+	for (int i=0; i<10; i++) {
+		Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+		World::getInstance()->takeOwnershipOf(bug);
+	}
 
 	DrawList drawList;
 	drawList.add(World::getInstance());

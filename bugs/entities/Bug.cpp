@@ -17,8 +17,10 @@
 #include "../body-parts/Torso.h"
 #include "../body-parts/BodyConst.h"
 #include "../utils/log.h"
+#include "../World.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
+#include "Egg.h"
 
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
@@ -144,11 +146,12 @@ void Bug::update(float dt) {
 	if (eggMassBuffer_ >= eggMass_) {
 		eggMassBuffer_ -= eggMass_;
 		// make an egg:
-		// .... .....
 		LOGLN("MAKE EGG! !!!!! ! !");
+		Egg* egg = new Egg(genome_.first, vec3xy(body_->getWorldTransformation()), glm::vec2(0.5f, 0.f), eggMass_);
+		World::getInstance()->takeOwnershipOf(egg);
 	}
 
-	LOGLN("leanMass: "<<body_->getMass_tree()<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
+	LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
 	if (realCachedMass_ < adultLeanMass_) {
 		// juvenile, growing
@@ -247,7 +250,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 	gl.location[1].set(1 << 15);
 	g.first.push_back(gl);
 	gla.attribute = GENE_ATTRIB_SIZE;
-	gla.value.set(0.5e-3f);
+	gla.value.set(1.e-3f);
 	g.first.push_back(gla);
 
 	// second muscle size
