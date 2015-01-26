@@ -14,6 +14,8 @@ Entity::~Entity() {
 }
 
 void Entity::destroy() {
+	if (markedForDeletion_)
+		return;
 	markedForDeletion_ = true;
 	World::getInstance()->destroyEntity(this);
 }

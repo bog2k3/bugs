@@ -103,7 +103,7 @@ void World::destroyPending() {
 			}
 			delete e;
 		} else {
-			LOGLN("World skip DESTROY unknown obj: "<<e);
+			LOGLN("[WARNING] World skip DESTROY unmanaged obj: "<<e);
 		}
 	}
 }

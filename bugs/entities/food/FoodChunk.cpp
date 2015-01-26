@@ -47,7 +47,9 @@ FoodChunk::~FoodChunk() {
 
 #ifdef DEBUG_DRAW_FOOD_CHUNK
 void FoodChunk::draw(RenderContext const& ctx) {
-	ctx.shape->drawCircle(physBody_.getPosition(), sqrtf(amountLeft_/(PI*WorldConst::FoodChunkDensity)), 0, 8, glm::vec3(1.f, 0.5f, 0.f));
+	ctx.shape->drawCircle(physBody_.getPosition(),
+			sqrtf(amountLeft_*PI_INV*WorldConst::FoodChunkDensityInv),
+					0, 8, glm::vec3(1.f, 0.5f, 0.f));
 }
 #endif
 
