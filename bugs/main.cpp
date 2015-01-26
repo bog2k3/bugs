@@ -115,17 +115,29 @@ int main() {
 	updateList.add(&contactListener);
 	updateList.add(World::getInstance());
 
+	float realTime = 0;							// [s]
+	float simulationTime = 0;					// [s]
+	float lastPrintedSimTime = 0;				// [s]
+	constexpr float simTimePrintInterval = 10.f; // [s]
+
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
 		float newTime = glfwGetTime();
-		float dt = newTime - t;
+		float realDT = newTime - t;
 		t = newTime;
+		realTime += realDT;
 
-		// override dt with fixed time step
-		dt = 1.f / 60;
+		// fixed time step for simulation
+		float simDT = 0.02f;
 
-		if (dt > 0) {
-			updateList.update(dt);
+		simulationTime += simDT;
+		if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
+			LOGLN("SIMULATION TIME: " << simulationTime<<"\t real time: "<<realTime<<"\t instant ratio: "<<simDT/realDT<<"\t average ratio: "<<simulationTime/realTime);
+			lastPrintedSimTime = simulationTime;
+		}
+
+		if (simDT > 0) {
+			updateList.update(simDT);
 		}
 
 		if (!skipRendering) {

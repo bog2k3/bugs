@@ -1,6 +1,6 @@
 #include "Neuron.h"
 #include "../utils/rand.h"
-#include <assert.h>
+#include <cassert>
 #include "InputSocket.h"
 
 using namespace std;

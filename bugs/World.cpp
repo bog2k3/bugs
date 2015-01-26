@@ -89,12 +89,18 @@ void World::destroyPending() {
 	for (auto e : destroyNow) {
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 		if (flags & Entity::FF_UPDATABLE) {
-			entsToUpdate.erase(std::find(entsToUpdate.begin(), entsToUpdate.end(), e));
+			auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
+			assert(it != entsToUpdate.end());
+			entsToUpdate.erase(it);
 		}
 		if (flags & Entity::FF_DRAWABLE) {
-			entsToDraw.erase(std::find(entsToDraw.begin(), entsToDraw.end(), e));
+			auto it = std::find(entsToDraw.begin(), entsToDraw.end(), e);
+			assert(it != entsToDraw.end());
+			entsToDraw.erase(it);
 		}
-		entities.erase(std::find(entities.begin(), entities.end(), e));
+		auto it = std::find(entities.begin(), entities.end(), e);
+		assert(it != entities.end());
+		entities.erase(it);
 		delete e;
 	}
 }

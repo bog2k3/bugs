@@ -2,7 +2,7 @@
 #include "OperationContext.h"
 #include "IOperation.h"
 #include "../GLFWInput.h"
-#include <assert.h>
+#include <cassert>
 
 OperationsStack::OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, b2World* physics)
 	: m_context(new OperationContext(pViewport, this, locator, physics))

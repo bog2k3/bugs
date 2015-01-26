@@ -15,7 +15,7 @@
 #include "../genetics/GeneDefinitions.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
-#include <assert.h>
+#include <cassert>
 
 BodyPartInitializationData::BodyPartInitializationData()
 	: attachmentDirectionParent(0)
