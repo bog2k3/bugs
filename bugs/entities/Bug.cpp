@@ -149,8 +149,9 @@ void Bug::update(float dt) {
 		LOGLN("MAKE EGG! !!!!! ! !");
 		Egg* egg = new Egg(genome_.first, vec3xy(body_->getWorldTransformation()), glm::vec2(0.5f, 0.f), eggMass_);
 		World::getInstance()->takeOwnershipOf(egg);
+		body_->setExtraMass(eggMassBuffer_);
+		body_->applyScale_tree(1.f);
 	}
-	body_->setExtraMass(eggMassBuffer_);
 
 	LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
@@ -439,6 +440,7 @@ void Bug::onFoodProcessed(float mass) {
 	if (fatMassRatio >= minFatMasRatio_) {
 		eggMass = mass * reproductiveMassRatio_;
 		eggMassBuffer_ += eggMass;
+		body_->setExtraMass(eggMassBuffer_);
 		if (realCachedMass_ < adultLeanMass_) {
 			growthMass = mass - eggMass;
 			float transferedMass = maxGrowthMassBuffer_ - growthMassBuffer_;

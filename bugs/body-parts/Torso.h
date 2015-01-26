@@ -25,7 +25,7 @@ public:
 	void update(float dt);
 	inline float getFatMass() { return fatMass_; }
 	inline float getBufferedEnergy() { return energyBuffer_; }
-	inline float setExtraMass(float mass) { extraMass_ = mass; }
+	inline void setExtraMass(float mass) { extraMass_ = mass; }
 
 	void consumeEnergy(float amount) override;
 	void addProcessedFood(float mass) override;
