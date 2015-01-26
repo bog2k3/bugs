@@ -1,19 +1,19 @@
 /*
- * Egg.cpp
+ * Gamete.cpp
  *
  *  Created on: Jan 25, 2015
  *      Author: bog
  */
 
-#include "Egg.h"
 #include "../genetics/Gene.h"
 #include "../math/math2D.h"
 #include "../body-parts/BodyConst.h"
 #include <Box2D/Box2D.h>
+#include "Gamete.h"
 
-Egg::Egg(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
+Gamete::Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 	: chromosome_(ch)
-	, body_(ObjectTypes::EGG, this, EventCategoryFlags::EGG, EventCategoryFlags::EGG)
+	, body_(ObjectTypes::GAMETE, this, EventCategoryFlags::GAMETE, EventCategoryFlags::GAMETE)
 {
 	PhysicsProperties props(pos, 0, true, speed, 0);
 	body_.create(props);
@@ -28,13 +28,13 @@ Egg::Egg(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 	fd.shape = &shp;
 	body_.b2Body_->CreateFixture(&fd);
 
-	body_.onCollision.add(std::bind(&Egg::onCollision, this, std::placeholders::_1, std::placeholders::_2));
+	body_.onCollision.add(std::bind(&Gamete::onCollision, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-Egg::~Egg() {
+Gamete::~Gamete() {
 	// TODO Auto-generated destructor stub
 }
 
-void Egg::onCollision(PhysicsBody* pOther, float impulse) {
+void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 
 }

@@ -8,9 +8,10 @@
 #ifndef OBJECTS_PHYSICSBODY_H_
 #define OBJECTS_PHYSICSBODY_H_
 
-#include <glm/vec2.hpp>
 #include "utils/Event.h"
+#include "math/box2glm.h"
 #include "ObjectTypesAndFlags.h"
+#include <glm/vec2.hpp>
 
 class b2Body;
 
@@ -41,6 +42,7 @@ public:
 	virtual ~PhysicsBody();
 
 	void create(PhysicsProperties const &props);
+	inline glm::vec2 getPosition() { return b2g(b2Body_->GetPosition()); }
 
 	Event<void(PhysicsBody *other, float impulseMagnitude)> onCollision;
 	Event<void(PhysicsBody* caller)> onDestroy;

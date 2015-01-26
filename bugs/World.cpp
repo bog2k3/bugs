@@ -102,6 +102,8 @@ void World::destroyPending() {
 				entsToDraw.erase(it);
 			}
 			delete e;
+		} else {
+			LOGLN("World skip DESTROY unknown obj: "<<e);
 		}
 	}
 }

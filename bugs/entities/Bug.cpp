@@ -20,7 +20,7 @@
 #include "../World.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
-#include "Egg.h"
+#include "Gamete.h"
 
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
@@ -147,7 +147,7 @@ void Bug::update(float dt) {
 		eggMassBuffer_ -= eggMass_;
 		// make an egg:
 		LOGLN("MAKE EGG! !!!!! ! !");
-		Egg* egg = new Egg(genome_.first, vec3xy(body_->getWorldTransformation()), glm::vec2(0.5f, 0.f), eggMass_);
+		Gamete* egg = new Gamete(genome_.first, vec3xy(body_->getWorldTransformation()), glm::vec2(0.5f, 0.f), eggMass_);
 		World::getInstance()->takeOwnershipOf(egg);
 		body_->setExtraMass(eggMassBuffer_);
 		body_->applyScale_tree(1.f);

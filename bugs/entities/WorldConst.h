@@ -15,7 +15,7 @@ class WorldConst {
 public:
 	static constexpr float FoodChunkDensity						= 7.f;				// [kg/m^2]
 	static constexpr float FoodChunkDensityInv					= 1.f/FoodChunkDensity;	// [m^2/kg]
-	static constexpr float FoodChunkDecaySpeed					= 0.5e-3f;			// [kg/s]  how much mass it loses in a second
+	static constexpr float FoodChunkDecaySpeed					= 1.5e-3f;			// [kg/s]  how much mass it loses in a second
 	static constexpr float FoodChunkSensorRatio					= 1.5f;				// [*]
 	static constexpr float FoodDispenserPeriod					= 1.f;				// [s]
 	static constexpr float FoodDispenserSize					= PI*0.625e-1f;		// [m^2]

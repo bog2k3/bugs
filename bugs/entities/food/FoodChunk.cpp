@@ -8,6 +8,8 @@
 #include "FoodChunk.h"
 #include "../WorldConst.h"
 #include "../../math/math2D.h"
+#include "../../renderOpenGL/RenderContext.h"
+#include "../../renderOpenGL/Shape2D.h"
 #include <Box2D/Box2D.h>
 
 FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass)
@@ -43,9 +45,11 @@ FoodChunk::~FoodChunk() {
 	onDestroy.trigger(this);
 }
 
+#ifdef DEBUG_DRAW_FOOD_CHUNK
 void FoodChunk::draw(RenderContext const& ctx) {
-	// TODO put a sign of amountLeft on it
+	ctx.shape->drawCircle(physBody_.getPosition(), sqrtf(amountLeft_/(PI*WorldConst::FoodChunkDensity)), 0, 8, glm::vec3(1.f, 0.5f, 0.f));
 }
+#endif
 
 void FoodChunk::update(float dt) {
 	consume(dt * WorldConst::FoodChunkDecaySpeed);

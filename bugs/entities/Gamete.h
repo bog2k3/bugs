@@ -1,21 +1,23 @@
 /*
- * Egg.h
+ * Gamete.h
  *
  *  Created on: Jan 25, 2015
  *      Author: bog
  */
 
-#ifndef ENTITIES_EGG_H_
-#define ENTITIES_EGG_H_
+#ifndef ENTITIES_GAMETE_H_
+#define ENTITIES_GAMETE_H_
 
 #include "Entity.h"
 #include "../genetics/Genome.h"
 #include "../PhysicsBody.h"
 
-class Egg: public Entity {
+#define DEBUG_DRAW_GAMETE
+
+class Gamete: public Entity {
 public:
-	Egg(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass);
-	virtual ~Egg();
+	Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass);
+	virtual ~Gamete();
 
 protected:
 	Chromosome chromosome_;
@@ -24,4 +26,4 @@ protected:
 	void onCollision(PhysicsBody* pOther, float impulse);
 };
 
-#endif /* ENTITIES_EGG_H_ */
+#endif /* ENTITIES_GAMETE_H_ */

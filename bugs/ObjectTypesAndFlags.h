@@ -22,7 +22,7 @@ enum class ObjectTypes : uint32_t {
 	FOOD_CHUNK,
 	FOOD_DISPENSER,
 	WALL,
-	EGG,
+	GAMETE,
 
 };
 
@@ -36,7 +36,7 @@ struct EventCategoryFlags {
 	static constexpr type BODYPART					= 1<< 0;
 	static constexpr type FOOD						= 1<< 1;
 	static constexpr type STATIC					= 1<< 2;
-	static constexpr type EGG						= 1<< 3;
+	static constexpr type GAMETE					= 1<< 3;
 
 
 	static constexpr type ALL						= 0xFFFFFFFF;

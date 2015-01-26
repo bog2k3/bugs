@@ -12,6 +12,8 @@
 #include "../../utils/Event.h"
 #include "../../PhysicsBody.h"
 
+#define DEBUG_DRAW_FOOD_CHUNK
+
 class FoodChunk: public Entity {
 public:
 	FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass);
@@ -21,7 +23,10 @@ public:
 	}
 
 	void update(float dt) override;
+
+#ifdef DEBUG_DRAW_FOOD_CHUNK
 	void draw(RenderContext const& rc) override;
+#endif
 
 	float getInitialMass() { return initialMass_; }
 	float getMassLeft() { return amountLeft_; }
