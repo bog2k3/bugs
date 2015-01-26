@@ -27,11 +27,12 @@ Torso::Torso(BodyPart* parent)
 	, energyBuffer_(0)
 	, maxEnergyBuffer_(0)
 	, cachedMassTree_(0)
+	, extraMass_(0)
 	, mouth_(nullptr)
 {
 	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
 	getUpdateList()->add(this);
 }
@@ -45,10 +46,11 @@ void Torso::commit() {
 	}
 
 	size_ = getInitializationData()->size;
-	float fatSize = fatMass_ * BodyConst::FatDensityInv;
+	float fakeFatMass = fatMass_ + extraMass_;
+	float fatSize = (fakeFatMass) * BodyConst::FatDensityInv;
 	lastCommittedTotalSizeInv_ = 1.f / (size_ + fatSize);
 
-	float density = (size_ * BodyConst::TorsoDensity + fatMass_) / (size_ + fatMass_ * BodyConst::FatDensityInv);
+	float density = (size_ * BodyConst::TorsoDensity + fakeFatMass) / (size_ + fakeFatMass * BodyConst::FatDensityInv);
 
 	// create fixture....
 	b2CircleShape shape;
@@ -81,7 +83,7 @@ void Torso::draw(RenderContext const& ctx) {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(getInitializationData()->size/PI), 0, 12, debug_color);
-		ctx.shape->drawCircle(pos, sqrtf((getInitializationData()->size+fatMass_*BodyConst::FatDensityInv)/PI), 0, 12, debug_color);
+		ctx.shape->drawCircle(pos, sqrtf((getInitializationData()->size+(fatMass_+extraMass_)*BodyConst::FatDensityInv)/PI), 0, 12, debug_color);
 		ctx.shape->drawLine(pos,
 				pos + glm::rotate(glm::vec2(sqrtf(getInitializationData()->size/PI), 0), transform.z),
 				0, debug_color);
@@ -91,7 +93,7 @@ void Torso::draw(RenderContext const& ctx) {
 glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle) const
 {
 	float size = getInitializationData()->size;
-	float fatSize = fatMass_*BodyConst::FatDensityInv;
+	float fatSize = (fatMass_+extraMass_)*BodyConst::FatDensityInv;
 	size += fatSize;
 	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);
 }
@@ -133,7 +135,7 @@ void Torso::die() {
 }
 
 void Torso::addProcessedFood(float mass) {
-	onFoodEaten.trigger(mass);
+	onFoodProcessed.trigger(mass);
 }
 
 void Torso::replenishEnergyFromMass(float mass) {

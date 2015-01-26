@@ -28,7 +28,7 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
 	commit_tree();
 

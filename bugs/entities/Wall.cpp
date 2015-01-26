@@ -10,7 +10,7 @@
 #include <Box2D/Box2D.h>
 
 Wall::Wall(glm::vec2 from, glm::vec2 to, float width)
-	: body_(ObjectTypes::WALL, this, CategoryFlags::STATIC, 0)
+	: body_(ObjectTypes::WALL, this, EventCategoryFlags::STATIC, 0)
 {
 	glm::vec2 delta(to-from);
 	float length = glm::length(delta);

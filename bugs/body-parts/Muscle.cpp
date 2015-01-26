@@ -134,7 +134,7 @@ void Muscle::commit() {
 			useOY = true;
 	}
 	// this is the world angle of insertion axis in default joint position:
-	float phi0 = targetPart->getWorldTransformation().z + (useOY ? PI/2 : 0);
+	float phi0 = targetPart->getWorldTransformation().z + (useOY ? PI/2 : 0) - joint_->getJointAngle();
 	glm::vec2 phi0_v(glm::rotate(glm::vec2(1, 0), phi0));
 
 	// compute the muscle angle (phi_muscle):

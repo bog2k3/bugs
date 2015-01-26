@@ -24,7 +24,7 @@ FoodDispenser::FoodDispenser(glm::vec2 position, float direction)
 {
 	physBody_.userObjectType_ = ObjectTypes::FOOD_DISPENSER;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = CategoryFlags::STATIC;
+	physBody_.categoryFlags_ = EventCategoryFlags::STATIC;
 
 	PhysicsProperties props(position, direction, false, glm::vec2(0), 0);
 	physBody_.create(props);

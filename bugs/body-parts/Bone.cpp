@@ -33,7 +33,7 @@ Bone::Bone(BodyPart* parent)
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_BONE;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
 Bone::~Bone() {

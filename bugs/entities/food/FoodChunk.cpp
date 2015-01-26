@@ -11,14 +11,11 @@
 #include <Box2D/Box2D.h>
 
 FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass)
-	: size_(mass * WorldConst::FoodChunkDensityInv)
+	: physBody_(ObjectTypes::FOOD_CHUNK, this, EventCategoryFlags::FOOD, 0)
+	, size_(mass * WorldConst::FoodChunkDensityInv)
 	, initialMass_(mass)
 	, amountLeft_(mass)
 {
-	physBody_.userObjectType_ = ObjectTypes::FOOD_CHUNK;
-	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = CategoryFlags::FOOD;
-
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
 	physBody_.create(props);
 
@@ -38,6 +35,7 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 	fdefK.friction = 0.2f;
 	fdefK.restitution = 0.3f;
 	fdefK.shape = &shp;
+	fdefK.filter.groupIndex = b2FilterGroup::FOOD_CHUNK;
 	physBody_.b2Body_->CreateFixture(&fdefK);
 }
 

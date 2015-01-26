@@ -13,7 +13,7 @@
 
 Egg::Egg(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 	: chromosome_(ch)
-	, body_(ObjectTypes::EGG, this, CategoryFlags::EGG, CategoryFlags::EGG)
+	, body_(ObjectTypes::EGG, this, EventCategoryFlags::EGG, EventCategoryFlags::EGG)
 {
 	PhysicsProperties props(pos, 0, true, speed, 0);
 	body_.create(props);

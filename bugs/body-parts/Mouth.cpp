@@ -30,8 +30,8 @@ Mouth::Mouth(BodyPart* parent) :
 					std::placeholders::_2));
 	physBody_.userObjectType_ = ObjectTypes::BPART_MOUTH;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
-	physBody_.collisionEventMask_ = CategoryFlags::FOOD;
+	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+	physBody_.collisionEventMask_ = EventCategoryFlags::FOOD;
 
 	getUpdateList()->add(this);
 }

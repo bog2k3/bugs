@@ -51,7 +51,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
 	body_ = new Torso(zygoteShell_);
-	body_->onFoodEaten.add(std::bind(&Bug::onFoodEaten, this, std::placeholders::_1));
+	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
 	ribosome_ = new Ribosome(this);
 
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
@@ -150,6 +150,7 @@ void Bug::update(float dt) {
 		Egg* egg = new Egg(genome_.first, vec3xy(body_->getWorldTransformation()), glm::vec2(0.5f, 0.f), eggMass_);
 		World::getInstance()->takeOwnershipOf(egg);
 	}
+	body_->setExtraMass(eggMassBuffer_);
 
 	LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
@@ -425,14 +426,14 @@ void Bug::draw(RenderContext const &ctx) {
 	body_->draw_tree(ctx);
 }
 
-void Bug::onFoodEaten(float mass) {
+void Bug::onFoodProcessed(float mass) {
 	/*
 	 * if fat is below critical ratio, all food goes to replenish it
 	 * else if not at full size, a fraction of food is used for filling up the growth buffer.
 	 * the rest of the food turns into energy and fat.
 	 */
-	LOGLN("EAT "<<mass<<"======================");
-	float fatMassRatio = body_->getFatMass() / body_->getMass_tree();
+	LOGLN("PROCESS_FOOD "<<mass<<"======================");
+	float fatMassRatio = body_->getFatMass() / (body_->getMass_tree() + body_->getFatMass());
 	float growthMass = 0;
 	float eggMass = 0;
 	if (fatMassRatio >= minFatMasRatio_) {
@@ -443,8 +444,9 @@ void Bug::onFoodEaten(float mass) {
 			float transferedMass = maxGrowthMassBuffer_ - growthMassBuffer_;
 			if (growthMass < transferedMass)
 				transferedMass = growthMass;
+			else
+				growthMass = transferedMass;
 			growthMassBuffer_ += transferedMass;
-			growthMass -= transferedMass;
 		}
 	}
 	body_->replenishEnergyFromMass(mass - eggMass - growthMass);

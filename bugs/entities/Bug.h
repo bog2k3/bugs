@@ -73,7 +73,7 @@ protected:
 
 	void updateEmbryonicDevelopment(float dt);
 	void updateDeadDecaying(float dt);
-	void onFoodEaten(float mass);
+	void onFoodProcessed(float mass);
 	void fixAllGeneValues();
 };
 

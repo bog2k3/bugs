@@ -30,7 +30,7 @@ Gripper::Gripper(BodyPart* parent)
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_GRIPPER;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = CategoryFlags::BODYPART;
+	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
 	getUpdateList()->add(this);
 }

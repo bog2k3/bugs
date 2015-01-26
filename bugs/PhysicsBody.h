@@ -36,7 +36,7 @@ struct PhysicsProperties {
 
 class PhysicsBody {
 public:
-	PhysicsBody(ObjectTypes userObjType, void* userPtr, CategoryFlags::type categFlags, CategoryFlags::type collisionMask);
+	PhysicsBody(ObjectTypes userObjType, void* userPtr, EventCategoryFlags::type categFlags, EventCategoryFlags::type collisionMask);
 	PhysicsBody() : PhysicsBody(ObjectTypes::UNDEFINED, nullptr, 0, 0) {}
 	virtual ~PhysicsBody();
 
@@ -53,9 +53,9 @@ public:
 	void* userPointer_;
 
 	// bit field for the categories that this object belongs to:
-	CategoryFlags::type categoryFlags_;
+	EventCategoryFlags::type categoryFlags_;
 	// bit mask for what other categories of objects that this collides with should trigger onCollision events on this object
-	CategoryFlags::type collisionEventMask_;
+	EventCategoryFlags::type collisionEventMask_;
 };
 
 #endif /* OBJECTS_PHYSICSBODY_H_ */

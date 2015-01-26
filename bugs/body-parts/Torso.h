@@ -25,6 +25,7 @@ public:
 	void update(float dt);
 	inline float getFatMass() { return fatMass_; }
 	inline float getBufferedEnergy() { return energyBuffer_; }
+	inline float setExtraMass(float mass) { extraMass_ = mass; }
 
 	void consumeEnergy(float amount) override;
 	void addProcessedFood(float mass) override;
@@ -42,7 +43,7 @@ public:
 	void setMouth(Mouth* m) { mouth_ = m; }
 	void replenishEnergyFromMass(float mass);
 
-	Event<void(float mass)> onFoodEaten;
+	Event<void(float mass)> onFoodProcessed;
 
 protected:
 	float size_;
@@ -52,6 +53,7 @@ protected:
 	float energyBuffer_;
 	float maxEnergyBuffer_;
 	float cachedMassTree_;
+	float extraMass_;
 	Mouth* mouth_;
 
 	void commit() override;

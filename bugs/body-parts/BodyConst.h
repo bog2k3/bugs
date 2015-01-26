@@ -51,7 +51,7 @@ public:
 
 	// default values for whole-body attributes:
 	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat
-	static constexpr float initialMinFatMassRatio			= 0.1f;			// [*] below this fraction, growth is halted
+	static constexpr float initialMinFatMassRatio			= 0.1f;			// [*] fat percentage of total body weight. below this fraction, growth is halted
 	static constexpr float initialAdultLeanMass				= 6.f;			// [kg]
 	static constexpr float initialGrowthSpeed				= 10.e-3f;		// [kg/s] how fast lean mass can be added to the body
 	static constexpr float initialEggMass					= 0.5f;			// [kg] mass of zygote

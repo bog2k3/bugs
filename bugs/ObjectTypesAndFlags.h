@@ -8,6 +8,7 @@
 #ifndef OBJECTTYPESANDFLAGS_H_
 #define OBJECTTYPESANDFLAGS_H_
 
+#include <Box2D/Dynamics/b2Fixture.h>
 #include <cstdint>
 
 // all the objects that have a PhysicsBody should have an entry here:
@@ -25,7 +26,11 @@ enum class ObjectTypes : uint32_t {
 
 };
 
-struct CategoryFlags {
+/*
+ * Use these values to tell PhysicsBody whether to generate collision events or not
+ * (physical collisions will occur nevertheless)
+ */
+struct EventCategoryFlags {
 	typedef uint32_t type;
 
 	static constexpr type BODYPART					= 1<< 0;
@@ -35,6 +40,23 @@ struct CategoryFlags {
 
 
 	static constexpr type ALL						= 0xFFFFFFFF;
+};
+
+/*
+ * use these categories to include or exclude physical collision between types of objects
+ */
+struct b2FilterCategory {
+	static constexpr decltype(::b2Filter::categoryBits) NONE			= 0;
+	static constexpr decltype(::b2Filter::categoryBits) DEFAULT			= 1;
+};
+
+/*
+ * groups are used to make objects of the same index never collide (negative) or always collide (>=0).
+ * different groups are handled by filter categories above.
+ */
+struct b2FilterGroup {
+	static constexpr decltype(::b2Filter::groupIndex) NONE				= 0;
+	static constexpr decltype(::b2Filter::groupIndex) FOOD_CHUNK		= -1;	// food chunks don't collide with each other
 };
 
 #endif /* OBJECTTYPESANDFLAGS_H_ */
