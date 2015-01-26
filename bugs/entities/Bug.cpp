@@ -153,7 +153,7 @@ void Bug::update(float dt) {
 		body_->applyScale_tree(1.f);
 	}
 
-	LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
+	//LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
 	if (realCachedMass_ < adultLeanMass_) {
 		// juvenile, growing
@@ -433,7 +433,7 @@ void Bug::onFoodProcessed(float mass) {
 	 * else if not at full size, a fraction of food is used for filling up the growth buffer.
 	 * the rest of the food turns into energy and fat.
 	 */
-	LOGLN("PROCESS_FOOD "<<mass<<"======================");
+	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
 	float fatMassRatio = body_->getFatMass() / (body_->getMass_tree() + body_->getFatMass());
 	float growthMass = 0;
 	float eggMass = 0;

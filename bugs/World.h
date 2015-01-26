@@ -23,6 +23,11 @@ public:
 	static World* getInstance();
 	virtual ~World();
 
+	/**
+	 * delete all entities and reset state
+	 */
+	void free();
+
 	b2Body* getBodyAtPos(glm::vec2 pos) override;
 
 	/// Called for each fixture found in the query AABB.

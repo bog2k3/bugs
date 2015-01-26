@@ -30,9 +30,23 @@ World* World::getInstance() {
 }
 
 World::~World() {
-	for (Entity* e : entities)
+	free();
+}
+
+void World::free() {
+	for (Entity* e : entities) {
+		e->markedForDeletion_ = true;
 		delete e;
+	}
+	for (Entity* e : entsToTakeOver) {
+		e->markedForDeletion_ = true;
+		delete e;
+	}
 	entities.clear();
+	entsToTakeOver.clear();
+	entsToDestroy.clear();
+	entsToDraw.clear();
+	entsToUpdate.clear();
 }
 
 bool World::ReportFixture(b2Fixture* fixture) {
@@ -61,10 +75,12 @@ b2Body* World::getBodyAtPos(glm::vec2 pos) {
 
 void World::takeOwnershipOf(Entity* e) {
 	entsToTakeOver.push_back(e);
+	// LOGLN("QUEUE IN ENT: "<<e);
 }
 
 void World::destroyEntity(Entity* e) {
 	entsToDestroy.push_back(e);
+	// LOGLN("QUEUE OUT ENT: "<< e);
 }
 
 void World::destroyPending() {
@@ -72,19 +88,27 @@ void World::destroyPending() {
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 		if (flags & Entity::FF_UPDATABLE) {
 			auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
-			if (it != entsToUpdate.end())
+			if (it != entsToUpdate.end()) {
 				entsToUpdate.erase(it);
-			else
+				//LOGLN("OUT UPDATABLE ENT: "<<e);
+			} else
 				ERROR("updatable entity not found in vector!!!");
 		}
 		if (flags & Entity::FF_DRAWABLE) {
 			auto it = std::find(entsToDraw.begin(), entsToDraw.end(), e);
-			if (it != entsToDraw.end())
+			if (it != entsToDraw.end()) {
 				entsToDraw.erase(it);
-			else
+				//LOGLN("OUT DRAWABLE ENT: "<<e);
+			} else
 				ERROR("drawable entity not found in vector!!!");
 		}
-		entities.erase(std::find(entities.begin(), entities.end(), e));
+		auto pos = std::find(entities.begin(), entities.end(), e);
+		if (pos != entities.end()) {
+			entities.erase(pos);
+			//LOGLN("OUT ENT: "<<e);
+		} else
+			ERROR("entity not found in vector!!!");
+		//LOGLN("DELETE ENT: " << e);
 		delete e;
 	}
 	entsToDestroy.clear();
@@ -92,13 +116,18 @@ void World::destroyPending() {
 
 void World::takeOverPending() {
 	for (auto e : entsToTakeOver) {
+		//LOGLN("IN ENT: "<<e);
 		entities.push_back(e);
 		// add to update and draw lists if appropriate
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
-		if (flags & Entity::FF_DRAWABLE)
+		if (flags & Entity::FF_DRAWABLE) {
+			//LOGLN("IN DRAWABLE ENT: "<<e);
 			entsToDraw.push_back(e);
-		if (flags & Entity::FF_UPDATABLE)
+		}
+		if (flags & Entity::FF_UPDATABLE) {
+			//LOGLN("IN UPDATABLE ENT: "<<e);
 			entsToUpdate.push_back(e);
+		}
 	}
 	entsToTakeOver.clear();
 }
