@@ -84,52 +84,35 @@ void World::destroyEntity(Entity* e) {
 }
 
 void World::destroyPending() {
-	for (auto e : entsToDestroy) {
+	decltype(entsToDestroy) destroyNow;
+	destroyNow.swap(entsToDestroy);
+	for (auto e : destroyNow) {
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 		if (flags & Entity::FF_UPDATABLE) {
-			auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
-			if (it != entsToUpdate.end()) {
-				entsToUpdate.erase(it);
-				//LOGLN("OUT UPDATABLE ENT: "<<e);
-			} else
-				ERROR("updatable entity not found in vector!!!");
+			entsToUpdate.erase(std::find(entsToUpdate.begin(), entsToUpdate.end(), e));
 		}
 		if (flags & Entity::FF_DRAWABLE) {
-			auto it = std::find(entsToDraw.begin(), entsToDraw.end(), e);
-			if (it != entsToDraw.end()) {
-				entsToDraw.erase(it);
-				//LOGLN("OUT DRAWABLE ENT: "<<e);
-			} else
-				ERROR("drawable entity not found in vector!!!");
+			entsToDraw.erase(std::find(entsToDraw.begin(), entsToDraw.end(), e));
 		}
-		auto pos = std::find(entities.begin(), entities.end(), e);
-		if (pos != entities.end()) {
-			entities.erase(pos);
-			//LOGLN("OUT ENT: "<<e);
-		} else
-			ERROR("entity not found in vector!!!");
-		//LOGLN("DELETE ENT: " << e);
+		entities.erase(std::find(entities.begin(), entities.end(), e));
 		delete e;
 	}
-	entsToDestroy.clear();
 }
 
 void World::takeOverPending() {
-	for (auto e : entsToTakeOver) {
-		//LOGLN("IN ENT: "<<e);
+	decltype(entsToTakeOver) takeOverNow;
+	takeOverNow.swap(entsToTakeOver);
+	for (auto e : takeOverNow) {
 		entities.push_back(e);
 		// add to update and draw lists if appropriate
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 		if (flags & Entity::FF_DRAWABLE) {
-			//LOGLN("IN DRAWABLE ENT: "<<e);
 			entsToDraw.push_back(e);
 		}
 		if (flags & Entity::FF_UPDATABLE) {
-			//LOGLN("IN UPDATABLE ENT: "<<e);
 			entsToUpdate.push_back(e);
 		}
 	}
-	entsToTakeOver.clear();
 }
 
 void World::update(float dt) {
