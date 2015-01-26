@@ -45,7 +45,7 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 }
 
 void Gamete::update(float dt) {
-	// TODO attract other gamets
+	// TODO attract other gamettes
 }
 
 #ifdef DEBUG_DRAW_GAMETE

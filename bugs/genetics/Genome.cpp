@@ -6,13 +6,35 @@
  */
 
 #include "Genome.h"
+#include "Gene.h"
+#include "../utils/rand.h"
 
 Chromosome GeneticOperations::meyosis(const Genome& gen) {
-
+	Chromosome c;
+	unsigned i=0;
+	while (i<gen.first.size() || i<gen.second.size()) {
+		const Gene *g = nullptr;
+		if (i<gen.first.size()) {
+			g = &gen.first[i];
+			if (i<gen.second.size() && randf() < 0.5f)
+				g = &gen.second[i];
+		} else
+			g = &gen.second[i];
+		c.push_back(*g);
+		i++;
+	}
+	alterChromosome(c);
+	return c;
 }
 
-void GeneticOperations::alter_genome(Genome &in_out) {
-
+/*
+ * 	1. mutating existing genes by altering their data and swapping positions
+ * 	2. creating new genes
+ * 	3. deleting existing genes
+ * 	4. altering the meta-genes for all genes except new ones
+ */
+void GeneticOperations::alterChromosome(Chromosome &c) {
+	// todo start mutating
 }
 
 /*

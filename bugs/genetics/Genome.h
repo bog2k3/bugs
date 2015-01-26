@@ -21,16 +21,16 @@ public:
 	/**
 	 * performs meyosis - creates a new unique Chromosome from the two parent chromosomes, by randomly choosing
 	 * one gene from either of them for each position.
+	 * also alters the resulting chromosome by applying these types of operations:
+	 * 	1. mutating existing genes by altering their data and swapping positions
+	 * 	2. creating new genes
+	 * 	3. deleting existing genes
+	 * 	4. altering the meta-genes for all genes except new ones
 	 */
 	static Chromosome meyosis(const Genome& gen);
 
-	/**
-	 * alters the genome by applying three types of operations:
-	 * 	1. mutating existing genes by altering their data and swapping positions
-	 * 	2. creating new genes
-	 * 	3. altering the meta-genes for all genes except new ones
-	 */
-	static void alter_genome(Genome &in_out);
+private:
+	static void alterChromosome(Chromosome &c);
 };
 
 #endif /* GENETICS_GENOME_H_ */
