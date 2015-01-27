@@ -42,6 +42,10 @@ public:
 	 * creates a new basic bug out of a default genome
 	 */
 	static Bug* newBasicBug(glm::vec2 position);
+	/**
+	 * creates a mutant descendant from the default bug genome
+	 */
+	static Bug* newBasicMutantBug(glm::vec2 position);
 
 protected:
 	Genome genome_;
@@ -75,6 +79,7 @@ protected:
 	void updateDeadDecaying(float dt);
 	void onFoodProcessed(float mass);
 	void fixAllGeneValues();
+	static Chromosome createBasicChromosome();
 };
 
 #endif /* ENTITIES_BUG_H_ */

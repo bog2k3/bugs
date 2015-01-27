@@ -12,6 +12,7 @@
 #include <utility>
 
 class Gene;
+class MetaGene;
 
 typedef std::vector<Gene> Chromosome;
 typedef std::pair<Chromosome, Chromosome> Genome;
@@ -29,8 +30,12 @@ public:
 	 */
 	static Chromosome meyosis(const Genome& gen);
 
-private:
 	static void alterChromosome(Chromosome &c);
+
+private:
+	static float getTotalMutationChance(Gene const& g);
+	static void alterGene(Gene &g, float mutationChanceFactor);
+	static void alterMetaGene(MetaGene &m);
 };
 
 #endif /* GENETICS_GENOME_H_ */

@@ -34,16 +34,19 @@ public:
 template<typename T>
 struct Atom {
 	T value;
-	MetaGene meta;
+	MetaGene chanceToMutate;	// chance that this atom will mutate
+	MetaGene changeAmount;	// maximum value by which a gene can be mutated. The mutation is random between - and + this value
 
 	operator T() const { return value; }
 	void set(T value) {
 		this->value = value;
-		this->meta.value = constants::initial_gene_mutate;
-		this->meta.dynamic_variation = constants::change_gene_mutate;
+		this->chanceToMutate.value = constants::initial_gene_mutate;
+		this->chanceToMutate.dynamic_variation = constants::change_gene_mutate;
+		this->changeAmount.value = constants::initial_gene_mutation_value;
+		this->changeAmount.dynamic_variation = constants::change_gene_mutation_value;
 	}
 
-	Atom() : value(), meta() {}
+	Atom() : value(), chanceToMutate(), changeAmount() {}
 };
 
 typedef uint16_t LocationLevelType; // bit 15 = current node, bits 0..14 children nodes
@@ -129,7 +132,6 @@ public:
 		, data(data)
 		, chance_to_delete(constants::initial_gene_delete, constants::change_gene_delete)
 		, chance_to_swap(constants::initial_gene_swap, constants::change_gene_swap)
-		, mutation_reference_value(constants::initial_gene_mutation_value, constants::change_gene_mutation_value)
 	{
 		update_meta_genes_vec();
 	}
@@ -149,17 +151,16 @@ public:
 		, data(original.data)
 		, chance_to_delete(original.chance_to_delete)
 		, chance_to_swap(original.chance_to_swap)
-		, mutation_reference_value(original.mutation_reference_value)
 	{
 		update_meta_genes_vec();
 	}
+
+	static Gene createRandom();
 
 	std::vector<MetaGene*> metaGenes;
 
 	MetaGene chance_to_delete;		// [0..1] represents the likelihood that this gene will disappear completely
 	MetaGene chance_to_swap;		// likelihood that this gene will swap places with an adjacent one
-
-	MetaGene mutation_reference_value; // maximum value by which a gene can be mutated. The mutation is random between - and + this value
 
 private:
 	void update_meta_genes_vec();
