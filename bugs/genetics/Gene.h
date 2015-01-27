@@ -147,12 +147,23 @@ public:
 	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
 
 	Gene(const Gene& original)
-		: type(original.type)
+		: RID(original.RID)
+		, type(original.type)
 		, data(original.data)
 		, chance_to_delete(original.chance_to_delete)
 		, chance_to_swap(original.chance_to_swap)
 	{
 		update_meta_genes_vec();
+	}
+
+	Gene& operator=(Gene const& right) {
+		RID = right.RID;
+		type = right.type;
+		data = right.data;
+		chance_to_delete = right.chance_to_delete;
+		chance_to_swap = right.chance_to_swap;
+		update_meta_genes_vec();
+		return *this;
 	}
 
 	static Gene createRandom();

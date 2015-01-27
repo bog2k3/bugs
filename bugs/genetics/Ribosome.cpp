@@ -110,9 +110,11 @@ void Ribosome::decodeDeferredGenes() {
 		decodeGene(*g, false);
 	// apply all neuron properties
 	for (auto n : mapNeurons_) {
-		if (n.second.transfer.hasValue())
+		if (n.second.transfer.hasValue()) {
 			bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)n.second.transfer.get()];
-		if (n.second.constant.hasValue())
+			if (bug_->neuralNet_->neurons[n.second.index]->transfFunc == nullptr)
+				bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[FN_ONE];
+		} if (n.second.constant.hasValue())
 			bug_->neuralNet_->neurons[n.second.index]->neuralConstant = n.second.constant;
 	}
 

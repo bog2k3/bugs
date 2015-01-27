@@ -18,6 +18,7 @@ class Joint;
 struct MuscleInitializationData : public BodyPartInitializationData {
 	virtual ~MuscleInitializationData() noexcept = default;
 	MuscleInitializationData();
+	void sanitizeData() override;
 
 	CummulativeValue aspectRatio;	// length/width
 };

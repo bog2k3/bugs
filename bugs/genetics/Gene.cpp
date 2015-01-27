@@ -2,7 +2,7 @@
 
 void Gene::update_meta_genes_vec() {
 	metaGenes.clear();
-	// add meta-genes to this vector to enable their segregation:
+	// add meta-genes to this vector to enable their mutation:
 	metaGenes.push_back(&chance_to_delete);
 	metaGenes.push_back(&chance_to_swap);
 

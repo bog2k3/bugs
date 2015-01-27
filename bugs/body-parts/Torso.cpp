@@ -95,7 +95,9 @@ glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle) const
 	float size = getInitializationData()->size;
 	float fatSize = (fatMass_+extraMass_)*BodyConst::FatDensityInv;
 	size += fatSize;
-	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	return ret;
 }
 
 void Torso::setInitialFatMass(float fat) {

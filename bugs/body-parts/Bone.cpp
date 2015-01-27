@@ -21,6 +21,14 @@ BoneInitializationData::BoneInitializationData()
 	density.reset(BodyConst::initialBoneDensity);
 }
 
+void BoneInitializationData::sanitizeData() {
+	BodyPartInitializationData::sanitizeData();
+	if (aspectRatio > BodyConst::MaxBodyPartAspectRatio)
+		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatio);
+	if (aspectRatio < BodyConst::MaxBodyPartAspectRatioInv)
+		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatioInv);
+}
+
 Bone::Bone(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_BONE, std::make_shared<BoneInitializationData>())
 	, boneInitialData_(std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData()))
@@ -69,10 +77,13 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 	glm::vec2 size = size_;
 	if (!committed_) {
 		std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
+		assert(!std::isnan(initData->aspectRatio) && initData->aspectRatio > 0);
 		size.y = sqrtf(initData->size / initData->aspectRatio);
 		size.x = initData->aspectRatio * size.y;
 	}
-	return rayIntersectBox(size.y, size.x, relativeAngle);
+	glm::vec2 ret(rayIntersectBox(size.y, size.x, relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	return ret;
 }
 
 void Bone::draw(RenderContext const& ctx) {

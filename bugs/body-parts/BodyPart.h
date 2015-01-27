@@ -32,6 +32,12 @@ enum PART_TYPE {
 struct BodyPartInitializationData {
 	virtual ~BodyPartInitializationData() = default;
 	BodyPartInitializationData();
+	/* this is called before commit() in order to sanitize all the initialData members that are set up by genes.
+	 * it's important to do this because some values may be broken (ex zero or negative for size, or other values that
+	 * don't make sense).
+	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
+	 */
+	virtual void sanitizeData();
 	PhysicsProperties cachedProps;
 
 	CummulativeValue attachmentDirectionParent;		// the attachment direction in parent's space
@@ -134,7 +140,6 @@ protected:
 	 * except in rare circumstances.
 	 * At this point the physics fixtures must be created and all temporary data purged.
 	 * The physicsProperties of the body are transform to world coordinates before this method is called;
-	 * The physicsProperties are deleted after the commit is finished.
 	 */
 	virtual void commit() = 0;
 	virtual void consumeEnergy(float amount);

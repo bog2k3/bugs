@@ -98,7 +98,9 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 		std::shared_ptr<BodyPartInitializationData> initData = getInitializationData();
 		size = initData->size;
 	}
-	return glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle);
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	return ret;
 }
 
 void Gripper::die() {

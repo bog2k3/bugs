@@ -54,6 +54,14 @@ MuscleInitializationData::MuscleInitializationData()
 	density.reset(BodyConst::MuscleDensity);
 }
 
+void MuscleInitializationData::sanitizeData() {
+	BodyPartInitializationData::sanitizeData();
+	if (aspectRatio > BodyConst::MaxBodyPartAspectRatio)
+		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatio);
+	if (aspectRatio < BodyConst::MaxBodyPartAspectRatioInv)
+		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatioInv);
+}
+
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
 	, muscleInitialData_(std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData()))
@@ -195,7 +203,9 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
 	float w = sqrtf(initData->size / initData->aspectRatio);
 	float l = initData->aspectRatio * w;
-	return rayIntersectBox(l, w, relativeAngle);
+	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	return ret;
 }
 
 void Muscle::draw(RenderContext const& ctx) {

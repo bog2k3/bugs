@@ -88,7 +88,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 }
 
 template<typename T>
-void alterAtom(Atom<T> &a, float mutationChanceFactor) {
+bool alterAtom(Atom<T> &a, float mutationChanceFactor) {
 	float chance = a.chanceToMutate.value * mutationChanceFactor;
 	if (chance < constants::global_alteration_override_chance)
 		chance = constants::global_alteration_override_chance;
@@ -98,52 +98,62 @@ void alterAtom(Atom<T> &a, float mutationChanceFactor) {
 		} else {
 			a.value += srandf() * a.changeAmount.value;
 		}
-	}
+		return true;
+	} else
+		return false;
 }
 
 void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
+	bool altered = false;
 	switch (g.type) {
 	case GENE_TYPE_BODY_ATTRIBUTE:
-		alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_DEVELOPMENT:
-		alterAtom(g.data.gene_command.angle, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_command.angle, mutationChanceFactor);
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		alterAtom(g.data.gene_feedback_synapse.from, mutationChanceFactor);
-		alterAtom(g.data.gene_feedback_synapse.to, mutationChanceFactor);
-		alterAtom(g.data.gene_feedback_synapse.weight, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_feedback_synapse.from, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_feedback_synapse.to, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_feedback_synapse.weight, mutationChanceFactor);
 		break;
 	case GENE_TYPE_GENERAL_ATTRIB:
-		alterAtom(g.data.gene_general_attribute.value, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_general_attribute.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_LOCATION:
 		for (unsigned i=0; i<constants::MAX_GROWTH_DEPTH; i++)
-			alterAtom(g.data.gene_location.location[i], mutationChanceFactor);
+			altered |= alterAtom(g.data.gene_location.location[i], mutationChanceFactor);
 		break;
 	case GENE_TYPE_NEURAL_CONST:
-		alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
-		alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		alterAtom(g.data.gene_local_attribute.value, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_local_attribute.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_SYNAPSE:
-		alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
-		alterAtom(g.data.gene_synapse.to, mutationChanceFactor);
-		alterAtom(g.data.gene_synapse.weight, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_synapse.to, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_synapse.weight, mutationChanceFactor);
 		break;
 	case GENE_TYPE_TRANSFER:
-		alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
-		alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
 		break;
 	default:
 		ERROR("unhandled gene type: "<<g.type);
 		break;
 	}
 
-	for (auto m : g.metaGenes)
+	// if any part of the gene has changed, then it becomes a new gene:
+	if (altered)
+		g.RID = new_RID();
+
+	LOGLN("alter metaGenes "<<g.type);
+	for (auto m : g.metaGenes) {
+		LOGLN("meta: " << m);
 		alterMetaGene(*m);
+	}
 }
 
 float GeneticOperations::getTotalMutationChance(Gene const& g) {

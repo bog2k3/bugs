@@ -17,6 +17,7 @@
 struct JointInitializationData : public BodyPartInitializationData {
 	virtual ~JointInitializationData() noexcept = default;
 	JointInitializationData();
+	void sanitizeData() override;
 
 	CummulativeValue phiMin;
 	CummulativeValue phiMax;

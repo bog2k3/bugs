@@ -25,6 +25,18 @@ JointInitializationData::JointInitializationData()
 	size.reset(BodyConst::initialJointSize);
 }
 
+void JointInitializationData::sanitizeData() {
+	BodyPartInitializationData::sanitizeData();
+	if (phiMin > 0)
+		phiMin.reset(0);
+	if (phiMax < 0)
+		phiMax.reset(0);
+	if (resetTorque < 0)
+		resetTorque.reset(0);
+	if (resetTorque > 1.e3f)
+		resetTorque.reset(1.e3f);
+}
+
 Joint::Joint(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_JOINT, std::make_shared<JointInitializationData>())
 	, jointInitialData_(std::dynamic_pointer_cast<JointInitializationData>(getInitializationData()))
@@ -130,7 +142,9 @@ void Joint::draw(RenderContext const& ctx) {
 glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle) const
 {
 	assert(getInitializationData());
-	return glm::rotate(glm::vec2(sqrtf(getInitializationData()->size * PI_INV), 0), relativeAngle);
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(getInitializationData()->size * PI_INV), 0), relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	return ret;
 }
 
 float Joint::getLowerLimit() {

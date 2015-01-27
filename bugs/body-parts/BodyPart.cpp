@@ -26,6 +26,13 @@ BodyPartInitializationData::BodyPartInitializationData()
 {
 }
 
+void BodyPartInitializationData::sanitizeData() {
+	if (size <= BodyConst::MinBodyPartSize)
+		size.reset(BodyConst::MinBodyPartSize);
+	if (density <= BodyConst::MinBodyPartDensity)
+		density.reset(BodyConst::MinBodyPartDensity);
+}
+
 BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
 	: type_(type)
 	, parent_(parent)
@@ -116,9 +123,10 @@ glm::vec2 BodyPart::getUpstreamAttachmentPoint() const {
 
 void BodyPart::commit_tree() {
 	assert(initialData_);
-	if (!committed_)
+	if (!committed_) {
+		initialData_->sanitizeData();
 		computeBodyPhysProps();
-	else
+	} else
 		reverseUpdateCachedProps();
 	lastCommitSize_inv_ = 1.f / initialData_->size;
 	// perform commit on local node:
@@ -155,9 +163,13 @@ void BodyPart::purge_initializationData_tree() {
 
 glm::vec2 BodyPart::getParentSpacePosition() const {
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
+	assert(!std::isnan(upstreamAttach.x) && !std::isnan(upstreamAttach.y));
 	glm::vec2 localOffset = getChildAttachmentPoint(PI - initialData_->angleOffset);
+	assert(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
 	float angle = initialData_->attachmentDirectionParent + initialData_->angleOffset;
-	return upstreamAttach - glm::rotate(localOffset, angle);
+	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	return ret;
 #warning "must take into account lateral offset"
 }
 
@@ -185,11 +197,14 @@ void BodyPart::computeBodyPhysProps() {
 	initialData_->cachedProps.angularVelocity = parentProps.angularVelocity;
 	// compute parent space position:
 	glm::vec2 pos = getParentSpacePosition();
+	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
 	// compute world space position:
 	pos = parentProps.position + glm::rotate(pos, parentProps.angle);
+	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
 	initialData_->cachedProps.position = pos;
 	// compute world space angle:
 	initialData_->cachedProps.angle = parentProps.angle + initialData_->attachmentDirectionParent + initialData_->angleOffset;
+	assert(!std::isnan(initialData_->cachedProps.angle));
 }
 
 glm::vec3 BodyPart::getWorldTransformation() const {

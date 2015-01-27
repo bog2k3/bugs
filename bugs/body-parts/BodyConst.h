@@ -17,6 +17,10 @@ public:
 	static constexpr float SizeThresholdToCommit_inv = 1.f / SizeThresholdToCommit;
 
 	// fixed values:
+	static constexpr float MinBodyPartSize					= 1.e-4f;		// [m^2]
+	static constexpr float MinBodyPartDensity				= 0.5f;			// [kg/m^2]
+	static constexpr float MaxBodyPartAspectRatio			= 100.f;		// [*]
+	static constexpr float MaxBodyPartAspectRatioInv		= 1.f / MaxBodyPartAspectRatio;	// [*]
 	static constexpr float ZygoteDensity					= 10.f;			// [kg/m^2]
 	static constexpr float ZygoteDensityInv					= 1.f / ZygoteDensity; // [m^2/kg]
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
