@@ -12,6 +12,7 @@
 #include "../math/math2D.h"
 #include "../neuralnet/InputSocket.h"
 #include "../utils/UpdateList.h"
+#include "../utils/assert.h"
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -99,7 +100,7 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 		size = initData->size;
 	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

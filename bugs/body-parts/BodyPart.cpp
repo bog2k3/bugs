@@ -12,6 +12,7 @@
 #include "../renderOpenGL/Shape2D.h"
 #include "../math/math2D.h"
 #include "../utils/log.h"
+#include "../utils/assert.h"
 #include "../genetics/GeneDefinitions.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
@@ -39,7 +40,6 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 	, children_{nullptr}
 	, nChildren_(0)
 	, committed_(false)
-	, keepInitializationData_(false)
 	, dontCreateBody_(false)
 	, initialData_(initialData)
 	, updateList_(nullptr)
@@ -125,14 +125,16 @@ void BodyPart::commit_tree() {
 	assert(initialData_);
 	if (!committed_) {
 		initialData_->sanitizeData();
+		cacheInitializationData();
+		purge_initializationData();
 		computeBodyPhysProps();
 	} else
 		reverseUpdateCachedProps();
-	lastCommitSize_inv_ = 1.f / initialData_->size;
+	lastCommitSize_inv_ = 1.f / size_;
 	// perform commit on local node:
 	if (type_ != BODY_PART_JOINT) {
 		if (!physBody_.b2Body_ && !dontCreateBody_)
-			physBody_.create(initialData_->cachedProps);
+			physBody_.create(cachedProps_);
 		commit();
 	}
 	// perform recursive commit on all non-muscle children:
@@ -152,23 +154,18 @@ void BodyPart::commit_tree() {
 	committed_ = true;
 }
 
-void BodyPart::purge_initializationData_tree() {
-	assert(committed_);
-	if (!keepInitializationData_) {
-		initialData_.reset();
-	}
-	for (int i=0; i<nChildren_; i++)
-		children_[i]->purge_initializationData_tree();
+void BodyPart::purge_initializationData() {
+	initialData_.reset();
 }
 
 glm::vec2 BodyPart::getParentSpacePosition() const {
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
-	assert(!std::isnan(upstreamAttach.x) && !std::isnan(upstreamAttach.y));
-	glm::vec2 localOffset = getChildAttachmentPoint(PI - initialData_->angleOffset);
-	assert(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
-	float angle = initialData_->attachmentDirectionParent + initialData_->angleOffset;
+	assertDbg(!std::isnan(upstreamAttach.x) && !std::isnan(upstreamAttach.y));
+	glm::vec2 localOffset = getChildAttachmentPoint(PI - angleOffset_);
+	assertDbg(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
+	float angle = attachmentDirectionParent_ + angleOffset_;
 	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 #warning "must take into account lateral offset"
 }
@@ -177,48 +174,46 @@ void BodyPart::reverseUpdateCachedProps() {
 	// reverse the magic here: get values from the physics engine and put them in our cached props
 	// in order to facilitate a recommit with changed data.
 	glm::vec3 worldTransform = getWorldTransformation();
-	initialData_->cachedProps.angle = worldTransform.z;
-	initialData_->cachedProps.position = vec3xy(worldTransform);
+	cachedProps_.angle = worldTransform.z;
+	cachedProps_.position = vec3xy(worldTransform);
 	if (physBody_.b2Body_) {
-		initialData_->cachedProps.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
-		initialData_->cachedProps.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
+		cachedProps_.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
+		cachedProps_.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
 	} else if (parent_) {
-		initialData_->cachedProps.velocity = parent_->initialData_->cachedProps.velocity;
-		initialData_->cachedProps.angularVelocity = parent_->initialData_->cachedProps.angularVelocity;
+		cachedProps_.velocity = parent_->cachedProps_.velocity;
+		cachedProps_.angularVelocity = parent_->cachedProps_.angularVelocity;
 	}
 }
 
 void BodyPart::computeBodyPhysProps() {
-	// do the magic here and update initialData_->cachedProps from other initialData_ fields
-	// initialData_->cachedProps must be in world space
-	// parent's initialData_->cachedProps are assumed to be in world space at this time
-	PhysicsProperties parentProps = parent_ ? parent_->initialData_->cachedProps : PhysicsProperties();
-	initialData_->cachedProps.velocity = parentProps.velocity;
-	initialData_->cachedProps.angularVelocity = parentProps.angularVelocity;
+	// do the magic here and update cachedProps from other positioning fields
+	// cachedProps must be in world space
+	// parent's cachedProps are assumed to be updated and in world space at this time
+	PhysicsProperties parentProps = parent_ ? parent_->cachedProps_ : PhysicsProperties();
+	cachedProps_.velocity = parentProps.velocity;
+	cachedProps_.angularVelocity = parentProps.angularVelocity;
 	// compute parent space position:
 	glm::vec2 pos = getParentSpacePosition();
-	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
+	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
 	// compute world space position:
 	pos = parentProps.position + glm::rotate(pos, parentProps.angle);
-	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
-	initialData_->cachedProps.position = pos;
+	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
+	cachedProps_.position = pos;
 	// compute world space angle:
-	initialData_->cachedProps.angle = parentProps.angle + initialData_->attachmentDirectionParent + initialData_->angleOffset;
-	assert(!std::isnan(initialData_->cachedProps.angle));
+	cachedProps_.angle = parentProps.angle + attachmentDirectionParent_ + angleOffset_;
+	assertDbg(!std::isnan(cachedProps_.angle));
 }
 
 glm::vec3 BodyPart::getWorldTransformation() const {
 	if (physBody_.b2Body_) {
 		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
-	} else if (initialData_) {
+	} else {
+#warning "if not committed yet, must compute these values on the fly"
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
 		glm::vec2 pos = getParentSpacePosition();
 		return parentTransform + glm::vec3(
 				glm::rotate(pos, parentTransform.z),
-				initialData_->attachmentDirectionParent + initialData_->angleOffset);
-	} else {
-		assert(false && "no known method to compute world transformation!!!");
-		return glm::vec3(0);
+				attachmentDirectionParent_ + angleOffset_);
 	}
 }
 
@@ -246,17 +241,13 @@ UpdateList* BodyPart::getUpdateList() {
 }
 
 float BodyPart::getMass_tree() {
-	float mass = 0;
-	if (initialData_)
-		mass = initialData_->size * initialData_->density;
-	else if (physBody_.b2Body_)
-		mass = physBody_.b2Body_->GetMass();
-	else
-		assert(false && "no known method to compute the mass of the body part!!!");
+	float mass = size_ * density_;
 
 	for (int i=0; i<nChildren_; i++)
 		mass += children_[i]->getMass_tree();
 	return mass;
+
+#warning "muscle mass must somehow count toward total body mass - maybe add it to torso?"
 }
 
 void BodyPart::applyScale_tree(float scale) {
@@ -264,14 +255,13 @@ void BodyPart::applyScale_tree(float scale) {
 }
 
 bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
-	assert(initialData_ && "applyScale_tree cannot be called after purging the initialization data!");
-	initialData_->size.reset(initialData_->size * scale);
+	size_ *= scale;
 	bool committed_now = false, should_commit_joint = false;
 	if (committed_) {
-		if (initialData_->size * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
-				|| initialData_->size * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
+		if (size_ * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
+				|| size_ * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
 		{
-			lastCommitSize_inv_ = 1.f / initialData_->size;
+			lastCommitSize_inv_ = 1.f / size_;
 			if (type_ != BODY_PART_JOINT) {
 				commit();
 				committed_now = true;
@@ -293,8 +283,7 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 }
 
 float BodyPart::getDefaultAngle() {
-	assert(initialData_ && "getDefaultAngle cannot be called after purging initialization data!");
-	return initialData_->attachmentDirectionParent + initialData_->angleOffset;
+	return attachmentDirectionParent_ + angleOffset_;
 }
 
 void BodyPart::consumeEnergy(float amount) {
@@ -320,4 +309,12 @@ void BodyPart::draw_tree(RenderContext const& ctx) {
 	draw(ctx);
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->draw_tree(ctx);
+}
+
+void BodyPart::cacheInitializationData() {
+	attachmentDirectionParent_ = initialData_->attachmentDirectionParent;
+	angleOffset_ = initialData_->angleOffset;
+	lateralOffset_ = initialData_->lateralOffset;
+	size_ = initialData_->size;
+	density_ = initialData_->density;
 }

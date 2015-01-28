@@ -11,6 +11,7 @@
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../utils/log.h"
+#include "../utils/assert.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -77,12 +78,12 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 	glm::vec2 size = size_;
 	if (!committed_) {
 		std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
-		assert(!std::isnan(initData->aspectRatio) && initData->aspectRatio > 0);
+		assertDbg(!std::isnan(initData->aspectRatio.get()) && initData->aspectRatio > 0);
 		size.y = sqrtf(initData->size / initData->aspectRatio);
 		size.x = initData->aspectRatio * size.y;
 	}
 	glm::vec2 ret(rayIntersectBox(size.y, size.x, relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

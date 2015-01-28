@@ -61,7 +61,7 @@ void ZygoteShell::draw(RenderContext const& ctx) {
 }
 
 void ZygoteShell::updateCachedDynamicPropsFromBody() {
-	PhysicsProperties &props = getInitializationData()->cachedProps;
+	PhysicsProperties &props = cachedProps_;
 	props.angle = physBody_.b2Body_->GetAngle();
 	props.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
 	props.position = b2g(physBody_.b2Body_->GetPosition());

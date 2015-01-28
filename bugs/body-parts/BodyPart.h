@@ -29,6 +29,8 @@ enum PART_TYPE {
 	BODY_PART_MOUTH,
 };
 
+// inherit this struct and put in it all the CummulativeValues that are changed by the genes.
+// after the genome is completely decoded, this data will be cached into real floats and this struct will be destroyed.
 struct BodyPartInitializationData {
 	virtual ~BodyPartInitializationData() = default;
 	BodyPartInitializationData();
@@ -38,7 +40,6 @@ struct BodyPartInitializationData {
 	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
 	 */
 	virtual void sanitizeData();
-	PhysicsProperties cachedProps;
 
 	CummulativeValue attachmentDirectionParent;		// the attachment direction in parent's space
 	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
@@ -101,11 +102,6 @@ public:
 	// draws the whole tree of body-parts
 	void draw_tree(RenderContext const& ctx);
 
-	/**
-	 * recursively free the initialization data from all body parts after committing the entire tree
-	 */
-	void purge_initializationData_tree();
-
 	inline int getChildrenCount() const { return nChildren_; }
 	inline BodyPart* getChild(int i) const { assert(i<nChildren_); return children_[i]; }
 	inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
@@ -124,6 +120,9 @@ public:
 	static constexpr int MAX_CHILDREN = 15;
 
 protected:
+	// these are used when initializing the body and whenever a new commit is called.
+	// they contain world-space values that are updated only prior to committing
+	PhysicsProperties cachedProps_;
 	PhysicsBody physBody_;
 	PART_TYPE type_;
 	BodyPart* parent_;
@@ -132,8 +131,21 @@ protected:
 	int nChildren_;
 
 	bool committed_;
-	bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
+	// bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
 	bool dontCreateBody_;			// set to true to prevent creating an actual physics body
+
+	// final positioning and physical values:
+	float attachmentDirectionParent_;
+	float angleOffset_;
+	float lateralOffset_;
+	float size_;
+	float density_;
+
+	/**
+	 * called after genome decoding finished, after data has been sanitized, just before initializationData will be destroyed.
+	 * Here you get the chance to cache the sanitized values into your member variables.
+	 */
+	virtual void cacheInitializationData();
 
 	/*
 	 * This is called after the body is completely developed and no more changes will occur on body parts
@@ -158,6 +170,7 @@ private:
 	void reverseUpdateCachedProps();
 	glm::vec2 getParentSpacePosition() const;
 	bool applyScale_treeImpl(float scale, bool parentChanged);
+	void purge_initializationData();
 
 	std::vector<int> motorLines_; // a list of motor nerve lines that pass through this node
 	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-

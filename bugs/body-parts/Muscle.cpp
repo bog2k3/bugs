@@ -42,6 +42,7 @@
 #include "../renderOpenGL/RenderContext.h"
 #include "../neuralnet/InputSocket.h"
 #include "../utils/UpdateList.h"
+#include "../utils/assert.h"
 #include <glm/vec3.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <math.h>
@@ -77,8 +78,6 @@ Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	, phiToDx_{0}
 #endif
 {
-	// we need this for debug draw, since muscle doesn't create fixture, nor body
-	keepInitializationData_ = true;
 	dontCreateBody_ = true;
 
 	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
@@ -204,7 +203,7 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
 	float w = sqrtf(initData->size / initData->aspectRatio);
 	float l = initData->aspectRatio * w;
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

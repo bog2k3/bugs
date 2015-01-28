@@ -14,6 +14,7 @@
 #include "../renderOpenGL/Shape2D.h"
 #include "../utils/log.h"
 #include "../utils/UpdateList.h"
+#include "../utils/assert.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -44,7 +45,7 @@ glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) const {
 	float width = sqrtf(size / BodyConst::MouthAspectRatio);
 	float length = BodyConst::MouthAspectRatio * width;
 	glm::vec2 ret(rayIntersectBox(width, length, relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

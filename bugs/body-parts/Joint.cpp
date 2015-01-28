@@ -12,6 +12,7 @@
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../utils/log.h"
+#include "../utils/assert.h"
 #include "../utils/UpdateList.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
@@ -143,7 +144,7 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle) const
 {
 	assert(getInitializationData());
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(getInitializationData()->size * PI_INV), 0), relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
