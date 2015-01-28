@@ -13,29 +13,36 @@
 struct CummulativeValue {
 	CummulativeValue() : value_(0), cachedValue_(0), cacheUpdated_(false), n_(0), factor_(1.f) {}
 	explicit CummulativeValue(float initial) : value_(initial), cachedValue_(value_), cacheUpdated_(true), n_(1), factor_(1.f) {}
-	operator float() {
+	inline operator float() {
 		if (!cacheUpdated_)
 			updateCache();
 		return cachedValue_;
 	}
-	float get() {
+	inline float get() {
 		return *this;
 	}
-	void changeAbs(float change) {
+	inline void changeAbs(float change) {
 		value_ += change;
 		n_++;
 		cacheUpdated_ = false;
 	}
-	void changeRel(float factor) {
+	inline void changeRel(float factor) {
 		factor_ *= factor;
 		cacheUpdated_ = false;
 	}
-	void reset(float initialValue) {
+	inline void reset(float initialValue) {
 		*this = CummulativeValue(initialValue);
 	}
-	inline bool hasValue() { return n_ > 0; }
+	inline bool hasValue() const { return n_ > 0; }
+	inline float clamp(float min, float max) {
+		if (get() < min)
+			return min;
+		if (get() > max)
+			return max;
+		return get();
+	}
 private:
-	void updateCache() {
+	inline void updateCache() {
 		assert(n_ > 0 && "trying to read empty (uninitialized) CummulativeValue !!!");
 		cachedValue_ = value_ * factor_ / n_;
 		cacheUpdated_ = true;

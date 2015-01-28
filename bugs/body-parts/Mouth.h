@@ -12,6 +12,13 @@
 
 class b2WeldJoint;
 
+struct MouthInitializationData : public BodyPartInitializationData {
+	virtual ~MouthInitializationData() noexcept = default;
+	MouthInitializationData();
+
+	CummulativeValue aspectRatio;
+};
+
 class Mouth: public BodyPart {
 public:
 	Mouth(BodyPart* parent);
@@ -24,12 +31,14 @@ public:
 	void setProcessingSpeed(float massPerTime);
 
 protected:
+	float length_;
 	float width_;
 	float bufferSize_;
 	float usedBuffer_;
 	float processingSpeed_;		// [kg/s]
 	b2WeldJoint* pJoint;
 
+	void cacheInitializationData() override;
 	void commit() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
 };

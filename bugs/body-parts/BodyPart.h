@@ -39,7 +39,6 @@ struct BodyPartInitializationData {
 	 * don't make sense).
 	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
 	 */
-	virtual void sanitizeData();
 
 	CummulativeValue attachmentDirectionParent;		// the attachment direction in parent's space
 	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
@@ -110,7 +109,8 @@ public:
 
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
-	float getDefaultAngle();
+	inline float getDefaultAngle() { return attachmentDirectionParent_ + angleOffset_; }
+	inline float getAngleOffset() { return angleOffset_; }
 
 	void matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<BodyPart*> *out);
 	void applyRecursive(std::function<void(BodyPart* pCurrent)> pred);
@@ -142,8 +142,10 @@ protected:
 	float density_;
 
 	/**
-	 * called after genome decoding finished, after data has been sanitized, just before initializationData will be destroyed.
-	 * Here you get the chance to cache the sanitized values into your member variables.
+	 * called after genome decoding finished, just before initializationData will be destroyed.
+	 * Here you get the chance to cache and sanitize the initialization values into your member variables.
+	 *
+	 * SANITIZE all values, don't trust genes !!!
 	 */
 	virtual void cacheInitializationData();
 

@@ -46,7 +46,6 @@ public:
 	Event<void(float mass)> onFoodProcessed;
 
 protected:
-	float size_;
 	float fatMass_;
 	float lastCommittedTotalSizeInv_;
 	float frameUsedEnergy_;

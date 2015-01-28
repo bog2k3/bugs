@@ -31,7 +31,6 @@ protected:
 	std::shared_ptr<InputSocket> inputSocket_;
 	bool active_;
 	b2WeldJoint* groundJoint_;
-	float size_;
 
 	void setActive(bool active);
 	void commit() override;

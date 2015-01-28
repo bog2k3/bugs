@@ -17,7 +17,6 @@
 struct JointInitializationData : public BodyPartInitializationData {
 	virtual ~JointInitializationData() noexcept = default;
 	JointInitializationData();
-	void sanitizeData() override;
 
 	CummulativeValue phiMin;
 	CummulativeValue phiMax;
@@ -37,23 +36,24 @@ public:
 
 	void update(float dt);
 
-	float getTotalRange(); // returns the total angular range (in radians) of the joint.
-	float getLowerLimit();
-	float getUpperLimit();
+	inline float getTotalRange() { return phiMax_ - phiMin_; } // returns the total angular range (in radians) of the joint.
+	inline float getLowerLimit() { return phiMin_; }
+	inline float getUpperLimit() { return phiMax_; }
 	float getJointAngle();
 
 	void addTorque(float t, float maxSpeed);
 
 protected:
-	std::weak_ptr<JointInitializationData> jointInitialData_;
 	b2RevoluteJoint* physJoint_;
-	float repauseAngle_;		// this is the angle toward which the joint tends to settle when muscles are idle
+	float phiMin_;
+	float phiMax_;
 	float resetTorque_;			// torque that resets the joint into repause position
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
 	friend class World;
 	void getNormalizedLimits(float &low, float &high);
 	void commit() override;
+	void cacheInitializationData() override;
 	void die() override;
 };
 

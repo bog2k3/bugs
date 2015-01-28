@@ -41,10 +41,10 @@ ZygoteShell::~ZygoteShell() {
 void ZygoteShell::commit() {
 	b2CircleShape shape;
 	shape.m_p.Set(0, 0);
-	shape.m_radius = sqrtf(getInitializationData()->size/PI);
+	shape.m_radius = sqrtf(size_*PI_INV);
 
 	b2FixtureDef fixDef;
-	fixDef.density = getInitializationData()->density;
+	fixDef.density = density_;
 	fixDef.friction = 0.2f;
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
@@ -56,7 +56,7 @@ void ZygoteShell::draw(RenderContext const& ctx) {
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
 	ctx.shape->drawLine(pos,
-			pos + glm::rotate(glm::vec2(sqrtf(getInitializationData()->size / PI), 0), transform.z),
+			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), transform.z),
 			0, debug_color);
 }
 

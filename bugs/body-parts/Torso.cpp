@@ -21,7 +21,6 @@ static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 
 Torso::Torso(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_TORSO, std::make_shared<BodyPartInitializationData>())
-	, size_(0.f)
 	, fatMass_(0)
 	, lastCommittedTotalSizeInv_(0)
 	, frameUsedEnergy_(0)
@@ -46,7 +45,6 @@ void Torso::commit() {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 
-	size_ = getInitializationData()->size;
 	float fakeFatMass = fatMass_ + extraMass_;
 	float fatSize = (fakeFatMass) * BodyConst::FatDensityInv;
 	lastCommittedTotalSizeInv_ = 1.f / (size_ + fatSize);
@@ -83,21 +81,21 @@ void Torso::draw(RenderContext const& ctx) {
 	} else {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(getInitializationData()->size/PI), 0, 12, debug_color);
-		ctx.shape->drawCircle(pos, sqrtf((getInitializationData()->size+(fatMass_+extraMass_)*BodyConst::FatDensityInv)/PI), 0, 12, debug_color);
+		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
+		ctx.shape->drawCircle(pos, sqrtf((size_+(fatMass_+extraMass_)*BodyConst::FatDensityInv)*PI_INV), 0, 12, debug_color);
 		ctx.shape->drawLine(pos,
-				pos + glm::rotate(glm::vec2(sqrtf(getInitializationData()->size/PI), 0), transform.z),
+				pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z),
 				0, debug_color);
 	}
 }
 
 glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle) const
 {
-	float size = getInitializationData()->size;
+	float fullSize = size_;
 	float fatSize = (fatMass_+extraMass_)*BodyConst::FatDensityInv;
-	size += fatSize;
-	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	fullSize += fatSize;
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(fullSize * PI_INV), 0), relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

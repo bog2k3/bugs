@@ -55,19 +55,16 @@ MuscleInitializationData::MuscleInitializationData()
 	density.reset(BodyConst::MuscleDensity);
 }
 
-void MuscleInitializationData::sanitizeData() {
-	BodyPartInitializationData::sanitizeData();
-	if (aspectRatio > BodyConst::MaxBodyPartAspectRatio)
-		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatio);
-	if (aspectRatio < BodyConst::MaxBodyPartAspectRatioInv)
-		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatioInv);
+void Muscle::cacheInitializationData() {
+	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
+	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
 }
 
 Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
-	, muscleInitialData_(std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData()))
 	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
 	, joint_(joint)
+	, aspectRatio_(1.f)
 	, rotationSign_(motorDirSign)
 	, maxForce_(0)
 	, maxJointAngularSpeed_(0)
@@ -80,7 +77,7 @@ Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
 {
 	dontCreateBody_ = true;
 
-	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
+	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
 
 	getUpdateList()->add(this);
@@ -92,11 +89,9 @@ Muscle::~Muscle() {
 void Muscle::commit() {
 	assert(joint_ != nullptr);
 
-	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
-
 	// here we compute the characteristics of the muscle
-	float w0 = sqrtf(initData->size / initData->aspectRatio); // relaxed width
-	float l0 = initData->aspectRatio * w0; // relaxed length
+	float w0 = sqrtf(size_ / aspectRatio_); // relaxed width
+	float l0 = aspectRatio_ * w0; // relaxed length
 	float dx = l0 * (1 - BodyConst::MuscleContractionRatio);
 
 	maxForce_ = w0 * BodyConst::MuscleForcePerWidthRatio;
@@ -135,9 +130,7 @@ void Muscle::commit() {
 	bool useOY = false;
 	if (targetPart->getType() == BODY_PART_BONE) {
 		Bone* bone = dynamic_cast<Bone*>(targetPart);
-		std::shared_ptr<BoneInitializationData> ptr = std::dynamic_pointer_cast<BoneInitializationData>(bone->getInitializationData());
-		assert(ptr);
-		if (ptr->aspectRatio < 1.f)
+		if (aspectRatio_ < 1.f)
 			useOY = true;
 	}
 	// this is the world angle of insertion axis in default joint position:
@@ -150,7 +143,7 @@ void Muscle::commit() {
 	glm::vec2 h_v(J-M);
 	float h = glm::length(h_v);
 	// at this time, both M, J, h and phi0_v are expressed in world space
-	float phi_muscle = acosf(glm::dot(glm::normalize(-h_v), phi0_v));
+	float phi_muscle = acosf(clamp(glm::dot(glm::normalize(-h_v), phi0_v), -1.f, +1.f));
 	// phi_muscle is now relative to phi0
 
 	// compute helper parameters:
@@ -199,27 +192,25 @@ void Muscle::commit() {
 }
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
-	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
-	float w = sqrtf(initData->size / initData->aspectRatio);
-	float l = initData->aspectRatio * w;
+	float w = sqrtf(size_ / aspectRatio_);
+	float l = aspectRatio_ * w;
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
 void Muscle::draw(RenderContext const& ctx) {
-	std::shared_ptr<MuscleInitializationData> initData = muscleInitialData_.lock();
-	float aspectRatio = initData->aspectRatio;
+	float crtAspect = aspectRatio_;
 #ifdef DEBUG_DRAW_MUSCLE
 	if (committed_) {
-		float w0 = sqrtf(initData->size / aspectRatio);
-		float l0 = aspectRatio * w0;
+		float w0 = sqrtf(size_ / aspectRatio_);
+		float l0 = aspectRatio_ * w0;
 		float dx = lerp_lookup(phiToDx_, nAngleSteps, getCurrentPhiSlice());
-		aspectRatio *= sqr((l0 - dx) / l0);
+		crtAspect *= sqr((l0 - dx) / l0);	// squeeze
 	}
 #endif
-	float w = sqrtf(initData->size / aspectRatio);
-	float l = aspectRatio * w;
+	float w = sqrtf(size_ / crtAspect);
+	float l = crtAspect * w;
 	glm::vec3 worldTransform = getWorldTransformation();
 	ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
 			glm::vec2(l, w), worldTransform.z, debug_color);

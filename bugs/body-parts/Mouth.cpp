@@ -20,15 +20,29 @@
 
 static const glm::vec3 debug_color(0.2f, 0.8f, 1.f);
 
-Mouth::Mouth(BodyPart* parent) :
-		BodyPart(parent, BODY_PART_MOUTH,
-				std::make_shared<BodyPartInitializationData>()), width_(0), bufferSize_(
-				0), usedBuffer_(0), processingSpeed_(0), pJoint(nullptr) {
-	getInitializationData()->size.reset(BodyConst::initialMouthSize);
+MouthInitializationData::MouthInitializationData()
+	: aspectRatio(BodyConst::MouthAspectRatio) {
+	size.reset(BodyConst::initialMouthSize);
+}
 
-	physBody_.onCollision.add(
-			std::bind(&Mouth::onCollision, this, std::placeholders::_1,
-					std::placeholders::_2));
+void Mouth::cacheInitializationData() {
+	BodyPart::cacheInitializationData();
+	auto data = std::dynamic_pointer_cast<MouthInitializationData>(getInitializationData());
+	float aspectRatio = data->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
+	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
+	width_ = length_ / aspectRatio;			// w = l/a
+}
+
+Mouth::Mouth(BodyPart* parent)
+	: BodyPart(parent, BODY_PART_MOUTH, std::make_shared<MouthInitializationData>())
+	, length_(0)
+	, width_(0)
+	, bufferSize_(0)
+	, usedBuffer_(0)
+	, processingSpeed_(0)
+	, pJoint(nullptr)
+{
+	physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
 	physBody_.userObjectType_ = ObjectTypes::BPART_MOUTH;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
@@ -41,11 +55,8 @@ Mouth::~Mouth() {
 }
 
 glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) const {
-	float size = getInitializationData()->size;
-	float width = sqrtf(size / BodyConst::MouthAspectRatio);
-	float length = BodyConst::MouthAspectRatio * width;
-	glm::vec2 ret(rayIntersectBox(width, length, relativeAngle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	glm::vec2 ret(rayIntersectBox(width_, length_, relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
@@ -61,15 +72,11 @@ void Mouth::commit() {
 		pJoint = nullptr;
 	}
 
-	float size = getInitializationData()->size;
-	float width = sqrtf(size / BodyConst::MouthAspectRatio);
-	float length = BodyConst::MouthAspectRatio * width;
-	width_ = width;
-	bufferSize_ = size * BodyConst::MouthBufferDensity;
+	bufferSize_ = size_ * BodyConst::MouthBufferDensity;
 
 	// create fixture:
 	b2PolygonShape shape;
-	shape.SetAsBox(length * 0.5f, width * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
+	shape.SetAsBox(length_ * 0.5f, width_ * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
 	b2FixtureDef fixDef;
 	fixDef.density = BodyConst::MouthDensity;
 	fixDef.friction = 0.2f;
@@ -81,11 +88,9 @@ void Mouth::commit() {
 	b2WeldJointDef jdef;
 	jdef.bodyA = parent_->getBody().b2Body_;
 	jdef.bodyB = physBody_.b2Body_;
-	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(
-			getInitializationData()->attachmentDirectionParent);
+	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
 	jdef.localAnchorA = g2b(parentAnchor);
-	glm::vec2 childAnchor = getChildAttachmentPoint(
-			PI - getInitializationData()->angleOffset);
+	glm::vec2 childAnchor = getChildAttachmentPoint(angleOffset_);
 	jdef.localAnchorB = g2b(childAnchor);
 	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
 }
@@ -94,16 +99,13 @@ void Mouth::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {
-		glm::vec3 worldTransform = getWorldTransformation();
-		float size = getInitializationData()->size;
-		float width = sqrtf(size / BodyConst::MouthAspectRatio);
-		float length = BodyConst::MouthAspectRatio * width;
+		/*glm::vec3 worldTransform = getWorldTransformation();
 		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
-				glm::vec2(length, width), worldTransform.z, debug_color);
+				glm::vec2(length_, width_), worldTransform.z, debug_color);
 		ctx.shape->drawLine(vec3xy(worldTransform),
 				vec3xy(worldTransform)
 						+ glm::rotate(getChildAttachmentPoint(0),
-								worldTransform.z), 0, debug_color);
+								worldTransform.z), 0, debug_color);*/
 	}
 }
 

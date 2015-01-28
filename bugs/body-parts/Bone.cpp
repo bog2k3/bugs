@@ -22,21 +22,20 @@ BoneInitializationData::BoneInitializationData()
 	density.reset(BodyConst::initialBoneDensity);
 }
 
-void BoneInitializationData::sanitizeData() {
-	BodyPartInitializationData::sanitizeData();
-	if (aspectRatio > BodyConst::MaxBodyPartAspectRatio)
-		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatio);
-	if (aspectRatio < BodyConst::MaxBodyPartAspectRatioInv)
-		aspectRatio.reset(BodyConst::MaxBodyPartAspectRatioInv);
+void Bone::cacheInitializationData() {
+	BodyPart::cacheInitializationData();
+	auto initData = std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData());
+	float aspectRatio = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
+	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
+	width_ = length_ / aspectRatio;			// w = l/a
 }
 
 Bone::Bone(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_BONE, std::make_shared<BoneInitializationData>())
-	, boneInitialData_(std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData()))
-	, size_(0)
-	, density_(0)
+	, length_(0)
+	, width_(0)
 {
-	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
+	auto initData = std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
 	registerAttribute(GENE_ATTRIB_DENSITY, initData->density);
 
@@ -56,17 +55,11 @@ void Bone::commit() {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 
-	std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
-	size_ = glm::vec2((float)initData->size, (float)initData->aspectRatio);
-	size_.x = sqrtf(size_.x * size_.y);	// l = sqrt(s*a)
-	size_.y = size_.x / size_.y;		// w = l/a
-	density_ = initData->density;
-
 	// create fixture:
 	b2PolygonShape shape;
-	shape.SetAsBox(size_.x * 0.5f, size_.y * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
+	shape.SetAsBox(length_ * 0.5f, width_ * 0.5f); // our x and y mean length and width (because length is parallel to OX axis)
 	b2FixtureDef fixDef;
-	fixDef.density = initData->density;
+	fixDef.density = density_;
 	fixDef.friction = 0.2f;
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;
@@ -75,15 +68,7 @@ void Bone::commit() {
 }
 glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
 {
-	glm::vec2 size = size_;
-	if (!committed_) {
-		std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
-		assertDbg(!std::isnan(initData->aspectRatio.get()) && initData->aspectRatio > 0);
-		size.y = sqrtf(initData->size / initData->aspectRatio);
-		size.x = initData->aspectRatio * size.y;
-	}
-	glm::vec2 ret(rayIntersectBox(size.y, size.x, relativeAngle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
 	return ret;
 }
 
@@ -91,7 +76,7 @@ void Bone::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {
-		std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
+		/*std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
 		glm::vec3 worldTransform = getWorldTransformation();
 		float w = sqrtf(initData->size / initData->aspectRatio);
 		float l = initData->aspectRatio * w;
@@ -101,6 +86,6 @@ void Bone::draw(RenderContext const& ctx) {
 				vec3xy(worldTransform),
 				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 				0,
-				debug_color);
+				debug_color);*/
 	}
 }

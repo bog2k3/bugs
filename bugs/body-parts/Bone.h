@@ -15,7 +15,6 @@
 struct BoneInitializationData : public BodyPartInitializationData {
 	virtual ~BoneInitializationData() noexcept = default;
 	BoneInitializationData();
-	void sanitizeData() override;
 
 	CummulativeValue aspectRatio;
 };
@@ -30,11 +29,11 @@ public:
 	void draw(RenderContext const& ctx) override;
 
 protected:
-	std::weak_ptr<BoneInitializationData> boneInitialData_;
-	glm::vec2 size_;
-	float density_;
+	float length_;
+	float width_;
 
 	void commit() override;
+	void cacheInitializationData() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

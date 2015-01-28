@@ -25,7 +25,6 @@ Gripper::Gripper(BodyPart* parent)
 	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
 	, active_(false)
 	, groundJoint_(nullptr)
-	, size_(0)
 {
 	getInitializationData()->density.reset(BodyConst::GripperDensity);
 
@@ -45,13 +44,10 @@ void Gripper::commit() {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	};
 
-	std::shared_ptr<BodyPartInitializationData> initData = getInitializationData();
-	size_ = initData->size;
-
 	b2CircleShape shape;
 	shape.m_radius = sqrtf(size_ * PI_INV);
 	b2FixtureDef fdef;
-	fdef.density = initData->density;
+	fdef.density = density_;
 	fdef.friction = 0.3f;
 	fdef.restitution = 0.2f;
 	fdef.shape = &shape;
@@ -83,24 +79,19 @@ void Gripper::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 	} else {
-		glm::vec3 transform = getWorldTransformation();
+		/*glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(getInitializationData()->size/PI), 0, 12, debug_color);
 		ctx.shape->drawLine(pos,
 				pos + glm::rotate(glm::vec2(sqrtf(getInitializationData()->size/PI), 0), transform.z),
-				0, debug_color);
+				0, debug_color);*/
 	}
 }
 
 glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle) const
 {
-	float size = size_;
-	if (!committed_) {
-		std::shared_ptr<BodyPartInitializationData> initData = getInitializationData();
-		size = initData->size;
-	}
-	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), relativeAngle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

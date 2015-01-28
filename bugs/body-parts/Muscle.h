@@ -18,7 +18,6 @@ class Joint;
 struct MuscleInitializationData : public BodyPartInitializationData {
 	virtual ~MuscleInitializationData() noexcept = default;
 	MuscleInitializationData();
-	void sanitizeData() override;
 
 	CummulativeValue aspectRatio;	// length/width
 };
@@ -38,9 +37,9 @@ public:
 protected:
 	static constexpr int nAngleSteps = 10;
 
-	std::weak_ptr<MuscleInitializationData> muscleInitialData_;
 	std::shared_ptr<InputSocket> inputSocket_;
 	Joint* joint_;
+	float aspectRatio_;
 	float rotationSign_;
 	float maxForce_;
 	float maxJointAngularSpeed_;
@@ -58,6 +57,7 @@ protected:
 	 * {ret} is relative position in current slice [0.0, 1.0] - use this to interpolate
 	 */
 	float getCurrentPhiSlice();
+	void cacheInitializationData() override;
 	void commit() override;
 };
 

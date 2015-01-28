@@ -26,26 +26,25 @@ JointInitializationData::JointInitializationData()
 	size.reset(BodyConst::initialJointSize);
 }
 
-void JointInitializationData::sanitizeData() {
-	BodyPartInitializationData::sanitizeData();
-	if (phiMin > 0)
-		phiMin.reset(0);
-	if (phiMax < 0)
-		phiMax.reset(0);
-	if (resetTorque < 0)
-		resetTorque.reset(0);
-	if (resetTorque > 1.e3f)
-		resetTorque.reset(1.e3f);
+void Joint::cacheInitializationData() {
+	BodyPart::cacheInitializationData();
+	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
+	phiMin_ = initData->phiMin.clamp(-PI*0.9f, limitAngle(initData->phiMin, PI*0.9f));
+	phiMax_ = initData->phiMax.clamp(-PI*0.9f, limitAngle(initData->phiMax, PI*0.9f));
+	if (phiMin_ > phiMax_) {
+		phiMin_ = phiMax_ = (phiMin_ + phiMax_) * 0.5f;
+	}
+	resetTorque_ = initData->resetTorque.clamp(0, 1.e3f);
 }
 
 Joint::Joint(BodyPart* parent)
 	: BodyPart(parent, BODY_PART_JOINT, std::make_shared<JointInitializationData>())
-	, jointInitialData_(std::dynamic_pointer_cast<JointInitializationData>(getInitializationData()))
 	, physJoint_(nullptr)
-	, repauseAngle_(0)
+	, phiMin_(0)
+	, phiMax_(0)
 	, resetTorque_(0)
 {
-	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
+	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_JOINT_LOW_LIMIT, initData->phiMin);
 	registerAttribute(GENE_ATTRIB_JOINT_HIGH_LIMIT, initData->phiMax);
 	registerAttribute(GENE_ATTRIB_JOINT_RESET_TORQUE, initData->resetTorque);
@@ -55,22 +54,10 @@ Joint::Joint(BodyPart* parent)
 
 Joint::~Joint() {
 	if (committed_) {
-#warning "must make sure this won't crash:"
+#warning "must make sure this won't crash (if body doesn't exit any more):"
 		if (parent_)
 			parent_->getBody().b2Body_->GetWorld()->DestroyJoint(physJoint_);
-	}}
-
-/**
- * if the angles are screwed, limit them to [-PI/9, 0] (low) and [0, +PI/9] (high)
- */
-void Joint::getNormalizedLimits(float &low, float &high) {
-	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-	low = limitAngle(initData->phiMin, 0);
-	if (low < -PI*0.9f)
-		low = -PI*0.9f;
-	high = limitAngle(initData->phiMax, PI*0.9f);
-	if (high < 0)
-		high = 0;
+	}
 }
 
 void Joint::commit() {
@@ -81,28 +68,23 @@ void Joint::commit() {
 		physJoint_ = nullptr;
 	}
 
-	std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-
-	float lowAngle, highAngle;
-	getNormalizedLimits(lowAngle, highAngle);
-
 	b2RevoluteJointDef def;
 	def.bodyA = parent_->getBody().b2Body_;
 	def.bodyB = children_[0]->getBody().b2Body_;
 	def.enableLimit = true;
-	def.lowerAngle = lowAngle;
-	def.upperAngle = highAngle;
+	def.lowerAngle = phiMin_;
+	def.upperAngle = phiMax_;
 	def.userData = (void*)this;
 	def.enableMotor = true;
 	def.referenceAngle = getDefaultAngle() + children_[0]->getDefaultAngle();
 
-	float radius = sqrtf(getInitializationData()->size/PI);
-	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(getInitializationData()->attachmentDirectionParent);
+	float radius = sqrtf(size_*PI_INV);
+	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
 	float parentAnchorLength = glm::length(parentAnchor);
 	parentAnchor *= 1 + radius/parentAnchorLength;	// move away from the edge by joint radius
 	def.localAnchorA = g2b(parentAnchor);
 
-	glm::vec2 childAnchor = children_[0]->getChildAttachmentPoint(PI - children_[0]->getInitializationData()->angleOffset);
+	glm::vec2 childAnchor = children_[0]->getChildAttachmentPoint(PI - children_[0]->getAngleOffset());
 	float childAnchorLength = glm::length(childAnchor);
 	childAnchor *= 1 + radius/childAnchorLength;
 	def.localAnchorB = g2b(childAnchor);
@@ -110,9 +92,6 @@ void Joint::commit() {
 	//def.collideConnected = true;
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
-
-	repauseAngle_ = initData->angleOffset;
-	resetTorque_ = initData->resetTorque;
 }
 
 glm::vec3 Joint::getWorldTransformation() const {
@@ -133,49 +112,18 @@ void Joint::draw(RenderContext const& ctx) {
 	{
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(getInitializationData()->size/PI), 0, 12, debug_color);
+		ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
 		ctx.shape->drawLine(pos,
-				pos + glm::rotate(glm::vec2(sqrtf(getInitializationData()->size/PI), 0), transform.z),
+				pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z),
 				0, debug_color);
 	}
 }
 
 glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle) const
 {
-	assert(getInitializationData());
-	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(getInitializationData()->size * PI_INV), 0), relativeAngle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
-}
-
-float Joint::getLowerLimit() {
-	if (committed_) {
-		return physJoint_->GetLowerLimit();
-	} else {
-		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-		return max(min(initData->phiMin.get(), 0.f), -PI*0.9f);
-	}
-}
-
-float Joint::getUpperLimit() {
-	if (committed_) {
-		return physJoint_->GetUpperLimit();
-	} else {
-		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-		return min(max(initData->phiMax.get(), 0.f), PI*0.9f);
-	}
-}
-
-float Joint::getTotalRange() {
-	if (committed_) {
-		return physJoint_->GetUpperLimit() - physJoint_->GetLowerLimit();
-	} else {
-		std::shared_ptr<JointInitializationData> initData = jointInitialData_.lock();
-		float lowAngle, highAngle;
-		getNormalizedLimits(lowAngle, highAngle);
-		// compute range:
-		return highAngle - lowAngle;
-	}
 }
 
 float Joint::getJointAngle() {

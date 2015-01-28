@@ -19,6 +19,7 @@ public:
 	// fixed values:
 	static constexpr float MinBodyPartSize					= 1.e-4f;		// [m^2]
 	static constexpr float MinBodyPartDensity				= 0.5f;			// [kg/m^2]
+	static constexpr float MaxBodyPartDensity				= 100.f;		// [kg/m^2]
 	static constexpr float MaxBodyPartAspectRatio			= 100.f;		// [*]
 	static constexpr float MaxBodyPartAspectRatioInv		= 1.f / MaxBodyPartAspectRatio;	// [*]
 	static constexpr float ZygoteDensity					= 10.f;			// [kg/m^2]

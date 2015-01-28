@@ -27,13 +27,6 @@ BodyPartInitializationData::BodyPartInitializationData()
 {
 }
 
-void BodyPartInitializationData::sanitizeData() {
-	if (size <= BodyConst::MinBodyPartSize)
-		size.reset(BodyConst::MinBodyPartSize);
-	if (density <= BodyConst::MinBodyPartDensity)
-		density.reset(BodyConst::MinBodyPartDensity);
-}
-
 BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
 	: type_(type)
 	, parent_(parent)
@@ -41,6 +34,11 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 	, nChildren_(0)
 	, committed_(false)
 	, dontCreateBody_(false)
+	, attachmentDirectionParent_(0)
+	, angleOffset_(0)
+	, lateralOffset_(0)
+	, size_(0.01f)
+	, density_(1.f)
 	, initialData_(initialData)
 	, updateList_(nullptr)
 	, lastCommitSize_inv_(0)
@@ -116,15 +114,13 @@ glm::vec2 BodyPart::getUpstreamAttachmentPoint() const {
 	if (!parent_)
 		return glm::vec2(0);
 	else {
-		glm::vec2 point(parent_->getChildAttachmentPoint(initialData_->attachmentDirectionParent));
+		glm::vec2 point(parent_->getChildAttachmentPoint(attachmentDirectionParent_));
 		return point;
 	}
 }
 
 void BodyPart::commit_tree() {
-	assert(initialData_);
 	if (!committed_) {
-		initialData_->sanitizeData();
 		cacheInitializationData();
 		purge_initializationData();
 		computeBodyPhysProps();
@@ -160,12 +156,12 @@ void BodyPart::purge_initializationData() {
 
 glm::vec2 BodyPart::getParentSpacePosition() const {
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
-	assertDbg(!std::isnan(upstreamAttach.x) && !std::isnan(upstreamAttach.y));
+	assert(!std::isnan(upstreamAttach.x) && !std::isnan(upstreamAttach.y));
 	glm::vec2 localOffset = getChildAttachmentPoint(PI - angleOffset_);
-	assertDbg(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
+	assert(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
 	float angle = attachmentDirectionParent_ + angleOffset_;
 	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 #warning "must take into account lateral offset"
 }
@@ -194,21 +190,21 @@ void BodyPart::computeBodyPhysProps() {
 	cachedProps_.angularVelocity = parentProps.angularVelocity;
 	// compute parent space position:
 	glm::vec2 pos = getParentSpacePosition();
-	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
+	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
 	// compute world space position:
 	pos = parentProps.position + glm::rotate(pos, parentProps.angle);
-	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
+	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
 	cachedProps_.position = pos;
 	// compute world space angle:
 	cachedProps_.angle = parentProps.angle + attachmentDirectionParent_ + angleOffset_;
-	assertDbg(!std::isnan(cachedProps_.angle));
+	assert(!std::isnan(cachedProps_.angle));
 }
 
 glm::vec3 BodyPart::getWorldTransformation() const {
 	if (physBody_.b2Body_) {
 		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
 	} else {
-#warning "if not committed yet, must compute these values on the fly"
+		// if not committed yet, must compute these values on the fly
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
 		glm::vec2 pos = getParentSpacePosition();
 		return parentTransform + glm::vec3(
@@ -282,10 +278,6 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 	return committed_now;
 }
 
-float BodyPart::getDefaultAngle() {
-	return attachmentDirectionParent_ + angleOffset_;
-}
-
 void BodyPart::consumeEnergy(float amount) {
 	if (parent_)
 		parent_->consumeEnergy(amount);
@@ -315,6 +307,6 @@ void BodyPart::cacheInitializationData() {
 	attachmentDirectionParent_ = initialData_->attachmentDirectionParent;
 	angleOffset_ = initialData_->angleOffset;
 	lateralOffset_ = initialData_->lateralOffset;
-	size_ = initialData_->size;
-	density_ = initialData_->density;
+	size_ = initialData_->size.clamp(BodyConst::MinBodyPartSize, 1.e10f);
+	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }
