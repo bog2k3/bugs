@@ -29,7 +29,7 @@ public:
 	virtual ~Muscle() override;
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 
 	virtual std::shared_ptr<InputSocket> getInputSocket() override { return inputSocket_; }

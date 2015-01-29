@@ -24,7 +24,7 @@ public:
 	Mouth(BodyPart* parent);
 	virtual ~Mouth() override;
 
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	void draw(RenderContext const& ctx) override;
 	void update(float dt);
 

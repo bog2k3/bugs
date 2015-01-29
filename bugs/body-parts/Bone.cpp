@@ -66,8 +66,11 @@ void Bone::commit() {
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
-glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle) const
+glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
 {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
 	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
 	return ret;
 }
@@ -76,16 +79,13 @@ void Bone::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {
-		/*std::shared_ptr<BoneInitializationData> initData = boneInitialData_.lock();
 		glm::vec3 worldTransform = getWorldTransformation();
-		float w = sqrtf(initData->size / initData->aspectRatio);
-		float l = initData->aspectRatio * w;
 		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
-				glm::vec2(l, w), worldTransform.z, debug_color);
+				glm::vec2(length_, width_), worldTransform.z, debug_color);
 		ctx.shape->drawLine(
 				vec3xy(worldTransform),
 				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 				0,
-				debug_color);*/
+				debug_color);
 	}
 }

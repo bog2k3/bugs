@@ -67,6 +67,7 @@ void Torso::commit() {
 	mouth_->setProcessingSpeed(size_ * BodyConst::FoodProcessingSpeedDensity);
 	maxEnergyBuffer_ = size_ * BodyConst::TorsoEnergyDensity;
 
+#warning "gresit, copiii inca nu sunt scalati"
 	cachedMassTree_ = BodyPart::getMass_tree();
 }
 
@@ -74,6 +75,7 @@ void Torso::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 #ifdef DEBUG_DRAW_TORSO
+		// draw the inner circle - actual torso size without fat
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
@@ -89,11 +91,13 @@ void Torso::draw(RenderContext const& ctx) {
 	}
 }
 
-glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle) const
+glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle)
 {
-	float fullSize = size_;
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
 	float fatSize = (fatMass_+extraMass_)*BodyConst::FatDensityInv;
-	fullSize += fatSize;
+	float fullSize = size_ + fatSize;
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(fullSize * PI_INV), 0), relativeAngle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;

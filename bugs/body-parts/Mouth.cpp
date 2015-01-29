@@ -54,7 +54,10 @@ Mouth::~Mouth() {
 	getUpdateList()->remove(this);
 }
 
-glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) const {
+glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
 	glm::vec2 ret(rayIntersectBox(width_, length_, relativeAngle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
@@ -99,13 +102,11 @@ void Mouth::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
 	} else {
-		/*glm::vec3 worldTransform = getWorldTransformation();
-		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
-				glm::vec2(length_, width_), worldTransform.z, debug_color);
+		glm::vec3 worldTransform = getWorldTransformation();
+		ctx.shape->drawRectangle(vec3xy(worldTransform), 0, glm::vec2(length_, width_), worldTransform.z, debug_color);
 		ctx.shape->drawLine(vec3xy(worldTransform),
-				vec3xy(worldTransform)
-						+ glm::rotate(getChildAttachmentPoint(0),
-								worldTransform.z), 0, debug_color);*/
+				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
+				0, debug_color);
 	}
 }
 

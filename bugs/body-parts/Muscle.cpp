@@ -191,7 +191,10 @@ void Muscle::commit() {
 	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * BodyConst::MuscleMaxLinearContractionSpeed;
 }
 
-glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) const {
+glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
 	float w = sqrtf(size_ / aspectRatio_);
 	float l = aspectRatio_ * w;
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));

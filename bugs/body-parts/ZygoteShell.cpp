@@ -30,7 +30,7 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
-	commit_tree();
+	commit_tree(1.f);
 
 	physBody_.b2Body_->SetTransform(g2b(position), randf()*2*PI);
 }

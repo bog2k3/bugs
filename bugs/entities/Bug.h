@@ -62,7 +62,7 @@ protected:
 	LifetimeSensor lifeTimeSensor_;
 	float growthMassBuffer_;	// stores processed food to be used for growth (at the speed dictated by genes)
 	float maxGrowthMassBuffer_;	// max growth buffer capacity (depends on max growth speed)
-	float realCachedMass_;		// lean body mass cached; stored here for reasons of float precision
+	float cachedLeanMass_;		// lean body mass cached; stored here for reasons of float precision
 	float eggMassBuffer_;		// holds mass to make eggs from
 
 	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;

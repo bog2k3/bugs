@@ -36,7 +36,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	, zygoteShell_(nullptr)
 	, growthMassBuffer_(0)
 	, maxGrowthMassBuffer_(0)
-	, realCachedMass_(0)
+	, cachedLeanMass_(0)
 	, eggMassBuffer_(0)
 	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
@@ -88,12 +88,11 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			// compute fat amount and scale up the torso to the correct size
 			float fatMass = zygMass * initialFatMassRatio_;
 			body_->setInitialFatMass(fatMass);
-			body_->applyScale_tree((zygMass-fatMass)/currentMass);
-			realCachedMass_ = zygMass - fatMass;
+			cachedLeanMass_ = zygMass - fatMass;
 
 			zygoteShell_->updateCachedDynamicPropsFromBody();
 			// commit all changes and create the physics bodys and fixtures:
-			body_->commit_tree();
+			body_->commit_tree((zygMass-fatMass)/currentMass);
 
 			// delete embryo shell
 			body_->changeParent(nullptr);
@@ -133,7 +132,7 @@ void Bug::update(float dt) {
 
 	lifeTimeSensor_.update(dt);
 	bodyPartsUpdateList_.update(dt);
-	neuralNet_->iterate();
+	//neuralNet_->iterate();
 
 	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
 		// we just depleted our energy supply and died
@@ -155,17 +154,17 @@ void Bug::update(float dt) {
 
 	//LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
-	if (realCachedMass_ < adultLeanMass_) {
+	if (cachedLeanMass_ < adultLeanMass_) {
 		// juvenile, growing
 		// max growth speed is dictated by genes
 		float massToGrow = growthSpeed_ * dt;
 		if (massToGrow > growthMassBuffer_)
 			massToGrow = growthMassBuffer_;
 		growthMassBuffer_ -= massToGrow;
-		realCachedMass_ += massToGrow;
-		body_->applyScale_tree(realCachedMass_ / body_->getMass_tree());
+		cachedLeanMass_ += massToGrow;
+		body_->applyScale_tree(cachedLeanMass_ / body_->getMass_tree());
 
-		if (realCachedMass_ >= adultLeanMass_ /* reached adulthood scale?*/) {
+		if (cachedLeanMass_ >= adultLeanMass_ /* reached adulthood scale?*/) {
 			// finished developing, discard all initialization data which is not useful any more:
 			// body_->purge_initializationData_tree();
 			// but we still use it when changeing fat amount...
@@ -193,7 +192,7 @@ void Bug::onFoodProcessed(float mass) {
 		eggMass = mass * reproductiveMassRatio_;
 		eggMassBuffer_ += eggMass;
 		body_->setExtraMass(eggMassBuffer_);
-		if (realCachedMass_ < adultLeanMass_) {
+		if (cachedLeanMass_ < adultLeanMass_) {
 			growthMass = mass - eggMass;
 			float transferedMass = maxGrowthMassBuffer_ - growthMassBuffer_;
 			if (growthMass < transferedMass)

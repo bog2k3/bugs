@@ -94,7 +94,7 @@ void Joint::commit() {
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 }
 
-glm::vec3 Joint::getWorldTransformation() const {
+glm::vec3 Joint::getWorldTransformation() {
 	if (!committed_)
 		return BodyPart::getWorldTransformation();
 	else {
@@ -119,8 +119,11 @@ void Joint::draw(RenderContext const& ctx) {
 	}
 }
 
-glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle) const
+glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;

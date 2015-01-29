@@ -66,14 +66,14 @@ public:
 	 * (in current's part coordinate frame).
 	 * This is usually the point where the ray from the center intersects the edge of the body part.
 	 */
-	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) const { return glm::vec2(0); }
+	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
 
 	/**
 	 * returns the attachment point for the current part in its parent's coordinate space.
 	 */
 	//glm::vec2 getUpstreamAttachmentPoint();
 
-	virtual glm::vec3 getWorldTransformation() const;
+	virtual glm::vec3 getWorldTransformation();
 
 	virtual void addProcessedFood(float mass) { if (parent_) parent_->addProcessedFood(mass); }
 
@@ -87,7 +87,7 @@ public:
 	/*
 	 * this will commit recursively in the entire body tree
 	 */
-	void commit_tree();
+	void commit_tree(float initialScale);
 
 	/* returns the mass of the part and its entire subtree */
 	virtual float getMass_tree();
@@ -133,6 +133,11 @@ protected:
 	bool committed_;
 	// bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
 	bool dontCreateBody_;			// set to true to prevent creating an actual physics body
+	/* this indicates if the values that come from genes (such as angleOffset_, size_ etc) have been cached
+	 * into the object's variables.
+	 * If not, one must sanitize and use directly the values from the initialData for whatever purposes.
+	 */
+	bool geneValuesCached_;
 
 	// final positioning and physical values:
 	float attachmentDirectionParent_;
@@ -162,7 +167,7 @@ protected:
 	void add(BodyPart* part);
 	void remove(BodyPart* part);
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
-	glm::vec2 getUpstreamAttachmentPoint() const;
+	glm::vec2 getUpstreamAttachmentPoint();
 	UpdateList* getUpdateList();
 	// call this if the fixture changed for any reason:
 	void reattachChildren();
@@ -170,7 +175,7 @@ protected:
 private:
 	void computeBodyPhysProps();
 	void reverseUpdateCachedProps();
-	glm::vec2 getParentSpacePosition() const;
+	glm::vec2 getParentSpacePosition();
 	bool applyScale_treeImpl(float scale, bool parentChanged);
 	void purge_initializationData();
 

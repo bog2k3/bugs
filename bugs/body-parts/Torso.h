@@ -20,7 +20,7 @@ public:
 	~Torso() override;
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) const override;
+	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	void setInitialFatMass(float fat);
 	void update(float dt);
 	inline float getFatMass() { return fatMass_; }

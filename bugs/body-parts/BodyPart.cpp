@@ -34,6 +34,7 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 	, nChildren_(0)
 	, committed_(false)
 	, dontCreateBody_(false)
+	, geneValuesCached_(false)
 	, attachmentDirectionParent_(0)
 	, angleOffset_(0)
 	, lateralOffset_(0)
@@ -110,22 +111,25 @@ void BodyPart::remove(BodyPart* part) {
 		}
 }
 
-glm::vec2 BodyPart::getUpstreamAttachmentPoint() const {
+glm::vec2 BodyPart::getUpstreamAttachmentPoint() {
 	if (!parent_)
 		return glm::vec2(0);
 	else {
 		glm::vec2 point(parent_->getChildAttachmentPoint(attachmentDirectionParent_));
+		assert(!std::isnan(point.x) && !std::isnan(point.y));
 		return point;
 	}
 }
 
-void BodyPart::commit_tree() {
+void BodyPart::commit_tree(float initialScale) {
 	if (!committed_) {
 		cacheInitializationData();
+		geneValuesCached_ = true;
 		purge_initializationData();
 		computeBodyPhysProps();
 	} else
 		reverseUpdateCachedProps();
+	size_ *= initialScale;
 	lastCommitSize_inv_ = 1.f / size_;
 	// perform commit on local node:
 	if (type_ != BODY_PART_JOINT) {
@@ -136,12 +140,12 @@ void BodyPart::commit_tree() {
 	// perform recursive commit on all non-muscle children:
 	for (int i=0; i<nChildren_; i++) {
 		if (children_[i]->type_ != BODY_PART_MUSCLE)
-			children_[i]->commit_tree();
+			children_[i]->commit_tree(initialScale);
 	}
 	// muscles go after all other children:
 	for (int i=0; i<nChildren_; i++) {
 		if (children_[i]->type_ == BODY_PART_MUSCLE)
-			children_[i]->commit_tree();
+			children_[i]->commit_tree(initialScale);
 	}
 
 	if (type_ == BODY_PART_JOINT) {
@@ -154,12 +158,15 @@ void BodyPart::purge_initializationData() {
 	initialData_.reset();
 }
 
-glm::vec2 BodyPart::getParentSpacePosition() const {
+glm::vec2 BodyPart::getParentSpacePosition() {
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
-	assert(!std::isnan(upstreamAttach.x) && !std::isnan(upstreamAttach.y));
 	glm::vec2 localOffset = getChildAttachmentPoint(PI - angleOffset_);
 	assert(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
-	float angle = attachmentDirectionParent_ + angleOffset_;
+	float angle;
+	if (!geneValuesCached_)
+		angle = limitAngle(initialData_->attachmentDirectionParent + initialData_->angleOffset, 2*PI);
+	else
+		angle = attachmentDirectionParent_ + angleOffset_;
 	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
@@ -200,7 +207,7 @@ void BodyPart::computeBodyPhysProps() {
 	assert(!std::isnan(cachedProps_.angle));
 }
 
-glm::vec3 BodyPart::getWorldTransformation() const {
+glm::vec3 BodyPart::getWorldTransformation() {
 	if (physBody_.b2Body_) {
 		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
 	} else {
@@ -304,8 +311,8 @@ void BodyPart::draw_tree(RenderContext const& ctx) {
 }
 
 void BodyPart::cacheInitializationData() {
-	attachmentDirectionParent_ = initialData_->attachmentDirectionParent;
-	angleOffset_ = initialData_->angleOffset;
+	attachmentDirectionParent_ = limitAngle(initialData_->attachmentDirectionParent, 2*PI);
+	angleOffset_ = limitAngle(initialData_->angleOffset, 2*PI);
 	lateralOffset_ = initialData_->lateralOffset;
 	size_ = initialData_->size.clamp(BodyConst::MinBodyPartSize, 1.e10f);
 	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
