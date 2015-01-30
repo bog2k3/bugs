@@ -36,20 +36,15 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
  * 	4. altering the meta-genes for all genes except new ones
  */
 void GeneticOperations::alterChromosome(Chromosome &c) {
-	static constexpr float numberGeneTypes = 9;
-	static constexpr float averageAtomsPerGene = (float)(constants::MAX_GROWTH_DEPTH + 14) / numberGeneTypes;
-	static constexpr float numberAlterationsPer100Atoms = 5;	// how many alterations we desire for a given number of atoms in a chromosome
+	static constexpr float numberAlterationsPerChromosome = 2;	// how many alterations we desire for a chromosome
 
-	// compute the total number of changes desired for this chromosome:
-	// (this includes swapping and deletion, but NOT creating new genes - that will be handled separately later)
-	float totalChangesDesired = c.size() * averageAtomsPerGene * 1.e-2 * numberAlterationsPer100Atoms;
 	// compute the total chance for mutations in the current chromosome:
 	float totalChanceToChange = 0.f;
 	for (unsigned i=0; i<c.size(); i++) {
 		totalChanceToChange += getTotalMutationChance(c[i]);
 	}
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
-	float mutationChanceFactor = totalChangesDesired / totalChanceToChange;
+	float mutationChanceFactor = numberAlterationsPerChromosome / totalChanceToChange;
 
 	// now we go ahead with mutations:
 	for (unsigned i=0; i<c.size(); i++) {

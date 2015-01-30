@@ -56,6 +56,7 @@ MuscleInitializationData::MuscleInitializationData()
 }
 
 void Muscle::cacheInitializationData() {
+	BodyPart::cacheInitializationData();
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
 }

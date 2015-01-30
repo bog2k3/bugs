@@ -132,7 +132,7 @@ void Bug::update(float dt) {
 
 	lifeTimeSensor_.update(dt);
 	bodyPartsUpdateList_.update(dt);
-	//neuralNet_->iterate();
+	neuralNet_->iterate();
 
 	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
 		// we just depleted our energy supply and died

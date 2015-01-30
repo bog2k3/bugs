@@ -123,13 +123,13 @@ glm::vec2 BodyPart::getUpstreamAttachmentPoint() {
 
 void BodyPart::commit_tree(float initialScale) {
 	if (!committed_) {
+		initialData_->size.changeRel(initialScale);
 		cacheInitializationData();
 		geneValuesCached_ = true;
 		purge_initializationData();
 		computeBodyPhysProps();
 	} else
 		reverseUpdateCachedProps();
-	size_ *= initialScale;
 	lastCommitSize_inv_ = 1.f / size_;
 	// perform commit on local node:
 	if (type_ != BODY_PART_JOINT) {
@@ -159,14 +159,13 @@ void BodyPart::purge_initializationData() {
 }
 
 glm::vec2 BodyPart::getParentSpacePosition() {
+	if (!geneValuesCached_)
+		cacheInitializationData();
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
 	glm::vec2 localOffset = getChildAttachmentPoint(PI - angleOffset_);
 	assert(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
 	float angle;
-	if (!geneValuesCached_)
-		angle = limitAngle(initialData_->attachmentDirectionParent + initialData_->angleOffset, 2*PI);
-	else
-		angle = attachmentDirectionParent_ + angleOffset_;
+	angle = attachmentDirectionParent_ + angleOffset_;
 	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
@@ -213,7 +212,7 @@ glm::vec3 BodyPart::getWorldTransformation() {
 	} else {
 		// if not committed yet, must compute these values on the fly
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-		glm::vec2 pos = getParentSpacePosition();
+		glm::vec2 pos = getParentSpacePosition(); // this will cache gene values as well
 		return parentTransform + glm::vec3(
 				glm::rotate(pos, parentTransform.z),
 				attachmentDirectionParent_ + angleOffset_);
