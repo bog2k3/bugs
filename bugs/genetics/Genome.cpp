@@ -106,6 +106,9 @@ void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		break;
 	case GENE_TYPE_DEVELOPMENT:
 		altered |= alterAtom(g.data.gene_command.angle, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_command.genomeOffset, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_command.genomeOffsetMuscle1, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_command.genomeOffsetMuscle2, mutationChanceFactor);
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
 		altered |= alterAtom(g.data.gene_feedback_synapse.from, mutationChanceFactor);
@@ -117,7 +120,7 @@ void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered |= alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		altered |= alterAtom(g.data.gene_local_attribute.value, mutationChanceFactor);
+		altered |= alterAtom(g.data.gene_attribute.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_SYNAPSE:
 		altered |= alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
@@ -152,6 +155,10 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 		break;
 	case GENE_TYPE_DEVELOPMENT:
 		ret += g.data.gene_command.angle.chanceToMutate.value;
+		ret += g.data.gene_command.genomeOffset.chanceToMutate.value;
+		ret += g.data.gene_command.genomeOffsetJoint.chanceToMutate.value;
+		ret += g.data.gene_command.genomeOffsetMuscle1.chanceToMutate.value;
+		ret += g.data.gene_command.genomeOffsetMuscle2.chanceToMutate.value;
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
 		ret += g.data.gene_feedback_synapse.from.chanceToMutate.value;
@@ -163,7 +170,7 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 		ret += g.data.gene_neural_constant.targetNeuron.chanceToMutate.value;
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		ret += g.data.gene_local_attribute.value.chanceToMutate.value;
+		ret += g.data.gene_attribute.value.chanceToMutate.value;
 		break;
 	case GENE_TYPE_SYNAPSE:
 		ret += g.data.gene_synapse.from.chanceToMutate.value;

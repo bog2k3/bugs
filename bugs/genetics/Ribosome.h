@@ -54,11 +54,11 @@ private:
 	std::map<int64_t, CummulativeValue> mapSynapses;
 	std::map<int64_t, CummulativeValue> mapFeedbackSynapses;
 
-	void decodeGene(Gene const& g, BodyPart* part, bool deferNeural);
-	void decodeDevelopCommand(GeneCommand const& g, BodyPart* part);
-	void decodeDevelopGrowth(GeneCommand const& g, BodyPart* part);
-	void decodeDevelopSplit(GeneCommand const& g, BodyPart* part);
-	void decodePartAttrib(GeneLocalAttribute const& g, BodyPart* part);
+	void decodeGene(Gene const& g, BodyPart* part, int crtPosition, bool deferNeural);
+	void decodeDevelopCommand(GeneCommand const& g, BodyPart* part, int crtPosition);
+	void decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crtPosition);
+	void decodeDevelopSplit(GeneCommand const& g, BodyPart* part, int crtPosition);
+	void decodePartAttrib(GeneAttribute const& g, BodyPart* part);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeFeedbackSynapse(GeneFeedbackSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);

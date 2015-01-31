@@ -12,10 +12,16 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_command.angle.changeAmount);
 		metaGenes.push_back(&data.gene_command.genomeOffset.chanceToMutate);
 		metaGenes.push_back(&data.gene_command.genomeOffset.changeAmount);
+		metaGenes.push_back(&data.gene_command.genomeOffsetJoint.chanceToMutate);
+		metaGenes.push_back(&data.gene_command.genomeOffsetJoint.changeAmount);
+		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle1.chanceToMutate);
+		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle1.changeAmount);
+		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle2.chanceToMutate);
+		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle2.changeAmount);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		metaGenes.push_back(&data.gene_local_attribute.value.chanceToMutate);
-		metaGenes.push_back(&data.gene_local_attribute.value.changeAmount);
+		metaGenes.push_back(&data.gene_attribute.value.chanceToMutate);
+		metaGenes.push_back(&data.gene_attribute.value.changeAmount);
 		break;
 	case GENE_TYPE_SYNAPSE:
 		metaGenes.push_back(&data.gene_synapse.from.chanceToMutate);

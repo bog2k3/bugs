@@ -108,7 +108,7 @@ void Ribosome::decodeDeferredGenes() {
 	}
 	// now decode the deferred neural genes (neuron properties):
 	for (auto &g : neuralGenes)
-		decodeGene(*g, nullptr, false);
+		decodeGene(*g, nullptr, 0, false);
 	// apply all neuron properties
 	for (auto n : mapNeurons_) {
 		if (n.second.transfer.hasValue()) {
@@ -164,7 +164,7 @@ bool Ribosome::step() {
 		 */
 
 		// now decode the gene
-		decodeGene(*g, p, true);
+		decodeGene(*g, p, offset, true);
 	}
 	return true;
 }
@@ -190,13 +190,13 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 	}
 }
 
-void Ribosome::decodeGene(Gene const& g, BodyPart* part, bool deferNeural) {
+void Ribosome::decodeGene(Gene const& g, BodyPart* part, int crtPosition, bool deferNeural) {
 	switch (g.type) {
 	case GENE_TYPE_DEVELOPMENT:
-		decodeDevelopCommand(g.data.gene_command, part);
+		decodeDevelopCommand(g.data.gene_command, part, crtPosition);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		decodePartAttrib(g.data.gene_local_attribute, part);
+		decodePartAttrib(g.data.gene_attribute, part);
 		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
@@ -234,15 +234,15 @@ bool Ribosome::partMustGenerateJoint(int part_type) {
 	}
 }
 
-void Ribosome::decodeDevelopCommand(GeneCommand const& g, BodyPart* part) {
+void Ribosome::decodeDevelopCommand(GeneCommand const& g, BodyPart* part, int crtPosition) {
 	if (g.command == GENE_DEV_GROW) {
-		decodeDevelopGrowth(g, part);
+		decodeDevelopGrowth(g, part, crtPosition);
 	} else if (g.command == GENE_DEV_SPLIT) {
-		decodeDevelopSplit(g, part);
+		decodeDevelopSplit(g, part, crtPosition);
 	}
 }
 
-void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part) {
+void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crtPosition) {
 	// now grow a new part on each adequate element in nodes list
 	// grow only works on bones and torso
 	if (part->getType() != BODY_PART_BONE && part->getType() != BODY_PART_TORSO)
@@ -261,6 +261,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
 		Joint* linkJoint = new Joint(part);
 		linkJoint->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
+		activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
 
 		// now generate the two muscles around the joint
 		// 1. Left
@@ -272,6 +273,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part) {
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mLeft);
 			mLeft->addMotorLine(motorLineId);
+			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
 		}
 		// 2. Right
 		if (part->getChildrenCount() < BodyPart::MAX_CHILDREN) {
@@ -282,6 +284,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part) {
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mRight);
 			mRight->addMotorLine(motorLineId);
+			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
 		}
 
 		// set part to point to the joint's node, since that's where the actual part will be attached:
@@ -315,9 +318,9 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part) {
 	bp->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
 
 	// start a new development path from the new part:
-	activeSet_.push_back(std::make_pair(bp, g.genomeOffset));
+	activeSet_.push_back(std::make_pair(bp, crtPosition + g.genomeOffset));
 }
-void Ribosome::decodeDevelopSplit(GeneCommand const& g, BodyPart* part) {
+void Ribosome::decodeDevelopSplit(GeneCommand const& g, BodyPart* part, int crtPosition) {
 	// split may work on bones, joints and grippers only
 	if (   part->getType() != BODY_PART_BONE
 		&& part->getType() != BODY_PART_JOINT
@@ -329,7 +332,7 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g, BodyPart* part) {
 	// angle of gene represents the angle to separate the newly split parts
 }
 
-void Ribosome::decodePartAttrib(GeneLocalAttribute const& g, BodyPart* part) {
+void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	CummulativeValue* pAttrib = part->getAttribute((gene_part_attribute_type)g.attribute);
 	if (pAttrib)
 		pAttrib->changeAbs(g.value);

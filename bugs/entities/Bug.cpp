@@ -208,64 +208,13 @@ void Bug::onFoodProcessed(float mass) {
 Chromosome Bug::createBasicChromosome() {
 	Chromosome c;
 
-	// body shape
-
-	// first bone:
-	GeneCommand gc;
-	gc.command = GENE_DEV_GROW;
-	gc.angle.set(PI);
-	gc.part_type = GENE_PART_BONE;
-	c.push_back(gc);
-
-	// bone 1 attribute
-	GeneLocalAttribute gla;
-	gla.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	gla.value.set(PI/8);
-	c.push_back(gla);
-
-	// second bone:
-	gc.angle.set(0);
-	c.push_back(gc);
-
-	// the gripper:
-	gc.part_type = GENE_PART_GRIPPER;
-	c.push_back(gc);
-
 	// body size (sq meters)
-	gla.attribute = GENE_ATTRIB_SIZE;
-	gla.value.set(0.1f * 0.1f);
-	c.push_back(gla);
-
-	// first bone size:
-	gla.value.set(0.08f * 0.01f);
-	c.push_back(gla);
-
-	// first bone aspect
-	gla.attribute = GENE_ATTRIB_ASPECT_RATIO;
-	gla.value.set(4);
-	c.push_back(gla);
-
-	// second bone size:
-	gla.attribute = GENE_ATTRIB_SIZE;
-	gla.value.set(0.08f * 0.01f);
-	c.push_back(gla);
-
-	// second bone aspect
-	gla.attribute = GENE_ATTRIB_ASPECT_RATIO;
-	gla.value.set(4);
-	c.push_back(gla);
-
-	// first muscle size
-	gla.attribute = GENE_ATTRIB_SIZE;
-	gla.value.set(1.e-3f);
-	c.push_back(gla);
-
-	// second muscle size
-	c.push_back(gla);
-
+	GeneAttribute ga;
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(0.1f * 0.1f);
+	c.push_back(ga);
 
 	//body attributes
-
 	GeneBodyAttribute gba;
 	gba.attribute = GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO;
 	gba.value.set(0.5f);
@@ -279,6 +228,68 @@ Chromosome Bug::createBasicChromosome() {
 	gba.value.set(4.f);
 	c.push_back(gba);
 
+	// bone 1:
+	GeneCommand gc;
+	gc.command = GENE_DEV_GROW;
+	gc.angle.set(PI);
+	gc.part_type = GENE_PART_BONE;
+	gc.genomeOffset.set(2);
+	gc.genomeOffsetJoint.set(1);
+	gc.genomeOffsetMuscle1.set(11);
+	gc.genomeOffsetMuscle2.set(11);
+	c.push_back(gc);
+
+	c.push_back(GeneStop());
+
+	// bone 2:
+	gc.angle.set(0);
+	gc.genomeOffset.set(5);
+	gc.genomeOffsetJoint.set(4);
+	gc.genomeOffsetMuscle1.set(4);
+	gc.genomeOffsetMuscle2.set(4);
+	c.push_back(gc);
+
+	// bone 1 size:
+	ga.value.set(0.08f * 0.01f);
+	c.push_back(ga);
+
+	// bone 1 aspect
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(4);
+	c.push_back(ga);
+
+	// bone 1 rotation
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(PI/8);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+
+	// the gripper:
+	gc.part_type = GENE_PART_GRIPPER;
+	gc.genomeOffsetJoint.set(3);
+	gc.genomeOffsetMuscle1.set(3);
+	gc.genomeOffsetMuscle2.set(3);
+	c.push_back(gc);
+
+	// bone 2 size:
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(0.08f * 0.01f);
+	c.push_back(ga);
+
+	// bone 2 aspect
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(4);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+
+	// muscle 1 & 2 size
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(1.e-3f);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
 
 	// neural system
 

@@ -55,11 +55,14 @@ struct GeneStop {
 struct GeneCommand {
 	gene_development_command command;
 	gene_part_type part_type;
-	Atom<float> angle;			// angle is relative to the previous element's orientation
-	Atom<int> genomeOffset;		// offset from current gene to the start of the genes for the new part
+	Atom<float> angle;				// angle is relative to the previous element's orientation
+	Atom<int> genomeOffset;			// offset from current gene to the start of the genes for the new part
+	Atom<int> genomeOffsetJoint;	// offset from current gene to the start of the genes for the new part's joint
+	Atom<int> genomeOffsetMuscle1;	// offset from current gene to the start of the genes for the new part's muscle 1
+	Atom<int> genomeOffsetMuscle2;	// offset from current gene to the start of the genes for the new part's muscle 2
 };
 
-struct GeneLocalAttribute {
+struct GeneAttribute {
 	Atom<float> value;
 	gene_part_attribute_type attribute;
 	bool relativeValue;
@@ -99,7 +102,7 @@ public:
 	union GeneData {
 		GeneStop gene_stop;
 		GeneCommand gene_command;
-		GeneLocalAttribute gene_local_attribute;
+		GeneAttribute gene_attribute;
 		GeneSynapse gene_synapse;
 		GeneTransferFunction gene_transfer_function;
 		GeneNeuralConstant gene_neural_constant;
@@ -108,7 +111,7 @@ public:
 
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
 		GeneData(GeneCommand const &gc) : gene_command(gc) {}
-		GeneData(GeneLocalAttribute const &gla) : gene_local_attribute(gla) {}
+		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneFeedbackSynapse const &gfs) : gene_feedback_synapse(gfs) {}
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
@@ -128,7 +131,7 @@ public:
 
 	Gene(GeneStop const& gs) : Gene(GENE_TYPE_STOP, gs) {}
 	Gene(GeneCommand const &gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
-	Gene(GeneLocalAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
+	Gene(GeneAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
 	Gene(GeneFeedbackSynapse const &gfs) : Gene(GENE_TYPE_FEEDBACK_SYNAPSE, gfs) {}
 	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER, gt) {}
