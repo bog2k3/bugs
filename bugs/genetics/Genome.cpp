@@ -112,13 +112,6 @@ void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered |= alterAtom(g.data.gene_feedback_synapse.to, mutationChanceFactor);
 		altered |= alterAtom(g.data.gene_feedback_synapse.weight, mutationChanceFactor);
 		break;
-	case GENE_TYPE_GENERAL_ATTRIB:
-		altered |= alterAtom(g.data.gene_general_attribute.value, mutationChanceFactor);
-		break;
-	case GENE_TYPE_LOCATION:
-		for (unsigned i=0; i<constants::MAX_GROWTH_DEPTH; i++)
-			altered |= alterAtom(g.data.gene_location.location[i], mutationChanceFactor);
-		break;
 	case GENE_TYPE_NEURAL_CONST:
 		altered |= alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
 		altered |= alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
@@ -164,13 +157,6 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 		ret += g.data.gene_feedback_synapse.from.chanceToMutate.value;
 		ret += g.data.gene_feedback_synapse.to.chanceToMutate.value;
 		ret += g.data.gene_feedback_synapse.weight.chanceToMutate.value;
-		break;
-	case GENE_TYPE_GENERAL_ATTRIB:
-		ret += g.data.gene_general_attribute.value.chanceToMutate.value;
-		break;
-	case GENE_TYPE_LOCATION:
-		for (unsigned i=0; i<constants::MAX_GROWTH_DEPTH; i++)
-			ret += g.data.gene_location.location[i].chanceToMutate.value;
 		break;
 	case GENE_TYPE_NEURAL_CONST:
 		ret += g.data.gene_neural_constant.value.chanceToMutate.value;

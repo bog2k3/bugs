@@ -211,9 +211,6 @@ Chromosome Bug::createBasicChromosome() {
 	// body shape
 
 	// first bone:
-	GeneLocation gl;
-	gl.location[0].set(1 << 15);
-	c.push_back(gl);
 	GeneCommand gc;
 	gc.command = GENE_DEV_GROW;
 	gc.angle.set(PI);
@@ -221,42 +218,25 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(gc);
 
 	// bone 1 attribute
-	gl.location[0].set(1<<1);
-	gl.location[1].set(1);
-	gl.location[2].set(1<<15);
-	c.push_back(gl);
 	GeneLocalAttribute gla;
 	gla.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	gla.value.set(PI/8);
 	c.push_back(gla);
 
 	// second bone:
-	gl.location[0].set(1<<1);
-	gl.location[1].set(1);
-	gl.location[2].set(1 << 15);
-	c.push_back(gl);
 	gc.angle.set(0);
 	c.push_back(gc);
 
 	// the gripper:
-	gl.location[2].set(1);
-	gl.location[3].set(1);
-	gl.location[4].set(1 << 15);
-	c.push_back(gl);
 	gc.part_type = GENE_PART_GRIPPER;
 	c.push_back(gc);
 
 	// body size (sq meters)
-	gl.location[0].set(1 << 15);
-	c.push_back(gl);
 	gla.attribute = GENE_ATTRIB_SIZE;
 	gla.value.set(0.1f * 0.1f);
 	c.push_back(gla);
 
 	// first bone size:
-	gl.location[0].set(1<<1);
-	gl.location[2].set(1 << 15);
-	c.push_back(gl);
 	gla.value.set(0.08f * 0.01f);
 	c.push_back(gla);
 
@@ -266,8 +246,6 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(gla);
 
 	// second bone size:
-	gl.location[2].set(1);
-	c.push_back(gl);
 	gla.attribute = GENE_ATTRIB_SIZE;
 	gla.value.set(0.08f * 0.01f);
 	c.push_back(gla);
@@ -278,16 +256,11 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(gla);
 
 	// first muscle size
-	gl.location[0].set(1<<2);
-	gl.location[1].set(1 << 15);
-	c.push_back(gl);
 	gla.attribute = GENE_ATTRIB_SIZE;
 	gla.value.set(1.e-3f);
 	c.push_back(gla);
 
 	// second muscle size
-	gl.location[0].set(1<<3);
-	c.push_back(gl);
 	c.push_back(gla);
 
 

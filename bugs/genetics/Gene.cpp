@@ -7,19 +7,11 @@ void Gene::update_meta_genes_vec() {
 	metaGenes.push_back(&chance_to_swap);
 
 	switch (type) {
-	case GENE_TYPE_LOCATION:
-		for (unsigned i=0; i<constants::MAX_GROWTH_DEPTH; i++) {
-			metaGenes.push_back(&data.gene_location.location[i].chanceToMutate);
-			metaGenes.push_back(&data.gene_location.location[i].changeAmount);
-		}
-		break;
 	case GENE_TYPE_DEVELOPMENT:
 		metaGenes.push_back(&data.gene_command.angle.chanceToMutate);
 		metaGenes.push_back(&data.gene_command.angle.changeAmount);
-		break;
-	case GENE_TYPE_GENERAL_ATTRIB:
-		metaGenes.push_back(&data.gene_general_attribute.value.chanceToMutate);
-		metaGenes.push_back(&data.gene_general_attribute.value.changeAmount);
+		metaGenes.push_back(&data.gene_command.genomeOffset.chanceToMutate);
+		metaGenes.push_back(&data.gene_command.genomeOffset.changeAmount);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_local_attribute.value.chanceToMutate);

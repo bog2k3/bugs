@@ -47,21 +47,18 @@ public:
 
 private:
 	Bug* bug_;
-	unsigned crtPosition_;
-	std::vector<const GeneGeneralAttribute*> generalAttribGenes;
 	std::vector<const Gene*> neuralGenes;
-	std::vector<BodyPart*> activeSet_;
+	std::vector<std::pair<BodyPart*, int>> activeSet_;
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
 	std::map<int64_t, CummulativeValue> mapSynapses;
 	std::map<int64_t, CummulativeValue> mapFeedbackSynapses;
 
-	void decodeGene(Gene const& g, bool deferNeural);
-	void decodeDevelopCommand(GeneCommand const& g);
-	void decodeDevelopGrowth(GeneCommand const& g);
-	void decodeDevelopSplit(GeneCommand const& g);
-	void decodePartAttrib(GeneLocalAttribute const& g);
-	void decodeGeneralAttrib(GeneGeneralAttribute const& g);
+	void decodeGene(Gene const& g, BodyPart* part, bool deferNeural);
+	void decodeDevelopCommand(GeneCommand const& g, BodyPart* part);
+	void decodeDevelopGrowth(GeneCommand const& g, BodyPart* part);
+	void decodeDevelopSplit(GeneCommand const& g, BodyPart* part);
+	void decodePartAttrib(GeneLocalAttribute const& g, BodyPart* part);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeFeedbackSynapse(GeneFeedbackSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);

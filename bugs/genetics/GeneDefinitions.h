@@ -10,10 +10,9 @@
 
 enum gene_type {
 	GENE_TYPE_INVALID = 0,
-	GENE_TYPE_LOCATION,			// defines the effective location for the next genes
+	GENE_TYPE_STOP,				// signals the ribosome to stop reading genes after this one
 	GENE_TYPE_DEVELOPMENT,		// developmental gene - commands the growth of the body
 	GENE_TYPE_PART_ATTRIBUTE,	// body part attribute - establishes characteristics of certain body parts
-	GENE_TYPE_GENERAL_ATTRIB,	// general attribute - controls the overall features of all	body parts of a specific type.
 	GENE_TYPE_BODY_ATTRIBUTE,	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 								// such as metabolic parameters
 	GENE_TYPE_SYNAPSE,			// creates or alters a synapse between neurons (cummulative weight)

@@ -49,28 +49,20 @@ struct Atom {
 	Atom() : value(), chanceToMutate(), changeAmount() {}
 };
 
-typedef uint16_t LocationLevelType; // bit 15 = current node, bits 0..14 children nodes
-
-struct GeneLocation {
-	Atom<LocationLevelType> location[constants::MAX_GROWTH_DEPTH];
-#warning "when mutating this gene, use only bit 15 and 0 for odd levels, and all 16 for even levels"
+struct GeneStop {
 };
 
 struct GeneCommand {
 	gene_development_command command;
 	gene_part_type part_type;
 	Atom<float> angle;			// angle is relative to the previous element's orientation
+	Atom<int> genomeOffset;		// offset from current gene to the start of the genes for the new part
 };
 
 struct GeneLocalAttribute {
 	Atom<float> value;
 	gene_part_attribute_type attribute;
 	bool relativeValue;
-};
-
-struct GeneGeneralAttribute {
-	gene_part_attribute_type attribute;
-	Atom<float> value;					// this is always relative
 };
 
 struct GeneSynapse {
@@ -105,20 +97,18 @@ public:
 	unsigned long RID;	// this is unique to this gene, when the gene is mutated, the RID changes
 	gene_type type;		// the type of gene
 	union GeneData {
-		GeneLocation gene_location;
+		GeneStop gene_stop;
 		GeneCommand gene_command;
 		GeneLocalAttribute gene_local_attribute;
-		GeneGeneralAttribute gene_general_attribute;
 		GeneSynapse gene_synapse;
 		GeneTransferFunction gene_transfer_function;
 		GeneNeuralConstant gene_neural_constant;
 		GeneFeedbackSynapse gene_feedback_synapse;
 		GeneBodyAttribute gene_body_attribute;
 
-		GeneData(GeneLocation const &gl) : gene_location(gl) {}
+		GeneData(GeneStop const &gs) : gene_stop(gs) {}
 		GeneData(GeneCommand const &gc) : gene_command(gc) {}
 		GeneData(GeneLocalAttribute const &gla) : gene_local_attribute(gla) {}
-		GeneData(GeneGeneralAttribute const &gga) : gene_general_attribute(gga) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneFeedbackSynapse const &gfs) : gene_feedback_synapse(gfs) {}
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
@@ -136,10 +126,9 @@ public:
 		update_meta_genes_vec();
 	}
 
-	Gene(GeneLocation const &gl) : Gene(GENE_TYPE_LOCATION, gl) {}
+	Gene(GeneStop const& gs) : Gene(GENE_TYPE_STOP, gs) {}
 	Gene(GeneCommand const &gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
 	Gene(GeneLocalAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
-	Gene(GeneGeneralAttribute const &gga) : Gene(GENE_TYPE_GENERAL_ATTRIB, gga) {}
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
 	Gene(GeneFeedbackSynapse const &gfs) : Gene(GENE_TYPE_FEEDBACK_SYNAPSE, gfs) {}
 	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER, gt) {}

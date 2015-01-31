@@ -112,7 +112,6 @@ public:
 	inline float getDefaultAngle() { return attachmentDirectionParent_ + angleOffset_; }
 	inline float getAngleOffset() { return angleOffset_; }
 
-	void matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<BodyPart*> *out);
 	void applyRecursive(std::function<void(BodyPart* pCurrent)> pred);
 	void addMotorLine(int line);
 	void addSensorLine(int line);

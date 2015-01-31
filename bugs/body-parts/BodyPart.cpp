@@ -61,17 +61,6 @@ BodyPart::~BodyPart() {
 		delete children_[i];
 }
 
-void BodyPart::matchLocation(const Atom<LocationLevelType>* location, int nLevel, std::vector<BodyPart*> *out) {
-	assert(nLevel >= 0);
-	if (*location & (1<<15)) {
-		out->push_back(this);
-	}
-	for (int i=0; i<nChildren_; i++) {
-		if (*location & (1 << i))
-			children_[i]->matchLocation(location+1, nLevel-1, out);
-	}
-}
-
 void BodyPart::applyRecursive(std::function<void(BodyPart* pCurrent)> pred) {
 	pred(this);
 	for (int i=0; i<nChildren_; i++)
