@@ -120,8 +120,6 @@ void Bug::updateDeadDecaying(float dt) {
 	// body parts loose their nutrient value gradually until they are deleted
 }
 
-#include "../neuralnet/InputSocket.h"
-
 void Bug::update(float dt) {
 	if (!isAlive_) {
 		updateDeadDecaying(dt);

@@ -130,9 +130,9 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 }
 
 float Joint::getJointAngle() {
-	if (committed_)
+	if (committed_) {
 		return physJoint_->GetJointAngle();
-	else
+	} else
 		return 0;
 }
 

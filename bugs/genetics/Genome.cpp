@@ -43,7 +43,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int stat_new = 0;
 #endif
 
-	static constexpr float numberAlterationsPerChromosome = 2;	// how many alterations we desire for a chromosome
+	static constexpr float numberAlterationsPerChromosome = 1;	// how many alterations we desire for a chromosome
 
 	// compute the total chance for mutations in the current chromosome:
 	float totalChanceToChange = 0.f;

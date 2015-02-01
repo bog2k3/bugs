@@ -9,6 +9,7 @@
 #define GENETICS_CUMMULATIVEVALUE_H_
 
 #include <cassert>
+#include <cmath>
 
 struct CummulativeValue {
 	CummulativeValue() : value_(0), cachedValue_(0), cacheUpdated_(false), n_(0), factor_(1.f) {}
@@ -16,6 +17,7 @@ struct CummulativeValue {
 	inline operator float() {
 		if (!cacheUpdated_)
 			updateCache();
+		assert(!std::isnan(cachedValue_));
 		return cachedValue_;
 	}
 	inline float get() {
