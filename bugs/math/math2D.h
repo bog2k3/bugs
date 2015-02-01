@@ -14,6 +14,7 @@ template<typename T> constexpr T abs(T const& x) { return x < 0 ? -x : x; }
 inline glm::vec2 getNormalVector(glm::vec2 v) { return glm::vec2(-v.y, v.x); }
 
 float constexpr eqEps(float f1, float f2) { return abs(f1 - f2) < EPS; }
+float constexpr eqEps(float f1, float f2, float eps) { return abs(f1 - f2) < eps; }
 
 constexpr float cross2D(const glm::vec2 &v1, const glm::vec2 &v2) {
 	return (v1.x*v2.y) - (v1.y*v2.x);

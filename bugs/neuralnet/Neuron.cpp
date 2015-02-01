@@ -27,7 +27,6 @@ void Neuron::update_value()
 
 void Neuron::push_output()
 {
-#warning transfFunc may be null which will crash!!!
 	output.push_value(transfFunc(value, neuralConstant));
 }
 

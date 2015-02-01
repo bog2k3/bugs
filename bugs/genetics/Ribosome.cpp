@@ -112,10 +112,10 @@ void Ribosome::decodeDeferredGenes() {
 	// apply all neuron properties
 	for (auto n : mapNeurons_) {
 		if (n.second.transfer.hasValue()) {
-			bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)n.second.transfer.get()];
-			if (bug_->neuralNet_->neurons[n.second.index]->transfFunc == nullptr)
-				bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[FN_ONE];
-		} if (n.second.constant.hasValue())
+			int funcIndex = clamp((int)n.second.transfer.get(), (int)FN_ONE, (int)FN_MAXCOUNT-1);
+			bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)funcIndex];
+		}
+		if (n.second.constant.hasValue())
 			bug_->neuralNet_->neurons[n.second.index]->neuralConstant = n.second.constant;
 	}
 }
@@ -132,7 +132,8 @@ bool Ribosome::step() {
 
 		return false;
 	}
-	for (unsigned i=0; i<activeSet_.size(); i++) {
+	int nCrtBranches = activeSet_.size();
+	for (unsigned i=0; i<nCrtBranches; i++) {
 		BodyPart* p = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second++;
 		bool hasFirst = offset < bug_->genome_.first.size();
@@ -152,7 +153,7 @@ bool Ribosome::step() {
 		if (reachedTheEnd || g->type == GENE_TYPE_STOP) {
 			// so much for this development path:
 			activeSet_.erase(activeSet_.begin()+i);
-			i--;
+			i--, nCrtBranches--;
 			continue;
 		}
 		/*

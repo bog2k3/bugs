@@ -43,6 +43,7 @@
 #include "../neuralnet/InputSocket.h"
 #include "../utils/UpdateList.h"
 #include "../utils/assert.h"
+#include "../utils/log.h"
 #include <glm/vec3.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <math.h>

@@ -145,6 +145,8 @@ void Joint::update(float dt) {
 	float minSpeed = 0, maxSpeed = 0;
 	float torque = 0;
 	for (unsigned i=0; i<vecTorques.size(); i++) {
+		if (eqEps(vecTorques[i].first, 0, 1.e-5f))
+			continue;
 		torque += vecTorques[i].first;
 		if (vecTorques[i].second < minSpeed)
 			minSpeed = vecTorques[i].second;
@@ -161,7 +163,7 @@ void Joint::update(float dt) {
 	vecTorques.clear();
 
 	// add the reset torque if joint is not within epsilon of repause angle:
-	if (!eqEps(getJointAngle(), PI/32)) {
+	if (!eqEps(getJointAngle(), 0, PI/32)) {
 		addTorque(-resetTorque_*sign(getJointAngle()), -4*getJointAngle());
 	}
 }

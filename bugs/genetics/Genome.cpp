@@ -101,6 +101,8 @@ bool alterAtom(Atom<T> &a, float mutationChanceFactor) {
 void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	bool altered = false;
 	switch (g.type) {
+	case GENE_TYPE_STOP:
+		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		altered |= alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
 		break;
@@ -140,9 +142,7 @@ void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	if (altered)
 		g.RID = new_RID();
 
-	LOGLN("alter metaGenes "<<g.type);
 	for (auto m : g.metaGenes) {
-		LOGLN("meta: " << m);
 		alterMetaGene(*m);
 	}
 }
@@ -150,6 +150,8 @@ void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 float GeneticOperations::getTotalMutationChance(Gene const& g) {
 	float ret = g.chance_to_delete.value + g.chance_to_swap.value;
 	switch (g.type) {
+	case GENE_TYPE_STOP:
+		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		ret += g.data.gene_body_attribute.value.chanceToMutate.value;
 		break;
