@@ -163,8 +163,8 @@ void Bug::update(float dt) {
 		growthMassBuffer_ -= massToGrow;
 		cachedLeanMass_ += massToGrow;
 		body_->applyScale_tree(cachedLeanMass_ / body_->getMass_tree());
-
 		if (cachedLeanMass_ >= adultLeanMass_ /* reached adulthood scale?*/) {
+
 			// finished developing, discard all initialization data which is not useful any more:
 			// body_->purge_initializationData_tree();
 			// but we still use it when changeing fat amount...
