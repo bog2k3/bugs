@@ -36,6 +36,13 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
  * 	4. altering the meta-genes for all genes except new ones
  */
 void GeneticOperations::alterChromosome(Chromosome &c) {
+#ifdef DEBUG
+	int stat_mutations = 0;
+	int stat_swaps = 0;
+	int stat_delete = 0;
+	int stat_new = 0;
+#endif
+
 	static constexpr float numberAlterationsPerChromosome = 2;	// how many alterations we desire for a chromosome
 
 	// compute the total chance for mutations in the current chromosome:
@@ -52,34 +59,60 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		if (delGene) {
 			c.erase(c.begin()+i);
 			i--;
+#ifdef DEBUG
+			stat_delete++;
+#endif
 			continue;
 		}
 		bool swap = randf() < c[i].chance_to_swap.value * mutationChanceFactor;
 		bool swapReverse = false;
 		if (swap) {
-			if (i < c.size()-1) // swap ahead
+			if (i < c.size()-1) { // swap ahead
 				xchg(c[i], c[i+1]);
-			else if (i > 0) { // swap behind
+#ifdef DEBUG
+				stat_swaps++;
+#endif
+			} else if (i > 0) { // swap behind
 				xchg(c[i], c[i-1]);
 				swapReverse = true;
+#ifdef DEBUG
+				stat_swaps++;
+#endif
 			}
 		}
-		if (swapReverse)
+		if (swapReverse) {
+#ifdef DEBUG
+			stat_mutations +=
+#endif
 			alterGene(c[i-1], mutationChanceFactor);
-		else
+		} else {
+#ifdef DEBUG
+			stat_mutations +=
+#endif
 			alterGene(c[i], mutationChanceFactor);
+		}
 
 		if (swap && !swapReverse) {
 			// swapped gene has been altered partially (by swapping), so must not go through a complete step again, do the rest here:
+#ifdef DEBUG
+			stat_mutations +=
+#endif
 			alterGene(c[i+1], mutationChanceFactor);
 			i++; // skip the next gene that has already been altered
 		}
 	}
 
 	// now there's a chance to spawn a new gene
-	if (randf() < constants::global_chance_to_spawn_gene) {
-		c.push_back(Gene::createRandom());
+	if (randf() < constants::global_chance_to_spawn_gene * c.size()) {
+		c.insert(c.begin()+randf()*c.size(), Gene::createRandom());
+#ifdef DEBUG
+		stat_new++;
+#endif
 	}
+
+#ifdef DEBUG
+		LOGLN("alter chromosome: [mutations: "<<stat_mutations<<"] [swaps: "<<stat_swaps<<"] [new: "<<stat_new<<"] [del: "<<stat_delete<<"]");
+#endif
 }
 
 template<typename T>
@@ -98,40 +131,40 @@ bool alterAtom(Atom<T> &a, float mutationChanceFactor) {
 		return false;
 }
 
-void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
-	bool altered = false;
+int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
+	int altered = 0;
 	switch (g.type) {
 	case GENE_TYPE_STOP:
 		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
-		altered |= alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_DEVELOPMENT:
-		altered |= alterAtom(g.data.gene_command.angle, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_command.genomeOffset, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_command.genomeOffsetMuscle1, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_command.genomeOffsetMuscle2, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_command.angle, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_command.genomeOffset, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_command.genomeOffsetMuscle1, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_command.genomeOffsetMuscle2, mutationChanceFactor);
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		altered |= alterAtom(g.data.gene_feedback_synapse.from, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_feedback_synapse.to, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_feedback_synapse.weight, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_feedback_synapse.from, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_feedback_synapse.to, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_feedback_synapse.weight, mutationChanceFactor);
 		break;
 	case GENE_TYPE_NEURAL_CONST:
-		altered |= alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		altered |= alterAtom(g.data.gene_attribute.value, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_attribute.value, mutationChanceFactor);
 		break;
 	case GENE_TYPE_SYNAPSE:
-		altered |= alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_synapse.to, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_synapse.weight, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_synapse.to, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_synapse.weight, mutationChanceFactor);
 		break;
 	case GENE_TYPE_TRANSFER:
-		altered |= alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
-		altered |= alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
 		break;
 	default:
 		ERROR("unhandled gene type: "<<g.type);
@@ -145,6 +178,8 @@ void GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	for (auto m : g.metaGenes) {
 		alterMetaGene(*m);
 	}
+
+	return altered;
 }
 
 float GeneticOperations::getTotalMutationChance(Gene const& g) {

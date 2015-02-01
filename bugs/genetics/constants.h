@@ -8,8 +8,8 @@ namespace constants {
 	constexpr float global_chance_to_spawn_gene			=	0.01f;
 
 	// initial values for genes' meta-genes:
-	constexpr float initial_gene_mutate					=	0.02f;		// chance to mutate gene
-	constexpr float initial_gene_delete					=	0.0005f;	// chance to delete gene
+	constexpr float initial_gene_mutate					=	0.015f;		// chance to mutate gene
+	constexpr float initial_gene_delete					=	0.002f;		// chance to delete gene
 	constexpr float initial_gene_swap					=	0.01f;		// chance to swap gene
 	constexpr float initial_gene_mutation_value			=	0.01f;		// value by which a gene mutates (for ints it's always +/-1)
 

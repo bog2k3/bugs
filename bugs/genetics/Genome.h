@@ -34,7 +34,8 @@ public:
 
 private:
 	static float getTotalMutationChance(Gene const& g);
-	static void alterGene(Gene &g, float mutationChanceFactor);
+	// return number of mutated atoms
+	static int alterGene(Gene &g, float mutationChanceFactor);
 	static void alterMetaGene(MetaGene &m);
 };
 
