@@ -40,7 +40,6 @@ struct BodyPartInitializationData {
 	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
 	 */
 
-	CummulativeValue attachmentDirectionParent;		// the attachment direction in parent's space
 	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
 	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
 	CummulativeValue size;							// surface area
@@ -60,6 +59,9 @@ public:
 	inline PART_TYPE getType() const { return type_; }
 
 	void changeParent(BodyPart* newParent);
+
+	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
+	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
 
 	/**
 	 * return the attachment point for a child of the current part, in the specified direction

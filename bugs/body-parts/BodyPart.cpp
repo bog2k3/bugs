@@ -19,8 +19,7 @@
 #include <cassert>
 
 BodyPartInitializationData::BodyPartInitializationData()
-	: attachmentDirectionParent(0)
-	, angleOffset(0)
+	: angleOffset(0)
 	, lateralOffset(0)
 	, size(BodyConst::initialBodyPartSize)
 	, density(BodyConst::initialBodyPartDensity)
@@ -49,7 +48,6 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 		parent->add(this);
 	}
 
-	registerAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE, initialData_->attachmentDirectionParent);
 	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->angleOffset);
 	registerAttribute(GENE_ATTRIB_ATTACHMENT_OFFSET, initialData_->lateralOffset);
 	registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
@@ -299,7 +297,6 @@ void BodyPart::draw_tree(RenderContext const& ctx) {
 }
 
 void BodyPart::cacheInitializationData() {
-	attachmentDirectionParent_ = limitAngle(initialData_->attachmentDirectionParent, 2*PI);
 	angleOffset_ = limitAngle(initialData_->angleOffset, 2*PI);
 	lateralOffset_ = initialData_->lateralOffset;
 	size_ = initialData_->size.clamp(BodyConst::MinBodyPartSize, 1.e10f);

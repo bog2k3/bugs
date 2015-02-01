@@ -252,6 +252,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		return;
 
 	float angle = g.angle;
+#error "implement circular layout here and push other parts around to fit and not overlap"
 
 	// The child's attachment point relative to the parent's center is computed from the angle specified in the gene,
 	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
@@ -261,7 +262,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	if (partMustGenerateJoint(g.part_type)) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
 		Joint* linkJoint = new Joint(part);
-		linkJoint->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
+		linkJoint->setAttachmentDirection(angle);
 		activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
 
 		// now generate the two muscles around the joint
@@ -269,7 +270,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		if (part->getChildrenCount() < BodyPart::MAX_CHILDREN) {
 			float mLeftAngle = angle + MUSCLE_OFFSET_ANGLE;
 			Muscle* mLeft = new Muscle(part, linkJoint, +1);
-			mLeft->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(mLeftAngle);
+			mLeft->setAttachmentDirection(mLeftAngle);
 			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(-MUSCLE_OFFSET_ANGLE);
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mLeft);
@@ -280,7 +281,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		if (part->getChildrenCount() < BodyPart::MAX_CHILDREN) {
 			float mRightAngle = angle - MUSCLE_OFFSET_ANGLE;
 			Muscle* mRight = new Muscle(part, linkJoint, -1);
-			mRight->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(mRightAngle);
+			mRight->setAttachmentDirection(mRightAngle);
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(+MUSCLE_OFFSET_ANGLE);
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mRight);
@@ -316,7 +317,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	}
 	if (!bp)
 		return;
-	bp->getAttribute(GENE_ATTRIB_ATTACHMENT_ANGLE)->reset(angle);
+	bp->setAttachmentDirection(angle);
 
 	// start a new development path from the new part:
 	activeSet_.push_back(std::make_pair(bp, crtPosition + g.genomeOffset));

@@ -49,7 +49,6 @@ enum gene_sensor_type {
 
 enum gene_part_attribute_type {
 	GENE_ATTRIB_INVALID = 0,
-	GENE_ATTRIB_ATTACHMENT_ANGLE,	// modifies the original growth angle
 	GENE_ATTRIB_LOCAL_ROTATION,		// rotates the part around its own center
 	GENE_ATTRIB_ATTACHMENT_OFFSET,	// sideways offset from parent joint, in % of current's part's width (default=0%)
 	GENE_ATTRIB_SIZE,			// represents the surface area of the part
