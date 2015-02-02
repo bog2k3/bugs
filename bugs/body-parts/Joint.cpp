@@ -37,8 +37,8 @@ void Joint::cacheInitializationData() {
 	resetTorque_ = initData->resetTorque.clamp(0, 1.e3f);
 }
 
-Joint::Joint(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_JOINT, std::make_shared<JointInitializationData>())
+Joint::Joint()
+	: BodyPart(BODY_PART_JOINT, std::make_shared<JointInitializationData>())
 	, physJoint_(nullptr)
 	, phiMin_(0)
 	, phiMax_(0)

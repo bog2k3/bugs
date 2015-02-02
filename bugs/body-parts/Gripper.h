@@ -16,8 +16,7 @@ class b2WeldJoint;
 
 class Gripper : public BodyPart, public IMotor {
 public:
-	// the position and rotation in props are relative to the parent
-	Gripper(BodyPart* parent);
+	Gripper();
 	~Gripper() override;
 
 	void draw(RenderContext const& ctx) override;

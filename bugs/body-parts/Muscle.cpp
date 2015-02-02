@@ -62,8 +62,8 @@ void Muscle::cacheInitializationData() {
 	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
 }
 
-Muscle::Muscle(BodyPart* parent, Joint* joint, int motorDirSign)
-	: BodyPart(parent, BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
+Muscle::Muscle(Joint* joint, int motorDirSign)
+	: BodyPart(BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
 	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
 	, joint_(joint)
 	, aspectRatio_(1.f)

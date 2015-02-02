@@ -30,8 +30,8 @@ void Bone::cacheInitializationData() {
 	width_ = length_ / aspectRatio;			// w = l/a
 }
 
-Bone::Bone(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_BONE, std::make_shared<BoneInitializationData>())
+Bone::Bone()
+	: BodyPart(BODY_PART_BONE, std::make_shared<BoneInitializationData>())
 	, length_(0)
 	, width_(0)
 {

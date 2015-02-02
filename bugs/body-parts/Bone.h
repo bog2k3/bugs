@@ -21,8 +21,7 @@ struct BoneInitializationData : public BodyPartInitializationData {
 
 class Bone: public BodyPart {
 public:
-	// the position and rotation in props are relative to the parent
-	Bone(BodyPart* parent);
+	Bone();
 	virtual ~Bone() override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 

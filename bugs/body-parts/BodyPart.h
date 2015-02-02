@@ -29,6 +29,8 @@ enum PART_TYPE {
 	BODY_PART_MOUTH,
 };
 
+static constexpr int MAX_CHILDREN = 15;
+
 // inherit this struct and put in it all the CummulativeValues that are changed by the genes.
 // after the genome is completely decoded, this data will be cached into real floats and this struct will be destroyed.
 struct BodyPartInitializationData {
@@ -44,6 +46,23 @@ struct BodyPartInitializationData {
 	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
 	CummulativeValue size;							// surface area
 	CummulativeValue density;
+
+	struct angularEntry {
+		int childIndex;
+		float angularSize;	// compute from child's width and owner's radius every time (child's size may change between insertions
+							// (we may have to adjust distributions after size change - use events)
+		// these are angular gaps between children:
+		float gapBefore;
+		float gapAfter;
+		// if gap before or after is 0, then the next/prev sibling is in contact with this one
+
+		void set(int index, float size, float gapBefore, float gapAfter) {
+			this->childIndex = index;
+			this->angularSize = size;
+			this->gapBefore = gapBefore;
+			this->gapAfter = gapAfter;
+		}
+	} circularBuffer[MAX_CHILDREN]; // this is initialization data
 };
 
 class UpdateList;
@@ -51,7 +70,7 @@ class RenderContext;
 
 class BodyPart {
 public:
-	BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
+	BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
 	virtual ~BodyPart();
 
 	virtual void draw(RenderContext const& ctx);
@@ -59,9 +78,6 @@ public:
 	inline PART_TYPE getType() const { return type_; }
 
 	void changeParent(BodyPart* newParent);
-
-	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
-	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
 
 	/**
 	 * return the attachment point for a child of the current part, in the specified direction
@@ -118,8 +134,6 @@ public:
 	void addMotorLine(int line);
 	void addSensorLine(int line);
 
-	static constexpr int MAX_CHILDREN = 15;
-
 protected:
 	// these are used when initializing the body and whenever a new commit is called.
 	// they contain world-space values that are updated only prior to committing
@@ -162,10 +176,16 @@ protected:
 	 * The physicsProperties of the body are transform to world coordinates before this method is called;
 	 */
 	virtual void commit() = 0;
+	virtual void getAngularSize() = 0;
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 
-	void add(BodyPart* part);
+	/*
+	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
+	 * The part's angle may be slightly changed if it overlaps other siblings.
+	 * returns the actual angle at which the part was inserted.
+	 */
+	float add(BodyPart* part, float angle);
 	void remove(BodyPart* part);
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint();
@@ -179,6 +199,8 @@ private:
 	glm::vec2 getParentSpacePosition();
 	bool applyScale_treeImpl(float scale, bool parentChanged);
 	void purge_initializationData();
+	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
+	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
 
 	std::vector<int> motorLines_; // a list of motor nerve lines that pass through this node
 	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-

@@ -26,9 +26,9 @@ BodyPartInitializationData::BodyPartInitializationData()
 {
 }
 
-BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
+BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
 	: type_(type)
-	, parent_(parent)
+	, parent_(nullptr)
 	, children_{nullptr}
 	, nChildren_(0)
 	, committed_(false)
@@ -44,9 +44,6 @@ BodyPart::BodyPart(BodyPart* parent, PART_TYPE type, std::shared_ptr<BodyPartIni
 	, lastCommitSize_inv_(0)
 {
 	assert (initialData != nullptr);
-	if (parent) {
-		parent->add(this);
-	}
 
 	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->angleOffset);
 	registerAttribute(GENE_ATTRIB_ATTACHMENT_OFFSET, initialData_->lateralOffset);
@@ -77,9 +74,48 @@ void BodyPart::addSensorLine(int line) {
 		parent_->addSensorLine(line);
 }
 
-void BodyPart::add(BodyPart* part) {
-	assert(nChildren_ < MAX_CHILDREN);
-	children_[nChildren_++] = part;
+float BodyPart::add(BodyPart* part, float angle) {
+	assert(nChildren_ < MAX_CHILDREN && initialData_);
+	// determine the position in the circular buffer:
+	int bufferPos = 0;
+	while (bufferPos < nChildren_ && angle >= children_[initialData_->circularBuffer[bufferPos].childIndex]->attachmentDirectionParent_)
+		bufferPos++;
+
+	float gapNeeded = part->getAngularSize() * 1.1f; // allow some margin
+	float gapLeftBefore = 0, gapLeftAfter = 0;
+	// more iterations may be required, since the first gaps found may not be enough:
+	while (gapNeeded > 0) {
+		// walk the circular buffer and compute 'mass' and gap
+		float MBefore, gapBefore = ; // compute push 'mass' and available gap before angle
+		float MAfter, gapAfter = ; // compute push 'mass' and available gap after angle
+		if (gapBefore+gapAfter == 0) {
+			// not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.
+		}
+		float MRatio = MAfter / MBefore;
+		float pushBef = gapNeeded / (1 + MRatio);
+		float pushAft = pushBef * MRatio;
+		if (pushBef > gapBefore) {
+			pushAft *= gapBefore / pushBef;
+			pushBefore = gapBefore;
+		} else
+			gapLeftBefore = gapBefore - pushBef;
+		if (pushAft > gapAfter) {
+			pushBefore *= gapAfter / pushAft;
+			pushAft = gapAfter;
+		} else
+			gapLeftAfter = gapAfter - pushAft;
+		pushBodyPart(partAfter, pushAft);	// must alter the attachmentDirectionParent of the siblings
+		pushBodyPart(partBefore, pushBef); // -||-
+		gapNeeded -= pushBef + pushAft;
+		angle = ; // adjust angle to the middle of the gap
+	}
+	for (int i=bufferPos+1; i<=nChildren_; i++)
+		initialData_->circularBuffer[i] = initialData_->circularBuffer[i-1];
+	initialData_->circularBuffer[bufferPos].set(nChildren_, gapNeeded, gapLeftBefore, gapLeftAfter);
+	children_[nChildren_] = part;
+	nChildren_++;
+	part->setAttachmentDirection(angle);
+	return angle;
 }
 
 void BodyPart::changeParent(BodyPart* newParent) {
@@ -87,7 +123,7 @@ void BodyPart::changeParent(BodyPart* newParent) {
 		parent_->remove(this);
 	parent_ = newParent;
 	if (parent_)
-		parent_->add(this);
+		parent_->add(this, attachmentDirectionParent_);
 }
 
 void BodyPart::remove(BodyPart* part) {

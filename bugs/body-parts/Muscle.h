@@ -25,7 +25,7 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 class Muscle: public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent:
-	Muscle(BodyPart* parent, Joint* joint, int motorDirSign);
+	Muscle(Joint* joint, int motorDirSign);
 	virtual ~Muscle() override;
 
 	void draw(RenderContext const& ctx) override;

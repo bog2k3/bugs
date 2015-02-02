@@ -27,7 +27,7 @@ class b2RevoluteJoint;
 
 class Joint : public BodyPart {
 public:
-	Joint(BodyPart* parent);
+	Joint();
 	~Joint() override;
 
 	void draw(RenderContext const& ctx) override;

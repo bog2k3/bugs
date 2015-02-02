@@ -243,56 +243,12 @@ void Ribosome::decodeDevelopCommand(GeneCommand const& g, BodyPart* part, int cr
 	}
 }
 
-// a vector of this must be in each bodyPart's initialization data, for its children
-struct angularEntry {
-	BodyPart* part;
-	OR
-	int childIndex;
-
-	float angularSize; // compute from child's width and parent radius every time (child's size may change between insertions - we may have to adjust distributions after size change - use events)
-	// these are angular gaps between children:
-	float gapBefore;
-	float gapAfter;
-	/*
-	 * if gap before or after is 0, then the next/prev sibling is in contact with this one
-	 */
-};
-angularEntry[MAX_CHILDREN] circularBuffer; // this is initialization data
-
-// return final angle
-float Ribosome::insertBodyPart(BodyyPart* part, float angle) {
-	float gapNeeded = part->getAngularSize() * 1.1f; // allow some margin
-	// more iterations may be required, since the first gaps found may not be enough:
-	while (gapNeeded > 0) {
-		float MBefore, gapBefore = ; // compute push 'mass' and available gap before angle
-		float MAfter, gapAfter = ; // compute push 'mass' and available gap after angle
-		if (gapBefore+gapAfter == 0) {
-			// not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.
-		}
-		float MRatio = MAfter / MBefore;
-		float pushBef = gapNeeded / (1 + MRatio);
-		float pushAft = pushBef * MRatio;
-		if (pushBef > gapBefore) {
-			pushAft *= gapBefore / pushBef;
-			pushBefore = gapBefore;
-		}
-		if (pushAft > gapAfter) {
-			pushBefore *= gapAfter / pushAft;
-			pushAft = gapAfter;
-		}
-		pushBodyPart(partAfter, pushAft);	// must alter the attachmentDirectionParent of the siblings
-		pushBodyPart(partBefore, pushBef); // -||-
-		gapNeeded -= pushBef + pushAft;
-		angle = ; // adjust angle to the middle of the gap
-	}
-}
-
 void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crtPosition) {
 	// now grow a new part on each adequate element in nodes list
 	// grow only works on bones and torso
 	if (part->getType() != BODY_PART_BONE && part->getType() != BODY_PART_TORSO)
 		return;
-	if (part->getChildrenCount() == BodyPart::MAX_CHILDREN)
+	if (part->getChildrenCount() == MAX_CHILDREN)
 		return;
 
 	float angle = g.angle;
@@ -304,18 +260,16 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 
 	if (partMustGenerateJoint(g.part_type)) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
-		Joint* linkJoint = new Joint(part);
-		angle = insertBodyPart(linkJoint, angle);
-		linkJoint->setAttachmentDirection(angle);
+		Joint* linkJoint = new Joint();
+		angle = part->add(linkJoint, angle);
 		activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
 
 		// now generate the two muscles around the joint
 		// 1. Left
-		if (part->getChildrenCount() < BodyPart::MAX_CHILDREN) {
+		if (part->getChildrenCount() < MAX_CHILDREN) {
 			float mLeftAngle = angle + EPS;
-			Muscle* mLeft = new Muscle(part, linkJoint, +1);
-			mLeftAngle = insertBodyPart(mLeft, mLeftAngle);
-			mLeft->setAttachmentDirection(mLeftAngle);
+			Muscle* mLeft = new Muscle(linkJoint, +1);
+			mLeftAngle = part->add(mLeft, mLeftAngle);
 			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mLeft);
@@ -323,11 +277,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
 		}
 		// 2. Right
-		if (part->getChildrenCount() < BodyPart::MAX_CHILDREN) {
+		if (part->getChildrenCount() < MAX_CHILDREN) {
 			float mRightAngle = angle - EPS;
-			Muscle* mRight = new Muscle(part, linkJoint, -1);
-			mRightAngle = insertBodyPart(linkJoint, mRightAngle);
-			mRight->setAttachmentDirection(mRightAngle);
+			Muscle* mRight = new Muscle(linkJoint, -1);
+			mRightAngle = part->add(linkJoint, mRightAngle);
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mRight);
@@ -345,10 +298,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	BodyPart* bp = nullptr;
 	switch (g.part_type) {
 	case GENE_PART_BONE:
-		bp = new Bone(part);
+		bp = new Bone();
 		break;
 	case GENE_PART_GRIPPER: {
-		Gripper* g = new Gripper(part);
+		Gripper* g = new Gripper();
 		int motorLineId = bug_->motors_.size();
 		bug_->motors_.push_back(g);
 		g->addMotorLine(motorLineId);
@@ -363,7 +316,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	}
 	if (!bp)
 		return;
-	bp->setAttachmentDirection(angle);
+
+	part->add(bp, angle);
 
 	// start a new development path from the new part:
 	activeSet_.push_back(std::make_pair(bp, crtPosition + g.genomeOffset));
