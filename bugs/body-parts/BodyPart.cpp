@@ -74,20 +74,41 @@ void BodyPart::addSensorLine(int line) {
 		parent_->addSensorLine(line);
 }
 
+int circularPrev(int index, int n) {
+	if (n == 0)
+		return 0;
+	return (index+n-1) % n;
+}
+int circularNext(int index, int n) {
+	if (n == 0)
+		return 0;
+	return (index+1) % n;
+}
+bool angleSpanOverlap(float angle, float span, BodyPartInitializationData::angularEntry const& entry) {
+
+}
+
 float BodyPart::add(BodyPart* part, float angle) {
 	assert(nChildren_ < MAX_CHILDREN && initialData_);
 	// determine the position in the circular buffer:
 	int bufferPos = 0;
 	while (bufferPos < nChildren_ && angle >= children_[initialData_->circularBuffer[bufferPos].childIndex]->attachmentDirectionParent_)
 		bufferPos++;
-
 	float gapNeeded = part->getAngularSize() * 1.1f; // allow some margin
+	int nextIdx = circularPrev(bufferPos, nChildren_);
+	if (nextIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, initialData_->circularBuffer[nextIdx])) {
+		// overlaps next neighbor
+	}
+#error "angle spread may not be symmetrical around attachment angle! (child attachment offset) - must use lowAngle, hiAngle instead of gapNeeded"
+		// or recompute the angle as the middle of the span, and then reset it when setting the attachmentAngle on the child - better like this
+
 	float gapLeftBefore = 0, gapLeftAfter = 0;
 	// more iterations may be required, since the first gaps found may not be enough:
 	while (gapNeeded > 0) {
 		// walk the circular buffer and compute 'mass' and gap
-		float MBefore, gapBefore = ; // compute push 'mass' and available gap before angle
-		float MAfter, gapAfter = ; // compute push 'mass' and available gap after angle
+		float MBefore = 0, gapBefore = 0; // compute push 'mass' and available gap before angle
+		float MAfter = 0, gapAfter = 0; // compute push 'mass' and available gap after angle
+
 		if (gapBefore+gapAfter == 0) {
 			// not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.
 		}
@@ -96,11 +117,11 @@ float BodyPart::add(BodyPart* part, float angle) {
 		float pushAft = pushBef * MRatio;
 		if (pushBef > gapBefore) {
 			pushAft *= gapBefore / pushBef;
-			pushBefore = gapBefore;
+			pushBef = gapBefore;
 		} else
 			gapLeftBefore = gapBefore - pushBef;
 		if (pushAft > gapAfter) {
-			pushBefore *= gapAfter / pushAft;
+			pushBef *= gapAfter / pushAft;
 			pushAft = gapAfter;
 		} else
 			gapLeftAfter = gapAfter - pushAft;
@@ -112,6 +133,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 	for (int i=bufferPos+1; i<=nChildren_; i++)
 		initialData_->circularBuffer[i] = initialData_->circularBuffer[i-1];
 	initialData_->circularBuffer[bufferPos].set(nChildren_, gapNeeded, gapLeftBefore, gapLeftAfter);
+	// todo update gaps for neighbors
 	children_[nChildren_] = part;
 	nChildren_++;
 	part->setAttachmentDirection(angle);
