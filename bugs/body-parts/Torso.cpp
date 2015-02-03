@@ -19,8 +19,8 @@
 
 static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 
-Torso::Torso(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_TORSO, std::make_shared<BodyPartInitializationData>())
+Torso::Torso()
+	: BodyPart(BODY_PART_TORSO, std::make_shared<BodyPartInitializationData>())
 	, fatMass_(0)
 	, lastCommittedTotalSizeInv_(0)
 	, frameUsedEnergy_(0)

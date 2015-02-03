@@ -84,8 +84,43 @@ int circularNext(int index, int n) {
 		return 0;
 	return (index+1) % n;
 }
-bool angleSpanOverlap(float angle, float span, BodyPartInitializationData::angularEntry const& entry) {
+bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, float &outMargin) {
+	// will set outMargin to negative if overlap, or positive shortest gap around element if no overlap
+	// move angle1 in origin for convenience:
+	angle2 = limitAngle(angle2 - angle1, PI);
+	angle1 = 0;
+	// compute min and max span:
+	float span1_2 = span1 * 0.5f;
+	// float a1min = limitAngle(-span1_2, 2*PI), a2max = limitAngle(angle1 + span1_2, 2*PI);
+	float span2_2 = span2 * 0.5f;
+	// float a2min = limitAngle(angle2 - span2_2, 2*PI), a2max = limitAngle(angle2 + span2_2, 2*PI);
+	if ()
+}
 
+constexpr float getAngularSize(float r, float width) {
+	return 2 * atanf(width/(2*r));
+}
+
+void BodyPart::pushBodyParts(int circularBufferIndex, float delta) {
+	if (delta == 0)
+		return;
+	float gapNext = 0;
+	int i=circularBufferIndex;
+	int di = sign(delta);
+	do {
+		BodyPartInitializationData::angularEntry &entry = initialData_->circularBuffer[i];
+		children_[entry.childIndex]->setAttachmentDirection(children_[entry.childIndex]->attachmentDirectionParent_ + delta);
+		if (di > 0) {
+			gapNext = entry.gapAfter - delta;
+			if (gapNext < 0)
+				entry.gapAfter = 0;
+		} else /* (di < 0)*/ {
+			gapNext = entry.gapBefore + delta;  // delta is negative here
+			if (gapNext < 0)
+				entry.gapBefore = 0;
+		}
+		i += di;
+	} while (gapNext > 0);
 }
 
 float BodyPart::add(BodyPart* part, float angle) {
@@ -94,23 +129,46 @@ float BodyPart::add(BodyPart* part, float angle) {
 	int bufferPos = 0;
 	while (bufferPos < nChildren_ && angle >= children_[initialData_->circularBuffer[bufferPos].childIndex]->attachmentDirectionParent_)
 		bufferPos++;
-	float gapNeeded = part->getAngularSize() * 1.1f; // allow some margin
-	int nextIdx = circularPrev(bufferPos, nChildren_);
-	if (nextIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, initialData_->circularBuffer[nextIdx])) {
-		// overlaps next neighbor
-	}
-#error "angle spread may not be symmetrical around attachment angle! (child attachment offset) - must use lowAngle, hiAngle instead of gapNeeded"
-		// or recompute the angle as the middle of the span, and then reset it when setting the attachmentAngle on the child - better like this
-
+	float r = glm::length(getChildAttachmentPoint(angle));
+	float span = getAngularSize(r, part->getAttachmentWidth()) * 1.1f; // *1.1f = allow some margin
+	float gapNeeded = span;
 	float gapLeftBefore = 0, gapLeftAfter = 0;
+	int nextIdx = circularNext(bufferPos, nChildren_);
+	bool overlapsNext = nextIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, initialData_->circularBuffer[nextIdx], gapLeftAfter);
+	int prevIdx = circularPrev(bufferPos, nChildren_);
+	bool overlapsPrev = prevIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, initialData_->circularBuffer[prevIdx], gapLeftBefore);
+	if (!overlapsNext && !overlapsPrev)
+		gapNeeded = 0;
 	// more iterations may be required, since the first gaps found may not be enough:
 	while (gapNeeded > 0) {
 		// walk the circular buffer and compute 'mass' and gap
 		float MBefore = 0, gapBefore = 0; // compute push 'mass' and available gap before angle
 		float MAfter = 0, gapAfter = 0; // compute push 'mass' and available gap after angle
-
-		if (gapBefore+gapAfter == 0) {
-			// not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.
+		if (!overlapsNext) {
+			MAfter = span;
+			gapAfter = gapLeftAfter;
+		} else if (!overlapsPrev) {
+			MBefore = span;
+			gapBefore = gapLeftBefore;
+		} else {
+			// both overlap
+			// walk positive:
+			int iNext = bufferPos;
+			do {
+				iNext = circularNext(iNext, nChildren_);
+				MAfter += getAngularSize(r, children_[initialData_->circularBuffer[iNext].childIndex]->getAttachmentWidth());
+				gapAfter = initialData_->circularBuffer[iNext].gapAfter;
+			} while (eqEps(gapAfter, 0) && iNext != bufferPos);
+			// walk negative:
+			int iPrev = circularNext(bufferPos, nChildren_);
+			do {
+				iPrev = circularPrev(iPrev, nChildren_);
+				MAfter += getAngularSize(r, children_[initialData_->circularBuffer[iPrev].childIndex]->getAttachmentWidth());
+				gapBefore = initialData_->circularBuffer[iPrev].gapBefore;
+			} while (eqEps(gapBefore, 0) && iPrev != bufferPos);
+		}
+		if (gapBefore+gapAfter < span) {
+			assert(false && "not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.");
 		}
 		float MRatio = MAfter / MBefore;
 		float pushBef = gapNeeded / (1 + MRatio);
@@ -125,14 +183,21 @@ float BodyPart::add(BodyPart* part, float angle) {
 			pushAft = gapAfter;
 		} else
 			gapLeftAfter = gapAfter - pushAft;
-		pushBodyPart(partAfter, pushAft);	// must alter the attachmentDirectionParent of the siblings
-		pushBodyPart(partBefore, pushBef); // -||-
+		if (overlapsNext)
+			pushBodyParts(circularNext(bufferPos, nChildren_), pushAft);	// must alter the attachmentDirectionParent of the siblings
+		else
+			angle += pushAft;
+		if (overlapsPrev)
+			pushBodyParts(bufferPos, -pushBef); // -||-
+		else
+			angle += -pushBef;
 		gapNeeded -= pushBef + pushAft;
-		angle = ; // adjust angle to the middle of the gap
+		if (overlapsNext && overlapsPrev)
+			angle += (pushAft - pushBef) * 0.5f; // adjust angle to the middle of the gap
 	}
 	for (int i=bufferPos+1; i<=nChildren_; i++)
 		initialData_->circularBuffer[i] = initialData_->circularBuffer[i-1];
-	initialData_->circularBuffer[bufferPos].set(nChildren_, gapNeeded, gapLeftBefore, gapLeftAfter);
+	initialData_->circularBuffer[bufferPos].set(nChildren_, span, gapLeftBefore, gapLeftAfter);
 	// todo update gaps for neighbors
 	children_[nChildren_] = part;
 	nChildren_++;

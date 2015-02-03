@@ -176,7 +176,8 @@ protected:
 	 * The physicsProperties of the body are transform to world coordinates before this method is called;
 	 */
 	virtual void commit() = 0;
-	virtual void getAngularSize() = 0;
+	// return the width of the part at the attachment point to its parent. This is the size perpendicular on the line from parent's center to attachment point.
+	virtual float getAttachmentWidth() = 0;
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 
@@ -201,6 +202,7 @@ private:
 	void purge_initializationData();
 	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
 	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
+	void pushBodyParts(int circularBufferIndex, float delta);
 
 	std::vector<int> motorLines_; // a list of motor nerve lines that pass through this node
 	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-

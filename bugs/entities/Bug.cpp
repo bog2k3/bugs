@@ -50,7 +50,8 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
 	zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
-	body_ = new Torso(zygoteShell_);
+	body_ = new Torso();
+	zygoteShell_->add(body_, 0);
 	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
 	ribosome_ = new Ribosome(this);
 

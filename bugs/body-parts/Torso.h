@@ -16,7 +16,7 @@ class Mouth;
 
 class Torso : public BodyPart {
 public:
-	Torso(BodyPart* parent);
+	Torso();
 	~Torso() override;
 
 	void draw(RenderContext const& ctx) override;
