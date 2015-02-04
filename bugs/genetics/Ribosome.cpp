@@ -33,7 +33,10 @@ Ribosome::Ribosome(Bug* bug)
 {
 	// create default body parts:
 	// 1. mouth
-	bug->body_->setMouth(new Mouth(bug_->body_));		// this will be the location 0x1
+	Mouth* m = new Mouth();
+	bug_->body_->add(m, 0);
+	bug->body_->setMouth(m);
+#warning "who sets the genome offset for mouth?" // maybe have a "grow mouth" command gene that will just set offset
 
 	// 2. Egg-layer
 	// ...

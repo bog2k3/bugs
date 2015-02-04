@@ -33,8 +33,8 @@ void Mouth::cacheInitializationData() {
 	width_ = length_ / aspectRatio;			// w = l/a
 }
 
-Mouth::Mouth(BodyPart* parent)
-	: BodyPart(parent, BODY_PART_MOUTH, std::make_shared<MouthInitializationData>())
+Mouth::Mouth()
+	: BodyPart(BODY_PART_MOUTH, std::make_shared<MouthInitializationData>())
 	, length_(0)
 	, width_(0)
 	, bufferSize_(0)

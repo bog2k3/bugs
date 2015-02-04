@@ -21,7 +21,7 @@ struct MouthInitializationData : public BodyPartInitializationData {
 
 class Mouth: public BodyPart {
 public:
-	Mouth(BodyPart* parent);
+	Mouth();
 	virtual ~Mouth() override;
 
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
