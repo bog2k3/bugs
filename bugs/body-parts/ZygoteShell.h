@@ -15,8 +15,8 @@ public:
 	ZygoteShell(glm::vec2 position, float mass);
 	~ZygoteShell() override;
 
-	void commit() override;
 	void draw(RenderContext const& ctx) override;
+	void commit() override;
 
 	/**
 	 * this updates the BodyPartInitializationData::cachedProps from the actual zygot physics body,
@@ -25,6 +25,9 @@ public:
 	void updateCachedDynamicPropsFromBody();
 
 	float getMass() { return mass_; }
+
+protected:
+	float getAttachmentWidth() override;
 
 private:
 	float mass_;

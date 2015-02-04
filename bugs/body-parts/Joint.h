@@ -53,6 +53,7 @@ protected:
 	friend class World;
 	void getNormalizedLimits(float &low, float &high);
 	void commit() override;
+	float getAttachmentWidth() override;
 	void cacheInitializationData() override;
 	void die() override;
 };

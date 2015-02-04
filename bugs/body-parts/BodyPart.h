@@ -133,6 +133,13 @@ public:
 	void applyRecursive(std::function<void(BodyPart* pCurrent)> pred);
 	void addMotorLine(int line);
 	void addSensorLine(int line);
+	/*
+	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
+	 * The part's angle may be slightly changed if it overlaps other siblings.
+	 * returns the actual angle at which the part was inserted.
+	 */
+	float add(BodyPart* part, float angle);
+	void remove(BodyPart* part);
 
 protected:
 	// these are used when initializing the body and whenever a new commit is called.
@@ -181,13 +188,7 @@ protected:
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 
-	/*
-	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
-	 * The part's angle may be slightly changed if it overlaps other siblings.
-	 * returns the actual angle at which the part was inserted.
-	 */
-	float add(BodyPart* part, float angle);
-	void remove(BodyPart* part);
+
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint();
 	UpdateList* getUpdateList();

@@ -59,6 +59,7 @@ protected:
 	float getCurrentPhiSlice();
 	void cacheInitializationData() override;
 	void commit() override;
+	float getAttachmentWidth() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

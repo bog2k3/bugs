@@ -40,6 +40,7 @@ protected:
 
 	void cacheInitializationData() override;
 	void commit() override;
+	float getAttachmentWidth() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
 };
 

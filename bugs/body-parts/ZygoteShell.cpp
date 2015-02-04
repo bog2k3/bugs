@@ -20,7 +20,7 @@
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
 ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
-	: BodyPart(nullptr, BODY_PART_ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
+	: BodyPart(BODY_PART_ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
 	, mass_(mass)
 {
 	getInitializationData()->size.reset(mass*BodyConst::ZygoteDensityInv);

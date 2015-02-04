@@ -32,6 +32,7 @@ protected:
 	float width_;
 
 	void commit() override;
+	float getAttachmentWidth() override;
 	void cacheInitializationData() override;
 };
 

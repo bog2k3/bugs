@@ -33,6 +33,7 @@ protected:
 
 	void setActive(bool active);
 	void commit() override;
+	float getAttachmentWidth() override;
 	void die() override;
 };
 

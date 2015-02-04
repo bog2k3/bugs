@@ -56,6 +56,7 @@ protected:
 	Mouth* mouth_;
 
 	void commit() override;
+	float getAttachmentWidth() override;
 	void die() override;
 };
 

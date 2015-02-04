@@ -9,6 +9,7 @@
 #include "World.h"
 #include "math/box2glm.h"
 #include <Box2D/Box2D.h>
+#include <cmath>
 
 PhysicsBody::PhysicsBody(ObjectTypes userObjType, void* userPtr, EventCategoryFlags::type categFlags, EventCategoryFlags::type collisionMask)
 	: b2Body_(nullptr)
