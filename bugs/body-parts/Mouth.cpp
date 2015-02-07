@@ -47,11 +47,15 @@ Mouth::Mouth()
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 	physBody_.collisionEventMask_ = EventCategoryFlags::FOOD;
-
-	getUpdateList()->add(this);
 }
+
 Mouth::~Mouth() {
 	getUpdateList()->remove(this);
+}
+
+void Mouth::onAddedToParent() {
+	assert(getUpdateList() && "update list should be available to the body at this time");
+	getUpdateList()->add(this);
 }
 
 glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {

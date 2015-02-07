@@ -56,6 +56,7 @@ protected:
 	float getAttachmentWidth() override;
 	void cacheInitializationData() override;
 	void die() override;
+	void onAddedToParent() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

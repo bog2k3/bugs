@@ -31,7 +31,10 @@ Gripper::Gripper()
 	physBody_.userObjectType_ = ObjectTypes::BPART_GRIPPER;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+}
 
+void Gripper::onAddedToParent() {
+	assert(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
 }
 

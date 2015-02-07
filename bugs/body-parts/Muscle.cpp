@@ -81,11 +81,14 @@ Muscle::Muscle(Joint* joint, int motorDirSign)
 
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
-
-	getUpdateList()->add(this);
 }
 
 Muscle::~Muscle() {
+}
+
+void Muscle::onAddedToParent() {
+	assert(getUpdateList() && "update list should be available to the body at this time");
+	getUpdateList()->add(this);
 }
 
 void Muscle::commit() {

@@ -25,14 +25,16 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
 {
 	getInitializationData()->size.reset(mass*BodyConst::ZygoteDensityInv);
 	getInitializationData()->density.reset(BodyConst::ZygoteDensity);
+	getInitializationData()->angleOffset.reset(randf()*2*PI);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
-	commit_tree(1.f);
-
-	physBody_.b2Body_->SetTransform(g2b(position), randf()*2*PI);
+	cacheInitializationData();
+	physBody_.create(cachedProps_);
+	commit();
+	committed_ = true;
 }
 
 ZygoteShell::~ZygoteShell() {

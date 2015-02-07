@@ -30,7 +30,7 @@ enum PART_TYPE {
 	BODY_PART_EGGLAYER,
 };
 
-static constexpr int MAX_CHILDREN = 15;
+static constexpr int MAX_CHILDREN = 16;
 
 // inherit this struct and put in it all the CummulativeValues that are changed by the genes.
 // after the genome is completely decoded, this data will be cached into real floats and this struct will be destroyed.
@@ -189,6 +189,7 @@ protected:
 	virtual float getAttachmentWidth() = 0;
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
+	virtual void onAddedToParent() {}
 
 
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);

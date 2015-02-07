@@ -42,6 +42,7 @@ protected:
 	void commit() override;
 	float getAttachmentWidth() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
+	void onAddedToParent() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_MOUTH_H_ */

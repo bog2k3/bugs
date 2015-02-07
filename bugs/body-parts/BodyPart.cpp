@@ -141,13 +141,19 @@ float BodyPart::add(BodyPart* part, float angle) {
 	float gapNeeded = span;
 	float gapLeftBefore = 0, gapLeftAfter = 0;
 	int nextIdx = circularNext(bufferPos, nChildren_);
-	float nextAngle = children_[initialData_->circularBuffer[nextIdx].childIndex]->attachmentDirectionParent_;
-	float nextSpan = initialData_->circularBuffer[nextIdx].angularSize;
-	bool overlapsNext = nextIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, nextAngle, nextSpan, gapLeftAfter);
+	bool overlapsNext = false;
+	if (nextIdx != bufferPos) {
+		float nextAngle = children_[initialData_->circularBuffer[nextIdx].childIndex]->attachmentDirectionParent_;
+		float nextSpan = initialData_->circularBuffer[nextIdx].angularSize;
+		overlapsNext = nextIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, nextAngle, nextSpan, gapLeftAfter);
+	}
 	int prevIdx = circularPrev(bufferPos, nChildren_);
-	float prevAngle = children_[initialData_->circularBuffer[prevIdx].childIndex]->attachmentDirectionParent_;
-	float prevSpan = initialData_->circularBuffer[prevIdx].angularSize;
-	bool overlapsPrev = prevIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, prevAngle, prevSpan, gapLeftBefore);
+	bool overlapsPrev = false;
+	if (prevIdx != bufferPos) {
+		float prevAngle = children_[initialData_->circularBuffer[prevIdx].childIndex]->attachmentDirectionParent_;
+		float prevSpan = initialData_->circularBuffer[prevIdx].angularSize;
+		overlapsPrev = prevIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, prevAngle, prevSpan, gapLeftBefore);
+	}
 	if (!overlapsNext && !overlapsPrev)
 		gapNeeded = 0;
 	// more iterations may be required, since the first gaps found may not be enough:

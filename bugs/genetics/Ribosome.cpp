@@ -130,6 +130,8 @@ bool Ribosome::step() {
 		});
 		if (!hasMouth || !hasEggLayer) {
 			// here mark the embryo as dead and return
+			bug_->isAlive_ = false;
+			cleanUp();
 			return false;
 		}
 
@@ -316,12 +318,13 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		bug_->motors_.push_back(g);
 		g->addMotorLine(motorLineId);
 		bp = g;
-	}
 		break;
-	case GENE_PART_MOUTH:
+	}
+	case GENE_PART_MOUTH: {
 		Mouth* m = new Mouth();
 		bp = m;
 		break;
+	}
 	case GENE_PART_SENSOR:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;

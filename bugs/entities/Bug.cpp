@@ -381,7 +381,7 @@ Chromosome Bug::createBasicChromosome() {
 	gc.command = GENE_DEV_GROW;
 	gc.angle.set(0);
 	gc.part_type = GENE_PART_MOUTH;
-	gc.genomeOffset = 3; // stop
+	gc.genomeOffset.set(3); // stop
 	c.push_back(gc);
 
 	// bone 1:

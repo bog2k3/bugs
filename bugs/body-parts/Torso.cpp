@@ -33,11 +33,16 @@ Torso::Torso()
 	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
-
-	getUpdateList()->add(this);
 }
 
 Torso::~Torso() {
+	if (getUpdateList())
+		getUpdateList()->remove(this);
+}
+
+void Torso::onAddedToParent() {
+	assert(getUpdateList() && "update list should be available to the body at this time");
+	getUpdateList()->add(this);
 }
 
 void Torso::commit() {
@@ -64,7 +69,7 @@ void Torso::commit() {
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
 
-	mouth_->setProcessingSpeed(size_ * BodyConst::FoodProcessingSpeedDensity);
+	// mouth_->setProcessingSpeed(size_ * BodyConst::FoodProcessingSpeedDensity);
 #warning "this is dubious; mouth must have its own speed, and body absorbs from mouth(s) with its own speed"
 
 	maxEnergyBuffer_ = size_ * BodyConst::TorsoEnergyDensity;

@@ -35,6 +35,7 @@ protected:
 	void commit() override;
 	float getAttachmentWidth() override;
 	void die() override;
+	void onAddedToParent() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_GRIPPER_H_ */

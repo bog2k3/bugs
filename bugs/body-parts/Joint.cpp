@@ -48,8 +48,6 @@ Joint::Joint()
 	registerAttribute(GENE_ATTRIB_JOINT_LOW_LIMIT, initData->phiMin);
 	registerAttribute(GENE_ATTRIB_JOINT_HIGH_LIMIT, initData->phiMax);
 	registerAttribute(GENE_ATTRIB_JOINT_RESET_TORQUE, initData->resetTorque);
-
-	getUpdateList()->add(this);
 }
 
 Joint::~Joint() {
@@ -58,6 +56,11 @@ Joint::~Joint() {
 		if (parent_)
 			parent_->getBody().b2Body_->GetWorld()->DestroyJoint(physJoint_);
 	}
+}
+
+void Joint::onAddedToParent() {
+	assert(getUpdateList() && "update list should be available to the body at this time");
+	getUpdateList()->add(this);
 }
 
 void Joint::commit() {

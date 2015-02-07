@@ -98,9 +98,9 @@ int main() {
 		World::getInstance()->takeOwnershipOf(foodDisp);
 	}
 
-	for (int i=0; i<100; i++) {
-		Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-		// Bug* bug = Bug::newBasicBug(glm::vec2(0.f));
+	for (int i=0; i<1; i++) {
+		//Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+		Bug* bug = Bug::newBasicBug(glm::vec2(0.f));
 		World::getInstance()->takeOwnershipOf(bug);
 	}
 

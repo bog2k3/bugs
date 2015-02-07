@@ -58,6 +58,7 @@ protected:
 	void commit() override;
 	float getAttachmentWidth() override { return 0; }
 	void die() override;
+	void onAddedToParent() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */

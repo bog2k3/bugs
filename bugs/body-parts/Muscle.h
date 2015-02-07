@@ -60,6 +60,7 @@ protected:
 	void cacheInitializationData() override;
 	void commit() override;
 	float getAttachmentWidth() override;
+	void onAddedToParent() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */
