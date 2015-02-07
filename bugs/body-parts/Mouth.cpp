@@ -144,3 +144,10 @@ void Mouth::update(float dt) {
 	if (massProcessed > 0)
 		parent_->addProcessedFood(massProcessed);
 }
+
+float Mouth::getAttachmentWidth() {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
+	return width_;
+}

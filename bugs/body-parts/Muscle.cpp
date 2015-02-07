@@ -132,7 +132,7 @@ void Muscle::commit() {
 	bool useOY = false;
 	if (targetPart->getType() == BODY_PART_BONE) {
 		Bone* bone = dynamic_cast<Bone*>(targetPart);
-		if (aspectRatio_ < 1.f)
+		if (bone->getAspectRatio() < 1.f)
 			useOY = true;
 	}
 	// this is the world angle of insertion axis in default joint position:
@@ -205,6 +205,9 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
 }
 
 void Muscle::draw(RenderContext const& ctx) {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
 	float crtAspect = aspectRatio_;
 #ifdef DEBUG_DRAW_MUSCLE
 	if (committed_) {
@@ -246,4 +249,12 @@ void Muscle::update(float dt) {
 	// compute energy consumption
 	float usedEnergy = maxForce_ * signal_strength * BodyConst::MuscleEnergyConstant * dt;
 	consumeEnergy(usedEnergy);
+}
+
+float Muscle::getAttachmentWidth() {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
+	float w = sqrtf(size_ / aspectRatio_);
+	return w;
 }

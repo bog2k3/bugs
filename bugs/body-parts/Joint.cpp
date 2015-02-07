@@ -171,3 +171,11 @@ void Joint::update(float dt) {
 void Joint::die() {
 	physJoint_->EnableMotor(false);
 }
+
+float Joint::getAttachmentWidth() {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
+	float r = sqrtf(size_*PI_INV);
+	return r;
+}

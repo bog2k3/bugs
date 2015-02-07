@@ -137,7 +137,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 		bufferPos++;
 	float r = glm::length(getChildAttachmentPoint(angle));
 	float span = getAngularSize(r, part->getAttachmentWidth()) * 1.1f; // *1.1f = allow some margin
-#error "getAttachmentWidth() will return default part size since it's just been created"
+#warning "getAttachmentWidth() will return default part size since it's just been created; must update layout when size changes"
 	float gapNeeded = span;
 	float gapLeftBefore = 0, gapLeftAfter = 0;
 	int nextIdx = circularNext(bufferPos, nChildren_);

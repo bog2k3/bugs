@@ -26,6 +26,7 @@ public:
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 
 	void draw(RenderContext const& ctx) override;
+	float getAspectRatio();
 
 protected:
 	float length_;

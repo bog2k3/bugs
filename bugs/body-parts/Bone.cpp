@@ -89,3 +89,17 @@ void Bone::draw(RenderContext const& ctx) {
 				debug_color);
 	}
 }
+
+float Bone::getAspectRatio() {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
+	return length_ / width_;
+}
+
+float Bone::getAttachmentWidth() {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
+	return width_;
+}

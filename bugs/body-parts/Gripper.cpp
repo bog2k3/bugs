@@ -81,9 +81,9 @@ void Gripper::draw(RenderContext const& ctx) {
 	} else {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
+		ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
 		ctx.shape->drawLine(pos,
-				pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z),
+				pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z),
 				0, debug_color);
 	}
 }
@@ -100,4 +100,12 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
 
 void Gripper::die() {
 	setActive(false);
+}
+
+float Gripper::getAttachmentWidth() {
+	if (!geneValuesCached_) {
+		cacheInitializationData();
+	}
+	float r = sqrtf(size_*PI_INV);
+	return r;
 }

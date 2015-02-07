@@ -51,6 +51,7 @@ struct BodyPartInitializationData {
 		int childIndex;
 		float angularSize;	// compute from child's width and owner's radius every time (child's size may change between insertions
 							// (we may have to adjust distributions after size change - use events)
+#warning "see above + must recompute layout when a child's size changes - use thresholds or smthng"
 		// these are angular gaps between children:
 		float gapBefore;
 		float gapAfter;
