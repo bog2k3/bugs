@@ -31,15 +31,8 @@
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 {
-	// create default body parts:
-	// 1. mouth
-	Mouth* m = new Mouth();
-	bug_->body_->add(m, 0);
-	bug->body_->setMouth(m);
-#warning "who sets the genome offset for mouth?" // maybe have a "grow mouth" command gene that will just set offset
-
-	// 2. Egg-layer
-	// ...
+	// there are no more default body parts; they either get created by the genes, or the embryo
+	// is discarded at the end of development if it lacks critical parts such as mouth or egg-layer
 
 	// start decoding with root body part at offset 0 in the genome:
 	activeSet_.push_back(std::make_pair(bug_->body_, 0));
@@ -126,6 +119,20 @@ void Ribosome::decodeDeferredGenes() {
 bool Ribosome::step() {
 	if (activeSet_.empty()) {
 		// finished decoding all body parts.
+
+		// check if critical body parts exist (at least a mouth and egg-layer)
+		bool hasMouth = false, hasEggLayer = false;
+		bug_->body_->applyRecursive([&hasMouth, &hasEggLayer] (BodyPart* p) {
+			if (p->getType() == BODY_PART_MOUTH)
+				hasMouth = true;
+			if (p->getType() == BODY_PART_EGGLAYER)
+				hasEggLayer = true;
+		});
+		if (!hasMouth || !hasEggLayer) {
+			// here mark the embryo as dead and return
+			return false;
+		}
+
 		// now decode the neural network:
 		initializeNeuralNetwork();
 		decodeDeferredGenes();
@@ -310,6 +317,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		g->addMotorLine(motorLineId);
 		bp = g;
 	}
+		break;
+	case GENE_PART_MOUTH:
+		Mouth* m = new Mouth();
+		bp = m;
 		break;
 	case GENE_PART_SENSOR:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));

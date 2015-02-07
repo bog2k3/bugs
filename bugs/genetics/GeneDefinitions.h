@@ -32,9 +32,11 @@ enum gene_development_command {
 
 enum gene_part_type {
 	GENE_PART_INVALID = 0,
+	GENE_PART_MOUTH,
 	GENE_PART_BONE,			// bone
 	GENE_PART_GRIPPER,		// gripper - used to move around, like a foot
 	GENE_PART_SENSOR,		// sensor - one of the sensor types
+	GENE_PART_EGGLAYER,		// sexual organ - used to grown and lay gamettes
 	GENE_PART_END
 };
 

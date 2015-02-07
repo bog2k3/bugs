@@ -65,6 +65,8 @@ void Torso::commit() {
 	physBody_.b2Body_->CreateFixture(&fixDef);
 
 	mouth_->setProcessingSpeed(size_ * BodyConst::FoodProcessingSpeedDensity);
+#warning "this is dubious; mouth must have its own speed, and body absorbs from mouth(s) with its own speed"
+
 	maxEnergyBuffer_ = size_ * BodyConst::TorsoEnergyDensity;
 
 #warning "gresit, copiii inca nu sunt scalati"

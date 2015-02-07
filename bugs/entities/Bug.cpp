@@ -81,6 +81,12 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 		tRibosomeStep_ -= DECODE_PERIOD;
 		isDeveloping_ = ribosome_->step();
 		if (!isDeveloping_) {	// finished development?
+			if (!isAlive_) {
+				// embryo not viable, discarded.
+				// should remove all body parts and put a sort of sign on the zygote shell
+				return;
+			}
+
 			float currentMass = body_->getMass_tree();
 			float zygMass = zygoteShell_->getMass();
 
@@ -370,17 +376,26 @@ Chromosome Bug::createBasicChromosome() {
 	gs.weight.set(1.f);
 	c.push_back(gs);
 
-	// bone 1:
+	// Mouth:
 	GeneCommand gc;
+	gc.command = GENE_DEV_GROW;
+	gc.angle.set(0);
+	gc.part_type = GENE_PART_MOUTH;
+	gc.genomeOffset = 3; // stop
+	c.push_back(gc);
+
+	// bone 1:
 	gc.command = GENE_DEV_GROW;
 	gc.angle.set(PI);
 	gc.part_type = GENE_PART_BONE;
-	gc.genomeOffset.set(2);
+	gc.genomeOffset.set(4);
 	gc.genomeOffsetJoint.set(1);
 	gc.genomeOffsetMuscle1.set(11);
 	gc.genomeOffsetMuscle2.set(11);
 	c.push_back(gc);
 
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
 	c.push_back(GeneStop());
 
 	// bone 2:
