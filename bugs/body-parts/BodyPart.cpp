@@ -100,7 +100,7 @@ bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, floa
 	} else // ends of span2 are on different sides of angle 1
 		outMargin = min(a2n-a1p, a1n-a2p);	// the smallest distance between the spans (positive) or the greatest overlap (negative)
 
-	return outMargin > 0;
+	return outMargin < 0;
 }
 
 inline float getAngularSize(float r, float width) {
@@ -139,20 +139,20 @@ float BodyPart::add(BodyPart* part, float angle) {
 	float span = getAngularSize(r, part->getAttachmentWidth()) * 1.1f; // *1.1f = allow some margin
 #warning "getAttachmentWidth() will return default part size since it's just been created; must update layout when size changes"
 	float gapNeeded = span;
-	float gapLeftBefore = 0, gapLeftAfter = 0;
+	float gapLeftBefore = 2*PI-span, gapLeftAfter = 2*PI-span; // initial values valid for no other children case
 	int nextIdx = circularNext(bufferPos, nChildren_);
 	bool overlapsNext = false;
 	if (nextIdx != bufferPos) {
 		float nextAngle = children_[initialData_->circularBuffer[nextIdx].childIndex]->attachmentDirectionParent_;
 		float nextSpan = initialData_->circularBuffer[nextIdx].angularSize;
-		overlapsNext = nextIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, nextAngle, nextSpan, gapLeftAfter);
+		overlapsNext = angleSpanOverlap(angle, gapNeeded, nextAngle, nextSpan, gapLeftAfter);
 	}
 	int prevIdx = circularPrev(bufferPos, nChildren_);
 	bool overlapsPrev = false;
 	if (prevIdx != bufferPos) {
 		float prevAngle = children_[initialData_->circularBuffer[prevIdx].childIndex]->attachmentDirectionParent_;
 		float prevSpan = initialData_->circularBuffer[prevIdx].angularSize;
-		overlapsPrev = prevIdx != bufferPos && angleSpanOverlap(angle, gapNeeded, prevAngle, prevSpan, gapLeftBefore);
+		overlapsPrev = angleSpanOverlap(angle, gapNeeded, prevAngle, prevSpan, gapLeftBefore);
 	}
 	if (!overlapsNext && !overlapsPrev)
 		gapNeeded = 0;
