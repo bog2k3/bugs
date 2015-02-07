@@ -131,12 +131,15 @@ void BodyPart::pushBodyParts(int circularBufferIndex, float delta) {
 
 float BodyPart::add(BodyPart* part, float angle) {
 	assert(nChildren_ < MAX_CHILDREN && initialData_);
+LOGPREFIX("BodyPart::add");
+LOGLN("enter type"<<this->type_<<"; angle:"<<angle);
 	// determine the position in the circular buffer:
 	int bufferPos = 0;
 	while (bufferPos < nChildren_ && angle >= children_[initialData_->circularBuffer[bufferPos].childIndex]->attachmentDirectionParent_)
 		bufferPos++;
 	float r = glm::length(getChildAttachmentPoint(angle));
 	float span = getAngularSize(r, part->getAttachmentWidth()) * 1.1f; // *1.1f = allow some margin
+LOGLN("add at pos : "<<bufferPos<<"; span:"<<span);
 #warning "getAttachmentWidth() will return default part size since it's just been created; must update layout when size changes"
 	float gapNeeded = span;
 	float gapLeftBefore = 2*PI-span, gapLeftAfter = 2*PI-span; // initial values valid for no other children case
