@@ -102,7 +102,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			body_->commit_tree((zygMass-fatMass)/currentMass);
 
 			// delete embryo shell
-			body_->changeParent(nullptr);
+			body_->removeFromParent();
 			delete zygoteShell_;
 			zygoteShell_ = nullptr;
 

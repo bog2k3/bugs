@@ -56,6 +56,8 @@ Joint::~Joint() {
 		if (parent_)
 			parent_->getBody().b2Body_->GetWorld()->DestroyJoint(physJoint_);
 	}
+	if (getUpdateList())
+		getUpdateList()->remove(this);
 }
 
 void Joint::onAddedToParent() {

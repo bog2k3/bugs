@@ -50,7 +50,8 @@ Mouth::Mouth()
 }
 
 Mouth::~Mouth() {
-	getUpdateList()->remove(this);
+	if (getUpdateList())
+		getUpdateList()->remove(this);
 }
 
 void Mouth::onAddedToParent() {

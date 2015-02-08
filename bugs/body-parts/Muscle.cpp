@@ -84,6 +84,8 @@ Muscle::Muscle(Joint* joint, int motorDirSign)
 }
 
 Muscle::~Muscle() {
+	if (getUpdateList())
+		getUpdateList()->remove(this);
 }
 
 void Muscle::onAddedToParent() {

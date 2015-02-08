@@ -49,6 +49,8 @@ void onInputEventHandler(InputEvent& ev) {
 
 int main() {
 	LOGGER("app_main");
+	randSeed(time(NULL));
+	LOGLN("RAND seed: "<<rand_seed);
 
 	if (!gltInit(800, 600, "Bugs"))
 		return -1;

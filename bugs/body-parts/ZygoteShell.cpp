@@ -69,3 +69,8 @@ void ZygoteShell::updateCachedDynamicPropsFromBody() {
 	props.position = b2g(physBody_.b2Body_->GetPosition());
 	props.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
 }
+
+float ZygoteShell::add(BodyPart* part, float angle) {
+	children_[nChildren_++] = part;
+	return angle;
+}

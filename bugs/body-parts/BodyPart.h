@@ -79,7 +79,7 @@ public:
 
 	inline PART_TYPE getType() const { return type_; }
 
-	void changeParent(BodyPart* newParent);
+	void removeFromParent();
 
 	/**
 	 * return the attachment point for a child of the current part, in the specified direction
@@ -140,7 +140,7 @@ public:
 	 * The part's angle may be slightly changed if it overlaps other siblings.
 	 * returns the actual angle at which the part was inserted.
 	 */
-	float add(BodyPart* part, float angle);
+	virtual float add(BodyPart* part, float angle);
 	void remove(BodyPart* part);
 
 protected:

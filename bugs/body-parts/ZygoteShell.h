@@ -16,7 +16,7 @@ public:
 	~ZygoteShell() override;
 
 	void draw(RenderContext const& ctx) override;
-	void commit() override;
+	float add(BodyPart* part, float angle) override;
 
 	/**
 	 * this updates the BodyPartInitializationData::cachedProps from the actual zygot physics body,
@@ -28,6 +28,7 @@ public:
 
 protected:
 	float getAttachmentWidth() override { return 0; }
+	void commit() override;
 
 private:
 	float mass_;

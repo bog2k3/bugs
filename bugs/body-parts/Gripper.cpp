@@ -40,6 +40,8 @@ void Gripper::onAddedToParent() {
 
 Gripper::~Gripper() {
 	setActive(false);
+	if (getUpdateList())
+		getUpdateList()->remove(this);
 }
 
 void Gripper::commit() {
