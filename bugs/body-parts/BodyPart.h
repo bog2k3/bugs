@@ -49,7 +49,6 @@ struct BodyPartInitializationData {
 	CummulativeValue density;
 
 	struct angularEntry {
-		int childIndex;
 		float angularSize;	// compute from child's width and owner's radius every time (child's size may change between insertions
 							// (we may have to adjust distributions after size change - use events)
 #warning "see above + must recompute layout when a child's size changes - use thresholds or smthng"
@@ -58,8 +57,7 @@ struct BodyPartInitializationData {
 		float gapAfter;
 		// if gap before or after is 0, then the next/prev sibling is in contact with this one
 
-		void set(int index, float size, float gapBefore, float gapAfter) {
-			this->childIndex = index;
+		void set(float size, float gapBefore, float gapAfter) {
 			this->angularSize = size;
 			this->gapBefore = gapBefore;
 			this->gapAfter = gapAfter;
@@ -206,6 +204,7 @@ private:
 	void purge_initializationData();
 	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
 	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
+	void fixOverlaps(int startIndex);
 	void pushBodyParts(int circularBufferIndex, float delta);
 
 	std::vector<int> motorLines_; // a list of motor nerve lines that pass through this node
