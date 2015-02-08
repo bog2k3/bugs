@@ -150,7 +150,7 @@ LOGLN("add at pos : "<<bufferPos<<"; span:"<<span);
 #warning "getAttachmentWidth() will return default part size since it's just been created; must update layout when size changes"
 	float gapLeftBefore = 2*PI-span, gapLeftAfter = 2*PI-span; // initial values valid for no other children case
 	bool overlapsNext = false, overlapsPrev = false;
-	if (nChildren_ > 0) {
+	if (nChildren_ > 1) {
 		int nextPos = circularNext(bufferPos, nChildren_);
 		float nextAngle = children_[nextPos]->attachmentDirectionParent_;
 		float nextSpan = initialData_->circularBuffer[nextPos].angularSize;
@@ -162,12 +162,14 @@ LOGLN("add at pos : "<<bufferPos<<"; span:"<<span);
 		if (nChildren_ == 2) {
 			// next and previous elements are the same, must fix gaps
 			overlapsNext = overlapsNext && bufferPos == 0;
-			if (!overlapsNext)
-				gapLeftAfter = 2*PI - span - initialData_->circularBuffer[nextPos].angularSize - gapLeftBefore;
 			overlapsPrev = overlapsPrev && bufferPos == 1;
-			if (!overlapsPrev)
+			if (!overlapsNext && overlapsPrev)
+				gapLeftAfter = 2*PI - span - initialData_->circularBuffer[nextPos].angularSize - gapLeftBefore;
+			if (!overlapsPrev && overlapsNext)
 				gapLeftBefore = 2*PI - span - initialData_->circularBuffer[prevPos].angularSize - gapLeftAfter;
 		}
+		initialData_->circularBuffer[nextPos].gapBefore = gapLeftAfter;
+		initialData_->circularBuffer[prevPos].gapAfter = gapLeftBefore;
 	}
 	initialData_->circularBuffer[bufferPos].set(span, gapLeftBefore, gapLeftAfter);
 	// done
@@ -223,8 +225,8 @@ void BodyPart::fixOverlaps(int startIndex) {
 		if (nChildren_ == 2) {
 			// distribute the semi-gaps proportional to the mass ratio
 			float gapSum = gapBefore + gapAfter;
-			gapBefore = MRatio * gapSum;
-			gapAfter = gapSum - gapBefore;
+			gapAfter = pushAft / gapNeeded * gapSum;
+			gapBefore = gapSum - gapAfter;
 		}
 		bool willOverlapNext = false, willOverlapPrev = false;
 		if (pushBef > gapBefore) {
