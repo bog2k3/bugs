@@ -131,7 +131,7 @@ void BodyPart::pushBodyParts(int index, float delta) {
 float BodyPart::add(BodyPart* part, float angle) {
 	assert(nChildren_ < MAX_CHILDREN && initialData_);
 LOGPREFIX("BodyPart::add");
-LOGLN("enter type"<<this->type_<<"; angle:"<<angle);
+LOGLN("enter parent_type: "<<this->type_<<"; type:"<<part->type_<<"; angle0:"<<angle);
 	// determine the position in the circular buffer:
 	int bufferPos = 0;
 	while (bufferPos < nChildren_ && angle >= children_[bufferPos]->attachmentDirectionParent_)
@@ -146,7 +146,7 @@ LOGLN("enter type"<<this->type_<<"; angle:"<<angle);
 	part->setAttachmentDirection(angle);
 	float r = glm::length(getChildAttachmentPoint(angle));
 	float span = getAngularSize(r, part->getAttachmentWidth()) * 1.1f; // *1.1f = allow some margin
-LOGLN("add at pos : "<<bufferPos<<"; span:"<<span);
+LOGLN("    add at pos : "<<bufferPos<<"; span:"<<span);
 #warning "getAttachmentWidth() will return default part size since it's just been created; must update layout when size changes"
 	float gapLeftBefore = 2*PI-span, gapLeftAfter = 2*PI-span; // initial values valid for no other children case
 	bool overlapsNext = false, overlapsPrev = false;
@@ -175,6 +175,7 @@ LOGLN("add at pos : "<<bufferPos<<"; span:"<<span);
 	// done
 	if (overlapsNext || overlapsPrev)
 		fixOverlaps(bufferPos);
+LOGLN("    settled at angle: "<<children_[bufferPos]->attachmentDirectionParent_);
 	return children_[bufferPos]->attachmentDirectionParent_;
 }
 

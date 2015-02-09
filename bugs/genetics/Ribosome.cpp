@@ -26,8 +26,6 @@
 
 #include <utility>
 
-// static constexpr float MUSCLE_OFFSET_ANGLE = PI * 0.25f;
-
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 {
@@ -289,7 +287,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		if (part->getChildrenCount() < MAX_CHILDREN) {
 			float mRightAngle = angle - EPS;
 			Muscle* mRight = new Muscle(linkJoint, -1);
-			mRightAngle = part->add(linkJoint, mRightAngle);
+			mRightAngle = part->add(mRight, mRightAngle);
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mRight);
