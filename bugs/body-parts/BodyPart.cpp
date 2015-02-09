@@ -195,27 +195,28 @@ void BodyPart::fixOverlaps(int startIndex) {
 			gapAfter = initialData_->circularBuffer[startIndex].gapAfter;
 		} else {
 			// walk positive:
-			int iNext = circularNext(startIndex, nChildren_);
+			int iNext = firstNext;
 			while (gapAfter < EPS && (nChildren_ == 2 || iNext != firstPrev)) {
 				MAfter += getAngularSize(r, children_[iNext]->getAttachmentWidth());
 				gapAfter = initialData_->circularBuffer[iNext].gapAfter;
 				iNext = circularNext(iNext, nChildren_);
 			}
+			if (nChildren_ > 2 && iNext == firstPrev && gapAfter < gapNeeded)
+				assert(false && "not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.");
 		}
 		if (!overlapsPrev) {
 			MBefore = initialData_->circularBuffer[startIndex].angularSize;
 			gapBefore = initialData_->circularBuffer[startIndex].gapBefore;
 		} else {
 			// walk negative:
-			int iPrev = circularPrev(startIndex, nChildren_);
+			int iPrev = firstPrev;
 			while (gapBefore < EPS && (nChildren_ == 2 || iPrev != firstNext)) {
 				MBefore += getAngularSize(r, children_[iPrev]->getAttachmentWidth());
 				gapBefore = initialData_->circularBuffer[iPrev].gapBefore;
 				iPrev = circularPrev(iPrev, nChildren_);
 			}
-		}
-		if (gapBefore+gapAfter < initialData_->circularBuffer[startIndex].angularSize) {
-			assert(false && "not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.");
+			if (nChildren_ > 2 && iPrev == firstNext && gapBefore < gapNeeded)
+				assert(false && "not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.");
 		}
 		assert(MAfter*MBefore != 0);
 		float MRatio = MAfter / MBefore;
@@ -241,11 +242,11 @@ void BodyPart::fixOverlaps(int startIndex) {
 		}
 		if (pushAft > 0) {
 			pushBodyParts(overlapsNext ? firstNext : startIndex, pushAft);	// must alter the attachmentDirectionParent of the siblings
-			initialData_->circularBuffer[startIndex].gapAfter += pushAft;
+			initialData_->circularBuffer[startIndex].gapAfter += overlapsNext ? pushAft : -pushAft;
 		}
 		if (pushBef > 0) {
 			pushBodyParts(overlapsPrev ? firstPrev : startIndex, -pushBef); // -||-
-			initialData_->circularBuffer[startIndex].gapBefore += pushBef;
+			initialData_->circularBuffer[startIndex].gapBefore += overlapsPrev ? pushBef : -pushBef;
 		}
 		gapNeeded -= pushBef + pushAft;
 		if (overlapsNext && overlapsPrev)

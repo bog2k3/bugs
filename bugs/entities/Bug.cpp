@@ -237,6 +237,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// neural system
 
+	/*
 	// neuron #0 transfer:
 	GeneTransferFunction gt;
 	gt.targetNeuron.set(0);
@@ -375,6 +376,7 @@ Chromosome Bug::createBasicChromosome() {
 	gs.to.set(-7);
 	gs.weight.set(1.f);
 	c.push_back(gs);
+	*/
 
 	// Mouth:
 	GeneCommand gc;
@@ -399,6 +401,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(GeneStop());
 
 	// bone 2:
+	/*
 	gc.angle.set(0);
 	gc.genomeOffset.set(5);
 	gc.genomeOffsetJoint.set(4);
@@ -447,6 +450,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(ga);
 
 	c.push_back(GeneStop());
+	*/
 
 	return c;
 }

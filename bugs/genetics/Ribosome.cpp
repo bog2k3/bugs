@@ -273,9 +273,6 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	if (partMustGenerateJoint(g.part_type)) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
 		Joint* linkJoint = new Joint();
-		angle = part->add(linkJoint, angle);
-		activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
-
 		// now generate the two muscles around the joint
 		// 1. Left
 		if (part->getChildrenCount() < MAX_CHILDREN) {
@@ -299,6 +296,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			mRight->addMotorLine(motorLineId);
 			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
 		}
+		part->add(linkJoint, angle);
+		activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
 
 		// set part to point to the joint's node, since that's where the actual part will be attached:
 		part = linkJoint;
