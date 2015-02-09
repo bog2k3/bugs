@@ -102,5 +102,6 @@ template<typename T> inline T lerp_lookup(const T* v, int nV, float position) {
 /**
  * Casts a ray from the box's center in the given direction and returns the coordinates of the point
  * on the edge of the box that is intersected by the ray
+ * length is along OX axis, and width along OY. direction is relative to trigonometric zero (OX+)
  */
 glm::vec2 rayIntersectBox(float width, float height, float direction);
