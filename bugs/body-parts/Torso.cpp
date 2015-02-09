@@ -33,6 +33,9 @@ Torso::Torso()
 	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+
+#warning "remove this, it's for debug:"
+	getInitializationData()->size.changeRel(50);
 }
 
 Torso::~Torso() {

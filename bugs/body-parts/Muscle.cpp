@@ -204,6 +204,7 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
 	}
 	float w = sqrtf(size_ / aspectRatio_);
 	float l = aspectRatio_ * w;
+#warning check this shit, might be l & w reversed:
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;

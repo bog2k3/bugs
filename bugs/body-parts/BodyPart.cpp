@@ -97,8 +97,11 @@ bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, floa
 			outMargin = min(a2p, a2n) - a1p;
 		else // both on the negative side
 			outMargin = a1n - max(a2n, a2p);
-	} else // ends of span2 are on different sides of angle 1
-		outMargin = min(a2n-a1p, a1n-a2p);	// the smallest distance between the spans (positive) or the greatest overlap (negative)
+	} else { // ends of span2 are on different sides of angle 1
+		float d1 = a2n-a1p, d2 = a1n-a2p;
+#warning "this is broken i think:"
+		outMargin = (abs(d1)<abs(d2)) ? d1 : d2; // the smallest distance between the spans (positive) or the greatest overlap (negative)
+	}
 
 	return outMargin < 0;
 }
@@ -108,11 +111,13 @@ inline float getAngularSize(float r, float width) {
 }
 
 void BodyPart::pushBodyParts(int index, float delta) {
+	LOGPREFIX("::pushBodyParts");
 	if (delta == 0)
 		return;
 	int di = sign(delta);
 	while (true) {
 		BodyPartInitializationData::angularEntry &entry = initialData_->circularBuffer[index];
+		LOGLN("push "<<index<<" delta:"<<delta);
 		children_[index]->setAttachmentDirection(children_[index]->attachmentDirectionParent_ + delta);
 		entry.gapBefore += delta;
 		entry.gapAfter -= delta;
@@ -145,7 +150,7 @@ LOGLN("enter parent_type: "<<this->type_<<"; type:"<<part->type_<<"; angle0:"<<a
 	part->parent_ = this;
 	part->setAttachmentDirection(angle);
 	float r = glm::length(getChildAttachmentPoint(angle));
-	float span = getAngularSize(r, part->getAttachmentWidth()) * 1.1f; // *1.1f = allow some margin
+	float span = getAngularSize(r, part->getAttachmentWidth());
 LOGLN("    add at pos : "<<bufferPos<<"; span:"<<span);
 #warning "getAttachmentWidth() will return default part size since it's just been created; must update layout when size changes"
 	float gapLeftBefore = 2*PI-span, gapLeftAfter = 2*PI-span; // initial values valid for no other children case
@@ -171,6 +176,7 @@ LOGLN("    add at pos : "<<bufferPos<<"; span:"<<span);
 		initialData_->circularBuffer[nextPos].gapBefore = gapLeftAfter;
 		initialData_->circularBuffer[prevPos].gapAfter = gapLeftBefore;
 	}
+	LOGLN("    gapBefore: "<<gapLeftBefore<<"; gapAfter:"<<gapLeftAfter);
 	initialData_->circularBuffer[bufferPos].set(span, gapLeftBefore, gapLeftAfter);
 	// done
 	if (overlapsNext || overlapsPrev)
@@ -180,6 +186,7 @@ LOGLN("    settled at angle: "<<children_[bufferPos]->attachmentDirectionParent_
 }
 
 void BodyPart::fixOverlaps(int startIndex) {
+	LOGPREFIX("::fixOverlaps");
 	bool overlapsNext = initialData_->circularBuffer[startIndex].gapAfter < 0;
 	bool overlapsPrev = initialData_->circularBuffer[startIndex].gapBefore < 0;
 	float gapNeeded = (overlapsNext ? -initialData_->circularBuffer[startIndex].gapAfter : 0) +
@@ -191,6 +198,7 @@ void BodyPart::fixOverlaps(int startIndex) {
 		float MBefore = 0, gapBefore = 0; // compute push 'mass' and available gap before angle
 		float MAfter = 0, gapAfter = 0; // compute push 'mass' and available gap after angle
 		int firstNext = circularNext(startIndex, nChildren_), firstPrev = circularPrev(startIndex, nChildren_);
+		bool wrapAround = false;
 		if (!overlapsNext) {
 			MAfter = initialData_->circularBuffer[startIndex].angularSize;
 			gapAfter = initialData_->circularBuffer[startIndex].gapAfter;
@@ -202,8 +210,10 @@ void BodyPart::fixOverlaps(int startIndex) {
 				gapAfter = initialData_->circularBuffer[iNext].gapAfter;
 				iNext = circularNext(iNext, nChildren_);
 			}
-			if (nChildren_ > 2 && iNext == firstPrev && gapAfter < gapNeeded)
-				assert(false && "not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.");
+			if (nChildren_ > 2 && iNext == firstPrev) {	// forward wrap around
+				gapAfter = 0;
+				wrapAround = true;
+			}
 		}
 		if (!overlapsPrev) {
 			MBefore = initialData_->circularBuffer[startIndex].angularSize;
@@ -216,15 +226,21 @@ void BodyPart::fixOverlaps(int startIndex) {
 				gapBefore = initialData_->circularBuffer[iPrev].gapBefore;
 				iPrev = circularPrev(iPrev, nChildren_);
 			}
-			if (nChildren_ > 2 && iPrev == firstNext && gapBefore < gapNeeded)
-				assert(false && "not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.");
+			if (nChildren_ > 2 && iPrev == firstNext) {	// backward wrap around
+				gapBefore = 0;
+				wrapAround = true;
+			}
+		}
+		if (gapBefore + gapAfter <= 0) {
+			assert(false && "not enough room for the new part, must decrease the size of the new part or of its siblings... nasty.");
+			// TODO handle this properly
 		}
 		assert(MAfter*MBefore != 0);
 		float MRatio = MAfter / MBefore;
 		float pushBef = gapNeeded / (1 + MRatio);
 		float pushAft = pushBef * MRatio;
 		// check if there is a single gap:
-		if (nChildren_ == 2) {
+		if (nChildren_ == 2 || wrapAround) {
 			// distribute the semi-gaps proportional to the mass ratio
 			float gapSum = gapBefore + gapAfter;
 			gapAfter = pushAft / gapNeeded * gapSum;

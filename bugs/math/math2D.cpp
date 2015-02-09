@@ -1,19 +1,27 @@
 #include <algorithm>
 #include "math2D.h"
 
-glm::vec2 rayIntersectBox(float width, float height, float direction) {
-	float hw = width * 0.5f, hl = height * 0.5f;	// half width and length
+#include "../utils/log.h"
+
+glm::vec2 rayIntersectBox(float length, float width, float direction) {
+	float hw = width * 0.5f, hl = length * 0.5f;	// half width and length
 	// bring the angle between [-PI, +PI]
-	float relativeAngle = limitAngle(direction, 7*PI/4);
-	float phiQ = atanf(width/height);
-	if (relativeAngle < phiQ && relativeAngle > -phiQ) {
+	float phiQ = atanf(width/length);
+	float relativeAngle = limitAngle(direction, 2*PI-phiQ);
+	if (relativeAngle < phiQ) {
 		// front edge
-		return glm::vec2(hl, sinf(relativeAngle) * hw);
-	} else if ((relativeAngle < PI-phiQ && relativeAngle > 0) || (relativeAngle > -PI+phiQ && relativeAngle < 0)) {
+		glm::vec2 ret(hl, sinf(relativeAngle) * hw);
+		LOGLN("rayIntersectBox w:"<<width<<"; l:"<<length<<"; a:"<<direction<<"; ret:"<<ret.x<<","<<ret.y);
+		return ret;
+	} else if (relativeAngle < PI-phiQ  || relativeAngle > PI+phiQ) {
 		// left or right edge
-		return glm::vec2(cosf(relativeAngle) * hl, relativeAngle < PI ? hw : -hw);
+		glm::vec2 ret(cosf(relativeAngle) * hl, relativeAngle < PI ? hw : -hw);
+		LOGLN("rayIntersectBox w:"<<width<<"; l:"<<length<<"; a:"<<direction<<"; ret:"<<ret.x<<","<<ret.y);
+		return ret;
 	} else {
 		// back edge
-		return glm::vec2(-hl, sinf(relativeAngle) * hw);
+		glm::vec2 ret(-hl, sinf(relativeAngle) * hw);
+		LOGLN("rayIntersectBox w:"<<width<<"; l:"<<length<<"; a:"<<direction<<"; ret:"<<ret.x<<","<<ret.y);
+		return ret;
 	}
 }

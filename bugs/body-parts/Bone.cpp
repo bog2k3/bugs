@@ -71,7 +71,7 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
 	if (!geneValuesCached_) {
 		cacheInitializationData();
 	}
-	glm::vec2 ret(rayIntersectBox(width_, length_, relativeAngle));
+	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
 	return ret;
 }
 

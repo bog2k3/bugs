@@ -22,7 +22,7 @@
 #include "Bug/ISensor.h"
 #include "Gamete.h"
 
-const float DECODE_FREQUENCY = 1.f; // genes per second
+const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
@@ -237,6 +237,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// neural system
 
+	/*
 	// neuron #0 transfer:
 	GeneTransferFunction gt;
 	gt.targetNeuron.set(0);
@@ -375,6 +376,7 @@ Chromosome Bug::createBasicChromosome() {
 	gs.to.set(-7);
 	gs.weight.set(1.f);
 	c.push_back(gs);
+	*/
 
 	// Mouth:
 	GeneCommand gc;

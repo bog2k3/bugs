@@ -147,7 +147,7 @@ int main() {
 			// wait until previous frame finishes rendering and show frame output:
 			gltEnd();
 			// draw builds the render queue for the current frame
-			drawList.draw(renderContext);
+			//drawList.draw(renderContext);
 
 			std::stringstream ss;
 			ss << "Salut Lume!\n[Powered by Box2D]";

@@ -104,4 +104,4 @@ template<typename T> inline T lerp_lookup(const T* v, int nV, float position) {
  * on the edge of the box that is intersected by the ray
  * length is along OX axis, and width along OY. direction is relative to trigonometric zero (OX+)
  */
-glm::vec2 rayIntersectBox(float width, float height, float direction);
+glm::vec2 rayIntersectBox(float length, float width, float direction);

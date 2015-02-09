@@ -63,7 +63,7 @@ glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {
 	if (!geneValuesCached_) {
 		cacheInitializationData();
 	}
-	glm::vec2 ret(rayIntersectBox(width_, length_, relativeAngle));
+	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
