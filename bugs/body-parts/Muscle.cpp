@@ -256,11 +256,3 @@ void Muscle::update(float dt) {
 	float usedEnergy = maxForce_ * signal_strength * BodyConst::MuscleEnergyConstant * dt;
 	consumeEnergy(usedEnergy);
 }
-
-float Muscle::getAttachmentWidth() {
-	if (!geneValuesCached_) {
-		cacheInitializationData();
-	}
-	float w = sqrtf(size_ / aspectRatio_);
-	return w;
-}

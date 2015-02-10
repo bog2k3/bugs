@@ -49,16 +49,12 @@ struct BodyPartInitializationData {
 	CummulativeValue density;
 
 	struct angularEntry {
-		float angularSize;	// compute from child's width and owner's radius every time (child's size may change between insertions
-							// (we may have to adjust distributions after size change - use events)
-#warning "see above + must recompute layout when a child's size changes - use thresholds or smthng"
 		// these are angular gaps between children:
 		float gapBefore;
 		float gapAfter;
 		// if gap before or after is 0, then the next/prev sibling is in contact with this one
 
-		void set(float size, float gapBefore, float gapAfter) {
-			this->angularSize = size;
+		void set(float gapBefore, float gapAfter) {
 			this->gapBefore = gapBefore;
 			this->gapAfter = gapAfter;
 		}
@@ -183,8 +179,6 @@ protected:
 	 * The physicsProperties of the body are transform to world coordinates before this method is called;
 	 */
 	virtual void commit() = 0;
-	// return the width of the part at the attachment point to its parent. This is the size perpendicular on the line from parent's center to attachment point.
-	virtual float getAttachmentWidth() = 0;
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 	virtual void onAddedToParent() {}

@@ -97,9 +97,3 @@ float Bone::getAspectRatio() {
 	return length_ / width_;
 }
 
-float Bone::getAttachmentWidth() {
-	if (!geneValuesCached_) {
-		cacheInitializationData();
-	}
-	return width_;
-}

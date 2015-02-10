@@ -59,7 +59,6 @@ protected:
 	float getCurrentPhiSlice();
 	void cacheInitializationData() override;
 	void commit() override;
-	float getAttachmentWidth() override;
 	void onAddedToParent() override;
 };
 

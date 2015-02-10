@@ -27,7 +27,6 @@ public:
 	float getMass() { return mass_; }
 
 protected:
-	float getAttachmentWidth() override { return 0; }
 	void commit() override;
 
 private:

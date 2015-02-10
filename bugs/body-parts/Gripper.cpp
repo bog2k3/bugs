@@ -107,10 +107,3 @@ void Gripper::die() {
 	setActive(false);
 }
 
-float Gripper::getAttachmentWidth() {
-	if (!geneValuesCached_) {
-		cacheInitializationData();
-	}
-	float r = sqrtf(size_*PI_INV);
-	return r;
-}

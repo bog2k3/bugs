@@ -349,7 +349,6 @@ void Ribosome::decodeDevelopSplit(GeneCommand const& g, BodyPart* part, int crtP
 }
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
-	return;
 	CummulativeValue* pAttrib = part->getAttribute((gene_part_attribute_type)g.attribute);
 	if (pAttrib)
 		pAttrib->changeAbs(g.value);
