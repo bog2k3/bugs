@@ -21,6 +21,7 @@
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Muscle.h"
 #include "../body-parts/Mouth.h"
+#include "../body-parts/EggLayer.h"
 #include "../utils/log.h"
 #include "../neuralnet/InputSocket.h"
 
@@ -326,7 +327,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
 	case GENE_PART_EGGLAYER:
-		assert(!!!"not implemented");
+		bp = new EggLayer();
 		break;
 	default:
 		ERROR("unhandled gene part type: "<<g.part_type);
