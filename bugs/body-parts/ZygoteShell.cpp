@@ -57,9 +57,20 @@ void ZygoteShell::commit() {
 void ZygoteShell::draw(RenderContext const& ctx) {
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
-	ctx.shape->drawLine(pos,
+	if (dead_) {
+		ctx.shape->drawLine(
+			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), 3*PI/4 + transform.z),
+			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -PI/4 + transform.z),
+			0, debug_color);
+		ctx.shape->drawLine(
+			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), PI/4 + transform.z),
+			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -3*PI/4 + transform.z),
+			0, debug_color);
+	} else {
+		ctx.shape->drawLine(pos,
 			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), transform.z),
 			0, debug_color);
+	}
 }
 
 void ZygoteShell::updateCachedDynamicPropsFromBody() {
@@ -68,4 +79,8 @@ void ZygoteShell::updateCachedDynamicPropsFromBody() {
 	props.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
 	props.position = b2g(physBody_.b2Body_->GetPosition());
 	props.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
+}
+
+void ZygoteShell::die() {
+	dead_ = true;
 }

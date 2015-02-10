@@ -27,9 +27,11 @@ public:
 
 protected:
 	void commit() override;
+	void die() override;
 
 private:
 	float mass_;
+	bool dead_;
 };
 
 #endif /* OBJECTS_BODY_PARTS_ZYGOTESHELL_H_ */

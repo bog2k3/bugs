@@ -84,6 +84,9 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			if (!isAlive_) {
 				// embryo not viable, discarded.
 				// should remove all body parts and put a sort of sign on the zygote shell
+				body_->removeFromParent();
+				delete body_;
+				zygoteShell_->die_tree();
 				return;
 			}
 
@@ -182,7 +185,10 @@ void Bug::update(float dt) {
 }
 
 void Bug::draw(RenderContext const &ctx) {
-	body_->draw_tree(ctx);
+	if (zygoteShell_)
+		zygoteShell_->draw_tree(ctx);
+	else
+		body_->draw_tree(ctx);
 }
 
 void Bug::onFoodProcessed(float mass) {
