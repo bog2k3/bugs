@@ -16,7 +16,6 @@ public:
 	~ZygoteShell() override;
 
 	void draw(RenderContext const& ctx) override;
-	float add(BodyPart* part, float angle) override;
 
 	/**
 	 * this updates the BodyPartInitializationData::cachedProps from the actual zygot physics body,

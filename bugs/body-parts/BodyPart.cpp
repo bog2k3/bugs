@@ -371,7 +371,7 @@ glm::vec3 BodyPart::getWorldTransformation() {
 	} else {
 		// if not committed yet, must compute these values on the fly
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-		glm::vec2 pos = getParentSpacePosition(); // this will cache gene values as well
+		glm::vec2 pos = getParentSpacePosition(); // this will temporarily cache gene values as well
 		return parentTransform + glm::vec3(
 				glm::rotate(pos, parentTransform.z),
 				attachmentDirectionParent_ + angleOffset_);
