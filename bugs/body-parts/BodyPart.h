@@ -126,7 +126,8 @@ public:
 	inline float getDefaultAngle() { return attachmentDirectionParent_ + angleOffset_; }
 	inline float getAngleOffset() { return angleOffset_; }
 
-	void applyRecursive(std::function<void(BodyPart* pCurrent)> pred);
+	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
+	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
 	void addMotorLine(int line);
 	void addSensorLine(int line);
 	/*

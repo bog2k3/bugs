@@ -125,6 +125,7 @@ bool Ribosome::step() {
 				hasMouth = true;
 			if (p->getType() == BODY_PART_EGGLAYER)
 				hasEggLayer = true;
+			return hasMouth && hasEggLayer;
 		});
 		if (!hasMouth || !hasEggLayer) {
 			// here mark the embryo as dead and return
@@ -143,7 +144,7 @@ bool Ribosome::step() {
 		return false;
 	}
 	int nCrtBranches = activeSet_.size();
-	for (unsigned i=0; i<nCrtBranches; i++) {
+	for (int i=0; i<nCrtBranches; i++) {
 		BodyPart* p = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second++;
 		bool hasFirst = offset < bug_->genome_.first.size();
@@ -170,8 +171,7 @@ bool Ribosome::step() {
 		 * 1. Must automatically generate muscles for joints;
 		 * 2. Must automatically generate life time sensor
 		 * 3. Auto-generate output neurons to command actuators (muscles, grippers, etc)
-		 * 4. Auto-generate Mouth
-		 * 5. Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
+		 * 4. Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 		 */
 
 		// now decode the gene
@@ -325,7 +325,11 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	case GENE_PART_SENSOR:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
+	case GENE_PART_EGGLAYER:
+		assert(!!!"not implemented");
+		break;
 	default:
+		ERROR("unhandled gene part type: "<<g.part_type);
 		break;
 	}
 	if (!bp)

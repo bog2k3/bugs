@@ -56,10 +56,13 @@ BodyPart::~BodyPart() {
 		delete children_[i];
 }
 
-void BodyPart::applyRecursive(std::function<void(BodyPart* pCurrent)> pred) {
-	pred(this);
+bool BodyPart::applyRecursive(std::function<bool(BodyPart* pCurrent)> pred) {
+	if (pred(this))
+		return true;
 	for (int i=0; i<nChildren_; i++)
-		children_[i]->applyRecursive(pred);
+		if (children_[i]->applyRecursive(pred))
+			return true;
+	return false;
 }
 
 void BodyPart::addMotorLine(int line) {
