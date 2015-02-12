@@ -70,8 +70,10 @@ void Ribosome::initializeNeuralNetwork() {
 	for (unsigned i=0; i<bug_->sensors_.size(); i++)
 		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
 	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
-	for (unsigned i=0; i<bug_->motors_.size(); i++)
-		bug_->neuralNet_->outputs.push_back(bug_->motors_[i]->getInputSocket());	// create network outputs
+	for (unsigned i=0; i<bug_->motors_.size(); i++) {
+		for (int s=0; s<bug_->motors_[i]->getNumberOfInputs(); s++)
+			bug_->neuralNet_->outputs.push_back(bug_->motors_[i]->getInputSocket(s));	// create network outputs
+	}
 	// create neurons:
 	int commandNeuronsStart = mapNeurons_.size();
 	int totalNeurons = commandNeuronsStart + bug_->motors_.size();

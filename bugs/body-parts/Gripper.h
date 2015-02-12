@@ -24,7 +24,8 @@ public:
 
 	void update(float dt);
 
-	std::shared_ptr<InputSocket> getInputSocket() override { return inputSocket_; }
+	int getNumberOfInputs() override { return 1; }
+	std::shared_ptr<InputSocket> getInputSocket(int index) override { assert(index==0); return inputSocket_; }
 
 protected:
 	std::shared_ptr<InputSocket> inputSocket_;

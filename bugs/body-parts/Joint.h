@@ -28,7 +28,7 @@ class b2RevoluteJoint;
 class Joint : public BodyPart {
 public:
 	Joint();
-	~Joint() override;
+	virtual ~Joint() override;
 
 	void draw(RenderContext const& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;

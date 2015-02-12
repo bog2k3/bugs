@@ -32,7 +32,8 @@ public:
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 
-	virtual std::shared_ptr<InputSocket> getInputSocket() override { return inputSocket_; }
+	int getNumberOfInputs() override { return 1; }
+	std::shared_ptr<InputSocket> getInputSocket(int index) override { assert(index==0); return inputSocket_; }
 
 protected:
 	static constexpr int nAngleSteps = 10;

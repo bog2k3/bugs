@@ -15,7 +15,8 @@ class IMotor {
 public:
 	virtual ~IMotor() {}
 
-	virtual std::shared_ptr<InputSocket> getInputSocket() = 0;
+	virtual int getNumberOfInputs() = 0;
+	virtual std::shared_ptr<InputSocket> getInputSocket(int index) = 0;
 };
 
 #endif /* ENTITIES_IMOTOR_H_ */
