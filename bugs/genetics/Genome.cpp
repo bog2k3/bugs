@@ -22,9 +22,9 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 				g = &gen.second[i];
 		} else
 			g = &gen.second[i];
-		if (g->type == GENE_TYPE_DEVELOPMENT)
-			g->data.gene_command.age++;	// should probably rebase all to 0 to avoid unsigned overflow - unlikely
 		c.push_back(*g);
+		if (g->type == GENE_TYPE_DEVELOPMENT)
+			c[i].data.gene_command.age++;	// should probably rebase all to 0 to avoid unsigned overflow - unlikely
 		i++;
 	}
 	alterChromosome(c);

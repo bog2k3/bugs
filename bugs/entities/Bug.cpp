@@ -22,7 +22,7 @@
 #include "Bug/ISensor.h"
 #include "Gamete.h"
 
-const float DECODE_FREQUENCY = 5.f; // genes per second
+const float DECODE_FREQUENCY = 1.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
