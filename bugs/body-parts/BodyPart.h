@@ -89,7 +89,8 @@ public:
 
 	virtual glm::vec3 getWorldTransformation();
 
-	virtual void addProcessedFood(float mass) { if (parent_) parent_->addProcessedFood(mass); }
+	// must return the actual amount deduced from mass argument
+	virtual float addFood(float mass) { if (parent_) parent_->addFood(mass); }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
@@ -190,9 +191,9 @@ protected:
 	UpdateList* getUpdateList();
 	// call this if the fixture changed for any reason:
 	void reattachChildren();
+	void computeBodyPhysProps();
 
 private:
-	void computeBodyPhysProps();
 	void reverseUpdateCachedProps();
 	glm::vec2 getParentSpacePosition();
 	bool applyScale_treeImpl(float scale, bool parentChanged);

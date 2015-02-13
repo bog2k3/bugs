@@ -28,7 +28,7 @@ public:
 	inline void setExtraMass(float mass) { extraMass_ = mass; }
 
 	void consumeEnergy(float amount) override;
-	void addProcessedFood(float mass) override;
+	float addFood(float mass) override;
 	// body mass doesn't include fat mass as long as initializationData is available. b2Body mass does include fat too.
 	float getMass_tree() override {
 		if (cachedMassTree_ == 0)
@@ -54,6 +54,9 @@ protected:
 	float cachedMassTree_;
 	float extraMass_;
 	Mouth* mouth_;
+	float foodProcessingSpeed_;
+	float foodBufferSize_;
+	float foodBuffer_;
 
 	void commit() override;
 	void die() override;

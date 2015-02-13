@@ -33,6 +33,8 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
 	cacheInitializationData();
+	computeBodyPhysProps();
+	cachedProps_.position = position;
 	physBody_.create(cachedProps_);
 	commit();
 	committed_ = true;

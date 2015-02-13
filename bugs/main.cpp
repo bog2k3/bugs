@@ -49,8 +49,6 @@ void onInputEventHandler(InputEvent& ev) {
 
 int main() {
 	LOGGER("app_main");
-	randSeed(time(NULL));
-	LOGLN("RAND seed: "<<rand_seed);
 
 	if (!gltInit(800, 600, "Bugs"))
 		return -1;
@@ -83,6 +81,10 @@ int main() {
 	GLFWInput::onInputEvent.add(onInputEventHandler);
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
+
+	//randSeed(1423850831L);
+	randSeed(time(NULL));
+	LOGLN("RAND seed: "<<rand_seed);
 
 	float worldRadius = 5.f;
 

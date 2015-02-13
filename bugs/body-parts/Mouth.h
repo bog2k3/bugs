@@ -28,14 +28,11 @@ public:
 	void draw(RenderContext const& ctx) override;
 	void update(float dt);
 
-	void setProcessingSpeed(float massPerTime);
-
 protected:
 	float length_;
 	float width_;
 	float bufferSize_;
 	float usedBuffer_;
-	float processingSpeed_;		// [kg/s]
 	b2WeldJoint* pJoint;
 
 	void cacheInitializationData() override;

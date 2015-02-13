@@ -112,6 +112,7 @@ void BodyPart::pushBodyParts(int index, float delta) {
 	if (delta == 0)
 		return;
 	int di = sign(delta);
+	int initialIndex = index;
 	while (true) {
 		BodyPartInitializationData::angularEntry &entry = initialData_->circularBuffer[index];
 		children_[index]->setAttachmentDirection(children_[index]->attachmentDirectionParent_ + delta);
@@ -126,6 +127,7 @@ void BodyPart::pushBodyParts(int index, float delta) {
 				break;
 		}
 		index = di > 0 ? circularNext(index, nChildren_) : circularPrev(index, nChildren_);
+		assert(index != initialIndex && "came around full circle; something's fucked up");
 	}
 }
 

@@ -39,7 +39,6 @@ Mouth::Mouth()
 	, width_(0)
 	, bufferSize_(0)
 	, usedBuffer_(0)
-	, processingSpeed_(0)
 	, pJoint(nullptr)
 {
 	physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
@@ -66,10 +65,6 @@ glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {
 	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
-}
-
-void Mouth::setProcessingSpeed(float massPerTime) {
-	processingSpeed_ = massPerTime;
 }
 
 void Mouth::commit() {
@@ -144,8 +139,6 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 }
 
 void Mouth::update(float dt) {
-	float massProcessed = min(usedBuffer_, processingSpeed_*dt);
-	usedBuffer_ -= massProcessed;
-	if (massProcessed > 0)
-		parent_->addProcessedFood(massProcessed);
+	if (usedBuffer_ > 0)
+		usedBuffer_ -= parent_->addFood(usedBuffer_);
 }

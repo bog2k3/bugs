@@ -29,6 +29,9 @@ Torso::Torso()
 	, cachedMassTree_(0)
 	, extraMass_(0)
 	, mouth_(nullptr)
+	, foodProcessingSpeed_(0)
+	, foodBufferSize_(0)
+	, foodBuffer_(0)
 {
 	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
 	physBody_.userPointer_ = this;
@@ -68,11 +71,9 @@ void Torso::commit() {
 	fixDef.shape = &shape;
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
-
-	// mouth_->setProcessingSpeed(size_ * BodyConst::FoodProcessingSpeedDensity);
-#warning "this is dubious; mouth must have its own speed, and body absorbs from mouth(s) with its own speed"
-
 	maxEnergyBuffer_ = size_ * BodyConst::TorsoEnergyDensity;
+	foodProcessingSpeed_ = size_ * BodyConst::FoodProcessingSpeedDensity;
+	foodBufferSize_ = foodProcessingSpeed_; // enough for 1 second
 
 #warning "gresit, copiii inca nu sunt scalati"
 	cachedMassTree_ = BodyPart::getMass_tree();
@@ -140,14 +141,19 @@ void Torso::update(float dt) {
 		}
 	}
 	frameUsedEnergy_ = 0;
+	float processedFood = min(foodBuffer_, foodProcessingSpeed_*dt);
+	foodBuffer_ -= processedFood;
+	onFoodProcessed.trigger(processedFood);
 }
 
 void Torso::die() {
 	commit();
 }
 
-void Torso::addProcessedFood(float mass) {
-	onFoodProcessed.trigger(mass);
+float Torso::addFood(float mass) {
+	float amountDeduced = min(mass, foodBufferSize_ - foodBuffer_);
+	foodBuffer_ += amountDeduced;
+	return amountDeduced;
 }
 
 void Torso::replenishEnergyFromMass(float mass) {
