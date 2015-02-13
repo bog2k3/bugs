@@ -270,7 +270,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	if (part->getChildrenCount() == MAX_CHILDREN)
 		return;
 
-	float angle = g.angle;
+	float angle = limitAngle(g.angle, 2*PI);
 
 	// The child's attachment point relative to the parent's center is computed from the angle specified in the gene,
 	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
