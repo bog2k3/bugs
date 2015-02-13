@@ -71,6 +71,7 @@ void Ribosome::initializeNeuralNetwork() {
 		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
 	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
 	for (unsigned i=0; i<bug_->motors_.size(); i++) {
+#warning sort motors by age first
 		for (int s=0; s<bug_->motors_[i]->getNumberOfInputs(); s++)
 			bug_->neuralNet_->outputs.push_back(bug_->motors_[i]->getInputSocket(s));	// create network outputs
 	}

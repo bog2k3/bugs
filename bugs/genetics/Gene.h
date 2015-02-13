@@ -53,19 +53,23 @@ struct GeneStop {
 };
 
 struct GeneCommand {
-	gene_development_command command;
-	gene_part_type part_type;
+	gene_development_command command = GENE_DEV_GROW;
+	gene_part_type part_type = GENE_PART_INVALID;
+	unsigned age = 0;				// this is the genetic 'age' of this particular gene. always increments by one in meyosis
 	Atom<float> angle;				// angle is relative to the previous element's orientation
 	Atom<int> genomeOffset;			// offset from current gene to the start of the genes for the new part
 	Atom<int> genomeOffsetJoint;	// offset from current gene to the start of the genes for the new part's joint
 	Atom<int> genomeOffsetMuscle1;	// offset from current gene to the start of the genes for the new part's muscle 1
 	Atom<int> genomeOffsetMuscle2;	// offset from current gene to the start of the genes for the new part's muscle 2
+
+	GeneCommand() = default;
 };
 
 struct GeneAttribute {
 	Atom<float> value;
-	gene_part_attribute_type attribute;
-	bool relativeValue;
+	gene_part_attribute_type attribute = GENE_ATTRIB_INVALID;
+
+	GeneAttribute() = default;
 };
 
 struct GeneSynapse {
@@ -91,8 +95,10 @@ struct GeneNeuralConstant {
 };
 
 struct GeneBodyAttribute {
-	gene_body_attribute_type attribute;
+	gene_body_attribute_type attribute = GENE_BODY_ATTRIB_INVALID;
 	Atom<float> value;
+
+	GeneBodyAttribute() = default;
 };
 
 class Gene {
