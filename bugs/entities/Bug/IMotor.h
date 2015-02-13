@@ -15,8 +15,10 @@ class IMotor {
 public:
 	virtual ~IMotor() {}
 
-	virtual int getNumberOfInputs() = 0;
-	virtual std::shared_ptr<InputSocket> getInputSocket(int index) = 0;
+	virtual unsigned getNumberOfInputs() = 0;
+	virtual std::shared_ptr<InputSocket> getInputSocket(unsigned index) = 0;
+
+	unsigned geneticAge = 0;
 };
 
 #endif /* ENTITIES_IMOTOR_H_ */

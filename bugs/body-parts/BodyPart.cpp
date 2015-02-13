@@ -143,6 +143,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 	children_[bufferPos] = part;
 	part->parent_ = this;
 	part->setAttachmentDirection(angle);
+	part->onAddedToParent();
 	constexpr float span = 2*PI/MAX_CHILDREN;
 	float gapLeftBefore = 2*PI-span, gapLeftAfter = 2*PI-span; // initial values valid for no other children case
 	bool overlapsNext = false, overlapsPrev = false;

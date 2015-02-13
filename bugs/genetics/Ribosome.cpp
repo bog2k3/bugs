@@ -68,10 +68,15 @@ void Ribosome::initializeNeuralNetwork() {
 	bug_->neuralNet_ = new NeuralNet();
 	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
 	for (unsigned i=0; i<bug_->sensors_.size(); i++)
+#warning must sort sensors by genetic age
 		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
 	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
 	for (unsigned i=0; i<bug_->motors_.size(); i++) {
-#warning sort motors by age first
+		// sort motors by genetic age (oldest first)
+		for (unsigned j=i+1; j<bug_->motors_.size(); j++)
+			if (bug_->motors_[j]->geneticAge > bug_->motors_[i]->geneticAge)
+				xchg(bug_->motors_[i], bug_->motors_[j]);
+		// now add all input sockets from all motors:
 		for (int s=0; s<bug_->motors_[i]->getNumberOfInputs(); s++)
 			bug_->neuralNet_->outputs.push_back(bug_->motors_[i]->getInputSocket(s));	// create network outputs
 	}
@@ -280,6 +285,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		if (part->getChildrenCount() < MAX_CHILDREN) {
 			float mRightAngle = std::nextafterf(angle, angle-1);
 			Muscle* mRight = new Muscle(linkJoint, -1);
+			mRight->geneticAge = g.age;
 			mRightAngle = part->add(mRight, mRightAngle);
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
 			int motorLineId = bug_->motors_.size();
@@ -291,6 +297,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		if (part->getChildrenCount() < MAX_CHILDREN) {
 			float mLeftAngle = std::nextafterf(angle, angle+1);
 			Muscle* mLeft = new Muscle(linkJoint, +1);
+			mLeft->geneticAge = g.age;
 			mLeftAngle = part->add(mLeft, mLeftAngle);
 			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
 			int motorLineId = bug_->motors_.size();
@@ -314,11 +321,12 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		bp = new Bone();
 		break;
 	case GENE_PART_GRIPPER: {
-		Gripper* g = new Gripper();
+		Gripper* gr = new Gripper();
+		gr->geneticAge = g.age;
 		int motorLineId = bug_->motors_.size();
-		bug_->motors_.push_back(g);
-		g->addMotorLine(motorLineId);
-		bp = g;
+		bug_->motors_.push_back(gr);
+		gr->addMotorLine(motorLineId);
+		bp = gr;
 		break;
 	}
 	case GENE_PART_MOUTH: {
@@ -329,9 +337,12 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	case GENE_PART_SENSOR:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
-	case GENE_PART_EGGLAYER:
-		bp = new EggLayer();
+	case GENE_PART_EGGLAYER: {
+		EggLayer* e = new EggLayer();
+		e->geneticAge = g.age;
+		bp = e;
 		break;
+	}
 	default:
 		ERROR("unhandled gene part type: "<<g.part_type);
 		break;

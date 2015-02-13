@@ -18,7 +18,10 @@ static const glm::vec3 debug_color(0.2f, 0.7f, 1.0f);
 
 EggLayer::EggLayer()
 	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<BodyPartInitializationData>())
+	, pJoint(nullptr)
 {
+	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1));	// [0] - suppress growth
+	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1)); // [1] - suppress release
 }
 
 EggLayer::~EggLayer() {
@@ -65,6 +68,8 @@ void EggLayer::update(float dt){
 void EggLayer::commit() {
 	if (committed_) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
+		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
+		pJoint = nullptr;
 	};
 
 	b2CircleShape shape;
@@ -75,6 +80,15 @@ void EggLayer::commit() {
 	fdef.restitution = 0.2f;
 	fdef.shape = &shape;
 	physBody_.b2Body_->CreateFixture(&fdef);
+
+	b2WeldJointDef jdef;
+	jdef.bodyA = parent_->getBody().b2Body_;
+	jdef.bodyB = physBody_.b2Body_;
+	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
+	jdef.localAnchorA = g2b(parentAnchor);
+	glm::vec2 childAnchor = getChildAttachmentPoint(angleOffset_);
+	jdef.localAnchorB = g2b(childAnchor);
+	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
 }
 
 void EggLayer::onAddedToParent() {

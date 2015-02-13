@@ -60,6 +60,7 @@ void Gripper::commit() {
 }
 
 void Gripper::update(float dt) {
+	// LOGLN("gripper value: "<<inputSocket_->value);
 	float intensity = inputSocket_->value;
 	setActive(intensity > 0.5f);
 }
