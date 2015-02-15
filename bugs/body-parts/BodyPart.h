@@ -126,6 +126,7 @@ public:
 	 */
 	inline float getDefaultAngle() { return attachmentDirectionParent_ + angleOffset_; }
 	inline float getAngleOffset() { return angleOffset_; }
+	inline float getAttachmentAngle() { return attachmentDirectionParent_; }
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
 	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
@@ -209,6 +210,10 @@ private:
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;
 	float lastCommitSize_inv_;
+
+#ifdef DEBUG
+	void checkCircularBuffer();
+#endif
 };
 
 

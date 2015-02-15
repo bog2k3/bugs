@@ -282,9 +282,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		Joint* linkJoint = new Joint();
 		// now generate the two muscles around the joint
 		// 1. Right
-		float mRightAngle = std::nextafterf(angle, angle-1);
+		Muscle* mRight = nullptr;
 		if (part->getChildrenCount() < MAX_CHILDREN) {
-			Muscle* mRight = new Muscle(linkJoint, -1);
+			float mRightAngle = std::nextafterf(angle, angle-1);
+			mRight = new Muscle(linkJoint, -1);
 			mRight->geneticAge = g.age;
 			mRightAngle = part->add(mRight, mRightAngle);
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
@@ -294,9 +295,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
 		}
 		// 2. Left
-		float mLeftAngle = std::nextafterf(angle, angle+1);
+		Muscle* mLeft = nullptr;
 		if (part->getChildrenCount() < MAX_CHILDREN) {
-			Muscle* mLeft = new Muscle(linkJoint, +1);
+			float mLeftAngle = std::nextafterf(angle, angle+1);
+			mLeft = new Muscle(linkJoint, +1);
 			mLeft->geneticAge = g.age;
 			mLeftAngle = part->add(mLeft, mLeftAngle);
 			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
@@ -305,9 +307,11 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			mLeft->addMotorLine(motorLineId);
 			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
 		}
-		angle = (mLeftAngle + mRightAngle) * 0.5f;
-		part->add(linkJoint, angle);
-		activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
+		if (part->getChildrenCount() < MAX_CHILDREN) {
+			angle = (mLeft->getAttachmentAngle() + mRight->getAttachmentAngle()) * 0.5f;
+			part->add(linkJoint, angle);
+			activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
+		}
 
 		// set part to point to the joint's node, since that's where the actual part will be attached:
 		part = linkJoint;
