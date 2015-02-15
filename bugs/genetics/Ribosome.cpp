@@ -282,8 +282,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		Joint* linkJoint = new Joint();
 		// now generate the two muscles around the joint
 		// 1. Right
+		float mRightAngle = std::nextafterf(angle, angle-1);
 		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mRightAngle = std::nextafterf(angle, angle-1);
 			Muscle* mRight = new Muscle(linkJoint, -1);
 			mRight->geneticAge = g.age;
 			mRightAngle = part->add(mRight, mRightAngle);
@@ -294,8 +294,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
 		}
 		// 2. Left
+		float mLeftAngle = std::nextafterf(angle, angle+1);
 		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mLeftAngle = std::nextafterf(angle, angle+1);
 			Muscle* mLeft = new Muscle(linkJoint, +1);
 			mLeft->geneticAge = g.age;
 			mLeftAngle = part->add(mLeft, mLeftAngle);
@@ -305,6 +305,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			mLeft->addMotorLine(motorLineId);
 			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
 		}
+		angle = (mLeftAngle + mRightAngle) * 0.5f;
 		part->add(linkJoint, angle);
 		activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
 
