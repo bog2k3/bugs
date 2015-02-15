@@ -87,7 +87,7 @@ int circularNext(int index, int n) {
 		return 0;
 	return (index+1) % n;
 }
-bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, float &outMargin) {
+bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, bool sweepPositive, float &outMargin) {
 	// will set outMargin to negative if overlap, or positive shortest gap around element if no overlap
 	// move angle1 in origin for convenience:
 	angle2 = limitAngle(angle2 - angle1, PI);
@@ -96,13 +96,20 @@ bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, floa
 	float a2p = angle2 + span2*0.5f, a2n = angle2 - span2*0.5f;
 	if (a2p*a2n >= 0) {
 		// both ends of span2 are on the same side of angle 1
-		if (a2p > 0) // both on the positive side
+		if (a2p > 0) { // both on the positive side
 			outMargin = min(a2p, a2n) - a1p;
-		else // both on the negative side
+			if (!sweepPositive)
+				outMargin = 2*PI-outMargin;
+		} else {// both on the negative side
 			outMargin = a1n - max(a2n, a2p);
+			if (sweepPositive)
+				outMargin = 2*PI-outMargin;
+		}
 	} else { // ends of span2 are on different sides of angle 1
 		float d1 = a2n-a1p, d2 = a1n-a2p;
 		outMargin = angle2 > 0 ? d1 : d2; // the smallest distance between the spans (positive) or the greatest overlap (negative)
+		if (sweepPositive == angle2<0)
+			outMargin = 2*PI-outMargin;
 	}
 
 	return outMargin < 0;
@@ -165,6 +172,21 @@ void BodyPart::pushBodyParts(int index, float delta) {
 }
 
 float BodyPart::add(BodyPart* part, float angle) {
+#ifdef DEBUG
+	constexpr float child_span = 2*PI/MAX_CHILDREN;
+	float gapPos = 0, gapNeg = 0;
+	for (int i=0; i<nChildren_; i++) {
+		int in = circularNext(i, nChildren_);
+		int ip = circularPrev(i, nChildren_);
+		assert(initialData_->circularBuffer[i].gapAfter == initialData_->circularBuffer[in].gapBefore);
+		assert(initialData_->circularBuffer[i].gapBefore == initialData_->circularBuffer[ip].gapAfter);
+		gapPos += initialData_->circularBuffer[i].gapAfter;
+		gapNeg += initialData_->circularBuffer[i].gapBefore;
+	}
+	assert(eqEps(gapPos, gapNeg, 1.e-4f));
+	float sum = child_span*nChildren_+gapPos;
+	assert(nChildren_ == 0 || eqEps(sum, 2*PI, 1.e-4f));
+#endif
 	assert(nChildren_ < MAX_CHILDREN && initialData_);
 	// determine the position in the circular buffer:
 	int bufferPos = 0;
@@ -186,11 +208,11 @@ float BodyPart::add(BodyPart* part, float angle) {
 		int nextPos = circularNext(bufferPos, nChildren_);
 		float nextAngle = children_[nextPos]->attachmentDirectionParent_;
 		constexpr float nextSpan = span;
-		overlapsNext = angleSpanOverlap(angle, span, nextAngle, nextSpan, gapLeftAfter);
+		overlapsNext = angleSpanOverlap(angle, span, nextAngle, nextSpan, true, gapLeftAfter);
 		int prevPos = circularPrev(bufferPos, nChildren_);
 		float prevAngle = children_[prevPos]->attachmentDirectionParent_;
 		constexpr float prevSpan = span;
-		overlapsPrev = angleSpanOverlap(angle, span, prevAngle, prevSpan, gapLeftBefore);
+		overlapsPrev = angleSpanOverlap(angle, span, prevAngle, prevSpan, false, gapLeftBefore);
 		if (nChildren_ == 2) {
 			// next and previous elements are the same, must fix gaps
 			overlapsNext = overlapsNext && bufferPos == 0;
@@ -210,6 +232,20 @@ float BodyPart::add(BodyPart* part, float angle) {
 		initialData_->circularBuffer[prevPos].gapAfter = gapLeftBefore;
 	}
 	initialData_->circularBuffer[bufferPos].set(gapLeftBefore, gapLeftAfter);
+#ifdef DEBUG
+	gapPos = 0, gapNeg = 0;
+	for (int i=0; i<nChildren_; i++) {
+		int in = circularNext(i, nChildren_);
+		int ip = circularPrev(i, nChildren_);
+		assert(initialData_->circularBuffer[i].gapAfter == initialData_->circularBuffer[in].gapBefore);
+		assert(initialData_->circularBuffer[i].gapBefore == initialData_->circularBuffer[ip].gapAfter);
+		gapPos += initialData_->circularBuffer[i].gapAfter;
+		gapNeg += initialData_->circularBuffer[i].gapBefore;
+	}
+	assert(eqEps(gapPos, gapNeg, 1.e-4f));
+	sum = child_span*nChildren_+gapPos;
+	assert(eqEps(sum, 2*PI, 1.e-4f));
+#endif
 	// done
 	if (overlapsNext || overlapsPrev)
 		fixOverlaps(bufferPos);
