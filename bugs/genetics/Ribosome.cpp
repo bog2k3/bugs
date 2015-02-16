@@ -287,7 +287,9 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			float mRightAngle = angle - 0.01f;
 			mRight = new Muscle(linkJoint, -1);
 			mRight->geneticAge = g.age;
+			float origAngle = mRightAngle;
 			mRightAngle = part->add(mRight, mRightAngle);
+			mRightAngle = limitAngle(mRightAngle-origAngle, PI) + origAngle;
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mRight);
@@ -300,7 +302,9 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			float mLeftAngle = angle + 0.01f;
 			mLeft = new Muscle(linkJoint, +1);
 			mLeft->geneticAge = g.age;
+			float origAngle = mLeftAngle;
 			mLeftAngle = part->add(mLeft, mLeftAngle);
+			mLeftAngle = limitAngle(mLeftAngle-origAngle, PI) + origAngle;
 			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
 			int motorLineId = bug_->motors_.size();
 			bug_->motors_.push_back(mLeft);
@@ -308,7 +312,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
 		}
 		if (part->getChildrenCount() < MAX_CHILDREN) {
-			angle = (mLeft->getAttachmentAngle() + mRight->getAttachmentAngle()) * 0.5f;
+			float span = limitAngle(mLeft->getAttachmentAngle() - mRight->getAttachmentAngle(), PI);
+			angle = mRight->getAttachmentAngle() + span * 0.5f;
 			part->add(linkJoint, angle);
 			activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
 		}
