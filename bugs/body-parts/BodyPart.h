@@ -212,7 +212,7 @@ private:
 	float lastCommitSize_inv_;
 
 #ifdef DEBUG
-	void checkCircularBuffer();
+	void checkCircularBuffer(bool noOverlap);
 #endif
 };
 

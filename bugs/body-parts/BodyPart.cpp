@@ -116,16 +116,21 @@ bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, bool
 }
 
 #ifdef DEBUG
-void BodyPart::checkCircularBuffer() {
+void BodyPart::checkCircularBuffer(bool noOverlap) {
 	constexpr float child_span = 2*PI/MAX_CHILDREN;
 	float gapPos = 0, gapNeg = 0;
 	for (int i=0; i<nChildren_; i++) {
 		int in = circularNext(i, nChildren_);
 		int ip = circularPrev(i, nChildren_);
-		assert(children_[i]->attachmentDirectionParent_ >= 0 && children_[i]->attachmentDirectionParent_ < 2*PI);
+		if (noOverlap)
+			assert(initialData_->circularBuffer[i].gapAfter >= 0 && initialData_->circularBuffer[i].gapBefore >= 0);
+		assert(children_[i]->attachmentDirectionParent_ >= 0 && children_[i]->attachmentDirectionParent_ < 2*PI+1.e-4f);
 		assert(initialData_->circularBuffer[i].gapAfter == initialData_->circularBuffer[in].gapBefore);
 		assert(initialData_->circularBuffer[i].gapBefore == initialData_->circularBuffer[ip].gapAfter);
-		assert(nChildren_==0 || i==nChildren_-1 || children_[i]->attachmentDirectionParent_ < children_[i+1]->attachmentDirectionParent_);
+		float pos = children_[i]->attachmentDirectionParent_;
+		float posnext = children_[in]->attachmentDirectionParent_;
+		assert(nChildren_==1 || eqEps(limitAngle(pos + child_span + initialData_->circularBuffer[i].gapAfter, 2*PI), posnext, 1.e-4f));
+		assert(i==nChildren_-1 || pos < posnext);
 		gapPos += initialData_->circularBuffer[i].gapAfter;
 		gapNeg += initialData_->circularBuffer[i].gapBefore;
 	}
@@ -141,11 +146,11 @@ void BodyPart::pushBodyParts(int index, float delta) {
 	int di = sign(delta);
 	int initialIndex = index;
 #ifdef DEBUG
-	checkCircularBuffer();
+	checkCircularBuffer(false);
 #endif
 	while (true) {
 		BodyPartInitializationData::angularEntry &entry = initialData_->circularBuffer[index];
-		children_[index]->setAttachmentDirection(children_[index]->attachmentDirectionParent_ + delta);
+		children_[index]->setAttachmentDirection(limitAngle(children_[index]->attachmentDirectionParent_ + delta, 2*PI));
 		entry.gapBefore += delta;
 		entry.gapAfter -= delta;
 		int iprev = circularPrev(index, nChildren_);
@@ -163,16 +168,17 @@ void BodyPart::pushBodyParts(int index, float delta) {
 		index = di > 0 ? circularNext(index, nChildren_) : circularPrev(index, nChildren_);
 		assert(index != initialIndex && "came around full circle; something's fucked up");
 #ifdef DEBUG
-		checkCircularBuffer();
+		checkCircularBuffer(false);
 #endif
 	}
 }
 
 float BodyPart::add(BodyPart* part, float angle) {
+	angle = limitAngle(angle, 2*PI);
 #ifdef DEBUG
-	checkCircularBuffer();
+	checkCircularBuffer(true);
 #endif
-	if (nChildren_ == 5) {
+	if (nChildren_ == 6) {
 		int a = 3;
 	}
 	assert(nChildren_ < MAX_CHILDREN && initialData_);
@@ -219,38 +225,41 @@ float BodyPart::add(BodyPart* part, float angle) {
 		initialData_->circularBuffer[nextPos].gapBefore = gapLeftAfter;
 		initialData_->circularBuffer[prevPos].gapAfter = gapLeftBefore;
 	}
-	assert(gapLeftBefore + gapLeftAfter >= -span + 1.e-4f);
+	assert(gapLeftBefore + gapLeftAfter >= -span - 1.e-4f);
 	initialData_->circularBuffer[bufferPos].set(gapLeftBefore, gapLeftAfter);
 #ifdef DEBUG
-	checkCircularBuffer();
+	checkCircularBuffer(false);
 #endif
 	// done
 	if (overlapsNext || overlapsPrev)
 		fixOverlaps(bufferPos);
 #ifdef DEBUG
-	checkCircularBuffer();
+	checkCircularBuffer(true);
 #endif
 	return children_[bufferPos]->attachmentDirectionParent_;
 }
 
 void BodyPart::fixOverlaps(int startIndex) {
 #ifdef DEBUG
-	checkCircularBuffer();
+	checkCircularBuffer(false);
 #endif
 	bool overlapsNext = initialData_->circularBuffer[startIndex].gapAfter < 0;
 	bool overlapsPrev = initialData_->circularBuffer[startIndex].gapBefore < 0;
-	float gapNeeded = (overlapsNext ? -initialData_->circularBuffer[startIndex].gapAfter : 0) +
-					(overlapsPrev ? -initialData_->circularBuffer[startIndex].gapBefore : 0);
 	constexpr float span = 2*PI/MAX_CHILDREN;
-	assert(gapNeeded > 0 && gapNeeded <= span+1.e-4);
 	// more iterations may be required, since the first gaps found may not be enough:
 #ifdef DEBUG
 	int iteration = 0;
 #endif
-	while (gapNeeded > 0) {
+	if (startIndex == 2) {
+		int a = 3;
+	}
+	while (overlapsNext || overlapsPrev) {
 #ifdef DEBUG
 		LOGLN("fixOverlap iteration" << ++iteration);
 #endif
+		float gapNeeded = (overlapsNext ? -initialData_->circularBuffer[startIndex].gapAfter : 0) +
+						(overlapsPrev ? -initialData_->circularBuffer[startIndex].gapBefore : 0);
+		assert(gapNeeded > 0 && gapNeeded <= span+1.e-4);
 		// walk the circular buffer and compute 'mass' and gap
 		float MBefore = 0, gapBefore = 0; // compute push 'mass' and available gap before angle
 		float MAfter = 0, gapAfter = 0; // compute push 'mass' and available gap after angle
@@ -302,37 +311,48 @@ void BodyPart::fixOverlaps(int startIndex) {
 			gapAfter = pushAft / gapNeeded * gapSum;
 			gapBefore = gapSum - gapAfter;
 		}
-		bool willOverlapNext = false, willOverlapPrev = false;
+		// bool willOverlapNext = false, willOverlapPrev = false;
 		if (pushBef > gapBefore) {
 			pushAft *= gapBefore / pushBef;
 			pushBef = gapBefore;
-			willOverlapPrev = true;
+			// willOverlapPrev = true;
 		}
 		if (pushAft > gapAfter) {
 			pushBef *= gapAfter / pushAft;
 			pushAft = gapAfter;
-			willOverlapNext = true;
+			//willOverlapNext = true;
 		}
-		if (overlapsNext && pushAft < -initialData_->circularBuffer[startIndex].gapAfter)
+		/*if (overlapsNext && pushAft < -initialData_->circularBuffer[startIndex].gapAfter)
 			willOverlapNext = true;
 		if (overlapsPrev && pushBef < -initialData_->circularBuffer[startIndex].gapBefore)
-			willOverlapPrev = true;
+			willOverlapPrev = true;*/
 		if (pushAft > 0)
 			pushBodyParts(overlapsNext ? firstNext : startIndex, pushAft);	// must alter the attachmentDirectionParent of the siblings
 		if (pushBef > 0)
 			pushBodyParts(overlapsPrev ? firstPrev : startIndex, -pushBef); // -||-
 		gapNeeded -= pushBef + pushAft;
 		assert(gapNeeded >= 0 && gapNeeded <= span);
-		if (overlapsNext && overlapsPrev)
+		if (overlapsNext && overlapsPrev) {
+			float prevPos = children_[startIndex]->attachmentDirectionParent_;
 			children_[startIndex]->attachmentDirectionParent_ += (pushAft - pushBef) * 0.5f; // adjust angle to the middle of the gap
+			initialData_->circularBuffer[startIndex].gapAfter += prevPos - children_[startIndex]->attachmentDirectionParent_;
+			initialData_->circularBuffer[circularNext(startIndex, nChildren_)].gapBefore = initialData_->circularBuffer[startIndex].gapAfter;
+			initialData_->circularBuffer[startIndex].gapBefore += children_[startIndex]->attachmentDirectionParent_ - prevPos;
+			initialData_->circularBuffer[circularPrev(startIndex, nChildren_)].gapAfter = initialData_->circularBuffer[startIndex].gapBefore;
+			// bring the angle back into [0, 2*PI) range:
+			children_[startIndex]->attachmentDirectionParent_ = limitAngle(children_[startIndex]->attachmentDirectionParent_, 2*PI);
+		}
 
-		overlapsNext = willOverlapNext;
-		overlapsPrev = willOverlapPrev;
+		overlapsNext = initialData_->circularBuffer[startIndex].gapAfter < 0;
+		overlapsPrev = initialData_->circularBuffer[startIndex].gapBefore < 0;
 
 #ifdef DEBUG
-		checkCircularBuffer();
+		checkCircularBuffer(false);
 #endif
 	}
+#ifdef DEBUG
+	checkCircularBuffer(true);
+#endif
 }
 
 void BodyPart::removeFromParent() {
