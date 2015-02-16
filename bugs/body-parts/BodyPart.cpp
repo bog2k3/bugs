@@ -123,20 +123,23 @@ void BodyPart::checkCircularBuffer(bool noOverlap) {
 		int in = circularNext(i, nChildren_);
 		int ip = circularPrev(i, nChildren_);
 		if (noOverlap)
-			assert(initialData_->circularBuffer[i].gapAfter >= 0 && initialData_->circularBuffer[i].gapBefore >= 0);
-		assert(children_[i]->attachmentDirectionParent_ >= 0 && children_[i]->attachmentDirectionParent_ < 2*PI+1.e-4f);
-		assert(initialData_->circularBuffer[i].gapAfter == initialData_->circularBuffer[in].gapBefore);
-		assert(initialData_->circularBuffer[i].gapBefore == initialData_->circularBuffer[ip].gapAfter);
+			assertDbg(initialData_->circularBuffer[i].gapAfter >= 0 && initialData_->circularBuffer[i].gapBefore >= 0);
+		assertDbg(children_[i]->attachmentDirectionParent_ >= 0 && children_[i]->attachmentDirectionParent_ < 2*PI+1.e-4f);
+		assertDbg(initialData_->circularBuffer[i].gapAfter == initialData_->circularBuffer[in].gapBefore);
+		assertDbg(initialData_->circularBuffer[i].gapBefore == initialData_->circularBuffer[ip].gapAfter);
 		float pos = children_[i]->attachmentDirectionParent_;
 		float posnext = children_[in]->attachmentDirectionParent_;
-		assert(nChildren_==1 || eqEps(limitAngle(pos + child_span + initialData_->circularBuffer[i].gapAfter, 2*PI), posnext, 1.e-4f));
-		assert(i==nChildren_-1 || pos < posnext);
+		assertDbg(nChildren_==1 || eqEps(limitAngle(pos + child_span + initialData_->circularBuffer[i].gapAfter - posnext, PI), 0, 1.e-4f));
+		if (noOverlap)
+			assertDbg(i==nChildren_-1 || pos < posnext);
+		else
+			assertDbg(i==nChildren_-1 || pos <= posnext);
 		gapPos += initialData_->circularBuffer[i].gapAfter;
 		gapNeg += initialData_->circularBuffer[i].gapBefore;
 	}
-	assert(eqEps(gapPos, gapNeg, 1.e-4f));
+	assertDbg(eqEps(gapPos, gapNeg, 1.e-4f));
 	float sum = child_span*nChildren_+gapPos;
-	assert(nChildren_ == 0 || eqEps(sum, 2*PI, 1.e-4f));
+	assertDbg(nChildren_ == 0 || eqEps(sum, 2*PI, 1.e-4f));
 }
 #endif
 
@@ -166,7 +169,7 @@ void BodyPart::pushBodyParts(int index, float delta) {
 				break;
 		}
 		index = di > 0 ? circularNext(index, nChildren_) : circularPrev(index, nChildren_);
-		assert(index != initialIndex && "came around full circle; something's fucked up");
+		assertDbg(index != initialIndex && "came around full circle; something's fucked up");
 #ifdef DEBUG
 		checkCircularBuffer(false);
 #endif
@@ -181,7 +184,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 	if (nChildren_ == 6) {
 		int a = 3;
 	}
-	assert(nChildren_ < MAX_CHILDREN && initialData_);
+	assertDbg(nChildren_ < MAX_CHILDREN && initialData_);
 	// determine the position in the circular buffer:
 	int bufferPos = 0;
 	while (bufferPos < nChildren_ && angle >= children_[bufferPos]->attachmentDirectionParent_)
@@ -225,7 +228,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 		initialData_->circularBuffer[nextPos].gapBefore = gapLeftAfter;
 		initialData_->circularBuffer[prevPos].gapAfter = gapLeftBefore;
 	}
-	assert(gapLeftBefore + gapLeftAfter >= -span - 1.e-4f);
+	assertDbg(gapLeftBefore + gapLeftAfter >= -span - 1.e-4f);
 	initialData_->circularBuffer[bufferPos].set(gapLeftBefore, gapLeftAfter);
 #ifdef DEBUG
 	checkCircularBuffer(false);
@@ -259,7 +262,7 @@ void BodyPart::fixOverlaps(int startIndex) {
 #endif
 		float gapNeeded = (overlapsNext ? -initialData_->circularBuffer[startIndex].gapAfter : 0) +
 						(overlapsPrev ? -initialData_->circularBuffer[startIndex].gapBefore : 0);
-		assert(gapNeeded > 0 && gapNeeded <= span+1.e-4);
+		assertDbg(gapNeeded > 0 && gapNeeded <= span+1.e-4);
 		// walk the circular buffer and compute 'mass' and gap
 		float MBefore = 0, gapBefore = 0; // compute push 'mass' and available gap before angle
 		float MAfter = 0, gapAfter = 0; // compute push 'mass' and available gap after angle
@@ -281,7 +284,7 @@ void BodyPart::fixOverlaps(int startIndex) {
 				wrapAround = true;
 			}
 		}
-		assert(gapAfter > 0);
+		assertDbg(gapAfter > 0);
 		if (!overlapsPrev) {
 			MBefore = span;
 			gapBefore = initialData_->circularBuffer[startIndex].gapBefore;
@@ -298,12 +301,12 @@ void BodyPart::fixOverlaps(int startIndex) {
 				wrapAround = true;
 			}
 		}
-		assert(gapBefore > 0);
-		assert(MAfter*MBefore != 0);
+		assertDbg(gapBefore > 0);
+		assertDbg(MAfter*MBefore != 0);
 		float MRatio = MAfter / MBefore;
 		float pushBef = gapNeeded / (1 + MRatio);
 		float pushAft = pushBef * MRatio;
-		assert(pushBef+pushAft == gapNeeded);
+		assertDbg(pushBef+pushAft == gapNeeded);
 		// check if there is a single gap:
 		if (nChildren_ == 2 || wrapAround) {
 			// distribute the semi-gaps proportional to the mass ratio
@@ -331,7 +334,7 @@ void BodyPart::fixOverlaps(int startIndex) {
 		if (pushBef > 0)
 			pushBodyParts(overlapsPrev ? firstPrev : startIndex, -pushBef); // -||-
 		gapNeeded -= pushBef + pushAft;
-		assert(gapNeeded >= 0 && gapNeeded <= span);
+		assertDbg(gapNeeded >= 0 && gapNeeded <= span);
 		if (overlapsNext && overlapsPrev) {
 			float prevPos = children_[startIndex]->attachmentDirectionParent_;
 			children_[startIndex]->attachmentDirectionParent_ += (pushAft - pushBef) * 0.5f; // adjust angle to the middle of the gap
@@ -374,7 +377,7 @@ glm::vec2 BodyPart::getUpstreamAttachmentPoint() {
 		return glm::vec2(0);
 	else {
 		glm::vec2 point(parent_->getChildAttachmentPoint(attachmentDirectionParent_));
-		assert(!std::isnan(point.x) && !std::isnan(point.y));
+		assertDbg(!std::isnan(point.x) && !std::isnan(point.y));
 		return point;
 	}
 }
@@ -421,11 +424,11 @@ glm::vec2 BodyPart::getParentSpacePosition() {
 		cacheInitializationData();
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
 	glm::vec2 localOffset = getChildAttachmentPoint(PI - angleOffset_);
-	assert(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
+	assertDbg(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
 	float angle;
 	angle = attachmentDirectionParent_ + angleOffset_;
 	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 #warning "must take into account lateral offset"
 }
@@ -454,14 +457,14 @@ void BodyPart::computeBodyPhysProps() {
 	cachedProps_.angularVelocity = parentProps.angularVelocity;
 	// compute parent space position:
 	glm::vec2 pos = getParentSpacePosition();
-	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
+	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
 	// compute world space position:
 	pos = parentProps.position + glm::rotate(pos, parentProps.angle);
-	assert(!std::isnan(pos.x) && !std::isnan(pos.y));
+	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
 	cachedProps_.position = pos;
 	// compute world space angle:
 	cachedProps_.angle = parentProps.angle + attachmentDirectionParent_ + angleOffset_;
-	assert(!std::isnan(cachedProps_.angle));
+	assertDbg(!std::isnan(cachedProps_.angle));
 }
 
 glm::vec3 BodyPart::getWorldTransformation() {
