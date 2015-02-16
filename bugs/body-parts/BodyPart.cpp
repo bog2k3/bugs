@@ -253,15 +253,9 @@ void BodyPart::fixOverlaps(int startIndex) {
 	bool overlapsPrev = initialData_->circularBuffer[startIndex].gapBefore <= 0;
 	constexpr float span = 2*PI/MAX_CHILDREN;
 	// more iterations may be required, since the first gaps found may not be enough:
-#ifdef DEBUG
-	int iteration = 0;
-#endif
 	float gapNeeded = (overlapsNext ? -initialData_->circularBuffer[startIndex].gapAfter : 0) +
 						(overlapsPrev ? -initialData_->circularBuffer[startIndex].gapBefore : 0);
 	while (gapNeeded > 0) {
-#ifdef DEBUG
-		LOGLN("fixOverlap iteration" << ++iteration);
-#endif
 		assertDbg(gapNeeded <= span+1.e-4);
 		// walk the circular buffer and compute 'mass' and gap
 		float MBefore = 0, gapBefore = 0; // compute push 'mass' and available gap before angle
@@ -284,7 +278,7 @@ void BodyPart::fixOverlaps(int startIndex) {
 				wrapAround = true;
 			}
 		}
-		assertDbg(gapAfter > 0);
+		assertDbg(wrapAround || gapAfter > 0);
 		if (!overlapsPrev) {
 			MBefore = span;
 			gapBefore = initialData_->circularBuffer[startIndex].gapBefore;
@@ -301,7 +295,7 @@ void BodyPart::fixOverlaps(int startIndex) {
 				wrapAround = true;
 			}
 		}
-		assertDbg(gapBefore > 0);
+		assertDbg(wrapAround || gapBefore > 0);
 		assertDbg(MAfter*MBefore != 0);
 		float MRatio = MAfter / MBefore;
 		float pushBef = gapNeeded / (1 + MRatio);
