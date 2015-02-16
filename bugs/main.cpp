@@ -82,8 +82,8 @@ int main() {
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	randSeed(1423852111);
-	//randSeed(time(NULL));
+	//randSeed(1423852111);
+	randSeed(time(NULL));
 	LOGLN("RAND seed: "<<rand_seed);
 
 	float worldRadius = 5.f;
@@ -103,10 +103,9 @@ int main() {
 	}
 
 	for (int i=0; i<10; i++) {
-		Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-		//Bug* bug = Bug::newBasicBug(glm::vec2(0.f));
-		//if (i==1)
-			World::getInstance()->takeOwnershipOf(bug);
+		//Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+		Bug* bug = Bug::newBasicBug(glm::vec2(0.f));
+		World::getInstance()->takeOwnershipOf(bug);
 	}
 
 	DrawList drawList;
