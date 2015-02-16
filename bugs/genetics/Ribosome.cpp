@@ -284,7 +284,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		// 1. Right
 		Muscle* mRight = nullptr;
 		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mRightAngle = std::nextafterf(angle, angle-1);
+			float mRightAngle = angle - 0.01f;
 			mRight = new Muscle(linkJoint, -1);
 			mRight->geneticAge = g.age;
 			mRightAngle = part->add(mRight, mRightAngle);
@@ -297,7 +297,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		// 2. Left
 		Muscle* mLeft = nullptr;
 		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mLeftAngle = std::nextafterf(angle, angle+1);
+			float mLeftAngle = angle + 0.01f;
 			mLeft = new Muscle(linkJoint, +1);
 			mLeft->geneticAge = g.age;
 			mLeftAngle = part->add(mLeft, mLeftAngle);

@@ -10,7 +10,9 @@
 
 #include <cassert>
 
-#ifdef DEBUG
+// #define ASSERTDBG_ENABLE
+
+#ifdef ASSERTDBG_ENABLE
 static void assertDbg(bool e) {
 	if (!e) {
 		__builtin_trap();
