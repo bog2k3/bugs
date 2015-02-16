@@ -243,7 +243,9 @@ float Muscle::getCurrentPhiSlice() {
 		iAngleSlice = nAngleSteps - 1;
 	if (iAngleSlice < 0)
 		iAngleSlice = 0;
-	return iAngleSlice + angleSlice;
+	float ret = iAngleSlice + angleSlice;
+	assertDbg(!std::isnan(ret));
+	return ret;
 }
 
 void Muscle::update(float dt) {

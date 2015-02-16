@@ -82,7 +82,7 @@ int main() {
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	randSeed(1424117212);
+	randSeed(1424118659);
 	//randSeed(time(NULL));
 	LOGLN("RAND seed: "<<rand_seed);
 
