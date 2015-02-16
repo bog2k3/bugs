@@ -108,7 +108,7 @@ bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, bool
 	} else { // ends of span2 are on different sides of angle 1
 		float d1 = a2n-a1p, d2 = a1n-a2p;
 		outMargin = angle2 > 0 ? d1 : d2; // the smallest distance between the spans (positive) or the greatest overlap (negative)
-		if (sweepPositive == (angle2<0))
+		if (sweepPositive == (angle2<=0))
 			outMargin = 2*PI-outMargin-span1-span2;
 	}
 

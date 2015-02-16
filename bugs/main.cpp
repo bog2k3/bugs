@@ -82,8 +82,8 @@ int main() {
 	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
 	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	//randSeed(1423852111);
-	randSeed(time(NULL));
+	randSeed(1424117212);
+	//randSeed(time(NULL));
 	LOGLN("RAND seed: "<<rand_seed);
 
 	float worldRadius = 5.f;
