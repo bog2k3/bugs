@@ -37,7 +37,6 @@ Gamete::Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 }
 
 Gamete::~Gamete() {
-	// TODO Auto-generated destructor stub
 }
 
 void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
