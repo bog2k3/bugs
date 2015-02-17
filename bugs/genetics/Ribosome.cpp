@@ -183,12 +183,6 @@ bool Ribosome::step() {
 			}
 			continue;
 		}
-		/*
-		 * 1. Must automatically generate muscles for joints;
-		 * 2. Must automatically generate life time sensor
-		 * 3. Auto-generate output neurons to command actuators (muscles, grippers, etc)
-		 * 4. Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
-		 */
 
 		// now decode the gene
 		decodeGene(*g, p, offset, true);
@@ -267,6 +261,7 @@ void Ribosome::decodeDevelopCommand(GeneCommand const& g, BodyPart* part, int cr
 	} else if (g.command == GENE_DEV_SPLIT) {
 		decodeDevelopSplit(g, part, crtPosition);
 	}
+	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 }
 
 void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crtPosition) {

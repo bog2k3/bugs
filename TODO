@@ -1,6 +1,6 @@
 * fix joint nan angle
 * do some statistical analysis on mutation rates
-* add "skipNext" and "jump" genes
+		* add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
 * make split work
 * add "duplicate" as a gene spawn method (copy existing gene)
 * make eggs attract each other
