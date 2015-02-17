@@ -41,17 +41,18 @@ public:
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
+	static constexpr float JointTorqueToleranceFactor		= 1.e+2f;		// [*] how much torque a joint can take, relative to its size
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
 	static constexpr float initialBodyPartDensity			= 10.f;			// [kg/m^2]
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
 	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
+	static constexpr float initialJointSize					= 0.8e-4f;		// [m^2]
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.9f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
-	static constexpr float initialJointSize					= 0.8e-4f;		// [m^2]
 	static constexpr float initialMouthSize					= 0.5e-3f;		// [m^2]
 
 	// default values for whole-body attributes:

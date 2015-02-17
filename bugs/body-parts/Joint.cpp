@@ -29,11 +29,8 @@ JointInitializationData::JointInitializationData()
 void Joint::cacheInitializationData() {
 	BodyPart::cacheInitializationData();
 	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
-	phiMin_ = initData->phiMin.clamp(-PI*0.9f, limitAngle(initData->phiMin, PI*0.9f));
-	phiMax_ = initData->phiMax.clamp(-PI*0.9f, limitAngle(initData->phiMax, PI*0.9f));
-	if (phiMin_ > phiMax_) {
-		phiMin_ = phiMax_ = (phiMin_ + phiMax_) * 0.5f;
-	}
+	phiMin_ = initData->phiMin.clamp(-PI*0.9f, 0);
+	phiMax_ = initData->phiMax.clamp(0, limitAngle(initData->phiMax, PI*0.9f));
 	resetTorque_ = initData->resetTorque.clamp(0, 1.e3f);
 }
 
@@ -151,6 +148,16 @@ void Joint::addTorque(float t, float maxSpeed) {
 }
 
 void Joint::update(float dt) {
+	float reactionTorque = physJoint_->GetReactionTorque(1.f/dt);
+	if (reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
+		// this joint is toast - must break free the downstream body parts
+		BodyPart* downStream = children_[0];
+		downStream->removeFromParent();
+		downStream->die_tree();
+		removeFromParent();
+		delete this;
+	}
+
 	// compute the resulting torque and speed and apply it to the joint
 	float minSpeed = 0, maxSpeed = 0;
 	float torque = 0;
@@ -168,11 +175,6 @@ void Joint::update(float dt) {
 	// apply the torque and max speed:
 	physJoint_->SetMotorSpeed(speed);
 	physJoint_->SetMaxMotorTorque(abs(torque));
-	/*if (abs(speed) > 200)
-		LOGLN("speed : " << speed);
-	if (abs(torque) > 0.1)
-		LOGLN("torque : " << torque);*/
-
 	// reset pending torques
 	vecTorques.clear();
 

@@ -196,8 +196,6 @@ void Muscle::commit() {
 
 	// must also compute max speed:
 	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * BodyConst::MuscleMaxLinearContractionSpeed;
-	/*if (maxJointAngularSpeed_ > 200)
-		LOGLN("muscle max speed: "<<maxJointAngularSpeed_);*/
 }
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
