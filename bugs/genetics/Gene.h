@@ -52,6 +52,18 @@ struct Atom {
 struct GeneStop {
 };
 
+struct GeneSkip {
+	Atom<int> minDepth;
+	Atom<int> maxDepth;
+	Atom<int> count;
+
+	GeneSkip() {
+		minDepth.set(1);
+		maxDepth.set(1);
+		count.set(2);
+	}
+};
+
 struct GeneCommand {
 	gene_development_command command = GENE_DEV_GROW;
 	gene_part_type part_type = GENE_PART_INVALID;
@@ -110,6 +122,7 @@ public:
 	gene_type type;		// the type of gene
 	union GeneData {
 		GeneStop gene_stop;
+		GeneSkip gene_skip;
 		GeneCommand gene_command;
 		GeneAttribute gene_attribute;
 		GeneSynapse gene_synapse;
@@ -119,6 +132,7 @@ public:
 		GeneBodyAttribute gene_body_attribute;
 
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
+		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
 		GeneData(GeneCommand const &gc) : gene_command(gc) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
@@ -138,7 +152,8 @@ public:
 		update_meta_genes_vec();
 	}
 
-	Gene(GeneStop const& gs) : Gene(GENE_TYPE_STOP, gs) {}
+	Gene(GeneStop const &gs) : Gene(GENE_TYPE_STOP, gs) {}
+	Gene(GeneSkip const &gs) : Gene(GENE_TYPE_SKIP, gs) {}
 	Gene(GeneCommand const &gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
 	Gene(GeneAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}

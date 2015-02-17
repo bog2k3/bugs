@@ -176,6 +176,13 @@ bool Ribosome::step() {
 			i--, nCrtBranches--;
 			continue;
 		}
+		if (g->type == GENE_TYPE_SKIP) {
+			int depth = p->getDepth();
+			if (depth <= g->data.gene_skip.maxDepth && depth >= g->data.gene_skip.minDepth) {
+				activeSet_[i].second += g->data.gene_skip.count;
+			}
+			continue;
+		}
 		/*
 		 * 1. Must automatically generate muscles for joints;
 		 * 2. Must automatically generate life time sensor
