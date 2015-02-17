@@ -11,6 +11,7 @@
 enum gene_type {
 	GENE_TYPE_INVALID = 0,
 	GENE_TYPE_STOP,				// signals the ribosome to stop reading genes after this one
+	GENE_TYPE_JUMP,				// control gene -> make ribosome jump a given relative 'distance' into the chromosome
 	GENE_TYPE_DEVELOPMENT,		// developmental gene - commands the growth of the body
 	GENE_TYPE_PART_ATTRIBUTE,	// body part attribute - establishes characteristics of certain body parts
 	GENE_TYPE_BODY_ATTRIBUTE,	// body attribute - controls specific whole-body attributes that do not belong to a specific part,

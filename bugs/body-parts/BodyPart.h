@@ -90,7 +90,9 @@ public:
 	virtual glm::vec3 getWorldTransformation();
 
 	// must return the actual amount deduced from mass argument
-	virtual float addFood(float mass) { if (parent_) parent_->addFood(mass); }
+	virtual float addFood(float mass) { if (parent_) return parent_->addFood(mass); else return 0; }
+
+	inline int getDepth() { int d=1; if (parent_) d+=parent_->getDepth(); return d; }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.

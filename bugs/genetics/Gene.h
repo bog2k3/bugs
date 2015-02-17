@@ -57,12 +57,15 @@ struct GeneCommand {
 	gene_part_type part_type = GENE_PART_INVALID;
 	unsigned age = 0;				// this is the genetic 'age' of this particular gene. always increments by one in meyosis
 	Atom<float> angle;				// angle is relative to the previous element's orientation
+	Atom<int> maxDepth;				// maximum depth at which this gene works
 	Atom<int> genomeOffset;			// offset from current gene to the start of the genes for the new part
 	Atom<int> genomeOffsetJoint;	// offset from current gene to the start of the genes for the new part's joint
 	Atom<int> genomeOffsetMuscle1;	// offset from current gene to the start of the genes for the new part's muscle 1
 	Atom<int> genomeOffsetMuscle2;	// offset from current gene to the start of the genes for the new part's muscle 2
 
-	GeneCommand() = default;
+	GeneCommand() {
+		maxDepth.set(10);
+	}
 };
 
 struct GeneAttribute {

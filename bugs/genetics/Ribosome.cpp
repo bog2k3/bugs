@@ -269,6 +269,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		return;
 	if (part->getChildrenCount() == MAX_CHILDREN)
 		return;
+	if (part->getDepth() > g.maxDepth)
+		return;
 
 	float angle = limitAngle(g.angle, 2*PI);
 
