@@ -139,6 +139,8 @@ float Joint::getJointAngle() {
 		float ret = physJoint_->GetJointAngle();
 		if (std::isnan(ret))
 			ret = 0;
+		else
+			ret = limitAngle(ret, PI);
 		return ret;
 	} else
 		return 0;
@@ -166,13 +168,20 @@ void Joint::update(float dt) {
 	// apply the torque and max speed:
 	physJoint_->SetMotorSpeed(speed);
 	physJoint_->SetMaxMotorTorque(abs(torque));
+	/*if (abs(speed) > 200)
+		LOGLN("speed : " << speed);
+	if (abs(torque) > 0.1)
+		LOGLN("torque : " << torque);*/
 
 	// reset pending torques
 	vecTorques.clear();
 
 	// add the reset torque if joint is not within epsilon of repause angle:
 	if (!eqEps(getJointAngle(), 0, PI/32)) {
-		addTorque(-resetTorque_*sign(getJointAngle()), -4*getJointAngle());
+		float reset_speed = -4*getJointAngle();
+		addTorque(-resetTorque_*sign(getJointAngle()), reset_speed);
+		if (abs(reset_speed) > 200)
+			LOGLN("reset speed: "<<reset_speed);
 	}
 }
 
