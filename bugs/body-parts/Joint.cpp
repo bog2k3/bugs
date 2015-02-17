@@ -137,7 +137,8 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 float Joint::getJointAngle() {
 	if (committed_) {
 		float ret = physJoint_->GetJointAngle();
-		assertDbg(!std::isnan(ret));
+		if (std::isnan(ret))
+			ret = 0;
 		return ret;
 	} else
 		return 0;
