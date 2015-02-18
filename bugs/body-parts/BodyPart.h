@@ -73,7 +73,11 @@ public:
 
 	inline PART_TYPE getType() const { return type_; }
 
-	void removeFromParent();
+	// void removeFromParent();
+
+	// detaches this body part along with all its children from the parent part, breaking all neural connections.
+	// this part and its children may die as a result of this operation if the parameter is true
+	void detach(bool die);
 
 	/**
 	 * return the attachment point for a child of the current part, in the specified direction
@@ -142,7 +146,6 @@ public:
 	 * returns the actual angle at which the part was inserted.
 	 */
 	virtual float add(BodyPart* part, float angle);
-	void remove(BodyPart* part);
 
 protected:
 	// these are used when initializing the body and whenever a new commit is called.
@@ -189,6 +192,7 @@ protected:
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 	virtual void onAddedToParent() {}
+	virtual void onDetachedFromParent() {}
 
 
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
@@ -197,6 +201,8 @@ protected:
 	// call this if the fixture changed for any reason:
 	void reattachChildren();
 	void computeBodyPhysProps();
+
+	virtual void detachMotorLines(std::vector<int> const& lines);
 
 private:
 	void reverseUpdateCachedProps();
@@ -207,6 +213,7 @@ private:
 	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
 	void fixOverlaps(int startIndex);
 	void pushBodyParts(int circularBufferIndex, float delta);
+	void remove(BodyPart* part);
 
 	/**
 	 * Lists of motor & sensor nerve lines that pass through this node.

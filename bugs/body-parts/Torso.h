@@ -44,6 +44,7 @@ public:
 	void replenishEnergyFromMass(float mass);
 
 	Event<void(float mass)> onFoodProcessed;
+	Event<void(std::vector<int> const&)> onMotorLinesDetached;
 
 protected:
 	float fatMass_;
@@ -61,6 +62,7 @@ protected:
 	void commit() override;
 	void die() override;
 	void onAddedToParent() override;
+	void detachMotorLines(std::vector<int> const& lines) override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */

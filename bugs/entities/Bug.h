@@ -78,6 +78,7 @@ protected:
 	void updateEmbryonicDevelopment(float dt);
 	void updateDeadDecaying(float dt);
 	void onFoodProcessed(float mass);
+	void onMotorLinesDetached(std::vector<int> const& lines);
 	void fixAllGeneValues();
 	static Chromosome createBasicChromosome();
 };

@@ -152,11 +152,9 @@ void Joint::update(float dt) {
 	if (reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
 		// this joint is toast - must break free the downstream body parts
 		BodyPart* downStream = children_[0];
-		downStream->removeFromParent();
-		downStream->die_tree();
-		removeFromParent();
+		downStream->detach(true);
 		delete this;
-#warning "must fix neural lines otherwise crash" // make a method in BodyPart::Detach() that handles everything
+		return;
 	}
 
 	// compute the resulting torque and speed and apply it to the joint
@@ -192,3 +190,8 @@ void Joint::die() {
 	physJoint_->EnableMotor(false);
 }
 
+void Joint::onDetachedFromParent() {
+	if (physJoint_)
+		World::getInstance()->getPhysics()->DestroyJoint(physJoint_);
+	physJoint_ = nullptr;
+}

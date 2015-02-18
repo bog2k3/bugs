@@ -166,3 +166,7 @@ void Torso::replenishEnergyFromMass(float mass) {
 		fatMass_ += mass;
 	}
 }
+
+void Torso::detachMotorLines(std::vector<int> const& lines) {
+	onMotorLinesDetached.trigger(lines);
+}

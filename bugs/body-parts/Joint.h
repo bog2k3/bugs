@@ -56,6 +56,7 @@ protected:
 	void cacheInitializationData() override;
 	void die() override;
 	void onAddedToParent() override;
+	void onDetachedFromParent() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

@@ -53,6 +53,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	body_ = new Torso();
 	zygoteShell_->add(body_, 0);
 	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
+	body_->onMotorLinesDetached.add(std::bind(&Bug::onMotorLinesDetached, this, std::placeholders::_1));
 	ribosome_ = new Ribosome(this);
 
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
@@ -83,10 +84,10 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 		if (!isDeveloping_) {	// finished development?
 			if (!isAlive_) {
 				// embryo not viable, discarded.
-				// should remove all body parts and put a sort of sign on the zygote shell
-				body_->removeFromParent();
-				delete body_;
+				LOGLN("Embryo not viable. DISCARDED.");
 				zygoteShell_->die_tree();
+				body_->detach(false);
+				delete body_;
 				return;
 			}
 
@@ -105,7 +106,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			body_->commit_tree((zygMass-fatMass)/currentMass);
 
 			// delete embryo shell
-			body_->removeFromParent();
+			body_->detach(false);
 			delete zygoteShell_;
 			zygoteShell_ = nullptr;
 
@@ -216,6 +217,13 @@ void Bug::onFoodProcessed(float mass) {
 		}
 	}
 	body_->replenishEnergyFromMass(mass - eggMass - growthMass);
+}
+
+void Bug::onMotorLinesDetached(std::vector<int> const& lines) {
+	for (int i : lines) {
+		neuralNet_->outputs[i]->
+#warning one motor may have many inputs; also must remove as output from all neurons that refer them.
+	}
 }
 
 Chromosome Bug::createBasicChromosome() {

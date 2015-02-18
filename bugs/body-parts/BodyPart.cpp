@@ -51,7 +51,7 @@ BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> i
 }
 
 BodyPart::~BodyPart() {
-	removeFromParent();
+	detach(true);
 	for (int i=0; i<nChildren_; i++)
 		delete children_[i];
 }
@@ -350,10 +350,19 @@ void BodyPart::fixOverlaps(int startIndex) {
 #endif
 }
 
-void BodyPart::removeFromParent() {
-	if (parent_)
+void BodyPart::detach(bool die) {
+	if (parent_) {
+		// first must detach all neural connections
+		detachMotorLines(motorLines_);
 		parent_->remove(this);
+	}
 	parent_ = nullptr;
+	onDetachedFromParent();
+}
+
+void BodyPart::detachMotorLines(std::vector<int> const& lines) {
+	if (parent_)
+		parent_->detachMotorLines(lines);
 }
 
 void BodyPart::remove(BodyPart* part) {
