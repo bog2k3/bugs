@@ -35,6 +35,9 @@ Ribosome::Ribosome(Bug* bug)
 
 	// start decoding with root body part at offset 0 in the genome:
 	activeSet_.push_back(std::make_pair(bug_->body_, 0));
+
+	// the number of default sensors (like lifeTime sensor) added by the bug before genetic decoding
+	nDefaultSensors = bug_->sensors_.size();
 }
 
 Ribosome::~Ribosome() {
@@ -67,19 +70,40 @@ void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
 	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
-	for (unsigned i=0; i<bug_->sensors_.size(); i++)
-#warning must sort sensors by genetic age
+	for (unsigned i=0; i<bug_->sensors_.size(); i++) {
+		// sort sensors by genetic age
+		if (i>=nDefaultSensors) // skip the default sensors which must always be at the beginning
+			for (unsigned j=i+1; j<bug_->sensors_.size(); j++)
+				if (bug_->sensors_[j]->geneticAge > bug_->sensors_[i]->geneticAge)
+					xchg(bug_->sensors_[i], bug_->sensors_[j]);
 		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
+	}
 	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
+	std::map<int, int> mapMotorIds, mapReverseMotorIds;
 	for (unsigned i=0; i<bug_->motors_.size(); i++) {
 		// sort motors by genetic age (oldest first)
 		for (unsigned j=i+1; j<bug_->motors_.size(); j++)
-			if (bug_->motors_[j]->geneticAge > bug_->motors_[i]->geneticAge)
+			if (bug_->motors_[j]->geneticAge > bug_->motors_[i]->geneticAge) {
 				xchg(bug_->motors_[i], bug_->motors_[j]);
+				// update mapping of indices:
+				auto it1 = mapReverseMotorIds.find(i);
+				int indexWhereKeyIs_i = i;
+				if (it1 != mapReverseMotorIds.end())
+					indexWhereKeyIs_i = it1->second;
+				auto it2 = mapReverseMotorIds.find(j);
+				int indexWhereKeyIs_j = j;
+				if (it2 != mapReverseMotorIds.end())
+					indexWhereKeyIs_j = it2->second;
+				mapMotorIds[indexWhereKeyIs_i] = j;
+				mapMotorIds[indexWhereKeyIs_j] = i;
+				mapReverseMotorIds[j] = indexWhereKeyIs_i;
+				mapReverseMotorIds[i] = indexWhereKeyIs_j;
+			}
 		// now add all input sockets from all motors:
 		for (int s=0; s<bug_->motors_[i]->getNumberOfInputs(); s++)
 			bug_->neuralNet_->outputs.push_back(bug_->motors_[i]->getInputSocket(s));	// create network outputs
 	}
+	bug_->body_->updateMotorMappings(mapMotorIds);
 	// create neurons:
 	int commandNeuronsStart = mapNeurons_.size();
 	int totalNeurons = commandNeuronsStart + bug_->motors_.size();

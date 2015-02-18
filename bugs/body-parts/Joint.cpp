@@ -49,7 +49,7 @@ Joint::Joint()
 
 Joint::~Joint() {
 	if (committed_) {
-#warning "must make sure this won't crash (if body doesn't exit any more):"
+#warning "must make sure this won't crash (if body doesn't exist any more):"
 		if (parent_)
 			parent_->getBody().b2Body_->GetWorld()->DestroyJoint(physJoint_);
 	}
@@ -156,6 +156,7 @@ void Joint::update(float dt) {
 		downStream->die_tree();
 		removeFromParent();
 		delete this;
+#warning "must fix neural lines otherwise crash" // make a method in BodyPart::Detach() that handles everything
 	}
 
 	// compute the resulting torque and speed and apply it to the joint

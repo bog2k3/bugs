@@ -47,6 +47,7 @@ public:
 
 private:
 	Bug* bug_;
+	int nDefaultSensors = 0;
 	std::vector<const Gene*> neuralGenes;
 	std::vector<std::pair<BodyPart*, int>> activeSet_;
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)

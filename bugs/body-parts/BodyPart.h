@@ -134,6 +134,8 @@ public:
 	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
 	void addMotorLine(int line);
 	void addSensorLine(int line);
+	void updateMotorMappings(std::map<int, int> mapping);
+
 	/*
 	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
 	 * The part's angle may be slightly changed if it overlaps other siblings.
@@ -206,8 +208,15 @@ private:
 	void fixOverlaps(int startIndex);
 	void pushBodyParts(int circularBufferIndex, float delta);
 
-	std::vector<int> motorLines_; // a list of motor nerve lines that pass through this node
+	/**
+	 * Lists of motor & sensor nerve lines that pass through this node.
+	 * Initially, each number represents the Nth motor/sensor that has been created for this body.
+	 * This does not correlate the Nth output/input from the brain, since the outputs/inputs are ordered by genetic age.
+	 * After finishing genetic decoding (after first commit), these values are remapped to the actual output/input neuron indices.
+	 */
+	std::vector<int> motorLines_;
 	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-
+
 	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;

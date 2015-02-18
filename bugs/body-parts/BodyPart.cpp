@@ -568,3 +568,10 @@ void BodyPart::cacheInitializationData() {
 	size_ = initialData_->size.clamp(BodyConst::MinBodyPartSize, 1.e10f);
 	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }
+
+void BodyPart::updateMotorMappings(std::map<int, int> mapping) {
+	for (unsigned i=0; i<motorLines_.size(); i++)
+		motorLines_[i] = mapping[i];
+	for (int i=0; i<nChildren_; i++)
+		children_[i]->updateMotorMappings(mapping);
+}
