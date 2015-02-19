@@ -147,7 +147,9 @@ void Torso::update(float dt) {
 }
 
 void Torso::die() {
-	commit();
+	// if this was ever alive, do a final commit to update its size to the cached mass
+	if (committed_)
+		commit();
 }
 
 float Torso::addFood(float mass) {
@@ -169,4 +171,10 @@ void Torso::replenishEnergyFromMass(float mass) {
 
 void Torso::detachMotorLines(std::vector<int> const& lines) {
 	onMotorLinesDetached.trigger(lines);
+}
+
+void Torso::detach(bool die) {
+	motorLines_.clear();
+	sensorLines_.clear();
+	BodyPart::detach(die);
 }

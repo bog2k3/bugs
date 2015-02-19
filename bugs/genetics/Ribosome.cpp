@@ -72,7 +72,7 @@ void Ribosome::initializeNeuralNetwork() {
 	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
 	for (unsigned i=0; i<bug_->sensors_.size(); i++) {
 		// sort sensors by genetic age
-		if (i>=nDefaultSensors) // skip the default sensors which must always be at the beginning
+		if ((int)i>=nDefaultSensors) // skip the default sensors which must always be at the beginning
 			for (unsigned j=i+1; j<bug_->sensors_.size(); j++)
 				if (bug_->sensors_[j]->geneticAge > bug_->sensors_[i]->geneticAge)
 					xchg(bug_->sensors_[i], bug_->sensors_[j]);
@@ -83,7 +83,7 @@ void Ribosome::initializeNeuralNetwork() {
 	for (unsigned i=0; i<bug_->motors_.size(); i++) {
 		// sort motors by genetic age (oldest first)
 		for (unsigned j=i+1; j<bug_->motors_.size(); j++)
-			if (bug_->motors_[j]->geneticAge > bug_->motors_[i]->geneticAge) {
+			if (bug_->motors_[j].geneticAge > bug_->motors_[i].geneticAge) {
 				xchg(bug_->motors_[i], bug_->motors_[j]);
 				// update mapping of indices:
 				auto it1 = mapReverseMotorIds.find(i);
@@ -100,8 +100,7 @@ void Ribosome::initializeNeuralNetwork() {
 				mapReverseMotorIds[i] = indexWhereKeyIs_j;
 			}
 		// now add all input sockets from all motors:
-		for (int s=0; s<bug_->motors_[i]->getNumberOfInputs(); s++)
-			bug_->neuralNet_->outputs.push_back(bug_->motors_[i]->getInputSocket(s));	// create network outputs
+		bug_->neuralNet_->outputs.push_back(bug_->motors_[i].inputSocket);	// create network outputs
 	}
 	bug_->body_->updateMotorMappings(mapMotorIds);
 	// create neurons:
@@ -117,6 +116,8 @@ void Ribosome::initializeNeuralNetwork() {
 		bug_->neuralNet_->neurons[i]->neuralConstant = 0.f;
 		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[FN_ONE];
 		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart].get());
+		// connect back the socket to the output neuron (in order to be able to locate the neuron later):
+		bug_->neuralNet_->outputs[i-commandNeuronsStart]->pParentNeuron = bug_->neuralNet_->neurons[i];
 	}
 }
 
@@ -314,13 +315,12 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		if (part->getChildrenCount() < MAX_CHILDREN) {
 			float mRightAngle = angle - 0.01f;
 			mRight = new Muscle(linkJoint, -1);
-			mRight->geneticAge = g.age;
 			float origAngle = mRightAngle;
 			mRightAngle = part->add(mRight, mRightAngle);
 			mRightAngle = limitAngle(mRightAngle-origAngle, PI) + origAngle;
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
 			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(mRight);
+			bug_->motors_.push_back(Motor(mRight->getInputSocket(), g.age));
 			mRight->addMotorLine(motorLineId);
 			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
 		}
@@ -329,13 +329,12 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		if (part->getChildrenCount() < MAX_CHILDREN) {
 			float mLeftAngle = angle + 0.01f;
 			mLeft = new Muscle(linkJoint, +1);
-			mLeft->geneticAge = g.age;
 			float origAngle = mLeftAngle;
 			mLeftAngle = part->add(mLeft, mLeftAngle);
 			mLeftAngle = limitAngle(mLeftAngle-origAngle, PI) + origAngle;
 			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
 			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(mLeft);
+			bug_->motors_.push_back(Motor(mLeft->getInputSocket(), g.age));
 			mLeft->addMotorLine(motorLineId);
 			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
 		}
@@ -360,9 +359,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		break;
 	case GENE_PART_GRIPPER: {
 		Gripper* gr = new Gripper();
-		gr->geneticAge = g.age;
 		int motorLineId = bug_->motors_.size();
-		bug_->motors_.push_back(gr);
+		bug_->motors_.push_back(Motor(gr->getInputSocket(), g.age));
 		gr->addMotorLine(motorLineId);
 		bp = gr;
 		break;
@@ -377,7 +375,8 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		break;
 	case GENE_PART_EGGLAYER: {
 		EggLayer* e = new EggLayer();
-		e->geneticAge = g.age;
+		for (auto &is : e->getInputSockets())
+			bug_->motors_.push_back(Motor(is, g.age));
 		bp = e;
 		break;
 	}

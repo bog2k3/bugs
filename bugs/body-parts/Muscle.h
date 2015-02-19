@@ -8,12 +8,12 @@
 #ifndef OBJECTS_BODY_PARTS_MUSCLE_H_
 #define OBJECTS_BODY_PARTS_MUSCLE_H_
 
-#include "../entities/Bug/IMotor.h"
 #include "BodyPart.h"
 
 #define DEBUG_DRAW_MUSCLE
 
 class Joint;
+class InputSocket;
 
 struct MuscleInitializationData : public BodyPartInitializationData {
 	virtual ~MuscleInitializationData() noexcept = default;
@@ -22,7 +22,7 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 	CummulativeValue aspectRatio;	// length/width
 };
 
-class Muscle: public BodyPart, public IMotor {
+class Muscle: public BodyPart {
 public:
 	// the position and rotation in props are relative to the parent:
 	Muscle(Joint* joint, int motorDirSign);
@@ -32,8 +32,7 @@ public:
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 
-	unsigned getNumberOfInputs() override { return 1; }
-	std::shared_ptr<InputSocket> getInputSocket(unsigned index) override { assert(index==0); return inputSocket_; }
+	std::shared_ptr<InputSocket> getInputSocket() { return inputSocket_; }
 
 protected:
 	static constexpr int nAngleSteps = 10;

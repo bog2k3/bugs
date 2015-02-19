@@ -16,6 +16,8 @@
 
 static const glm::vec3 debug_color(0.2f, 0.7f, 1.0f);
 
+#define DEBUG_DRAW_EGGLAYER
+
 EggLayer::EggLayer()
 	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<BodyPartInitializationData>())
 	, pJoint(nullptr)
@@ -31,6 +33,7 @@ EggLayer::~EggLayer() {
 
 void EggLayer::draw(RenderContext const& ctx) {
 	if (committed_) {
+#ifdef DEBUG_DRAW_EGGLAYER
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		float r_2 = sqrtf(size_*PI_INV) * 0.5f;
@@ -42,6 +45,7 @@ void EggLayer::draw(RenderContext const& ctx) {
 			pos - glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
 			pos + glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
 			0, debug_color);
+#endif // DEBUG_DRAW_EGGLAYER
 	} else {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);

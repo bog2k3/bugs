@@ -18,8 +18,8 @@
 #include "../body-parts/BodyConst.h"
 #include "../utils/log.h"
 #include "../World.h"
-#include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
+#include "Bug/Motor.h"
 #include "Gamete.h"
 
 const float DECODE_FREQUENCY = 1.f; // genes per second
@@ -221,8 +221,7 @@ void Bug::onFoodProcessed(float mass) {
 
 void Bug::onMotorLinesDetached(std::vector<int> const& lines) {
 	for (int i : lines) {
-		neuralNet_->outputs[i]->
-#warning one motor may have many inputs; also must remove as output from all neurons that refer them.
+		neuralNet_->outputs[i]->pParentNeuron->output.getTargets().clear();
 	}
 }
 

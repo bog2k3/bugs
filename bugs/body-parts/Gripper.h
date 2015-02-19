@@ -10,11 +10,11 @@
 
 #include "BodyPart.h"
 #include <memory>
-#include "../entities/Bug/IMotor.h"
 
 class b2WeldJoint;
+class InputSocket;
 
-class Gripper : public BodyPart, public IMotor {
+class Gripper : public BodyPart {
 public:
 	Gripper();
 	~Gripper() override;
@@ -24,8 +24,7 @@ public:
 
 	void update(float dt);
 
-	unsigned getNumberOfInputs() override { return 1; }
-	std::shared_ptr<InputSocket> getInputSocket(unsigned index) override { assert(index==0); return inputSocket_; }
+	std::shared_ptr<InputSocket> getInputSocket() { return inputSocket_; }
 
 protected:
 	std::shared_ptr<InputSocket> inputSocket_;

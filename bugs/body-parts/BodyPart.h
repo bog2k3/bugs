@@ -77,7 +77,7 @@ public:
 
 	// detaches this body part along with all its children from the parent part, breaking all neural connections.
 	// this part and its children may die as a result of this operation if the parameter is true
-	void detach(bool die);
+	virtual void detach(bool die);
 
 	/**
 	 * return the attachment point for a child of the current part, in the specified direction
@@ -175,6 +175,15 @@ protected:
 	float density_;
 
 	/**
+	 * Lists of motor & sensor nerve lines that pass through this node.
+	 * Initially, each number represents the Nth motor/sensor that has been created for this body.
+	 * This does not correlate the Nth output/input from the brain, since the outputs/inputs are ordered by genetic age.
+	 * After finishing genetic decoding (after first commit), these values are remapped to the actual output/input neuron indices.
+	 */
+	std::vector<int> motorLines_;
+	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-
+
+	/**
 	 * called after genome decoding finished, just before initializationData will be destroyed.
 	 * Here you get the chance to cache and sanitize the initialization values into your member variables.
 	 *
@@ -214,15 +223,6 @@ private:
 	void fixOverlaps(int startIndex);
 	void pushBodyParts(int circularBufferIndex, float delta);
 	void remove(BodyPart* part);
-
-	/**
-	 * Lists of motor & sensor nerve lines that pass through this node.
-	 * Initially, each number represents the Nth motor/sensor that has been created for this body.
-	 * This does not correlate the Nth output/input from the brain, since the outputs/inputs are ordered by genetic age.
-	 * After finishing genetic decoding (after first commit), these values are remapped to the actual output/input neuron indices.
-	 */
-	std::vector<int> motorLines_;
-	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-
 
 	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;

@@ -187,7 +187,8 @@ void Joint::update(float dt) {
 }
 
 void Joint::die() {
-	physJoint_->EnableMotor(false);
+	if (committed_)
+		physJoint_->EnableMotor(false);
 }
 
 void Joint::onDetachedFromParent() {

@@ -17,9 +17,9 @@
 #include <vector>
 #include <map>
 #include "Bug/LifetimeSensor.h"
+#include "Bug/Motor.h"
 
 class ISensor;
-class IMotor;
 class NeuralNet;
 class Ribosome;
 class Torso;
@@ -50,7 +50,7 @@ public:
 protected:
 	Genome genome_;
 	std::vector<ISensor*> sensors_;
-	std::vector<IMotor*> motors_;
+	std::vector<Motor> motors_;
 	NeuralNet* neuralNet_;
 	Ribosome* ribosome_;
 	bool isAlive_;

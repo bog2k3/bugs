@@ -39,6 +39,7 @@ public:
 		cachedMassTree_ = 0;	// reset the cached value to force a recomputation
 		BodyPart::applyScale_tree(scale);
 	}
+	void detach(bool die) override;
 
 	void setMouth(Mouth* m) { mouth_ = m; }
 	void replenishEnergyFromMass(float mass);
