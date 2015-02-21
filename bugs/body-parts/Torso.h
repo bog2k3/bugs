@@ -35,6 +35,7 @@ public:
 			cachedMassTree_ = BodyPart::getMass_tree();
 		return cachedMassTree_;
 	}
+	void resetCachedMass() { cachedMassTree_ = 0; }
 	void applyScale_tree(float scale) override {
 		cachedMassTree_ = 0;	// reset the cached value to force a recomputation
 		BodyPart::applyScale_tree(scale);
@@ -46,6 +47,7 @@ public:
 
 	Event<void(float mass)> onFoodProcessed;
 	Event<void(std::vector<int> const&)> onMotorLinesDetached;
+	Event<void()> onBodyMassChanged;
 
 protected:
 	float fatMass_;
@@ -64,6 +66,7 @@ protected:
 	void die() override;
 	void onAddedToParent() override;
 	void detachMotorLines(std::vector<int> const& lines) override;
+	void hierarchyMassChanged() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */

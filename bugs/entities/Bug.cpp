@@ -37,6 +37,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	, growthMassBuffer_(0)
 	, maxGrowthMassBuffer_(0)
 	, cachedLeanMass_(0)
+	, cachedMassDirty_(false)
 	, eggMassBuffer_(0)
 	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
@@ -170,6 +171,11 @@ void Bug::update(float dt) {
 
 	//LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
+	if (cachedMassDirty_) {
+		body_->resetCachedMass();
+#warning "getMass_tree() includes fat too after purging initialization data"
+		cachedLeanMass_ = body_->getMass_tree();
+	}
 	if (cachedLeanMass_ < adultLeanMass_) {
 		// juvenile, growing
 		// max growth speed is dictated by genes

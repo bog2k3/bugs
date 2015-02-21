@@ -217,6 +217,7 @@ protected:
 	void computeBodyPhysProps();
 
 	virtual void detachMotorLines(std::vector<int> const& lines);
+	virtual void hierarchyMassChanged();
 
 private:
 	void reverseUpdateCachedProps();

@@ -178,3 +178,7 @@ void Torso::detach(bool die) {
 	sensorLines_.clear();
 	BodyPart::detach(die);
 }
+
+void Torso::hierarchyMassChanged() {
+	onBodyMassChanged.trigger();
+}

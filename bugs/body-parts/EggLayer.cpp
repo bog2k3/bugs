@@ -71,6 +71,8 @@ glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
 void EggLayer::update(float dt){
 	if (isDead())
 		return;
+	// after lay egg and mass is reduced, call:
+	// hierarchyMassChanged();
 }
 
 void EggLayer::commit() {

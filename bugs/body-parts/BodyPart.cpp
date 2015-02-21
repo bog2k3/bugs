@@ -364,6 +364,7 @@ void BodyPart::detach(bool die) {
 		detachMotorLines(motorLines_);
 		parent_->remove(this);
 		onDetachedFromParent();
+		parent_->hierarchyMassChanged();
 	}
 	parent_ = nullptr;
 	if (die)
@@ -595,4 +596,9 @@ void BodyPart::updateMotorMappings(std::map<int, int> mapping) {
 		motorLines_[i] = mapping[i];
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->updateMotorMappings(mapping);
+}
+
+void BodyPart::hierarchyMassChanged() {
+	if (parent_)
+		parent_->hierarchyMassChanged();
 }
