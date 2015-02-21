@@ -142,6 +142,8 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 }
 
 void Mouth::update(float dt) {
+	if (isDead())
+		return;
 	if (usedBuffer_ > 0)
 		usedBuffer_ -= parent_->addFood(usedBuffer_);
 }

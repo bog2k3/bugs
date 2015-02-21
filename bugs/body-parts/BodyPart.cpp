@@ -43,6 +43,7 @@ BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> i
 	, updateList_(nullptr)
 	, lastCommitSize_inv_(0)
 	, destroyCalled_(false)
+	, dead_(false)
 {
 	assert (initialData != nullptr);
 
@@ -562,6 +563,7 @@ void BodyPart::consumeEnergy(float amount) {
 
 void BodyPart::die_tree() {
 	die();
+	dead_ = true;
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->die_tree();
 }

@@ -150,6 +150,8 @@ public:
 	 */
 	virtual float add(BodyPart* part, float angle);
 
+	inline bool isDead() { return dead_; }
+
 protected:
 	// these are used when initializing the body and whenever a new commit is called.
 	// they contain world-space values that are updated only prior to committing
@@ -232,6 +234,7 @@ private:
 	UpdateList* updateList_;
 	float lastCommitSize_inv_;
 	bool destroyCalled_;
+	bool dead_;
 
 #ifdef DEBUG
 	void checkCircularBuffer(bool noOverlap, bool checkOrder);

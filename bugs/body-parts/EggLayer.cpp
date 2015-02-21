@@ -69,7 +69,8 @@ glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
 }
 
 void EggLayer::update(float dt){
-
+	if (isDead())
+		return;
 }
 
 void EggLayer::commit() {

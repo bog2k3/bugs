@@ -22,7 +22,7 @@ public:
 	}
 
 	void remove(int handle) {
-		assert(handle >= 0 && handle < callbackList_.size());
+		assert(handle >= 0 && (unsigned)handle < callbackList_.size());
 		callbackList_[handle] = nullptr;
 	}
 
@@ -31,48 +31,11 @@ public:
 			c();
 	}
 
-	template<typename T1>
-	void trigger(T1 const &t1) {
+	template<typename... ArgTypes>
+	void trigger(ArgTypes... argList) {
 		for (auto c : callbackList_)
 			if (c)
-				c(t1);
-	}
-
-	template<typename T1>
-	void trigger(T1 &t1) {
-		for (auto c : callbackList_)
-			if (c)
-				c(t1);
-	}
-
-	template<typename T1>
-	void trigger(T1 const &t1) const {
-		for (auto c : callbackList_)
-			c(t1);
-	}
-
-	template<typename T1, typename T2>
-	void trigger(T1 const &t1, T2 const &t2) {
-		for (auto c : callbackList_)
-			c(t1, t2);
-	}
-
-	template<typename T1, typename T2>
-	void trigger(T1 const &t1, T2 const &t2) const {
-		for (auto c : callbackList_)
-			c(t1, t2);
-	}
-
-	template<typename T1, typename T2, typename T3>
-	void trigger(T1 const &t1, T2 const &t2, T3 const &t3) {
-		for (auto c : callbackList_)
-			c(t1, t2, t3);
-	}
-
-	template<typename T1, typename T2, typename T3>
-	void trigger(T1 const &t1, T2 const &t2, T3 const &t3) const {
-		for (auto c : callbackList_)
-			c(t1, t2, t3);
+				c(argList...);
 	}
 
 protected:
