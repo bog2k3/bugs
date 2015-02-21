@@ -43,6 +43,8 @@ public:
 
 	void addTorque(float t, float maxSpeed);
 
+	Event<void(Joint*)> onDie;
+
 protected:
 	b2RevoluteJoint* physJoint_;
 	float phiMin_;

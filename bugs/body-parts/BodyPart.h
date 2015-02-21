@@ -69,6 +69,9 @@ public:
 	BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
 	virtual ~BodyPart();
 
+	// call this to destroy and delete the object. Never delete directly
+	void destroy();
+
 	virtual void draw(RenderContext const& ctx);
 
 	inline PART_TYPE getType() const { return type_; }
@@ -228,6 +231,7 @@ private:
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;
 	float lastCommitSize_inv_;
+	bool destroyCalled_;
 
 #ifdef DEBUG
 	void checkCircularBuffer(bool noOverlap, bool checkOrder);

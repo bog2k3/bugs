@@ -39,9 +39,6 @@ void Gripper::onAddedToParent() {
 }
 
 Gripper::~Gripper() {
-	setActive(false);
-	if (getUpdateList())
-		getUpdateList()->remove(this);
 }
 
 void Gripper::commit() {
@@ -106,5 +103,7 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
 
 void Gripper::die() {
 	setActive(false);
+	if (getUpdateList())
+		getUpdateList()->remove(this);
 }
 

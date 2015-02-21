@@ -25,6 +25,7 @@ public:
 protected:
 	void commit() override;
 	void onAddedToParent() override;
+	void die() override;
 
 	b2WeldJoint* pJoint;
 	std::vector<std::shared_ptr<InputSocket>> inputs_;

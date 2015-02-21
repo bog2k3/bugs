@@ -27,6 +27,9 @@ EggLayer::EggLayer()
 }
 
 EggLayer::~EggLayer() {
+}
+
+void EggLayer::die() {
 	if (getUpdateList())
 		getUpdateList()->remove(this);
 }

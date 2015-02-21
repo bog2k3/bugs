@@ -60,6 +60,10 @@ protected:
 	void cacheInitializationData() override;
 	void commit() override;
 	void onAddedToParent() override;
+	void die() override;
+
+private:
+	void onJointDied(Joint* j);
 };
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

@@ -39,8 +39,6 @@ Torso::Torso()
 }
 
 Torso::~Torso() {
-	if (getUpdateList())
-		getUpdateList()->remove(this);
 }
 
 void Torso::onAddedToParent() {
@@ -150,6 +148,8 @@ void Torso::die() {
 	// if this was ever alive, do a final commit to update its size to the cached mass
 	if (committed_)
 		commit();
+	if (getUpdateList())
+		getUpdateList()->remove(this);
 }
 
 float Torso::addFood(float mass) {

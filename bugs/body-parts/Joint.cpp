@@ -48,13 +48,9 @@ Joint::Joint()
 }
 
 Joint::~Joint() {
-	if (committed_) {
-#warning "must make sure this won't crash (if body doesn't exist any more):"
-		if (parent_)
-			parent_->getBody().b2Body_->GetWorld()->DestroyJoint(physJoint_);
+	if (committed_ && physJoint_) {
+		World::getInstance()->getPhysics()->DestroyJoint(physJoint_);
 	}
-	if (getUpdateList())
-		getUpdateList()->remove(this);
 }
 
 void Joint::onAddedToParent() {
@@ -153,7 +149,7 @@ void Joint::update(float dt) {
 		// this joint is toast - must break free the downstream body parts
 		BodyPart* downStream = children_[0];
 		downStream->detach(true);
-		delete this;
+		destroy();
 		return;
 	}
 
@@ -187,8 +183,11 @@ void Joint::update(float dt) {
 }
 
 void Joint::die() {
-	if (committed_)
+	if (committed_ && physJoint_)
 		physJoint_->EnableMotor(false);
+	if (getUpdateList())
+		getUpdateList()->remove(this);
+	onDie.trigger(this);
 }
 
 void Joint::onDetachedFromParent() {

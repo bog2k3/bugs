@@ -67,10 +67,14 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 }
 
 Bug::~Bug() {
-	if (zygoteShell_)
-		delete zygoteShell_;
-	else if (body_)
-		delete(body_);
+	if (zygoteShell_) {
+		zygoteShell_->destroy();
+		zygoteShell_ = nullptr;
+	}
+	else if (body_) {
+		body_->destroy();
+		body_ = nullptr;
+	}
 	if (ribosome_)
 		delete ribosome_;
 }
@@ -87,7 +91,8 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				LOGLN("Embryo not viable. DISCARDED.");
 				zygoteShell_->die_tree();
 				body_->detach(false);
-				delete body_;
+				body_->destroy();
+				body_ = nullptr;
 				return;
 			}
 
@@ -107,7 +112,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			// delete embryo shell
 			body_->detach(false);
-			delete zygoteShell_;
+			zygoteShell_->destroy();
 			zygoteShell_ = nullptr;
 
 			delete ribosome_;

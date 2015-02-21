@@ -20,7 +20,9 @@ public:
 	}
 
 	updatable_wrap(const updatable_wrap& w) : self_(w.self_->copy()) {}
-	updatable_wrap operator = (updatable_wrap const &w) { return updatable_wrap(w); }
+	updatable_wrap(updatable_wrap&& w) : self_(std::move(w.self_)) {}
+	updatable_wrap& operator = (updatable_wrap const &w) { self_ = decltype(self_)(w.self_->copy()); return *this; }
+	updatable_wrap& operator = (updatable_wrap &&w) { self_ = std::move(w.self_); return *this; }
 
 	bool equal_value(updatable_wrap const& w) const {
 		return self_->getRawPtr() == w.self_->getRawPtr();
@@ -29,6 +31,8 @@ public:
 	void update(float dt) {
 		self_->update_(dt);
 	}
+
+	void* debugGetPtr() const { return self_->getRawPtr(); }
 
 private:
 	struct concept_t {

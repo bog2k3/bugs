@@ -49,6 +49,9 @@ Mouth::Mouth()
 }
 
 Mouth::~Mouth() {
+}
+
+void Mouth::die() {
 	if (getUpdateList())
 		getUpdateList()->remove(this);
 }

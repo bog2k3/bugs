@@ -42,6 +42,7 @@ BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> i
 	, initialData_(initialData)
 	, updateList_(nullptr)
 	, lastCommitSize_inv_(0)
+	, destroyCalled_(false)
 {
 	assert (initialData != nullptr);
 
@@ -51,9 +52,15 @@ BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> i
 }
 
 BodyPart::~BodyPart() {
+	assert(destroyCalled_);
+}
+
+void BodyPart::destroy() {
+	destroyCalled_ = true;
 	detach(true);
 	for (int i=0; i<nChildren_; i++)
-		delete children_[i];
+		children_[i]->destroy();
+	delete this;
 }
 
 bool BodyPart::applyRecursive(std::function<bool(BodyPart* pCurrent)> pred) {
@@ -355,9 +362,11 @@ void BodyPart::detach(bool die) {
 		// first must detach all neural connections
 		detachMotorLines(motorLines_);
 		parent_->remove(this);
+		onDetachedFromParent();
 	}
 	parent_ = nullptr;
-	onDetachedFromParent();
+	if (die)
+		die_tree();
 }
 
 void BodyPart::detachMotorLines(std::vector<int> const& lines) {

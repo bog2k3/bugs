@@ -81,11 +81,22 @@ Muscle::Muscle(Joint* joint, int motorDirSign)
 
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
+
+	joint_->onDie.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
 }
 
 Muscle::~Muscle() {
+}
+
+void Muscle::die() {
 	if (getUpdateList())
 		getUpdateList()->remove(this);
+}
+
+void Muscle::onJointDied(Joint* joint) {
+	assert(joint == joint_);
+	die();
+	joint_ = nullptr;
 }
 
 void Muscle::onAddedToParent() {
@@ -236,7 +247,8 @@ void Muscle::draw(RenderContext const& ctx) {
 }
 
 float Muscle::getCurrentPhiSlice() {
-	float angleSlice = (joint_->getJointAngle() - cachedPhiMin_) / phiAngleStep_;
+	float angle = joint_ ? joint_->getJointAngle() : 0;
+	float angleSlice = (angle - cachedPhiMin_) / phiAngleStep_;
 	int iAngleSlice = (int) angleSlice;
 	angleSlice -= iAngleSlice;
 	if (iAngleSlice >= nAngleSteps)
