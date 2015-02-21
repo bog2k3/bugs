@@ -562,7 +562,8 @@ void BodyPart::consumeEnergy(float amount) {
 }
 
 void BodyPart::die_tree() {
-	die();
+	if (!dead_)
+		die();
 	dead_ = true;
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->die_tree();
