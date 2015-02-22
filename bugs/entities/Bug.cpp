@@ -380,15 +380,15 @@ Chromosome Bug::createBasicChromosome() {
 	gs.weight.set(-1.f);
 	c.push_back(gs);
 
-	// synapse 7 to o[-1] (muscle 1)
+	// synapse 7 to o[-3] (muscle 1)
 	gs.from.set(7);
-	gs.to.set(-1);
+	gs.to.set(-3);
 	gs.weight.set(1.f);
 	c.push_back(gs);
 
-	// synapse 8 to o[-2] (muscle 2)
+	// synapse 8 to o[-4] (muscle 2)
 	gs.from.set(8);
-	gs.to.set(-2);
+	gs.to.set(-4);
 	gs.weight.set(1.f);
 	c.push_back(gs);
 
@@ -398,9 +398,9 @@ Chromosome Bug::createBasicChromosome() {
 	gs.weight.set(-0.7f);
 	c.push_back(gs);
 
-	// synapse 6 to o[-7] (gripper)
+	// synapse 6 to o[-9] (gripper)
 	gs.from.set(6);
-	gs.to.set(-7);
+	gs.to.set(-9);
 	gs.weight.set(1.f);
 	c.push_back(gs);
 
@@ -410,20 +410,22 @@ Chromosome Bug::createBasicChromosome() {
 	gc.angle.set(0);
 	gc.part_type = GENE_PART_MOUTH;
 	gc.genomeOffset.set(4); // stop
+	gc.age = 10;
 	c.push_back(gc);
 
 	// Egg-layer:
 	gc.angle.set(3*PI/4);
 	gc.part_type = GENE_PART_EGGLAYER;
 	gc.genomeOffset.set(3); // stop
+	gc.age = 9;
 	c.push_back(gc);
 
 	// bone 1:
-	gc.command = GENE_DEV_GROW;
+	gc.age = 8;
 	gc.angle.set(PI);
 	gc.part_type = GENE_PART_BONE;
 	gc.genomeOffset.set(4);
-	gc.genomeOffsetJoint.set(1);
+	gc.genomeOffsetJoint.set(2);
 	gc.genomeOffsetMuscle1.set(11);
 	gc.genomeOffsetMuscle2.set(11);
 	c.push_back(gc);
@@ -433,6 +435,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(GeneStop());
 
 	// bone 2:
+	gc.age = 7;
 	gc.angle.set(0);
 	gc.genomeOffset.set(5);
 	gc.genomeOffsetJoint.set(4);
@@ -457,6 +460,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(GeneStop());
 
 	// the gripper:
+	gc.age = 6;
 	gc.part_type = GENE_PART_GRIPPER;
 	gc.genomeOffsetJoint.set(3);
 	gc.genomeOffsetMuscle1.set(3);
