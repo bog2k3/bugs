@@ -1,4 +1,5 @@
-* make egglayer grow instead of torso
+* fix basic bug neural routing - now it's fucked up
+		* make egglayer grow instead of torso
 		* fix scaling after break apart
 		* fix joint nan angle
 * do some statistical analysis on mutation rates

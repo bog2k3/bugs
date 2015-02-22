@@ -83,7 +83,7 @@ glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
 void EggLayer::update(float dt){
 	if (isDead())
 		return;
-	suppressGrowth_ = false && inputs_[0]->value > 0;
+	suppressGrowth_ = inputs_[0]->value > 0;
 	suppressRelease_ = inputs_[1]->value > 0;
 
 	if (eggMassBuffer_ >= targetEggMass_ && !suppressRelease_) {
