@@ -1,4 +1,4 @@
-* fix basic bug neural routing - now it's fucked up
+		* fix basic bug neural routing - now it's fucked up
 		* make egglayer grow instead of torso
 		* fix scaling after break apart
 		* fix joint nan angle
@@ -6,6 +6,6 @@
 		* add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
 * make split work
 * add "duplicate" as a gene spawn method (copy existing gene)
-* make eggs attract each other
+* !!! make eggs attract each other
 * make eggs, zygotes and dead body parts as food
 * fix basic bug muscle sync
