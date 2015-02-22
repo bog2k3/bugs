@@ -6,11 +6,15 @@
  */
 
 #include "EggLayer.h"
+#include "BodyConst.h"
 #include "../math/box2glm.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../utils/UpdateList.h"
+#include "../utils/log.h"
+#include "../entities/Gamete.h"
+#include "../World.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -21,6 +25,11 @@ static const glm::vec3 debug_color(0.2f, 0.7f, 1.0f);
 EggLayer::EggLayer()
 	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<BodyPartInitializationData>())
 	, pJoint(nullptr)
+	, suppressGrowth_(false)
+	, suppressRelease_(false)
+	, eggMassBuffer_(0)
+	, targetEggMass_(BodyConst::initialEggMass)
+	, ejectSpeed_(BodyConst::initialEggEjectSpeed)
 {
 	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1));	// [0] - suppress growth
 	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1)); // [1] - suppress release
@@ -68,11 +77,44 @@ glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
 	return ret;
 }
 
+void EggLayer::checkScale() {
+	// check and update scale
+}
+
 void EggLayer::update(float dt){
 	if (isDead())
 		return;
-	// after lay egg and mass is reduced, call:
-	// hierarchyMassChanged();
+	suppressGrowth_ = inputs_[0]->value > 0;
+	suppressRelease_ = inputs_[1]->value > 0;
+
+	if (eggMassBuffer_ >= targetEggMass_ && !suppressRelease_) {
+		// lay an egg here
+		LOGLN("MAKE EGG! !!!!! ! !");
+		Chromosome chr = GeneticOperations::meyosis(*getGenome());
+		glm::vec3 transform = getWorldTransformation();
+		glm::vec2 speed = glm::rotate(glm::vec2(1, 0), transform.z) * ejectSpeed_;
+		Gamete* egg = new Gamete(chr, vec3xy(transform), speed, targetEggMass_);
+		World::getInstance()->takeOwnershipOf(egg);
+		eggMassBuffer_ -= targetEggMass_;
+		checkScale();
+
+#warning take eggMassBuffer_ into account when committing fixture and when computing mass tree
+	}
+}
+
+float EggLayer::getFoodRequired() {
+	if (!suppressGrowth_)
+		return std::min(targetEggMass_ - eggMassBuffer_, 0.f);
+	else
+		return 0;
+}
+
+void EggLayer::useFood(float food) {
+	if (!suppressGrowth_) {
+		eggMassBuffer_ += food;
+
+		checkScale();
+	}
 }
 
 void EggLayer::commit() {

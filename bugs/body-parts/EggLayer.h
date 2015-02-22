@@ -18,17 +18,27 @@ public:
 	EggLayer();
 	virtual ~EggLayer() override;
 
-	void draw(RenderContext const& ctx) override;
+ 	void draw(RenderContext const& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
+
+	float getFoodRequired();
+	void useFood(float food);
+	inline void setTargetEggMass(float mass) { targetEggMass_ = mass; }
 
 protected:
 	void commit() override;
 	void onAddedToParent() override;
 	void die() override;
+	void checkScale();
 
 	b2WeldJoint* pJoint;
 	std::vector<std::shared_ptr<InputSocket>> inputs_;
+	bool suppressGrowth_;
+	bool suppressRelease_;
+	float eggMassBuffer_;
+	float targetEggMass_;
+	float ejectSpeed_;	// TODO put this in intialization data to be changed by genes
 
 public:
 	decltype(inputs_) const& getInputSockets() const { return inputs_; }

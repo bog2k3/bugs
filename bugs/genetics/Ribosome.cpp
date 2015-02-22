@@ -377,6 +377,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		EggLayer* e = new EggLayer();
 		for (auto &is : e->getInputSockets())
 			bug_->motors_.push_back(Motor(is, g.age));
+		bug_->eggLayers_.push_back(e);
 		bp = e;
 		break;
 	}

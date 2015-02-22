@@ -27,8 +27,6 @@ Torso::Torso()
 	, energyBuffer_(0)
 	, maxEnergyBuffer_(0)
 	, cachedMassTree_(0)
-	, extraMass_(0)
-	, mouth_(nullptr)
 	, foodProcessingSpeed_(0)
 	, foodBufferSize_(0)
 	, foodBuffer_(0)
@@ -51,7 +49,7 @@ void Torso::commit() {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 
-	float fakeFatMass = fatMass_ + extraMass_;
+	float fakeFatMass = fatMass_;
 	float fatSize = (fakeFatMass) * BodyConst::FatDensityInv;
 	lastCommittedTotalSizeInv_ = 1.f / (size_ + fatSize);
 
@@ -90,7 +88,7 @@ void Torso::draw(RenderContext const& ctx) {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
-		ctx.shape->drawCircle(pos, sqrtf((size_+(fatMass_+extraMass_)*BodyConst::FatDensityInv)*PI_INV), 0, 12, debug_color);
+		ctx.shape->drawCircle(pos, sqrtf((size_+fatMass_*BodyConst::FatDensityInv)*PI_INV), 0, 12, debug_color);
 		ctx.shape->drawLine(pos,
 				pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z),
 				0, debug_color);
@@ -102,7 +100,7 @@ glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle)
 	if (!geneValuesCached_) {
 		cacheInitializationData();
 	}
-	float fatSize = (fatMass_+extraMass_)*BodyConst::FatDensityInv;
+	float fatSize = fatMass_*BodyConst::FatDensityInv;
 	float fullSize = size_ + fatSize;
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(fullSize * PI_INV), 0), relativeAngle));
 	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
@@ -140,8 +138,10 @@ void Torso::update(float dt) {
 	}
 	frameUsedEnergy_ = 0;
 	float processedFood = min(foodBuffer_, foodProcessingSpeed_*dt);
-	foodBuffer_ -= processedFood;
-	onFoodProcessed.trigger(processedFood);
+	if (processedFood != 0) {
+		foodBuffer_ -= processedFood;
+		onFoodProcessed.trigger(processedFood);
+	}
 }
 
 void Torso::die() {

@@ -16,13 +16,14 @@
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Torso.h"
 #include "../body-parts/BodyConst.h"
+#include "../body-parts/EggLayer.h"
 #include "../utils/log.h"
 #include "../World.h"
 #include "Bug/ISensor.h"
 #include "Bug/Motor.h"
 #include "Gamete.h"
 
-const float DECODE_FREQUENCY = 1.f; // genes per second
+const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
@@ -38,7 +39,6 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	, maxGrowthMassBuffer_(0)
 	, cachedLeanMass_(0)
 	, cachedMassDirty_(false)
-	, eggMassBuffer_(0)
 	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
@@ -55,6 +55,8 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	zygoteShell_->add(body_, 0);
 	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
 	body_->onMotorLinesDetached.add(std::bind(&Bug::onMotorLinesDetached, this, std::placeholders::_1));
+	body_->onBodyMassChanged.add([this] { cachedMassDirty_ = true; });
+	body_->setGenome(&genome_);
 	ribosome_ = new Ribosome(this);
 
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
@@ -109,7 +111,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			zygoteShell_->updateCachedDynamicPropsFromBody();
 			// commit all changes and create the physics bodys and fixtures:
-			body_->commit_tree((zygMass-fatMass)/currentMass);
+			body_->commit_tree(cachedLeanMass_/currentMass);
 
 			// delete embryo shell
 			body_->detach(false);
@@ -158,23 +160,16 @@ void Bug::update(float dt) {
 		return;
 	}
 
-	// check if there's enough mass to form an egg:
-	if (eggMassBuffer_ >= eggMass_) {
-		eggMassBuffer_ -= eggMass_;
-		// make an egg:
-		LOGLN("MAKE EGG! !!!!! ! !");
-		Gamete* egg = new Gamete(genome_.first, vec3xy(body_->getWorldTransformation()), glm::vec2(0.5f, 0.f), eggMass_);
-		World::getInstance()->takeOwnershipOf(egg);
-		body_->setExtraMass(eggMassBuffer_);
-		body_->applyScale_tree(1.f);
-	}
-
 	//LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
 	if (cachedMassDirty_) {
+		// some part broke up, must recompute some things
+		float oldLeanMass = cachedLeanMass_;
 		body_->resetCachedMass();
 #warning "getMass_tree() includes fat too after purging initialization data"
 		cachedLeanMass_ = body_->getMass_tree();
+		adultLeanMass_ *= cachedLeanMass_ / oldLeanMass;
+		cachedMassDirty_ = false;
 	}
 	if (cachedLeanMass_ < adultLeanMass_) {
 		// juvenile, growing
@@ -185,12 +180,6 @@ void Bug::update(float dt) {
 		growthMassBuffer_ -= massToGrow;
 		cachedLeanMass_ += massToGrow;
 		body_->applyScale_tree(cachedLeanMass_ / body_->getMass_tree());
-		if (cachedLeanMass_ >= adultLeanMass_ /* reached adulthood scale?*/) {
-
-			// finished developing, discard all initialization data which is not useful any more:
-			// body_->purge_initializationData_tree();
-			// but we still use it when changeing fat amount...
-		}
 	} else {
 		// adult life
 	}
@@ -210,13 +199,24 @@ void Bug::onFoodProcessed(float mass) {
 	 * the rest of the food turns into energy and fat.
 	 */
 	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
-	float fatMassRatio = body_->getFatMass() / (body_->getMass_tree() + body_->getFatMass());
+	if (cachedMassDirty_)
+		return;
+	float fatMassRatio = body_->getFatMass() / (cachedLeanMass_ + body_->getFatMass());
 	float growthMass = 0;
 	float eggMass = 0;
 	if (fatMassRatio >= minFatMasRatio_) {
+		// use some food to make eggs:
 		eggMass = mass * reproductiveMassRatio_;
-		eggMassBuffer_ += eggMass;
-		body_->setExtraMass(eggMassBuffer_);
+		float totalFoodRequired = 0;
+		for (int i=0; i<(int)eggLayers_.size(); i++)
+			totalFoodRequired += eggLayers_[i]->getFoodRequired();
+		if (totalFoodRequired > 0) {
+			float availPerTotal = eggMass / totalFoodRequired;
+			for (int i=0; i<(int)eggLayers_.size(); i++)
+				eggLayers_[i]->useFood(eggLayers_[i]->getFoodRequired() * availPerTotal);
+		} else
+			eggMass = 0;
+		// use some food to grow the body:
 		if (cachedLeanMass_ < adultLeanMass_) {
 			growthMass = mass - eggMass;
 			float transferedMass = maxGrowthMassBuffer_ - growthMassBuffer_;
@@ -227,6 +227,7 @@ void Bug::onFoodProcessed(float mass) {
 			growthMassBuffer_ += transferedMass;
 		}
 	}
+	// use the left food to make fat and energy:
 	body_->replenishEnergyFromMass(mass - eggMass - growthMass);
 }
 

@@ -24,6 +24,7 @@ class NeuralNet;
 class Ribosome;
 class Torso;
 class ZygoteShell;
+class EggLayer;
 
 class Bug : public Entity {
 public:
@@ -64,7 +65,7 @@ protected:
 	float maxGrowthMassBuffer_;	// max growth buffer capacity (depends on max growth speed)
 	float cachedLeanMass_;		// lean body mass cached; stored here for reasons of float precision
 	bool cachedMassDirty_;		// flag to signal that cachedLeanMass_ must be recomputed
-	float eggMassBuffer_;		// holds mass to make eggs from
+	std::vector<EggLayer*> eggLayers_;
 
 	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
 	CummulativeValue initialFatMassRatio_;

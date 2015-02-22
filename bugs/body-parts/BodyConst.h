@@ -61,6 +61,7 @@ public:
 	static constexpr float initialAdultLeanMass				= 6.f;			// [kg]
 	static constexpr float initialGrowthSpeed				= 10.e-3f;		// [kg/s] how fast lean mass can be added to the body
 	static constexpr float initialEggMass					= 0.5f;			// [kg] mass of zygote
+	static constexpr float initialEggEjectSpeed				= 0.6f;			// [m/s]
 	static constexpr float initialReproductiveMassRatio		= 0.8f;			// [*] fraction of growth mass that is invested in creating eggs
 };
 

@@ -11,6 +11,7 @@
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
 #include "../genetics/Gene.h"
+#include "../genetics/Genome.h"
 #include "../PhysicsBody.h"
 #include <vector>
 #include <map>
@@ -76,8 +77,6 @@ public:
 
 	inline PART_TYPE getType() const { return type_; }
 
-	// void removeFromParent();
-
 	// detaches this body part along with all its children from the parent part, breaking all neural connections.
 	// this part and its children may die as a result of this operation if the parameter is true
 	virtual void detach(bool die);
@@ -100,6 +99,8 @@ public:
 	virtual float addFood(float mass) { if (parent_) return parent_->addFood(mass); else return 0; }
 
 	inline int getDepth() { int d=1; if (parent_) d+=parent_->getDepth(); return d; }
+
+	virtual Genome* getGenome() { if (parent_) return parent_->getGenome(); return nullptr; }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
