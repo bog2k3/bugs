@@ -19,15 +19,13 @@
 #include <Box2D/Box2D.h>
 
 static const glm::vec3 debug_color(0.2f, 0.7f, 1.0f);
+static const glm::vec3 debug_color_suppressed(1.0f, 0.7f, 0.2f);
+static const glm::vec3 debug_color_ripe(0.2f, 1.0f, 0.1f);
 
 #define DEBUG_DRAW_EGGLAYER
 
 EggLayer::EggLayer()
 	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<BodyPartInitializationData>())
-	, pJoint(nullptr)
-	, suppressGrowth_(false)
-	, suppressRelease_(false)
-	, eggMassBuffer_(0)
 	, targetEggMass_(BodyConst::initialEggMass)
 	, ejectSpeed_(BodyConst::initialEggEjectSpeed)
 {
@@ -43,20 +41,25 @@ void EggLayer::die() {
 		getUpdateList()->remove(this);
 }
 
+float EggLayer::getMass_tree() {
+	return initialSize_ * density_;
+}
+
 void EggLayer::draw(RenderContext const& ctx) {
 	if (committed_) {
 #ifdef DEBUG_DRAW_EGGLAYER
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		float r_2 = sqrtf(size_*PI_INV) * 0.5f;
+		glm::vec3 color = eggMassBuffer_ >= targetEggMass_ ? debug_color_ripe : (suppressGrowth_ ? debug_color_suppressed : debug_color);
 		ctx.shape->drawLine(
 			pos - glm::rotate(glm::vec2(r_2, 0), transform.z),
 			pos + glm::rotate(glm::vec2(r_2, 0), transform.z),
-			0, debug_color);
+			0, color);
 		ctx.shape->drawLine(
 			pos - glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
 			pos + glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
-			0, debug_color);
+			0, color);
 #endif // DEBUG_DRAW_EGGLAYER
 	} else {
 		glm::vec3 transform = getWorldTransformation();
@@ -77,14 +80,10 @@ glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
 	return ret;
 }
 
-void EggLayer::checkScale() {
-	// check and update scale
-}
-
 void EggLayer::update(float dt){
 	if (isDead())
 		return;
-	suppressGrowth_ = inputs_[0]->value > 0;
+	suppressGrowth_ = false && inputs_[0]->value > 0;
 	suppressRelease_ = inputs_[1]->value > 0;
 
 	if (eggMassBuffer_ >= targetEggMass_ && !suppressRelease_) {
@@ -96,15 +95,12 @@ void EggLayer::update(float dt){
 		Gamete* egg = new Gamete(chr, vec3xy(transform), speed, targetEggMass_);
 		World::getInstance()->takeOwnershipOf(egg);
 		eggMassBuffer_ -= targetEggMass_;
-		checkScale();
-
-#warning take eggMassBuffer_ into account when committing fixture and when computing mass tree
 	}
 }
 
 float EggLayer::getFoodRequired() {
 	if (!suppressGrowth_)
-		return std::min(targetEggMass_ - eggMassBuffer_, 0.f);
+		return std::max(targetEggMass_ - eggMassBuffer_, 0.f);
 	else
 		return 0;
 }
@@ -112,8 +108,8 @@ float EggLayer::getFoodRequired() {
 void EggLayer::useFood(float food) {
 	if (!suppressGrowth_) {
 		eggMassBuffer_ += food;
-
-		checkScale();
+		size_ = initialSize_ + eggMassBuffer_ * BodyConst::ZygoteDensityInv;
+		applyScale_tree(1.f);
 	}
 }
 
@@ -122,7 +118,12 @@ void EggLayer::commit() {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
 		pJoint = nullptr;
-	};
+	} else {
+		initialSize_ = size_;
+	}
+
+	// override density with zygote density
+	density_ = BodyConst::ZygoteDensity;
 
 	b2CircleShape shape;
 	shape.m_radius = sqrtf(size_ * PI_INV);

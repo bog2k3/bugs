@@ -168,7 +168,7 @@ void Bug::update(float dt) {
 		body_->resetCachedMass();
 #warning "getMass_tree() includes fat too after purging initialization data"
 		cachedLeanMass_ = body_->getMass_tree();
-		adultLeanMass_ *= cachedLeanMass_ / oldLeanMass;
+		adultLeanMass_.changeRel(cachedLeanMass_ / oldLeanMass);
 		cachedMassDirty_ = false;
 	}
 	if (cachedLeanMass_ < adultLeanMass_) {

@@ -26,17 +26,20 @@ public:
 	void useFood(float food);
 	inline void setTargetEggMass(float mass) { targetEggMass_ = mass; }
 
+	float getMass_tree() override;
+
 protected:
 	void commit() override;
 	void onAddedToParent() override;
 	void die() override;
 	void checkScale();
 
-	b2WeldJoint* pJoint;
+	b2WeldJoint* pJoint = nullptr;
 	std::vector<std::shared_ptr<InputSocket>> inputs_;
-	bool suppressGrowth_;
-	bool suppressRelease_;
-	float eggMassBuffer_;
+	bool suppressGrowth_ = false;
+	bool suppressRelease_ = false;
+	float initialSize_ = 0;
+	float eggMassBuffer_ = 0;
 	float targetEggMass_;
 	float ejectSpeed_;	// TODO put this in intialization data to be changed by genes
 
