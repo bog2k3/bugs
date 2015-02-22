@@ -20,6 +20,8 @@
 
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
+#define DEBUG_DRAW_GRIPPER
+
 Gripper::Gripper()
 	: BodyPart(BODY_PART_GRIPPER, std::make_shared<BodyPartInitializationData>())
 	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
@@ -60,7 +62,7 @@ void Gripper::update(float dt) {
 	if (isDead())
 		return;
 	float intensity = inputSocket_->value;
-	setActive(intensity > 0.5f);
+	setActive(intensity > 0);
 }
 
 void Gripper::setActive(bool active) {
@@ -82,6 +84,13 @@ void Gripper::setActive(bool active) {
 void Gripper::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
+#ifdef DEBUG_DRAW_GRIPPER
+		if (active_) {
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV)*0.6f, 0, 12, debug_color);
+		}
+#endif
 	} else {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);

@@ -273,7 +273,7 @@ Chromosome Bug::createBasicChromosome() {
 	// neuron #0 constant:
 	GeneNeuralConstant gnc;
 	gnc.targetNeuron.set(0);
-	gnc.value.set(0.5f);
+	gnc.value.set(0.7f);
 	c.push_back(gnc);
 
 	// neuron #1 transfer:
@@ -302,7 +302,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(gt);
 	// neuron #5 constant:
 	gnc.targetNeuron.set(5);
-	gnc.value.set(0.4f);
+	gnc.value.set(0.1f);
 	c.push_back(gnc);
 
 	// neuron #6 transfer:
