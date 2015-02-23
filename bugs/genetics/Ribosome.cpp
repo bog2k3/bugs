@@ -236,7 +236,7 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 	}
 }
 
-void Ribosome::decodeGene(Gene const& g, BodyPart* part, int crtPosition, bool deferNeural) {
+void Ribosome::decodeGene(Gene &g, BodyPart* part, int crtPosition, bool deferNeural) {
 	switch (g.type) {
 	case GENE_TYPE_DEVELOPMENT:
 		decodeDevelopCommand(g.data.gene_command, part, crtPosition);
@@ -280,7 +280,7 @@ bool Ribosome::partMustGenerateJoint(int part_type) {
 	}
 }
 
-void Ribosome::decodeDevelopCommand(GeneCommand const& g, BodyPart* part, int crtPosition) {
+void Ribosome::decodeDevelopCommand(GeneCommand &g, BodyPart* part, int crtPosition) {
 	if (g.command == GENE_DEV_GROW) {
 		decodeDevelopGrowth(g, part, crtPosition);
 	} else if (g.command == GENE_DEV_SPLIT) {
@@ -289,7 +289,7 @@ void Ribosome::decodeDevelopCommand(GeneCommand const& g, BodyPart* part, int cr
 	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 }
 
-void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crtPosition) {
+void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPosition) {
 	// now grow a new part on each adequate element in nodes list
 	// grow only works on bones and torso
 	if (part->getType() != BODY_PART_BONE && part->getType() != BODY_PART_TORSO)
@@ -298,6 +298,14 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 		return;
 	if (part->getDepth() > g.maxDepth)
 		return;
+
+	int age = g.age;
+	if (mapGeneToIterations_[&g]++) {
+		// this is not the first time we're reading this gene
+		if (!g.rereadAgeOffset)
+			g.rereadAgeOffset = -g.age;
+		age += g.rereadAgeOffset;
+	}
 
 	float angle = limitAngle(g.angle, 2*PI);
 
@@ -320,7 +328,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			mRightAngle = limitAngle(mRightAngle-origAngle, PI) + origAngle;
 			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
 			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(Motor(mRight->getInputSocket(), g.age));
+			bug_->motors_.push_back(Motor(mRight->getInputSocket(), age));
 			mRight->addMotorLine(motorLineId);
 			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
 		}
@@ -334,7 +342,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 			mLeftAngle = limitAngle(mLeftAngle-origAngle, PI) + origAngle;
 			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
 			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(Motor(mLeft->getInputSocket(), g.age));
+			bug_->motors_.push_back(Motor(mLeft->getInputSocket(), age));
 			mLeft->addMotorLine(motorLineId);
 			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
 		}
@@ -360,7 +368,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	case GENE_PART_GRIPPER: {
 		Gripper* gr = new Gripper();
 		int motorLineId = bug_->motors_.size();
-		bug_->motors_.push_back(Motor(gr->getInputSocket(), g.age));
+		bug_->motors_.push_back(Motor(gr->getInputSocket(), age));
 		gr->addMotorLine(motorLineId);
 		bp = gr;
 		break;
@@ -376,7 +384,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	case GENE_PART_EGGLAYER: {
 		EggLayer* e = new EggLayer();
 		for (auto &is : e->getInputSockets())
-			bug_->motors_.push_back(Motor(is, g.age));
+			bug_->motors_.push_back(Motor(is, age));
 		bug_->eggLayers_.push_back(e);
 		bp = e;
 		break;
@@ -393,7 +401,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand const& g, BodyPart* part, int crt
 	// start a new development path from the new part:
 	activeSet_.push_back(std::make_pair(bp, crtPosition + g.genomeOffset));
 }
-void Ribosome::decodeDevelopSplit(GeneCommand const& g, BodyPart* part, int crtPosition) {
+void Ribosome::decodeDevelopSplit(GeneCommand &g, BodyPart* part, int crtPosition) {
 	// split may work on bones, joints and grippers only
 	if (   part->getType() != BODY_PART_BONE
 		&& part->getType() != BODY_PART_JOINT

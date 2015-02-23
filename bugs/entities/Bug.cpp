@@ -155,6 +155,7 @@ void Bug::update(float dt) {
 
 	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
 		// we just depleted our energy supply and died
+		LOGLN("bug DIED");
 		isAlive_ = false;
 		body_->die_tree();
 		return;

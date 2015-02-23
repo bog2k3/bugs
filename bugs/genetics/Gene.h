@@ -68,6 +68,7 @@ struct GeneCommand {
 	gene_development_command command = GENE_DEV_GROW;
 	gene_part_type part_type = GENE_PART_INVALID;
 	unsigned age = 0;				// this is the genetic 'age' of this particular gene. always increments by one in meyosis
+	unsigned rereadAgeOffset = 0;	// the offset applied to age when reading the gene second time or more
 	Atom<float> angle;				// angle is relative to the previous element's orientation
 	Atom<int> maxDepth;				// maximum depth at which this gene works
 	Atom<int> genomeOffset;			// offset from current gene to the start of the genes for the new part
