@@ -13,6 +13,7 @@
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../World.h"
+#include "Bug.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -43,10 +44,26 @@ Gamete::~Gamete() {
 }
 
 void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
-
+	if (isZombie())
+		return;
+	// collision with another gamete. THIS is where the magic happens! :-)
+	Gamete *other = (Gamete*)pOther->userPointer_;
+	if (other->isZombie())
+		return;
+	Genome g;
+	g.first = chromosome_;
+	g.second = other->chromosome_;
+	Bug *newlySpawnedBug = new Bug(g,
+			body_.b2Body_->GetMass() + other->body_.b2Body_->GetMass(),
+			(body_.getPosition() + other->body_.getPosition()) * 0.5f);
+	World::getInstance()->takeOwnershipOf(newlySpawnedBug);
+	destroy();
+	other->destroy();
 }
 
 void Gamete::update(float dt) {
+	if (isZombie())
+		return;
 	if (++updateSkipCounter_ < UPDATE_PERIOD)
 		return;
 	updateSkipCounter_ = 0;

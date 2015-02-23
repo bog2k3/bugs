@@ -26,6 +26,7 @@ public:
 	virtual void draw(RenderContext const& ctx) {}
 
 	void destroy();
+	bool isZombie() { return markedForDeletion_; }
 
 protected:
 	Entity() = default;
