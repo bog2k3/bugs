@@ -19,7 +19,7 @@ public:
 	Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass);
 	virtual ~Gamete();
 #ifdef DEBUG_DRAW_GAMETE
-	FunctionalityFlags getFunctionalityFlags() override { return FF_DRAWABLE; }
+	FunctionalityFlags getFunctionalityFlags() override { return FF_DRAWABLE | FF_UPDATABLE; }
 #endif
 
 	void update(float dt) override;
@@ -30,6 +30,7 @@ public:
 protected:
 	Chromosome chromosome_;
 	PhysicsBody body_;
+	int updateSkipCounter_ = 0;
 
 	void onCollision(PhysicsBody* pOther, float impulse);
 };

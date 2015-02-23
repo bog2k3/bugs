@@ -73,14 +73,27 @@ b2Body* World::getBodyAtPos(glm::vec2 pos) {
 	return ret;
 }
 
+void World::getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies) {
+	assert(b2QueryResult.empty());
+	b2AABB aabb;
+	aabb.lowerBound = g2b(pos) - b2Vec2(radius, radius);
+	aabb.upperBound = g2b(pos) + b2Vec2(radius, radius);
+	physWld->QueryAABB(this, aabb);
+	for (b2Fixture* f : b2QueryResult) {
+		if (clipToCircle)
+			if (glm::length(b2g(f->GetAABB(0).GetCenter()) - pos) > radius)
+				continue;
+		outBodies.push_back(f->GetBody());
+	}
+	b2QueryResult.clear();	// reset
+}
+
 void World::takeOwnershipOf(Entity* e) {
 	entsToTakeOver.push_back(e);
-	// LOGLN("QUEUE IN ENT: "<<e);
 }
 
 void World::destroyEntity(Entity* e) {
 	entsToDestroy.push_back(e);
-	// LOGLN("QUEUE OUT ENT: "<< e);
 }
 
 void World::destroyPending() {

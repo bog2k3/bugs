@@ -6,15 +6,18 @@
  */
 
 #include "Gamete.h"
+#include "WorldConst.h"
 #include "../genetics/Gene.h"
 #include "../math/math2D.h"
 #include "../body-parts/BodyConst.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
+#include "../World.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
 static const glm::vec3 debug_color(0.1f, 0.4f, 1.f);
+static const int UPDATE_PERIOD = 10; // [frames]
 
 Gamete::Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 	: chromosome_(ch)
@@ -44,7 +47,25 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 }
 
 void Gamete::update(float dt) {
-	// TODO attract other gamettes
+	if (++updateSkipCounter_ < UPDATE_PERIOD)
+		return;
+	updateSkipCounter_ = 0;
+	// attract other gamettes
+	std::vector<b2Body*> bodies;
+	World::getInstance()->getBodiesInArea(body_.getPosition(), WorldConst::GameteAttractRadius, true, bodies);
+	for (auto b : bodies) {
+		if (!b->GetUserData() || b->GetType() != b2_dynamicBody)
+			continue;
+		if (((PhysicsBody*)b->GetUserData())->userObjectType_ == ObjectTypes::GAMETE) {
+			// found another gamete, let's attract each other
+			b2Vec2 force = body_.b2Body_->GetPosition() - b->GetPosition();
+			float distance = force.Normalize();
+			force *= WorldConst::GameteAttractForceFactor / (1+sqr(distance));
+			force *= b->GetMass() * body_.b2Body_->GetMass();
+			b->ApplyForceToCenter(force, true);
+			body_.b2Body_->ApplyForceToCenter(-force, true);
+		}
+	}
 }
 
 #ifdef DEBUG_DRAW_GAMETE

@@ -22,6 +22,9 @@ public:
 	static constexpr float FoodDispenserSpawnVelocity			= 0.9f;				// [m/s]
 	static constexpr float FoodDispenserSpawnMass				= 50.e-3f;			// [kg]
 	static constexpr float FoodDispenserSpreadAngleHalf			= PI;				// [rad]
+
+	static constexpr float GameteAttractRadius					= 10;				// [m]
+	static constexpr float GameteAttractForceFactor				= 30;				// force between 2 1kg gametes [N]
 };
 
 #endif /* OBJECTS_WORLDCONST_H_ */

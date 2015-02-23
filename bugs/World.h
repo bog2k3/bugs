@@ -12,7 +12,6 @@
 #include "renderOpenGL/RenderContext.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <vector>
-#include <deque>
 
 class b2World;
 class b2Body;
@@ -29,6 +28,7 @@ public:
 	void free();
 
 	b2Body* getBodyAtPos(glm::vec2 pos) override;
+	void getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies);
 
 	/// Called for each fixture found in the query AABB.
 	/// @return false to terminate the query.
@@ -53,7 +53,7 @@ protected:
 	std::vector<Entity*> entsToDraw;
 	std::vector<Entity*> entsToDestroy;
 	std::vector<Entity*> entsToTakeOver;
-	std::deque<b2Fixture*> b2QueryResult;
+	std::vector<b2Fixture*> b2QueryResult;
 
 	void destroyPending();
 	void takeOverPending();
