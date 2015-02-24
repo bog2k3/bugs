@@ -286,7 +286,7 @@ Chromosome Bug::createBasicChromosome() {
 	// neuron #0 constant:
 	GeneNeuralConstant gnc;
 	gnc.targetNeuron.set(0);
-	gnc.value.set(0.7f);
+	gnc.value.set(1.7f);
 	c.push_back(gnc);
 
 	// neuron #1 transfer:
@@ -341,7 +341,7 @@ Chromosome Bug::createBasicChromosome() {
 	gnc.value.set(0);
 	c.push_back(gnc);
 
-	const float musclePeriod = 2.f; // seconds
+	const float musclePeriod = 3.f; // seconds
 
 	GeneSynapse gs;
 
@@ -427,7 +427,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.push_back(gc);
 
 	// Egg-layer:
-	gc.angle.set(3*PI/4);
+	gc.angle.set(2.5f*PI/4);
 	gc.part_type = GENE_PART_EGGLAYER;
 	gc.genomeOffset.set(10);
 	gc.age = 9;
@@ -488,7 +488,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// joint1 offs:
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(BodyConst::initialJointSize);
+	ga.value.set(5*BodyConst::initialJointSize);
 	c.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;

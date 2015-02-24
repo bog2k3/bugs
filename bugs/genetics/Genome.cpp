@@ -45,7 +45,8 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int stat_new = 0;
 #endif
 
-	int nNeurons = 0, nMotors = 0, nSensors = 0;
+	int nMotors = 0, nSensors = 0;
+	std::map<int, bool> mapNeuronsExist;
 
 	static constexpr float numberAlterationsPerChromosome = 1;	// how many alterations we desire for a chromosome
 
@@ -55,8 +56,47 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	for (unsigned i=0; i<c.size(); i++) {
 		totalChanceToChange += getTotalMutationChance(c[i]);
 
-		// todo count
+		// count
+		switch (c[i].type) {
+		case GENE_TYPE_DEVELOPMENT:
+			if (c[i].data.gene_command.command == GENE_DEV_SPLIT) {
+				nMotors += 5;
+				nSensors += 5;
+				break;
+			}
+			switch (c[i].data.gene_command.part_type) {
+			case GENE_PART_BONE:
+				nMotors += 2;
+				nSensors++;
+				break;
+			case GENE_PART_EGGLAYER:
+				nMotors += 2;
+				nSensors++;
+				break;
+			case GENE_PART_GRIPPER:
+				nMotors++;
+				break;
+			case GENE_PART_SENSOR:
+				nSensors++;
+				break;
+			}
+			break;
+		case GENE_TYPE_FEEDBACK_SYNAPSE:
+			if (c[i].data.gene_feedback_synapse.to >= 0)
+				mapNeuronsExist[c[i].data.gene_feedback_synapse.to] = true;
+			break;
+		case GENE_TYPE_SYNAPSE:
+			if (c[i].data.gene_synapse.from >= 0)
+				mapNeuronsExist[c[i].data.gene_synapse.from] = true;
+			if (c[i].data.gene_synapse.to >= 0)
+				mapNeuronsExist[c[i].data.gene_synapse.to] = true;
+			break;
+		default:
+			break;
+		}
 	}
+	int nNeurons = mapNeuronsExist.size();
+
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
 	float mutationChanceFactor = numberAlterationsPerChromosome / totalChanceToChange;
 
