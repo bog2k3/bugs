@@ -77,7 +77,9 @@ enum gene_body_attribute_type {
 												// until it reaches this target, then growth stops.
 	GENE_BODY_ATTRIB_GROWTH_SPEED,				// [kg/s] speed at which growth happens
 	GENE_BODY_ATTRIB_EGG_MASS,					// [kg] how big eggs should be?
-	GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO	// [*] what fraction of growth food goes into creating eggs?
+	GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO,	// [*] what fraction of growth food goes into creating eggs?
+
+	GENE_BODY_ATTRIB_END
 };
 
 #endif /* GENETICS_GENEDEFINITIONS_H_ */

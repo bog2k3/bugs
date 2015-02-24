@@ -192,6 +192,15 @@ public:
 
 private:
 	void update_meta_genes_vec();
+
+	static Gene createRandomSkipGene();
+	static Gene createRandomCommandGene();
+	static Gene createRandomAttribGene();
+	static Gene createRandomSynapseGene();
+	static Gene createRandomFeedbackSynapseGene();
+	static Gene createRandomTransferFuncGene();
+	static Gene createRandomNeuralConstGene();
+	static Gene createRandomBodyAttribGene();
 };
 
 #endif //__gene_h__

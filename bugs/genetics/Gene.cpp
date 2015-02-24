@@ -1,4 +1,6 @@
 #include "Gene.h"
+#include "../utils/log.h"
+#include "../body-parts/BodyConst.h"
 
 void Gene::update_meta_genes_vec() {
 	metaGenes.clear();
@@ -60,7 +62,57 @@ void Gene::update_meta_genes_vec() {
 	}
 }
 
+Gene Gene::createRandomBodyAttribGene() {
+	GeneBodyAttribute g;
+	g.attribute = (gene_body_attribute_type)randi(GENE_BODY_ATTRIB_INVALID+1, GENE_BODY_ATTRIB_END-1);
+	switch (g.attribute) {
+	case GENE_BODY_ATTRIB_ADULT_LEAN_MASS:
+		g.value.set(BodyConst::initialAdultLeanMass);
+		break;
+	case GENE_BODY_ATTRIB_EGG_MASS:
+		g.value.set(BodyConst::initialEggMass);
+		break;
+	case GENE_BODY_ATTRIB_GROWTH_SPEED:
+		g.value.set(BodyConst::initialGrowthSpeed);
+		break;
+	case GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO:
+		g.value.set(BodyConst::initialFatMassRatio);
+		break;
+	case GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO:
+		g.value.set(BodyConst::initialMinFatMassRatio);
+		break;
+	case GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO:
+		g.value.set(BodyConst::initialReproductiveMassRatio);
+		break;
+	default:
+		ERROR("unhandled body attrib type: " << g.attribute);
+	}
+	return g;
+}
+
 Gene Gene::createRandom() {
-#warning TODO this
-	return Gene(GENE_TYPE_END, GeneBodyAttribute());
+	gene_type type = (gene_type)randi(GENE_TYPE_INVALID+1, GENE_TYPE_END-1);
+	switch (type) {
+	case GENE_TYPE_BODY_ATTRIBUTE:
+		return createRandomBodyAttribGene();
+	case GENE_TYPE_DEVELOPMENT:
+		return createRandomCommandGene();
+	case GENE_TYPE_FEEDBACK_SYNAPSE:
+		return createRandomFeedbackSynapseGene();
+	case GENE_TYPE_NEURAL_CONST:
+		return createRandomNeuralConstGene();
+	case GENE_TYPE_PART_ATTRIBUTE:
+		return createRandomAttribGene();
+	case GENE_TYPE_SKIP:
+		return createRandomSkipGene();
+	case GENE_TYPE_STOP:
+		return GeneStop();
+	case GENE_TYPE_SYNAPSE:
+		return createRandomSynapseGene();
+	case GENE_TYPE_TRANSFER:
+		return createRandomTransferFuncGene();
+	default:
+		ERROR("unhandled gene random type: " << type);
+		return GeneStop();
+	}
 }
