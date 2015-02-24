@@ -1,3 +1,4 @@
+* !!! fix dev gene reusage neural linking		
 		* make gametes fuse into new zygotes
 		* fix basic bug neural routing - now it's fucked up
 		* make egglayer grow instead of torso
