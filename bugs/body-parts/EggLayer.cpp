@@ -36,7 +36,7 @@ void EggLayer::cacheInitializationData() {
 }
 
 EggLayer::EggLayer()
-	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<BodyPartInitializationData>())
+	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<EggLayerInitializationData>())
 	, targetEggMass_(BodyConst::initialEggMass)
 	, ejectSpeed_(0)
 {

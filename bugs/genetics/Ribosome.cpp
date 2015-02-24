@@ -154,7 +154,7 @@ bool Ribosome::step() {
 
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
-		bug_->body_->applyRecursive([&hasMouth, &hasEggLayer] (BodyPart* p) {
+		bug_->body_->applyRecursive([&hasMouth, &hasEggLayer, this] (BodyPart* p) {
 			if (p->getType() == BODY_PART_MOUTH)
 				hasMouth = true;
 			if (p->getType() == BODY_PART_EGGLAYER) {
