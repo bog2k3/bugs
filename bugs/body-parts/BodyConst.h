@@ -22,6 +22,9 @@ public:
 	static constexpr float MaxBodyPartDensity				= 100.f;		// [kg/m^2]
 	static constexpr float MaxBodyPartAspectRatio			= 100.f;		// [*]
 	static constexpr float MaxBodyPartAspectRatioInv		= 1.f / MaxBodyPartAspectRatio;	// [*]
+	static constexpr float MinEggMass						= 1.e-3;		// [kg]
+	static constexpr float MaxEggMass						= 10;			// [kg]
+	static constexpr float MaxEggEjectSpeed					= 100;			// [m/s]
 	static constexpr float ZygoteDensity					= 10.f;			// [kg/m^2]
 	static constexpr float ZygoteDensityInv					= 1.f / ZygoteDensity; // [m^2/kg]
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
@@ -37,7 +40,6 @@ public:
 	static constexpr float FatEnergyDensityInv				= 1.f / FatEnergyDensity;	// [kg/J]
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
 	static constexpr float MuscleEnergyConstant				= 1.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
-	static constexpr float MouthAspectRatio					= 0.15f;		// [*] length/width
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
@@ -54,6 +56,7 @@ public:
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialMouthSize					= 0.5e-3f;		// [m^2]
+	static constexpr float initialMouthAspectRatio			= 0.15f;		// [*] length/width
 
 	// default values for whole-body attributes:
 	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat

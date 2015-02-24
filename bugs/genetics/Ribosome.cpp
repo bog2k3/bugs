@@ -157,8 +157,10 @@ bool Ribosome::step() {
 		bug_->body_->applyRecursive([&hasMouth, &hasEggLayer] (BodyPart* p) {
 			if (p->getType() == BODY_PART_MOUTH)
 				hasMouth = true;
-			if (p->getType() == BODY_PART_EGGLAYER)
+			if (p->getType() == BODY_PART_EGGLAYER) {
 				hasEggLayer = true;
+				((EggLayer*)p)->setTargetEggMass(bug_->eggMass_);
+			}
 			return hasMouth && hasEggLayer;
 		});
 		if (!hasMouth || !hasEggLayer) {

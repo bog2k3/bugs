@@ -21,7 +21,7 @@
 static const glm::vec3 debug_color(0.2f, 0.8f, 1.f);
 
 MouthInitializationData::MouthInitializationData()
-	: aspectRatio(BodyConst::MouthAspectRatio) {
+	: aspectRatio(BodyConst::initialMouthAspectRatio) {
 	size.reset(BodyConst::initialMouthSize);
 }
 

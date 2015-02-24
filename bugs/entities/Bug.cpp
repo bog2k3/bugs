@@ -264,6 +264,18 @@ Chromosome Bug::createBasicChromosome() {
 	gba.value.set(4.f);
 	c.push_back(gba);
 
+	gba.attribute = GENE_BODY_ATTRIB_GROWTH_SPEED;
+	gba.value.set(BodyConst::initialGrowthSpeed);
+	c.push_back(gba);
+
+	gba.attribute = GENE_BODY_ATTRIB_EGG_MASS;
+	gba.value.set(BodyConst::initialEggMass);
+	c.push_back(gba);
+
+	gba.attribute = GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO;
+	gba.value.set(BodyConst::initialReproductiveMassRatio);
+	c.push_back(gba);
+
 	// neural system
 
 	// neuron #0 transfer:
@@ -410,14 +422,14 @@ Chromosome Bug::createBasicChromosome() {
 	gc.command = GENE_DEV_GROW;
 	gc.angle.set(0);
 	gc.part_type = GENE_PART_MOUTH;
-	gc.genomeOffset.set(4); // stop
+	gc.genomeOffset.set(5);
 	gc.age = 10;
 	c.push_back(gc);
 
 	// Egg-layer:
 	gc.angle.set(3*PI/4);
 	gc.part_type = GENE_PART_EGGLAYER;
-	gc.genomeOffset.set(3); // stop
+	gc.genomeOffset.set(10);
 	gc.age = 9;
 	c.push_back(gc);
 
@@ -425,67 +437,250 @@ Chromosome Bug::createBasicChromosome() {
 	gc.age = 8;
 	gc.angle.set(PI);
 	gc.part_type = GENE_PART_BONE;
-	gc.genomeOffset.set(4);
-	gc.genomeOffsetJoint.set(2);
-	gc.genomeOffsetMuscle1.set(11);
-	gc.genomeOffsetMuscle2.set(11);
+	gc.genomeOffset.set(21);
+	gc.genomeOffsetJoint.set(15);
+	gc.genomeOffsetMuscle1.set(65);
+	gc.genomeOffsetMuscle2.set(65);
 	c.push_back(gc);
 
 	c.push_back(GeneStop());
 	c.push_back(GeneStop());
+
+	// mouth offs:
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialMouthSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMouthAspectRatio);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
 	c.push_back(GeneStop());
 
-	// bone 2:
+	// egglayer offs:
+	ga.attribute = GENE_ATTRIB_EGG_EJECT_SPEED;
+	ga.value.set(BodyConst::initialEggEjectSpeed);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialBodyPartSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
+
+	// joint1 offs:
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(BodyConst::initialJointMaxPhi);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(BodyConst::initialJointMinPhi);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
+	ga.value.set(BodyConst::initialJointResetTorque);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
+
+	// bone1 offs:
+	// grow bone2:
 	gc.age = 7;
 	gc.angle.set(0);
-	gc.genomeOffset.set(5);
-	gc.genomeOffsetJoint.set(4);
-	gc.genomeOffsetMuscle1.set(4);
-	gc.genomeOffsetMuscle2.set(4);
+	gc.genomeOffset.set(20);
+	gc.genomeOffsetJoint.set(8);
+	gc.genomeOffsetMuscle1.set(14);
+	gc.genomeOffsetMuscle2.set(14);
 	c.push_back(gc);
 
-	// bone 1 size:
+	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
 	c.push_back(ga);
 
-	// bone 1 aspect
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(4);
 	c.push_back(ga);
 
-	// bone 1 rotation
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	ga.value.set(PI/8);
 	c.push_back(ga);
 
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_DENSITY;
+	ga.value.set(BodyConst::initialBoneDensity);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
 	c.push_back(GeneStop());
 
-	// the gripper:
+	// bone2 joint offs:
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(BodyConst::initialJointMaxPhi);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(BodyConst::initialJointMinPhi);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
+	ga.value.set(BodyConst::initialJointResetTorque);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
+
+	// bone2 muscles offs:
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialBodyPartSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMuscleAspectRatio);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
+
+	// bone2 offs:
+	// grow gripper:
 	gc.age = 6;
 	gc.part_type = GENE_PART_GRIPPER;
-	gc.genomeOffsetJoint.set(3);
-	gc.genomeOffsetMuscle1.set(3);
-	gc.genomeOffsetMuscle2.set(3);
+	gc.genomeOffset.set(14);
+	gc.genomeOffsetJoint.set(8);
+	gc.genomeOffsetMuscle1.set(18);
+	gc.genomeOffsetMuscle2.set(18);
 	c.push_back(gc);
 
-	// bone 2 size:
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
 	c.push_back(ga);
 
-	// bone 2 aspect
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(4);
 	c.push_back(ga);
 
+	ga.attribute = GENE_ATTRIB_DENSITY;
+	ga.value.set(BodyConst::initialBoneDensity);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
 	c.push_back(GeneStop());
 
-	// muscle 1 & 2 size
+	// gripper joint offs:
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(BodyConst::initialJointMaxPhi);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(BodyConst::initialJointMinPhi);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
+	ga.value.set(BodyConst::initialJointResetTorque);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
+
+	// gripper offs:
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialBodyPartSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
+
+	// gripper muscle offs:
+
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialBodyPartSize);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMuscleAspectRatio);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	c.push_back(GeneStop());
+	c.push_back(GeneStop());
+
+	// bone1 muscles offs:
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(1.e-3f);
 	c.push_back(ga);
 
-	c.push_back(GeneStop());
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMuscleAspectRatio);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.push_back(ga);
 
 	return c;
 }

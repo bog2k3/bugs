@@ -11,6 +11,13 @@
 #include "BodyPart.h"
 #include "../neuralnet/InputSocket.h"
 
+struct EggLayerInitializationData : public BodyPartInitializationData {
+	virtual ~EggLayerInitializationData() noexcept = default;
+	EggLayerInitializationData();
+
+	CummulativeValue ejectSpeed;
+};
+
 class b2WeldJoint;
 
 class EggLayer: public BodyPart {
@@ -32,6 +39,7 @@ protected:
 	void commit() override;
 	void onAddedToParent() override;
 	void die() override;
+	void cacheInitializationData() override;
 	void checkScale();
 
 	b2WeldJoint* pJoint = nullptr;

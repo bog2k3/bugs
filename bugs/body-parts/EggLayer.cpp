@@ -7,6 +7,7 @@
 
 #include "EggLayer.h"
 #include "BodyConst.h"
+// #include "../genetics/GeneDefinitions.h"
 #include "../math/box2glm.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
@@ -24,13 +25,26 @@ static const glm::vec3 debug_color_ripe(0.2f, 1.0f, 0.1f);
 
 #define DEBUG_DRAW_EGGLAYER
 
+EggLayerInitializationData::EggLayerInitializationData()
+	: ejectSpeed(BodyConst::initialEggEjectSpeed) {
+}
+
+void EggLayer::cacheInitializationData() {
+	BodyPart::cacheInitializationData();
+	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
+	ejectSpeed_ = data->ejectSpeed.clamp(0, BodyConst::MaxEggEjectSpeed);
+}
+
 EggLayer::EggLayer()
 	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<BodyPartInitializationData>())
 	, targetEggMass_(BodyConst::initialEggMass)
-	, ejectSpeed_(BodyConst::initialEggEjectSpeed)
+	, ejectSpeed_(0)
 {
 	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1));	// [0] - suppress growth
 	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1)); // [1] - suppress release
+
+	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
+	registerAttribute(GENE_ATTRIB_EGG_EJECT_SPEED, data->ejectSpeed);
 }
 
 EggLayer::~EggLayer() {

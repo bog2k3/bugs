@@ -60,6 +60,7 @@ enum gene_part_attribute_type {
 	GENE_ATTRIB_JOINT_LOW_LIMIT,	// low angle limit for joint
 	GENE_ATTRIB_JOINT_HIGH_LIMIT,	// high angle limit for joint
 	GENE_ATTRIB_JOINT_RESET_TORQUE,	// torque that moves the joint back into rest position when no forces act on it
+	GENE_ATTRIB_EGG_EJECT_SPEED,	// speed with which eggs are ejected from egg-layers
 
 	GENE_ATTRIB_END
 };
