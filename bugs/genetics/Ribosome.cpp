@@ -114,7 +114,7 @@ void Ribosome::initializeNeuralNetwork() {
 	for (int i=commandNeuronsStart; i<totalNeurons; i++) {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
 		bug_->neuralNet_->neurons[i]->neuralConstant = 0.f;
-		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[FN_ONE];
+		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[transferFuncNames::FN_ONE];
 		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart].get());
 		// connect back the socket to the output neuron (in order to be able to locate the neuron later):
 		bug_->neuralNet_->outputs[i-commandNeuronsStart]->pParentNeuron = bug_->neuralNet_->neurons[i];
@@ -140,7 +140,9 @@ void Ribosome::decodeDeferredGenes() {
 	// apply all neuron properties
 	for (auto n : mapNeurons_) {
 		if (n.second.transfer.hasValue()) {
-			int funcIndex = clamp((int)n.second.transfer.get(), (int)FN_ONE, (int)FN_MAXCOUNT-1);
+			int funcIndex = clamp((int)n.second.transfer.get(),
+					(int)transferFuncNames::FN_ONE,
+					(int)transferFuncNames::FN_MAXCOUNT-1);
 			bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)funcIndex];
 		}
 		if (n.second.constant.hasValue())

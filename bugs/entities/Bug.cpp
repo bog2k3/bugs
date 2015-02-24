@@ -281,7 +281,7 @@ Chromosome Bug::createBasicChromosome() {
 	// neuron #0 transfer:
 	GeneTransferFunction gt;
 	gt.targetNeuron.set(0);
-	gt.functionID.set(FN_CONSTANT);
+	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
 	c.push_back(gt);
 	// neuron #0 constant:
 	GeneNeuralConstant gnc;
@@ -291,27 +291,27 @@ Chromosome Bug::createBasicChromosome() {
 
 	// neuron #1 transfer:
 	gt.targetNeuron.set(1);
-	gt.functionID.set(FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.push_back(gt);
 
 	// neuron #2 transfer:
 	gt.targetNeuron.set(2);
-	gt.functionID.set(FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.push_back(gt);
 
 	// neuron #3 transfer:
 	gt.targetNeuron.set(3);
-	gt.functionID.set(FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.push_back(gt);
 
 	// neuron #4 transfer:
 	gt.targetNeuron.set(4);
-	gt.functionID.set(FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.push_back(gt);
 
 	// neuron #5 transfer:
 	gt.targetNeuron.set(5);
-	gt.functionID.set(FN_CONSTANT);
+	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
 	c.push_back(gt);
 	// neuron #5 constant:
 	gnc.targetNeuron.set(5);
@@ -320,12 +320,12 @@ Chromosome Bug::createBasicChromosome() {
 
 	// neuron #6 transfer:
 	gt.targetNeuron.set(6);
-	gt.functionID.set(FN_ONE);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.push_back(gt);
 
 	// neuron #7 transfer:
 	gt.targetNeuron.set(7);
-	gt.functionID.set(FN_THRESHOLD);
+	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
 	c.push_back(gt);
 	// neuron #7 threshold value:
 	gnc.targetNeuron.set(7);
@@ -334,7 +334,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// neuron #8 transfer:
 	gt.targetNeuron.set(8);
-	gt.functionID.set(FN_THRESHOLD);
+	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
 	c.push_back(gt);
 	// neuron #8 threshold value:
 	gnc.targetNeuron.set(8);

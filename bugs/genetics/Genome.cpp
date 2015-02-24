@@ -45,12 +45,17 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int stat_new = 0;
 #endif
 
+	int nNeurons = 0, nMotors = 0, nSensors = 0;
+
 	static constexpr float numberAlterationsPerChromosome = 1;	// how many alterations we desire for a chromosome
 
 	// compute the total chance for mutations in the current chromosome:
+	// also count the number of neurons, motors and sensors since we need these in order to create new random genes
 	float totalChanceToChange = 0.f;
 	for (unsigned i=0; i<c.size(); i++) {
 		totalChanceToChange += getTotalMutationChance(c[i]);
+
+		// todo count
 	}
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
 	float mutationChanceFactor = numberAlterationsPerChromosome / totalChanceToChange;
@@ -106,7 +111,8 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	// now there's a chance to spawn a new gene
 	if (randf() < constants::global_chance_to_spawn_gene * c.size()) {
-		c.insert(c.begin()+randf()*c.size(), Gene::createRandom());
+		int position = randi(c.size()-1);
+		c.insert(c.begin()+position, Gene::createRandom(c.size()-position, nMotors, nSensors, nNeurons));
 #ifdef DEBUG
 		stat_new++;
 #endif

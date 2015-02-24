@@ -6,15 +6,15 @@
 std::map<transferFuncNames, transfer_function> mapTransferFunctions;
 
 int initNeuralFunctionMap() {
-	mapTransferFunctions[FN_ONE] = &transfer_fn_one;
-	mapTransferFunctions[FN_LN] = &transfer_fn_ln;
-	mapTransferFunctions[FN_SIGM] = &transfer_fn_sigmoid;
-	mapTransferFunctions[FN_THRESHOLD] = &transfer_fn_threshold;
-	mapTransferFunctions[FN_SIN] = &transfer_fn_sin;
-	mapTransferFunctions[FN_RAND] = &transfer_fn_rand;
-	mapTransferFunctions[FN_EXP] = &transfer_fn_exp;
-	mapTransferFunctions[FN_POW] = &transfer_fn_pow;
-	mapTransferFunctions[FN_CONSTANT] = &transfer_fn_constant;
+	mapTransferFunctions[transferFuncNames::FN_ONE] = &transfer_fn_one;
+	mapTransferFunctions[transferFuncNames::FN_LN] = &transfer_fn_ln;
+	mapTransferFunctions[transferFuncNames::FN_SIGM] = &transfer_fn_sigmoid;
+	mapTransferFunctions[transferFuncNames::FN_THRESHOLD] = &transfer_fn_threshold;
+	mapTransferFunctions[transferFuncNames::FN_SIN] = &transfer_fn_sin;
+	mapTransferFunctions[transferFuncNames::FN_RAND] = &transfer_fn_rand;
+	mapTransferFunctions[transferFuncNames::FN_EXP] = &transfer_fn_exp;
+	mapTransferFunctions[transferFuncNames::FN_POW] = &transfer_fn_pow;
+	mapTransferFunctions[transferFuncNames::FN_CONSTANT] = &transfer_fn_constant;
 
 	return 0;
 }

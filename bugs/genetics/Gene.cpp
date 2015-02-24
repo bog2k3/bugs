@@ -1,6 +1,7 @@
 #include "Gene.h"
 #include "../utils/log.h"
 #include "../body-parts/BodyConst.h"
+#include "../neuralnet/functions.h"
 
 void Gene::update_meta_genes_vec() {
 	metaGenes.clear();
@@ -90,27 +91,85 @@ Gene Gene::createRandomBodyAttribGene() {
 	return g;
 }
 
-Gene Gene::createRandom() {
+Gene Gene::createRandomCommandGene(int spaceLeftAfter) {
+	GeneCommand g;
+	g.angle.set(randf()*2*PI);
+	g.command = (gene_development_command)randi(GENE_DEV_INVALID+1, GENE_DEV_END-1);
+	g.genomeOffset.set(randi(spaceLeftAfter-1));
+	g.genomeOffsetJoint.set(randi(spaceLeftAfter-1));
+	g.genomeOffsetMuscle1.set(randi(spaceLeftAfter-1));
+	g.genomeOffsetMuscle2.set(randi(spaceLeftAfter-1));
+	g.maxDepth.set(randi(10));
+	g.part_type = (gene_part_type)randi(GENE_PART_INVALID+1, GENE_PART_END-1);
+	return g;
+}
+
+Gene Gene::createRandomSynapseGene(int nNeurons, int nMotors, int nSensors) {
+	GeneSynapse g;
+	g.from.set(randi(-nSensors, nNeurons-1));
+	g.to.set(randi(-nMotors, nNeurons-1));
+	g.weight.set(randf());
+	return g;
+}
+
+Gene Gene::createRandomFeedbackSynapseGene(int nMotors, int nNeurons) {
+	GeneFeedbackSynapse g;
+	g.from.set(randi(nMotors-1));
+	g.from.set(randi(-nMotors, nNeurons-1));
+	g.weight.set(srandf());
+	return g;
+}
+
+Gene Gene::createRandomNeuralConstGene(int nNeurons) {
+	GeneNeuralConstant g;
+	g.targetNeuron.set(randi(nNeurons-1));
+	g.value.set(srandf());
+	return g;
+}
+
+Gene Gene::createRandomTransferFuncGene(int nNeurons) {
+	GeneTransferFunction g;
+	g.functionID.set(randi((int)transferFuncNames::FN_MAXCOUNT-1));
+	g.targetNeuron.set(randi(nNeurons-1));
+	return g;
+}
+
+Gene Gene::createRandomAttribGene() {
+	GeneAttribute g;
+	g.attribute = (gene_part_attribute_type)randi(GENE_ATTRIB_INVALID+1, GENE_ATTRIB_END-1);
+	g.value.set(randf());
+	return g;
+}
+
+Gene Gene::createRandomSkipGene(int spaceLeftAfter) {
+	GeneSkip g;
+	g.minDepth.set(randi(10));
+	g.maxDepth.set(g.minDepth + randi(10-g.minDepth));
+	g.count.set(randi(spaceLeftAfter));
+	return g;
+}
+
+Gene Gene::createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeurons) {
 	gene_type type = (gene_type)randi(GENE_TYPE_INVALID+1, GENE_TYPE_END-1);
 	switch (type) {
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		return createRandomBodyAttribGene();
 	case GENE_TYPE_DEVELOPMENT:
-		return createRandomCommandGene();
+		return createRandomCommandGene(spaceLeftAfter);
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		return createRandomFeedbackSynapseGene();
+		return createRandomFeedbackSynapseGene(nMotors, nNeurons);
 	case GENE_TYPE_NEURAL_CONST:
-		return createRandomNeuralConstGene();
+		return createRandomNeuralConstGene(nNeurons);
 	case GENE_TYPE_PART_ATTRIBUTE:
 		return createRandomAttribGene();
 	case GENE_TYPE_SKIP:
-		return createRandomSkipGene();
+		return createRandomSkipGene(spaceLeftAfter);
 	case GENE_TYPE_STOP:
 		return GeneStop();
 	case GENE_TYPE_SYNAPSE:
-		return createRandomSynapseGene();
+		return createRandomSynapseGene(nNeurons, nMotors, nSensors);
 	case GENE_TYPE_TRANSFER:
-		return createRandomTransferFuncGene();
+		return createRandomTransferFuncGene(nNeurons);
 	default:
 		ERROR("unhandled gene random type: " << type);
 		return GeneStop();

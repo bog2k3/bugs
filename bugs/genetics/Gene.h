@@ -69,6 +69,7 @@ struct GeneCommand {
 	gene_part_type part_type = GENE_PART_INVALID;
 	unsigned age = 0;				// this is the genetic 'age' of this particular gene. always increments by one in meyosis
 	unsigned rereadAgeOffset = 0;	// the offset applied to age when reading the gene second time or more
+#warning must take care not to copy rereadAgeOffset when duplicating the gene
 	Atom<float> angle;				// angle is relative to the previous element's orientation
 	Atom<int> maxDepth;				// maximum depth at which this gene works
 	Atom<int> genomeOffset;			// offset from current gene to the start of the genes for the new part
@@ -183,7 +184,8 @@ public:
 		return *this;
 	}
 
-	static Gene createRandom();
+	// parameter tells how many genes are in the chromosome after the position where this one will be inserted
+	static Gene createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeurons);
 
 	std::vector<MetaGene*> metaGenes;
 
@@ -193,13 +195,13 @@ public:
 private:
 	void update_meta_genes_vec();
 
-	static Gene createRandomSkipGene();
-	static Gene createRandomCommandGene();
+	static Gene createRandomSkipGene(int spaceLeftAfter);
+	static Gene createRandomCommandGene(int spaceLeftAfter);
 	static Gene createRandomAttribGene();
-	static Gene createRandomSynapseGene();
-	static Gene createRandomFeedbackSynapseGene();
-	static Gene createRandomTransferFuncGene();
-	static Gene createRandomNeuralConstGene();
+	static Gene createRandomSynapseGene(int nNeurons, int nMotors, int nSensors);
+	static Gene createRandomFeedbackSynapseGene(int nMotors, int nNeurons);
+	static Gene createRandomTransferFuncGene(int nNeurons);
+	static Gene createRandomNeuralConstGene(int nNeurons);
 	static Gene createRandomBodyAttribGene();
 };
 

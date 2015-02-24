@@ -6,7 +6,7 @@
 // standard model for all neural transfer functions:
 typedef float (*transfer_function)(float value, float constant);
 
-enum transferFuncNames {
+enum class transferFuncNames {
 	FN_ONE,
 	FN_LN,
 	FN_SIGM,
@@ -17,7 +17,7 @@ enum transferFuncNames {
 	FN_POW,
 	FN_CONSTANT,
 
-	FN_MAXCOUNT			// this is the total number of functions + 1
+	FN_MAXCOUNT			// this is the total number of functions
 };
 
 extern std::map<transferFuncNames, transfer_function> mapTransferFunctions;
