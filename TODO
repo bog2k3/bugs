@@ -1,4 +1,4 @@
-* make gametes fuse into new zygotes
+		* make gametes fuse into new zygotes
 		* fix basic bug neural routing - now it's fucked up
 		* make egglayer grow instead of torso
 		* fix scaling after break apart
@@ -9,4 +9,5 @@
 * add "duplicate" as a gene spawn method (copy existing gene)
 		* make eggs attract each other
 * make eggs, zygotes and dead body parts as food
-* fix basic bug muscle sync
+		* fix basic bug muscle sync
+* clean up all TODOs and WARNINGs from code...
