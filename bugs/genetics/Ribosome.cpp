@@ -304,10 +304,13 @@ void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPositi
 		return;
 
 	int age = g.age;
-	if (mapGeneToIterations_[&g]++) {
+	if (mapGeneToIterations_[&g]++ > 0) {
+#error insertion in one chromosome desynchs genes from the two chromosomes. must insert dummy gene in the other at same pos
 		// this is not the first time we're reading this gene
 		if (!g.rereadAgeOffset)
 			g.rereadAgeOffset = -g.age;
+		else
+			g.rereadAgeOffset--;
 		age += g.rereadAgeOffset;
 	}
 
