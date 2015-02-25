@@ -48,7 +48,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int nMotors = 0, nSensors = 0;
 	std::map<int, bool> mapNeuronsExist;
 
-	static constexpr float numberAlterationsPerChromosome = 1;	// how many alterations we desire for a chromosome
+	static constexpr float numberAlterationsPerChromosome = 3;	// how many alterations we desire for a chromosome at most
 
 	// compute the total chance for mutations in the current chromosome:
 	// also count the number of neurons, motors and sensors since we need these in order to create new random genes
@@ -98,12 +98,15 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int nNeurons = mapNeuronsExist.size();
 
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
-	float mutationChanceFactor = numberAlterationsPerChromosome / totalChanceToChange;
+	float mutationChanceFactor = totalChanceToChange;
+	if (mutationChanceFactor * c.size() > numberAlterationsPerChromosome)
+		mutationChanceFactor = numberAlterationsPerChromosome / mutationChanceFactor;
 
 	// now we go ahead with mutations:
 	for (unsigned i=0; i<c.size(); i++) {
 		bool delGene = randf() < c[i].chance_to_delete.value * mutationChanceFactor;
 		if (delGene) {
+#error: don't delete, just replace with dummy
 			c.erase(c.begin()+i);
 			i--;
 #ifdef DEBUG
@@ -151,6 +154,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	// now there's a chance to spawn a new gene
 	if (randf() < constants::global_chance_to_spawn_gene * c.size()) {
+#error: keep a record of last genes spawned (at most N, and if eggs have a difference of more than N genes, they don't fuse)
 		int position = randi(c.size()-1);
 		c.insert(c.begin()+position, Gene::createRandom(c.size()-position, nMotors, nSensors, nNeurons));
 #ifdef DEBUG

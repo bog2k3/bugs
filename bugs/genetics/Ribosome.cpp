@@ -309,8 +309,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPositi
 		// this is not the first time we're reading this gene
 		if (!g.rereadAgeOffset)
 			g.rereadAgeOffset = -g.age;
-		else
-			g.rereadAgeOffset--;
+#error rereadAgeOffset must be carried over into the next generation
 		age += g.rereadAgeOffset;
 	}
 

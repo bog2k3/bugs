@@ -73,6 +73,7 @@ void Gamete::update(float dt) {
 	for (auto b : bodies) {
 		if (!b->GetUserData() || b->GetType() != b2_dynamicBody)
 			continue;
+#error only attract and fuse if they don't differ by more than N in the number of genes - N is the same as the new gene recorded history
 		if (((PhysicsBody*)b->GetUserData())->userObjectType_ == ObjectTypes::GAMETE) {
 			// found another gamete, let's attract each other
 			b2Vec2 force = body_.b2Body_->GetPosition() - b->GetPosition();
