@@ -79,6 +79,8 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 			case GENE_PART_SENSOR:
 				nSensors++;
 				break;
+			default:
+				break;
 			}
 			break;
 		case GENE_TYPE_FEEDBACK_SYNAPSE:
@@ -106,9 +108,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	for (unsigned i=0; i<c.size(); i++) {
 		bool delGene = randf() < c[i].chance_to_delete.value * mutationChanceFactor;
 		if (delGene) {
-#error: don't delete, just replace with dummy
-			c.erase(c.begin()+i);
-			i--;
+			c[i].type = GENE_TYPE_NO_OP;
 #ifdef DEBUG
 			stat_delete++;
 #endif

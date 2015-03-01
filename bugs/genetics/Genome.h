@@ -8,13 +8,18 @@
 #ifndef GENETICS_GENOME_H_
 #define GENETICS_GENOME_H_
 
+#include "../entities/WorldConst.h"
 #include <vector>
 #include <utility>
 
 class Gene;
 class MetaGene;
 
-typedef std::vector<Gene> Chromosome;
+struct Chromosome {
+	std::vector<Gene> genes;
+	int lastInsertPos[WorldConst::MaxGenomeLengthDifference] { -1 };
+};
+
 typedef std::pair<Chromosome, Chromosome> Genome;
 
 class GeneticOperations {

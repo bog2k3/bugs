@@ -25,6 +25,7 @@ public:
 
 	static constexpr float GameteAttractRadius					= 10;				// [m]
 	static constexpr float GameteAttractForceFactor				= 30;				// force between 2 1kg gametes [N]
+	static constexpr int MaxGenomeLengthDifference				= 3;				// max length difference that is still compatible
 };
 
 #endif /* OBJECTS_WORLDCONST_H_ */

@@ -27,6 +27,8 @@ public:
 	void draw(RenderContext const& ctx) override;
 #endif
 
+	const Chromosome& getChromosome() const { return chromosome_; }
+
 protected:
 	Chromosome chromosome_;
 	PhysicsBody body_;

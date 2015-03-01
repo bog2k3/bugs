@@ -10,6 +10,7 @@
 
 enum gene_type {
 	GENE_TYPE_INVALID = 0,
+	GENE_TYPE_NO_OP,			// no operation gene; dummy.
 	GENE_TYPE_STOP,				// signals the ribosome to stop reading genes after this one
 	GENE_TYPE_SKIP,				// control gene -> skip next N genes if all conditions are met
 	GENE_TYPE_DEVELOPMENT,		// developmental gene - commands the growth of the body
