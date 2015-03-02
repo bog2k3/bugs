@@ -14,21 +14,26 @@
 Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	Chromosome c;
 	unsigned i=0;
-	while (i<gen.first.size() || i<gen.second.size()) {
+	while (i<gen.first.genes.size() || i<gen.second.genes.size()) {
 		const Gene *g = nullptr;
-		if (i<gen.first.size()) {
-			g = &gen.first[i];
-			if (i<gen.second.size() && randf() < 0.5f)
-				g = &gen.second[i];
+		if (i<gen.first.genes.size()) {
+			g = &gen.first.genes[i];
+			if (i<gen.second.genes.size() && randf() < 0.5f)
+				g = &gen.second.genes[i];
 		} else
-			g = &gen.second[i];
-		c.push_back(*g);
+			g = &gen.second.genes[i];
+		c.genes.push_back(*g);
 		if (g->type == GENE_TYPE_DEVELOPMENT)
-			c[i].data.gene_command.age++;	// should probably rebase all to 0 to avoid unsigned overflow - unlikely
+			c.genes[i].data.gene_command.age++;	// should probably rebase all to 0 to avoid unsigned overflow - unlikely
 		i++;
 	}
 	alterChromosome(c);
 	return c;
+}
+
+void GeneticOperations::fixGenesSynchro(Genome& gen) {
+	// this shit is more complicated than i thought
+#error implement
 }
 
 /*
@@ -53,18 +58,18 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	// compute the total chance for mutations in the current chromosome:
 	// also count the number of neurons, motors and sensors since we need these in order to create new random genes
 	float totalChanceToChange = 0.f;
-	for (unsigned i=0; i<c.size(); i++) {
-		totalChanceToChange += getTotalMutationChance(c[i]);
+	for (unsigned i=0; i<c.genes.size(); i++) {
+		totalChanceToChange += getTotalMutationChance(c.genes[i]);
 
 		// count
-		switch (c[i].type) {
+		switch (c.genes[i].type) {
 		case GENE_TYPE_DEVELOPMENT:
-			if (c[i].data.gene_command.command == GENE_DEV_SPLIT) {
+			if (c.genes[i].data.gene_command.command == GENE_DEV_SPLIT) {
 				nMotors += 5;
 				nSensors += 5;
 				break;
 			}
-			switch (c[i].data.gene_command.part_type) {
+			switch (c.genes[i].data.gene_command.part_type) {
 			case GENE_PART_BONE:
 				nMotors += 2;
 				nSensors++;
@@ -84,14 +89,14 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 			}
 			break;
 		case GENE_TYPE_FEEDBACK_SYNAPSE:
-			if (c[i].data.gene_feedback_synapse.to >= 0)
-				mapNeuronsExist[c[i].data.gene_feedback_synapse.to] = true;
+			if (c.genes[i].data.gene_feedback_synapse.to >= 0)
+				mapNeuronsExist[c.genes[i].data.gene_feedback_synapse.to] = true;
 			break;
 		case GENE_TYPE_SYNAPSE:
-			if (c[i].data.gene_synapse.from >= 0)
-				mapNeuronsExist[c[i].data.gene_synapse.from] = true;
-			if (c[i].data.gene_synapse.to >= 0)
-				mapNeuronsExist[c[i].data.gene_synapse.to] = true;
+			if (c.genes[i].data.gene_synapse.from >= 0)
+				mapNeuronsExist[c.genes[i].data.gene_synapse.from] = true;
+			if (c.genes[i].data.gene_synapse.to >= 0)
+				mapNeuronsExist[c.genes[i].data.gene_synapse.to] = true;
 			break;
 		default:
 			break;
@@ -101,29 +106,29 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
 	float mutationChanceFactor = totalChanceToChange;
-	if (mutationChanceFactor * c.size() > numberAlterationsPerChromosome)
+	if (mutationChanceFactor * c.genes.size() > numberAlterationsPerChromosome)
 		mutationChanceFactor = numberAlterationsPerChromosome / mutationChanceFactor;
 
 	// now we go ahead with mutations:
-	for (unsigned i=0; i<c.size(); i++) {
-		bool delGene = randf() < c[i].chance_to_delete.value * mutationChanceFactor;
+	for (unsigned i=0; i<c.genes.size(); i++) {
+		bool delGene = randf() < c.genes[i].chance_to_delete.value * mutationChanceFactor;
 		if (delGene) {
-			c[i].type = GENE_TYPE_NO_OP;
+			c.genes[i].type = GENE_TYPE_NO_OP;
 #ifdef DEBUG
 			stat_delete++;
 #endif
 			continue;
 		}
-		bool swap = randf() < c[i].chance_to_swap.value * mutationChanceFactor;
+		bool swap = randf() < c.genes[i].chance_to_swap.value * mutationChanceFactor;
 		bool swapReverse = false;
 		if (swap) {
-			if (i < c.size()-1) { // swap ahead
-				xchg(c[i], c[i+1]);
+			if (i < c.genes.size()-1) { // swap ahead
+				xchg(c.genes[i], c.genes[i+1]);
 #ifdef DEBUG
 				stat_swaps++;
 #endif
 			} else if (i > 0) { // swap behind
-				xchg(c[i], c[i-1]);
+				xchg(c.genes[i], c.genes[i-1]);
 				swapReverse = true;
 #ifdef DEBUG
 				stat_swaps++;
@@ -134,12 +139,12 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 #ifdef DEBUG
 			stat_mutations +=
 #endif
-			alterGene(c[i-1], mutationChanceFactor);
+			alterGene(c.genes[i-1], mutationChanceFactor);
 		} else {
 #ifdef DEBUG
 			stat_mutations +=
 #endif
-			alterGene(c[i], mutationChanceFactor);
+			alterGene(c.genes[i], mutationChanceFactor);
 		}
 
 		if (swap && !swapReverse) {
@@ -147,16 +152,25 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 #ifdef DEBUG
 			stat_mutations +=
 #endif
-			alterGene(c[i+1], mutationChanceFactor);
+			alterGene(c.genes[i+1], mutationChanceFactor);
 			i++; // skip the next gene that has already been altered
 		}
 	}
 
 	// now there's a chance to spawn a new gene
-	if (randf() < constants::global_chance_to_spawn_gene * c.size()) {
-#error: keep a record of last genes spawned (at most N, and if eggs have a difference of more than N genes, they don't fuse)
-		int position = randi(c.size()-1);
-		c.insert(c.begin()+position, Gene::createRandom(c.size()-position, nMotors, nSensors, nNeurons));
+	if (randf() < constants::global_chance_to_spawn_gene * c.genes.size()) {
+		int position = randi(c.genes.size()-1);
+		Gene newGene(Gene::createRandom(c.genes.size()-position, nMotors, nSensors, nNeurons));
+		if (c.genes[position].type == GENE_TYPE_NO_OP)
+			c.genes[position] = newGene;
+		else {
+			// must keep a record of last genes inserted (at most N, and if gametes have a difference of more than N genes, they don't fuse)
+			// when combining two gametes we must insert dummy genes at corespondend positions in the other chromosome, in order to realign the alelles.
+			c.genes.insert(c.genes.begin()+position, newGene);
+			for (int i=1; i<WorldConst::MaxGenomeLengthDifference; i++)
+				c.lastInsertPos[i] = c.lastInsertPos[i-1];
+			c.lastInsertPos[0] = position;
+		}
 #ifdef DEBUG
 		stat_new++;
 #endif

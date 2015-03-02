@@ -17,7 +17,7 @@ class MetaGene;
 
 struct Chromosome {
 	std::vector<Gene> genes;
-	int lastInsertPos[WorldConst::MaxGenomeLengthDifference] { -1 };
+	int lastInsertPos[WorldConst::MaxGenomeLengthDifference] { -1 };	// [0] is most recent addition, [1] previous most recent and so on...
 };
 
 typedef std::pair<Chromosome, Chromosome> Genome;
@@ -36,6 +36,11 @@ public:
 	static Chromosome meyosis(const Genome& gen);
 
 	static void alterChromosome(Chromosome &c);
+
+	/**
+	 * fixes genes synchronization for a new genome created out of two chromosomes that came from gamettes.
+	 */
+	static void fixGenesSynchro(Genome& gen);
 
 private:
 	static float getTotalMutationChance(Gene const& g);

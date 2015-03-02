@@ -185,19 +185,25 @@ bool Ribosome::step() {
 	for (int i=0; i<nCrtBranches; i++) {
 		BodyPart* p = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second++;
-		bool hasFirst = offset < bug_->genome_.first.size();
-		bool hasSecond = offset < bug_->genome_.second.size();
+		bool hasFirst = offset < bug_->genome_.first.genes.size();
+		bool hasSecond = offset < bug_->genome_.second.genes.size();
 		bool reachedTheEnd = !hasFirst && !hasSecond;
+		if (hasFirst)
+			hasFirst = bug_->genome_.first.genes[offset].type != GENE_TYPE_NO_OP;
+		if (hasSecond)
+			hasSecond = bug_->genome_.second.genes[offset].type != GENE_TYPE_NO_OP;
+		if (!hasFirst && !hasSecond)
+			continue;
 		Gene* g = nullptr;
 		if (!reachedTheEnd) {
 			// choose the dominant (or the only) gene out of the current pair:
 			if (hasFirst && (!hasSecond || isCircularGreater(
-					bug_->genome_.first[offset].RID,
-					bug_->genome_.second[offset].RID)
+					bug_->genome_.first.genes[offset].RID,
+					bug_->genome_.second.genes[offset].RID)
 				))
-				g = &bug_->genome_.first[offset];
+				g = &bug_->genome_.first.genes[offset];
 			else
-				g = &bug_->genome_.second[offset];
+				g = &bug_->genome_.second.genes[offset];
 		}
 		if (reachedTheEnd || g->type == GENE_TYPE_STOP) {
 			// so much for this development path:
@@ -305,11 +311,10 @@ void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPositi
 
 	int age = g.age;
 	if (mapGeneToIterations_[&g]++ > 0) {
-#error insertion in one chromosome desynchs genes from the two chromosomes. must insert dummy gene in the other at same pos
 		// this is not the first time we're reading this gene
 		if (!g.rereadAgeOffset)
 			g.rereadAgeOffset = -g.age;
-#error rereadAgeOffset must be carried over into the next generation
+		// rereadAgeOffset must be carried over into the next generation
 		age += g.rereadAgeOffset;
 	}
 
