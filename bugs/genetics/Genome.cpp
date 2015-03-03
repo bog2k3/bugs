@@ -27,13 +27,28 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 			c.genes[i].data.gene_command.age++;	// should probably rebase all to 0 to avoid unsigned overflow - unlikely
 		i++;
 	}
+#error must also copy the insertion positions
 	alterChromosome(c);
 	return c;
 }
 
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
-#error implement
+	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
+	int dif = gen.first.genes.size() - gen.second.genes.size();
+	// pull back the insertions on the once chromosome that is shorter:
+	if (dif > 0) {
+		// C2 is shorter
+		for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
+#warning must also compute the number of additions from each chromosome - their difference must be equal to chrom length diff, otherwise pull back one of them.
+			int from = i + dif
+		}
+	} else if (dif < 0) {
+		// C1 is shorter
+	}
+	// now the difference in number of insertions is equal to the difference in chromosome length, we can assume pairs of simultaneous insertions
+	// start from the oldest addition from each chromosome, and add it into the other (if they're on different positions), computing
+	// the offseted insertion position by looking at other insertions if either of them occures before or on the same pos.
 }
 
 /*
