@@ -32,23 +32,54 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	return c;
 }
 
+void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
+	assert(amount > 0);
+	for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
+		int from = i + amount;
+		if (from < WorldConst::MaxGenomeLengthDifference)
+			c.lastInsertPos[i] = c.lastInsertPos[from];
+		else
+			c.lastInsertPos[i] = -1;
+	}
+}
+
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
 	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
+	// compute the number of insertions from each chromosome:
+	int ins1 = 0, ins2 = 0;
+	for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
+		if (gen.first.lastInsertPos[i] != -1)
+			ins1++;
+		if (gen.second.lastInsertPos[i] != -1)
+			ins2++;
+	}
+	// compute the length difference between chromosomes:
 	int dif = gen.first.genes.size() - gen.second.genes.size();
-	// pull back the insertions on the once chromosome that is shorter:
+	// pull back the insertions on the one chromosome that is shorter until the difference in size matches the difference
+	// in number of insertions:
 	if (dif > 0) {
+		assert(ins1 >= ins2);
 		// C2 is shorter
-		for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
-#warning must also compute the number of additions from each chromosome - their difference must be equal to chrom length diff, otherwise pull back one of them.
-			int from = i + dif
-		}
+		int pullback = dif - (ins1 - ins2);
+		if (pullback > 0)
+			pullBackInsertions(gen.second, pullback);
 	} else if (dif < 0) {
 		// C1 is shorter
+		assert(ins2 >= ins1);
+		int pullback = dif - (ins2 - ins1);
+		if (pullback > 0)
+			pullBackInsertions(gen.first, pullback);
 	}
 	// now the difference in number of insertions is equal to the difference in chromosome length, we can assume pairs of simultaneous insertions
 	// start from the oldest addition from each chromosome, and add it into the other (if they're on different positions), computing
-	// the offseted insertion position by looking at other insertions if either of them occures before or on the same pos.
+	// the offsetted insertion position by looking at other insertions if either of them occures before or on the same pos.
+	int insertPosIndex = 0;
+	while (gen.first.lastInsertPos[insertPosIndex] != -1 || gen.second.lastInsertPos[insertPosIndex] != -1) {
+		// there are some insertions left
+
+		insertPosIndex++;
+	}
 }
 
 /*

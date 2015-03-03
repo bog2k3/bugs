@@ -47,6 +47,7 @@ private:
 	// return number of mutated atoms
 	static int alterGene(Gene &g, float mutationChanceFactor);
 	static void alterMetaGene(MetaGene &m);
+	static void pullBackInsertions(Chromosome &c, int amount);
 };
 
 #endif /* GENETICS_GENOME_H_ */
