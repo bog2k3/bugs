@@ -75,6 +75,10 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// start from the oldest addition from each chromosome, and add it into the other (if they're on different positions), computing
 	// the offsetted insertion position by looking at other insertions if either of them occures before or on the same pos.
 	int insertPosIndex = 0;
+	// here we store the pending insertions from the other list, in order to append them to the current list:
+	int pendingFirst[WorldConst::MaxGenomeLengthDifference], pendingSecond[WorldConst::MaxGenomeLengthDifference];
+	int nPendingFirst = 0, nPendingSecond = 0;
+	// now do the dew:
 	while (gen.first.lastInsertPos[insertPosIndex] != -1 || gen.second.lastInsertPos[insertPosIndex] != -1) {
 		// there are some insertions left
 
