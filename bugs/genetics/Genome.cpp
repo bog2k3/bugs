@@ -81,7 +81,7 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// now do the dew:
 	while (gen.first.lastInsertPos[insertPosIndex] != -1 || gen.second.lastInsertPos[insertPosIndex] != -1) {
 		// there are some insertions left
-
+		test set: abcdef+[2 2] abcdef+[4 2 6] => I:[+6,+7]; II:[+3]
 		insertPosIndex++;
 	}
 }
