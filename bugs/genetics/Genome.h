@@ -17,7 +17,16 @@ class MetaGene;
 
 struct Chromosome {
 	std::vector<Gene> genes;
-	int lastInsertPos[WorldConst::MaxGenomeLengthDifference] { -1 };	// [0] is the oldest addition, highest index non -1 is the most recent
+	// int lastInsertPos[WorldConst::MaxGenomeLengthDifference] { -1 };	// [0] is the oldest addition, highest index non -1 is the most recent
+	struct insertion {
+		int index;
+		int age;	// in number of generations
+	};
+	std::vector<insertion> insertions;
+
+	Chromosome() : insertions(WorldConst::MaxGenomeLengthDifference, insertion()) {
+		insertions.clear();
+	}
 };
 
 typedef std::pair<Chromosome, Chromosome> Genome;

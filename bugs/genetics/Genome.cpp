@@ -34,20 +34,20 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 
 void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
 	assert(amount > 0);
-	for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
+	/*for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
 		int from = i + amount;
 		if (from < WorldConst::MaxGenomeLengthDifference)
 			c.lastInsertPos[i] = c.lastInsertPos[from];
 		else
 			c.lastInsertPos[i] = -1;
-	}
+	}*/
 }
 
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
 	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
 	// compute the number of insertions from each chromosome:
-	int ins1 = 0, ins2 = 0;
+	/*int ins1 = 0, ins2 = 0;
 	for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
 		if (gen.first.lastInsertPos[i] != -1)
 			ins1++;
@@ -71,19 +71,37 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 		if (pullback > 0)
 			pullBackInsertions(gen.first, pullback);
 	}
-	// now the difference in number of insertions is equal to the difference in chromosome length, we can assume pairs of simultaneous insertions
-	// start from the oldest addition from each chromosome, and add it into the other (if they're on different positions), computing
-	// the offsetted insertion position by looking at other insertions if either of them occures before or on the same pos.
-	int insertPosIndex = 0;
-	// here we store the pending insertions from the other list, in order to append them to the current list:
-	int pendingFirst[WorldConst::MaxGenomeLengthDifference], pendingSecond[WorldConst::MaxGenomeLengthDifference];
-	int nPendingFirst = 0, nPendingSecond = 0;
-	// now do the dew:
-	while (gen.first.lastInsertPos[insertPosIndex] != -1 || gen.second.lastInsertPos[insertPosIndex] != -1) {
-		// there are some insertions left
-		test set: abcdef+[2 2] abcdef+[4 2 6] => I:[+6,+7]; II:[+3]
-		insertPosIndex++;
+	// now the difference in number of insertions is equal to the difference in chromosome length, we can assume pairs of simultaneous insertions.
+	// we order the insertions from left to right (smallest to largest index) in each chromosome and add them to the opposite chromosomes
+	// in pairs unless they are at the same locations, in which case they are skipped (if both chromosomes inserted at the same location)
+	int orderedFirst[WorldConst::MaxGenomeLengthDifference], orderedSecond[WorldConst::MaxGenomeLengthDifference];
+	memcpy(orderedFirst, gen.first.lastInsertPos, sizeof(orderedFirst));
+	memcpy(orderedSecond, gen.second.lastInsertPos, sizeof(orderedSecond));
+	// sort:
+	for (int i=0; i<WorldConst::MaxGenomeLengthDifference-1; i++) {
+		if (orderedFirst[i] == orderedSecond[i] == -1)
+			break;
+		for (int j=i+1; j<WorldConst::MaxGenomeLengthDifference; j++) {
+			if (orderedFirst[i] > orderedFirst[j] && orderedFirst[j] != -1)
+				xchg(orderedFirst[i], orderedFirst[j]);
+			if (orderedSecond[i] > orderedSecond[j] && orderedSecond[j] != -1)
+				xchg(orderedSecond[i], orderedSecond[j]);
+		}
 	}
+	int toAddToSecond[WorldConst::MaxGenomeLengthDifference] { -1 };
+	int nToAddToSecond = 0;
+	int toAddToFirst[WorldConst::MaxGenomeLengthDifference] { -1 };
+	int nToAddToFirst = 0;
+	// add from first to second and from second to first unless the positions are the same:
+	int iFirst = 0, iSecond = 0;
+	while (orderedFirst[iFirst] != -1 || orderedSecond[iSecond] != -1) {
+		if (orderedFirst[iFirst] < orderedSecond[iSecond] || orderedSecond[iSecond] == -1) {
+			// add from first to second
+			int posToAddTo = orderedFirst[iFirst++];
+			toAddToSecond[nToAddToSecond++] = posToAddTo;
+			// must increment all insertion positions from second, both in orderedSecond and in gen.,second.lastInsertPos
+		}
+	}*/
 }
 
 /*
