@@ -19,8 +19,11 @@ struct Chromosome {
 	std::vector<Gene> genes;
 	// int lastInsertPos[WorldConst::MaxGenomeLengthDifference] { -1 };	// [0] is the oldest addition, highest index non -1 is the most recent
 	struct insertion {
-		int index;
-		int age;	// in number of generations
+		int index = -1;
+		int age = 0;	// in number of generations
+
+		insertion() = default;
+		insertion(int index, int age) : index(index), age(age) {}
 	};
 	std::vector<insertion> insertions;
 
@@ -57,6 +60,8 @@ private:
 	static int alterGene(Gene &g, float mutationChanceFactor);
 	static void alterMetaGene(MetaGene &m);
 	static void pullBackInsertions(Chromosome &c, int amount);
+	static void insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g);
+	static void trimInsertionList(Chromosome &c);
 };
 
 #endif /* GENETICS_GENOME_H_ */

@@ -52,6 +52,9 @@ struct Atom {
 struct GeneStop {
 };
 
+struct GeneNoOp {
+};
+
 struct GeneSkip {
 	Atom<int> minDepth;
 	Atom<int> maxDepth;
@@ -124,6 +127,7 @@ public:
 	gene_type type;		// the type of gene
 	union GeneData {
 		GeneStop gene_stop;
+		GeneNoOp gene_no_op;
 		GeneSkip gene_skip;
 		GeneCommand gene_command;
 		GeneAttribute gene_attribute;
@@ -134,6 +138,7 @@ public:
 		GeneBodyAttribute gene_body_attribute;
 
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
+		GeneData(GeneNoOp const &gnop) : gene_no_op(gnop) {}
 		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
 		GeneData(GeneCommand const &gc) : gene_command(gc) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
@@ -155,6 +160,7 @@ public:
 	}
 
 	Gene(GeneStop const &gs) : Gene(GENE_TYPE_STOP, gs) {}
+	Gene(GeneNoOp const &gnop) : Gene(GENE_TYPE_NO_OP, gnop) {}
 	Gene(GeneSkip const &gs) : Gene(GENE_TYPE_SKIP, gs) {}
 	Gene(GeneCommand const &gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
 	Gene(GeneAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}

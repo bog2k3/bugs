@@ -10,6 +10,7 @@
 #include "../utils/rand.h"
 #include "../utils/log.h"
 #include "../math/math2D.h"
+#include <set>
 
 Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	Chromosome c;
@@ -27,81 +28,110 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 			c.genes[i].data.gene_command.age++;	// should probably rebase all to 0 to avoid unsigned overflow - unlikely
 		i++;
 	}
-#error must also copy the insertion positions
+	// copy insertion list:
+	c.insertions = gen.first.insertions;	// both chromosomes should have identical lists
+	// increase all insertions' age:
+	for (uint i=0; i<c.insertions.size(); i++)
+		c.insertions[i].age++;
+	// perform some mutations:
 	alterChromosome(c);
 	return c;
 }
 
 void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
 	assert(amount > 0);
-	/*for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
+	for (uint i=0; i<c.insertions.size(); i++) {
 		int from = i + amount;
-		if (from < WorldConst::MaxGenomeLengthDifference)
-			c.lastInsertPos[i] = c.lastInsertPos[from];
-		else
-			c.lastInsertPos[i] = -1;
-	}*/
+		if (from < c.insertions.size())
+			c.insertions[i] = c.insertions[from];
+		else {
+			c.insertions.erase(c.insertions.begin()+i, c.insertions.end());
+			break;
+		}
+	}
+}
+
+void GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g) {
+	c.genes.insert(c.genes.begin() + ins.index, g);
+	// determine where in insertions we must add this new index
+	uint d=0;
+	while (d<c.insertions.size() && c.insertions[d].index <= ins.index) d++;
+	c.insertions.insert(c.insertions.begin()+d, ins);
+	// increment all insertions in second that are to the right of this one
+	for (; d<c.insertions.size(); d++)
+		c.insertions[d].index++;
+}
+
+void GeneticOperations::trimInsertionList(Chromosome &c) {
+	while (c.insertions.size() > (uint)WorldConst::MaxGenomeLengthDifference) {
+		// search for oldest entry and remove it
+		uint ioldest = 0;
+		for (uint i=1; i<c.insertions.size(); i++)
+			if (c.insertions[i].age > c.insertions[ioldest].age)
+				ioldest = i;
+		c.insertions.erase(c.insertions.begin()+ioldest);
+	}
 }
 
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
-	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
-	// compute the number of insertions from each chromosome:
-	/*int ins1 = 0, ins2 = 0;
-	for (int i=0; i<WorldConst::MaxGenomeLengthDifference; i++) {
-		if (gen.first.lastInsertPos[i] != -1)
-			ins1++;
-		if (gen.second.lastInsertPos[i] != -1)
-			ins2++;
-	}
+	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= (uint)WorldConst::MaxGenomeLengthDifference);
+
+	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
+	Chromosome &c1 = gen.first;
+	Chromosome &c2 = gen.second;
+
 	// compute the length difference between chromosomes:
-	int dif = gen.first.genes.size() - gen.second.genes.size();
+	int dif = c1.genes.size() - c2.genes.size();
 	// pull back the insertions on the one chromosome that is shorter until the difference in size matches the difference
 	// in number of insertions:
 	if (dif > 0) {
-		assert(ins1 >= ins2);
+		assert(c1.insertions.size() >= c2.insertions.size());
 		// C2 is shorter
-		int pullback = dif - (ins1 - ins2);
+		int pullback = dif - (c1.insertions.size() - c2.insertions.size());
 		if (pullback > 0)
-			pullBackInsertions(gen.second, pullback);
+			pullBackInsertions(c2, pullback);
 	} else if (dif < 0) {
 		// C1 is shorter
-		assert(ins2 >= ins1);
-		int pullback = dif - (ins2 - ins1);
+		assert(c1.insertions.size() <= c2.insertions.size());
+		int pullback = dif - (c2.insertions.size() - c1.insertions.size());
 		if (pullback > 0)
-			pullBackInsertions(gen.first, pullback);
+			pullBackInsertions(c1, pullback);
 	}
-	// now the difference in number of insertions is equal to the difference in chromosome length, we can assume pairs of simultaneous insertions.
-	// we order the insertions from left to right (smallest to largest index) in each chromosome and add them to the opposite chromosomes
-	// in pairs unless they are at the same locations, in which case they are skipped (if both chromosomes inserted at the same location)
-	int orderedFirst[WorldConst::MaxGenomeLengthDifference], orderedSecond[WorldConst::MaxGenomeLengthDifference];
-	memcpy(orderedFirst, gen.first.lastInsertPos, sizeof(orderedFirst));
-	memcpy(orderedSecond, gen.second.lastInsertPos, sizeof(orderedSecond));
-	// sort:
-	for (int i=0; i<WorldConst::MaxGenomeLengthDifference-1; i++) {
-		if (orderedFirst[i] == orderedSecond[i] == -1)
-			break;
-		for (int j=i+1; j<WorldConst::MaxGenomeLengthDifference; j++) {
-			if (orderedFirst[i] > orderedFirst[j] && orderedFirst[j] != -1)
-				xchg(orderedFirst[i], orderedFirst[j]);
-			if (orderedSecond[i] > orderedSecond[j] && orderedSecond[j] != -1)
-				xchg(orderedSecond[i], orderedSecond[j]);
+
+	// keep track of which indexes from insertions vector were added at this step so we don't treat them again:
+	bool c1_added[2*WorldConst::MaxGenomeLengthDifference] {false};
+	bool c2_added[2*WorldConst::MaxGenomeLengthDifference] {false};
+	// now do the insertions:
+	decltype(c1.insertions) &ins1 = c1.insertions;
+	decltype(c2.insertions) &ins2 = c2.insertions;
+
+	for (uint i=0, j=0; i<ins1.size() || j<ins2.size(); ) {
+		bool fromFirst = i<ins1.size() && !c1_added[i];
+		if (fromFirst && j<ins2.size() && !c2_added[j]) {
+			if (ins1[i].index == ins2[j].index) {
+				// same position in both, just skip it
+				i++, j++;
+				continue;
+			}
+			fromFirst = ins1[i].index < ins2[j].index;		// choose the smallest insertion position first
+		}
+		if (fromFirst) {
+			// insert the current insertion from first to second;
+			insertNewGene(c2, ins1[i], GeneNoOp());
+			c2_added[ins1[i].index] = true;
+			// go to next location in ins1:
+			i++;
+		} else {
+			// insert the current insertion from second to first
+			insertNewGene(c1, ins2[j], GeneNoOp());
+			c1_added[ins2[j].index] = true;
+			// go to next location in ins2:
+			j++;
 		}
 	}
-	int toAddToSecond[WorldConst::MaxGenomeLengthDifference] { -1 };
-	int nToAddToSecond = 0;
-	int toAddToFirst[WorldConst::MaxGenomeLengthDifference] { -1 };
-	int nToAddToFirst = 0;
-	// add from first to second and from second to first unless the positions are the same:
-	int iFirst = 0, iSecond = 0;
-	while (orderedFirst[iFirst] != -1 || orderedSecond[iSecond] != -1) {
-		if (orderedFirst[iFirst] < orderedSecond[iSecond] || orderedSecond[iSecond] == -1) {
-			// add from first to second
-			int posToAddTo = orderedFirst[iFirst++];
-			toAddToSecond[nToAddToSecond++] = posToAddTo;
-			// must increment all insertion positions from second, both in orderedSecond and in gen.,second.lastInsertPos
-		}
-	}*/
+	trimInsertionList(c1);
+	trimInsertionList(c2);
 }
 
 /*
@@ -234,10 +264,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		else {
 			// must keep a record of last genes inserted (at most N, and if gametes have a difference of more than N genes, they don't fuse)
 			// when combining two gametes we must insert dummy genes at corespondend positions in the other chromosome, in order to realign the alelles.
-			c.genes.insert(c.genes.begin()+position, newGene);
-			for (int i=1; i<WorldConst::MaxGenomeLengthDifference; i++)
-				c.lastInsertPos[i] = c.lastInsertPos[i-1];
-			c.lastInsertPos[0] = position;
+			insertNewGene(c, Chromosome::insertion(position, 0), newGene);
 		}
 #ifdef DEBUG
 		stat_new++;
