@@ -31,8 +31,8 @@ public:
 			c();
 	}
 
-	template<typename... ArgTypes>
-	void trigger(ArgTypes... argList) {
+	template<typename... argTypes>
+	void trigger(argTypes... argList) {
 		for (auto c : callbackList_)
 			if (c)
 				c(argList...);

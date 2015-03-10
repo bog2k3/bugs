@@ -170,6 +170,8 @@ Gene Gene::createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeur
 		return createRandomSynapseGene(nNeurons, nMotors, nSensors);
 	case GENE_TYPE_TRANSFER:
 		return createRandomTransferFuncGene(nNeurons);
+	case GENE_TYPE_NO_OP:
+		return GeneNoOp();
 	default:
 		ERROR("unhandled gene random type: " << type);
 		return GeneStop();
