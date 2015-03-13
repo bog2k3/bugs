@@ -63,7 +63,7 @@ void GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, 
 }
 
 void GeneticOperations::trimInsertionList(Chromosome &c) {
-	while (c.insertions.size() > (uint)WorldConst::MaxGenomeLengthDifference) {
+	while (c.insertions.size() > WorldConst::MaxGenomeLengthDifference) {
 		// search for oldest entry and remove it
 		uint ioldest = 0;
 		for (uint i=1; i<c.insertions.size(); i++)
@@ -75,7 +75,7 @@ void GeneticOperations::trimInsertionList(Chromosome &c) {
 
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
-	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= (uint)WorldConst::MaxGenomeLengthDifference);
+	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
 
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
 	Chromosome &c1 = gen.first;
