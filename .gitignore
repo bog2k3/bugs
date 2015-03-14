@@ -7,3 +7,8 @@ Debug/
 **/.project
 
 eclipse.sh
+/bugs/build/
+/bugs/dist/# This code depends on make tool being used
+
+bugs/.dep.inc
+bugs/nbproject/

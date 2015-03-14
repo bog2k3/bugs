@@ -35,6 +35,7 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 		c.insertions[i].age++;
 	// perform some mutations:
 	alterChromosome(c);
+	trimInsertionList(c);
 	return c;
 }
 
@@ -75,7 +76,8 @@ void GeneticOperations::trimInsertionList(Chromosome &c) {
 
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
-	assert(abs(gen.first.genes.size() - gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
+	LOGLN("diff: "<< (int)abs(gen.first.genes.size() - gen.second.genes.size()));
+	assert(abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
 
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
 	Chromosome &c1 = gen.first;
@@ -107,8 +109,12 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	decltype(c2.insertions) &ins2 = c2.insertions;
 
 	for (uint i=0, j=0; i<ins1.size() || j<ins2.size(); ) {
-		bool fromFirst = i<ins1.size() && !c1_added[i];
-		if (fromFirst && j<ins2.size() && !c2_added[j]) {
+		while (i<ins1.size() && c1_added[i])
+			i++;
+		while (j<ins2.size() && c2_added[j])
+			j++;
+		bool fromFirst = i<ins1.size();
+		if (fromFirst && j<ins2.size()) {
 			if (ins1[i].index == ins2[j].index) {
 				// same position in both, just skip it
 				i++, j++;
@@ -122,7 +128,7 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 			c2_added[ins1[i].index] = true;
 			// go to next location in ins1:
 			i++;
-		} else {
+		} else if (j<ins2.size()) {
 			// insert the current insertion from second to first
 			insertNewGene(c1, ins2[j], GeneNoOp());
 			c1_added[ins2[j].index] = true;
