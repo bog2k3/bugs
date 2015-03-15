@@ -56,10 +56,10 @@ void GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, 
 	c.genes.insert(c.genes.begin() + ins.index, g);
 	// determine where in insertions we must add this new index
 	uint d=0;
-	while (d<c.insertions.size() && c.insertions[d].index <= ins.index) d++;
+	while (d<c.insertions.size() && c.insertions[d].index < ins.index) d++;
 	c.insertions.insert(c.insertions.begin()+d, ins);
 	// increment all insertions in second that are to the right of this one
-	for (; d<c.insertions.size(); d++)
+	for (++d; d<c.insertions.size(); d++)
 		c.insertions[d].index++;
 }
 
@@ -127,14 +127,15 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 			insertNewGene(c2, ins1[i], GeneNoOp());
 			c2_added[ins1[i].index] = true;
 			// go to next location in ins1:
-			i++;
+			//i++;
 		} else if (j<ins2.size()) {
 			// insert the current insertion from second to first
 			insertNewGene(c1, ins2[j], GeneNoOp());
 			c1_added[ins2[j].index] = true;
 			// go to next location in ins2:
-			j++;
+			//j++;
 		}
+		i++, j++;
 	}
 	trimInsertionList(c1);
 	trimInsertionList(c2);
@@ -262,7 +263,8 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	}
 
 	// now there's a chance to spawn a new gene
-	if (randf() < constants::global_chance_to_spawn_gene * c.genes.size()) {
+	if (false && // DEBUG: disable adding new genes
+			randf() < constants::global_chance_to_spawn_gene * c.genes.size()) {
 		int position = randi(c.genes.size()-1);
 		Gene newGene(Gene::createRandom(c.genes.size()-position, nMotors, nSensors, nNeurons));
 		if (c.genes[position].type == GENE_TYPE_NO_OP)
