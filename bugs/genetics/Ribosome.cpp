@@ -192,7 +192,7 @@ bool Ribosome::step() {
 			hasFirst = bug_->genome_.first.genes[offset].type != GENE_TYPE_NO_OP;
 		if (hasSecond)
 			hasSecond = bug_->genome_.second.genes[offset].type != GENE_TYPE_NO_OP;
-		if (!hasFirst && !hasSecond)
+		if (!hasFirst && !hasSecond && !reachedTheEnd)
 			continue;
 		Gene* g = nullptr;
 		if (!reachedTheEnd) {

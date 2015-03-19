@@ -488,7 +488,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// joint1 offs:
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(5*BodyConst::initialJointSize);
+	ga.value.set(8*BodyConst::initialJointSize);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
@@ -681,6 +681,23 @@ Chromosome Bug::createBasicChromosome() {
 	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
 	ga.value.set(0);
 	c.genes.push_back(ga);
+
+	// finished with adding genes.
+	// now we need to add some redundancy in between genes:
+	int padding = 2;
+	for (uint i=0; i<c.genes.size(); i+=padding+1) {
+		for (int k=0; k<padding; k++)
+			c.genes.insert(c.genes.begin()+i+1, GeneNoOp());
+		if (c.genes[i].type == GENE_TYPE_SKIP) {
+			c.genes[i].data.gene_skip.count.set(c.genes[i].data.gene_skip.count * (padding+1));
+		}
+		if (c.genes[i].type == GENE_TYPE_DEVELOPMENT) {
+			c.genes[i].data.gene_command.genomeOffset.set(c.genes[i].data.gene_command.genomeOffset * (padding+1));
+			c.genes[i].data.gene_command.genomeOffsetJoint.set(c.genes[i].data.gene_command.genomeOffsetJoint * (padding+1));
+			c.genes[i].data.gene_command.genomeOffsetMuscle1.set(c.genes[i].data.gene_command.genomeOffsetMuscle1 * (padding+1));
+			c.genes[i].data.gene_command.genomeOffsetMuscle2.set(c.genes[i].data.gene_command.genomeOffsetMuscle2 * (padding+1));
+		}
+	}
 
 	return c;
 }

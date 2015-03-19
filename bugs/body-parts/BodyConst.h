@@ -33,7 +33,7 @@ public:
 	static constexpr float TorsoEnergyDensity				= 100.f;		// [J/m^2] how much ready-to-use energy the torso can store
 	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*]
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
-	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.8f;			// [m/s] max meters/second linear contraction speed
+	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.6f;			// [m/s] max meters/second linear contraction speed
 	static constexpr float FatDensity						= 8.f;			// [kg/m^2]
 	static constexpr float FatDensityInv					= 1.f/FatDensity;	// [m^2/kg]
 	static constexpr float FatEnergyDensity					= 0.5e+4f;		// [J/kg]
@@ -43,14 +43,14 @@ public:
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
-	static constexpr float JointTorqueToleranceFactor		= 2.0e+2f;		// [*] how much torque a joint can take, relative to its size
+	static constexpr float JointTorqueToleranceFactor		= 1.0e+2f;		// [*] how much torque a joint can take, relative to its size
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
 	static constexpr float initialBodyPartDensity			= 10.f;			// [kg/m^2]
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
 	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
-	static constexpr float initialJointSize					= 1.4e-4f;		// [m^2]
+	static constexpr float initialJointSize					= 1.9e-4f;		// [m^2]
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.9f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
