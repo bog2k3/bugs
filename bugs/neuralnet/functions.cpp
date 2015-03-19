@@ -43,17 +43,26 @@ float transfer_fn_sin(float value, float arg) {
 
 // ln(value)
 float transfer_fn_ln(float value, float arg) {
-	return log(value);
+	if (value <= 0)
+		return -1.e+10f;
+	else
+		return log(value);
 }
 
 // arg^value
 float transfer_fn_exp(float value, float arg) {
-	return pow(arg, value);
+	if (arg < 0)
+		return pow(arg, (int)value);
+	else
+		return pow(arg, value);
 }
 
 // value^arg
 float transfer_fn_pow(float value, float arg) {
-	return pow(value, arg);
+	if (value < 0)
+		return pow(value, (int)arg);
+	else
+		return pow(value, arg);
 }
 
 // rand(value)

@@ -66,8 +66,8 @@ int main() {
 	physicsDraw.SetFlags(
 				  b2Draw::e_shapeBit
 				//| b2Draw::e_centerOfMassBit
-				// | b2Draw::e_jointBit
-				// | b2Draw::e_aabbBit
+				//| b2Draw::e_jointBit
+				//| b2Draw::e_aabbBit
 			);
 	physWld.SetDebugDraw(&physicsDraw);
 
@@ -99,13 +99,13 @@ int main() {
 
 	for (int i=0; i<25; i++) {
 		FoodDispenser* foodDisp = new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0);
-		World::getInstance()->takeOwnershipOf(foodDisp);
+		//World::getInstance()->takeOwnershipOf(foodDisp);
 	}
 
 	for (int i=0; i<20; i++) {
 		Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
 		//Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-		if (i==8)
+		//if (i==8)
 			World::getInstance()->takeOwnershipOf(bug);
 	}
 

@@ -140,6 +140,8 @@ float Joint::getJointAngle() {
 }
 
 void Joint::addTorque(float t, float maxSpeed) {
+	assert(!std::isnan(t));
+	assert(!std::isnan(maxSpeed));
 	vecTorques.push_back(std::make_pair(t, maxSpeed));
 }
 
