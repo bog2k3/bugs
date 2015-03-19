@@ -248,6 +248,8 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 
 void Ribosome::decodeGene(Gene &g, BodyPart* part, int crtPosition, bool deferNeural) {
 	switch (g.type) {
+	case GENE_TYPE_NO_OP:
+		break;
 	case GENE_TYPE_DEVELOPMENT:
 		decodeDevelopCommand(g.data.gene_command, part, crtPosition);
 		break;

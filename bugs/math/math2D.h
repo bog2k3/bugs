@@ -96,6 +96,7 @@ template<typename T> inline T lerp_lookup(const T* v, int nV, float position) {
 		// lerp with next value
 		value = lerp(value, v[index+1], lerpFact - 0.5f);
 	}
+	assert(!std::isnan(value));
 	return value;
 }
 

@@ -179,6 +179,7 @@ void Muscle::commit() {
 
 		float D = 4*sqr(h)*(sqr(dx)*(sqr(CM)-p*CM-1) + sqr(h*p)) + sqr(sqr(dx));
 		assert(D>=0);
+		#error above if D<0 we should disable this muscle permanently
 		float sqrtD = sqrt(D);
 		float bneg = -2*sqr(dx)*h*CM + sqr(dx)*h*p;
 		float denom = 1.f / (2*sqr(h*p) - 2*sqr(dx));

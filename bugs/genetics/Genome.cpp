@@ -263,7 +263,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	}
 
 	// now there's a chance to spawn a new gene
-	if (false && // DEBUG: disable adding new genes
+	if (//false && // DEBUG: disable adding new genes
 			randf() < constants::global_chance_to_spawn_gene * c.genes.size()) {
 		int position = randi(c.genes.size()-1);
 		Gene newGene(Gene::createRandom(c.genes.size()-position, nMotors, nSensors, nNeurons));
@@ -304,6 +304,13 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	int altered = 0;
 	switch (g.type) {
 	case GENE_TYPE_STOP:
+		break;
+	case GENE_TYPE_NO_OP:
+		break;
+	case GENE_TYPE_SKIP:
+		altered += alterAtom(g.data.gene_skip.count, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_skip.maxDepth, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_skip.minDepth, mutationChanceFactor);
 		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		altered += alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
@@ -355,6 +362,13 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 	float ret = g.chance_to_delete.value + g.chance_to_swap.value;
 	switch (g.type) {
 	case GENE_TYPE_STOP:
+		break;
+	case GENE_TYPE_NO_OP:
+		break;
+	case GENE_TYPE_SKIP:
+		ret += g.data.gene_skip.count.chanceToMutate.value;
+		ret += g.data.gene_skip.maxDepth.chanceToMutate.value;
+		ret += g.data.gene_skip.minDepth.chanceToMutate.value;
 		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		ret += g.data.gene_body_attribute.value.chanceToMutate.value;
