@@ -148,9 +148,11 @@ void Joint::addTorque(float t, float maxSpeed) {
 void Joint::update(float dt) {
 	if (isDead())
 		return;
-#warning must also break from reactionForce not only torque
-	float reactionTorque = physJoint_->GetReactionTorque(1.f/dt);
-	if (reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
+	float invdt = 1.f / dt;
+	float reactionTorque = physJoint_->GetReactionTorque(invdt);
+	float reactionForce = physJoint_->GetReactionForce(invdt).Length(); // TODO must tune
+	if (reactionForce > size_ * BodyConst::JointForceToleranceFactor
+		|| reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
 		// this joint is toast - must break free the downstream body parts
 		BodyPart* downStream = children_[0];
 		downStream->detach(true);

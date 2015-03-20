@@ -43,7 +43,8 @@ public:
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
-	static constexpr float JointTorqueToleranceFactor		= 1.5e+2f;		// [*] how much torque a joint can take, relative to its size
+	static constexpr float JointForceToleranceFactor		= 2.e+2f;		// [N/m^2] how much force a joint can take, relative to its size
+	static constexpr float JointTorqueToleranceFactor		= 1.5e+2f;		// [Nm/m^2] how much torque a joint can take, relative to its size
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
