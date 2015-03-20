@@ -150,7 +150,7 @@ void Joint::update(float dt) {
 		return;
 	float invdt = 1.f / dt;
 	float reactionTorque = physJoint_->GetReactionTorque(invdt);
-	float reactionForce = physJoint_->GetReactionForce(invdt).Length(); // TODO must tune
+	float reactionForce = physJoint_->GetReactionForce(invdt).Length();
 	if (reactionForce > size_ * BodyConst::JointForceToleranceFactor
 		|| reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
 		// this joint is toast - must break free the downstream body parts
