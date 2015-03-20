@@ -125,7 +125,7 @@ bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, bool
 
 #ifdef DEBUG
 void BodyPart::checkCircularBuffer(bool noOverlap, bool checkOrder) {
-	constexpr float child_span = 2*PI/MAX_CHILDREN;
+	constexpr float child_span = 1.9f*PI/MAX_CHILDREN; // 1.9f instead of 2 to allow some room for round-offs and shit
 	float gapPos = 0, gapNeg = 0;
 	for (int i=0; i<nChildren_; i++) {
 		int in = circularNext(i, nChildren_);
@@ -205,7 +205,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 	part->parent_ = this;
 	part->setAttachmentDirection(angle);
 	part->onAddedToParent();
-	constexpr float span = 2*PI/MAX_CHILDREN;
+	constexpr float span = 1.9f*PI/MAX_CHILDREN; // 1.9f instead of 2 to allow some room for round-offs and shit
 	float gapLeftBefore = 2*PI-span, gapLeftAfter = 2*PI-span; // initial values valid for no other children case
 	bool overlapsNext = false, overlapsPrev = false;
 	if (nChildren_ > 1) {
@@ -224,6 +224,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 	initialData_->circularBuffer[bufferPos].set(gapLeftBefore, gapLeftAfter);
 	// done
 	if (overlapsNext || overlapsPrev) {
+#warning if this was the MAX_CHILDRENth child, the following will fail (must fix):
 		fixOverlaps(bufferPos);
 		// fix order if some parts crossed the zero line
 		while (children_[0]->attachmentDirectionParent_ > children_[1]->attachmentDirectionParent_) {
@@ -259,7 +260,7 @@ void BodyPart::fixOverlaps(int startIndex) {
 #endif
 	bool overlapsNext = initialData_->circularBuffer[startIndex].gapAfter <= 0;
 	bool overlapsPrev = initialData_->circularBuffer[startIndex].gapBefore <= 0;
-	constexpr float span = 2*PI/MAX_CHILDREN;
+	constexpr float span = 1.9f*PI/MAX_CHILDREN; // 1.9f instead of 2 to allow some room for round-offs and shit
 	// more iterations may be required, since the first gaps found may not be enough:
 	float gapNeeded = (overlapsNext ? -initialData_->circularBuffer[startIndex].gapAfter : 0) +
 						(overlapsPrev ? -initialData_->circularBuffer[startIndex].gapBefore : 0);
