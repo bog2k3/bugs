@@ -187,6 +187,7 @@ void Muscle::commit() {
 		float r1 = (bneg + dx*sqrtD) * denom;
 		float r2 = (bneg - dx*sqrtD) * denom;
 		float r = r1 < 0 ? r2 : (r2 < 0 ? r1 : min(r1, r2));	// use the smaller non-negative value
+		assertDbg(!std::isnan(r));
 
 		// now compute the rsinalpha and hcosbeta tables for 10 intermediate steps:
 		phiAngleStep_ = (phi_MAX - phi_min) / nAngleSteps;
@@ -199,8 +200,10 @@ void Muscle::commit() {
 			float phi = phi_min + phiAngleStep_ * i;
 			glm::vec2 r_v_norm(glm::rotate(phi0_v, phi));
 			glm::vec2 t_v_norm(glm::normalize(h_v + r_v_norm*r));
-			float alpha = acosf(glm::dot(t_v_norm, r_v_norm));
-			float beta = acosf(glm::dot(h_v_norm, t_v_norm));
+			float t_dot_v = glm::dot(t_v_norm, r_v_norm);
+			float alpha = acosf(clamp(t_dot_v, -1.f, 1.f));
+			float h_dot_t = glm::dot(h_v_norm, t_v_norm);
+			float beta = acosf(clamp(h_dot_t, -1.f, 1.f));
 			phiToRSinAlphaHSinBeta_[i] = r * sinf(alpha) + h * sinf(beta);
 #ifdef DEBUG_DRAW_MUSCLE
 			phiToDx_[i] = t0 - glm::length(h_v + r_v_norm*r);
