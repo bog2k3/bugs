@@ -10,6 +10,7 @@
 #include "math/math2D.h"
 #include "math/box2glm.h"
 #include "utils/log.h"
+#include "utils/assert.h"
 #include <glm/glm.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
@@ -35,7 +36,7 @@ World::~World() {
 
 void World::free() {
 	for (Entity* e : entities) {
-		e->markedForDeletion_ = true;
+		e->markedForDeletion_= true;
 		delete e;
 	}
 	for (Entity* e : entsToTakeOver) {
@@ -55,7 +56,7 @@ bool World::ReportFixture(b2Fixture* fixture) {
 }
 
 b2Body* World::getBodyAtPos(glm::vec2 pos) {
-	assert(b2QueryResult.empty());
+	assertDbg(b2QueryResult.empty());
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(0.005f, 0.005f);
 	aabb.upperBound = g2b(pos) + b2Vec2(0.005f, 0.005f);
@@ -74,7 +75,7 @@ b2Body* World::getBodyAtPos(glm::vec2 pos) {
 }
 
 void World::getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies) {
-	assert(b2QueryResult.empty());
+	assertDbg(b2QueryResult.empty());
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(radius, radius);
 	aabb.upperBound = g2b(pos) + b2Vec2(radius, radius);
@@ -106,17 +107,17 @@ void World::destroyPending() {
 			Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 			if (flags & Entity::FF_UPDATABLE) {
 				auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
-				assert(it != entsToUpdate.end());
+				assertDbg(it != entsToUpdate.end());
 				entsToUpdate.erase(it);
 			}
 			if (flags & Entity::FF_DRAWABLE) {
 				auto it = std::find(entsToDraw.begin(), entsToDraw.end(), e);
-				assert(it != entsToDraw.end());
+				assertDbg(it != entsToDraw.end());
 				entsToDraw.erase(it);
 			}
 			delete e;
 		} else {
-			LOGLN("[WARNING] World skip DESTROY unmanaged obj: "<<e);
+			ERROR("[WARNING] World skip DESTROY unmanaged obj: "<<e);
 		}
 	}
 }
@@ -138,11 +139,11 @@ void World::takeOverPending() {
 }
 
 void World::update(float dt) {
-	// delete pending entities:
-	destroyPending();
-
 	// take over pending entities:
 	takeOverPending();
+
+	// delete pending entities:
+	destroyPending();
 
 	// do the actual update on entities:
 	for (auto e : entsToUpdate)

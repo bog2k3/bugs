@@ -7,15 +7,18 @@
 
 #include "Entity.h"
 #include "../World.h"
-#include <cassert>
+#include "../utils/assert.h"
+#include "../utils/log.h"
 
 Entity::~Entity() {
-	assert(markedForDeletion_ && "You should never call delete on an Entity directly! (use destroy() instead)");
+	assertDbg(markedForDeletion_ && "You should never call delete on an Entity directly! (use destroy() instead)");
 }
 
 void Entity::destroy() {
-	if (markedForDeletion_)
+	if (markedForDeletion_) {
+		LOGLN("WARNING: destroy called more than once!");
 		return;
+	}
 	markedForDeletion_ = true;
 	World::getInstance()->destroyEntity(this);
 }
