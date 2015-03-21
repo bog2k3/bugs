@@ -237,6 +237,8 @@ void Muscle::draw(RenderContext const& ctx) {
 	float crtAspect = aspectRatio_;
 #ifdef DEBUG_DRAW_MUSCLE
 	if (committed_) {
+		if (isDead())
+			return;
 		float w0 = sqrtf(size_ / aspectRatio_);
 		float l0 = aspectRatio_ * w0;
 		float dx = lerp_lookup(phiToDx_, nAngleSteps, getCurrentPhiSlice());

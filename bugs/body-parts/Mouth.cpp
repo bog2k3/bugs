@@ -41,7 +41,7 @@ Mouth::Mouth()
 	, usedBuffer_(0)
 	, pJoint(nullptr)
 {
-	physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
+	onCollisionEventHandle = physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
 	physBody_.userObjectType_ = ObjectTypes::BPART_MOUTH;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
@@ -54,6 +54,9 @@ Mouth::~Mouth() {
 void Mouth::die() {
 	if (getUpdateList())
 		getUpdateList()->remove(this);
+	physBody_.onCollision.remove(onCollisionEventHandle);
+	physBody_.collisionEventMask_ = 0;
+	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 void Mouth::onAddedToParent() {
@@ -125,15 +128,45 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 			0);
 	b2Vec2 otherSize = 2.f * otherAABB.GetExtents();
 	float maxSwallowRatio = min(1.f, width_ / max(max(width_, otherSize.x), otherSize.y));
+	float maxFoodAvailable = 0;
+
+	// check how much food there is:
 	switch (pOther->userObjectType_) {
 	case ObjectTypes::FOOD_CHUNK: {
 		FoodChunk* pChunk = static_cast<FoodChunk*>(pOther->userPointer_);
-		// how much mass could we swallow if buffer allowed it?
-		float maxSwallow = min(pChunk->getMassLeft(), maxSwallowRatio * pChunk->getInitialMass());
-		float bufferAvail = bufferSize_ - usedBuffer_;
-		float actualFoodAmountTransferred = min(bufferAvail, maxSwallow);
-		usedBuffer_ += actualFoodAmountTransferred;
-		pChunk->consume(actualFoodAmountTransferred);
+		maxFoodAvailable = pChunk->getMassLeft();
+		break;
+	case ObjectTypes::BPART_BONE:
+	case ObjectTypes::BPART_EGGLAYER:
+	case ObjectTypes::BPART_GRIPPER:
+	case ObjectTypes::BPART_MOUTH:
+	case ObjectTypes::BPART_TORSO:
+		maxFoodAvailable = static_cast<BodyPart*>(pOther->userPointer_)->getFoodValue();
+		break;
+	//case ObjectTypes::BPART_ZYGOTE:
+		//break;
+	}
+	default:
+		ERROR("Mouth can't handle object type "<<(int)pOther->userObjectType_)
+	};
+
+	// compute food amount that will be transfered:
+	float maxSwallow = min(maxFoodAvailable, maxSwallowRatio * pChunk->getInitialMass()); // how much mass could we swallow if buffer allowed it?
+	float bufferAvail = bufferSize_ - usedBuffer_;
+	float actualFoodAmountTransferred = min(bufferAvail, maxSwallow);
+	usedBuffer_ += actualFoodAmountTransferred;
+
+	// consume the food:
+	switch (pOther->userObjectType_) {
+	case ObjectTypes::FOOD_CHUNK: {
+		static_cast<FoodChunk*>(pOther->userPointer_)->consume(actualFoodAmountTransferred);
+		break;
+	case ObjectTypes::BPART_BONE:
+	case ObjectTypes::BPART_EGGLAYER:
+	case ObjectTypes::BPART_GRIPPER:
+	case ObjectTypes::BPART_MOUTH:
+	case ObjectTypes::BPART_TORSO:
+		static_cast<BodyPart*>(pOther->userPointer_)->consumeFoodValue(actualFoodAmountTransferred);
 		break;
 	}
 	default:

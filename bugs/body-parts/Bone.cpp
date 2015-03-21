@@ -50,6 +50,10 @@ Bone::~Bone() {
 	}
 }
 
+void Bone::die() {
+	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
+}
+
 void Bone::commit() {
 	if (committed_) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);

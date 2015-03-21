@@ -1,5 +1,5 @@
-* prevent attraction between incompatible gamettes
-* fix double deletion and other memory issues (valgrind)
+		* prevent attraction between incompatible gamettes
+* check for double deletion and other memory issues (valgrind)
 * serialization - load/save
 * !!! fix dev gene reusage neural linking		
 		* make gametes fuse into new zygotes

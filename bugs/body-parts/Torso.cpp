@@ -79,6 +79,8 @@ void Torso::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 #ifdef DEBUG_DRAW_TORSO
+		if (isDead())
+			return;
 		// draw the inner circle - actual torso size without fat
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
@@ -150,6 +152,7 @@ void Torso::die() {
 		commit();
 	if (getUpdateList())
 		getUpdateList()->remove(this);
+	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 float Torso::addFood(float mass) {

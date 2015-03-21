@@ -567,8 +567,22 @@ void BodyPart::die_tree() {
 	if (!dead_)
 		die();
 	dead_ = true;
+	foodValueLeft_ = size_ * density_;
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->die_tree();
+}
+
+void BodyPart::consumeFoodValue(float amount) {
+	if (dead_) {
+		foodValueLeft_ -= amount;
+		if (foodValueLeft_ <= 0)
+			detach(false);
+		for (int i=0; i<nChildren_; i++)
+			children_[i]->detach(false);
+		nChildren_ = 0;
+		destroy();
+#error "must attach children to parent (but if this is zygote?). must somehow inform bug entity"
+	}
 }
 
 void BodyPart::reattachChildren() {

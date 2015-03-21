@@ -39,6 +39,8 @@ public:
 
 	const Genome& getGenome() { return genome_; }
 
+	void kill();
+
 	/**
 	 * creates a new basic bug out of a default genome
 	 */

@@ -120,6 +120,9 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			delete ribosome_;
 			ribosome_ = nullptr;
+
+			if (randf() < 0.5)
+				kill();
 		}
 	}
 }
@@ -139,6 +142,12 @@ void Bug::updateDeadDecaying(float dt) {
 	// body parts loose their nutrient value gradually until they are deleted
 }
 
+void Bug::kill() {
+	LOGLN("bug DIED");
+	isAlive_ = false;
+	body_->die_tree();
+}
+
 void Bug::update(float dt) {
 	if (!isAlive_) {
 		updateDeadDecaying(dt);
@@ -155,9 +164,7 @@ void Bug::update(float dt) {
 
 	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
 		// we just depleted our energy supply and died
-		LOGLN("bug DIED");
-		isAlive_ = false;
-		body_->die_tree();
+		kill();
 		return;
 	}
 

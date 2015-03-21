@@ -153,6 +153,9 @@ public:
 
 	inline bool isDead() { return dead_; }
 
+	float getFoodValue() { return foodValueLeft_; }
+	void consumeFoodValue(float amount);
+
 protected:
 	// these are used when initializing the body and whenever a new commit is called.
 	// they contain world-space values that are updated only prior to committing
@@ -234,9 +237,10 @@ private:
 	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;
-	float lastCommitSize_inv_;
-	bool destroyCalled_;
-	bool dead_;
+	float lastCommitSize_inv_ = 0;
+	bool destroyCalled_ = false;
+	bool dead_ = false;
+	float foodValueLeft_ = 0;
 
 #ifdef DEBUG
 	void checkCircularBuffer(bool noOverlap, bool checkOrder);

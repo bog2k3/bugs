@@ -22,7 +22,9 @@ static const int UPDATE_PERIOD = 10; // [frames]
 
 Gamete::Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 	: chromosome_(ch)
-	, body_(ObjectTypes::GAMETE, this, EventCategoryFlags::GAMETE, EventCategoryFlags::GAMETE)
+	, body_(ObjectTypes::GAMETE, this,
+			EventCategoryFlags::GAMETE,
+			EventCategoryFlags::GAMETE)
 {
 	PhysicsProperties props(pos, 0, true, speed, 0);
 	body_.create(props);

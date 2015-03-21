@@ -45,6 +45,9 @@ EggLayer::EggLayer()
 
 	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_EGG_EJECT_SPEED, data->ejectSpeed);
+
+	physBody_.userObjectType_ = ObjectTypes::BPART_EGGLAYER;
+	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
 EggLayer::~EggLayer() {
@@ -53,6 +56,7 @@ EggLayer::~EggLayer() {
 void EggLayer::die() {
 	if (getUpdateList())
 		getUpdateList()->remove(this);
+	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 float EggLayer::getMass_tree() {
@@ -62,6 +66,8 @@ float EggLayer::getMass_tree() {
 void EggLayer::draw(RenderContext const& ctx) {
 	if (committed_) {
 #ifdef DEBUG_DRAW_EGGLAYER
+		if (isDead())
+			return;
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		float r_2 = sqrtf(size_*PI_INV) * 0.5f;

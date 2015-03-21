@@ -34,6 +34,7 @@ protected:
 
 	void commit() override;
 	void cacheInitializationData() override;
+	void die() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

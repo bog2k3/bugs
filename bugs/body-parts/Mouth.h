@@ -34,6 +34,7 @@ protected:
 	float bufferSize_;
 	float usedBuffer_;
 	b2WeldJoint* pJoint;
+	int onCollisionEventHandle;
 
 	void cacheInitializationData() override;
 	void commit() override;
