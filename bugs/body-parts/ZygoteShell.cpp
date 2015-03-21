@@ -19,7 +19,7 @@
 
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
-ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
+ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
 	: BodyPart(BODY_PART_ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
 	, mass_(mass)
 	, dead_(false)
@@ -35,6 +35,7 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float mass)
 	cacheInitializationData();
 	computeBodyPhysProps();
 	cachedProps_.position = position;
+	cachedProps_.velocity = velocity;
 	physBody_.create(cachedProps_);
 	commit();
 	committed_ = true;

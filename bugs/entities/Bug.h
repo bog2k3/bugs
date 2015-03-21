@@ -28,7 +28,7 @@ class EggLayer;
 
 class Bug : public Entity {
 public:
-	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position);
+	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity);
 	virtual ~Bug();
 	FunctionalityFlags getFunctionalityFlags() override {
 		return FF_UPDATABLE | FF_DRAWABLE;

@@ -50,16 +50,24 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 	Gamete *other = (Gamete*)pOther->userPointer_;
 	if (other->isZombie())
 		return;
-	if (abs((int)other->getChromosome().genes.size() - (int)chromosome_.genes.size()) > WorldConst::MaxGenomeLengthDifference)
+	if ((uint)abs((int)other->getChromosome().genes.size() - (int)chromosome_.genes.size()) > WorldConst::MaxGenomeLengthDifference)
 		return;
 	Genome g;
+	// combine the two chromosomes into a single genome
 	g.first = chromosome_;
 	g.second = other->chromosome_;
+	// fix gene synchronizations between the two chromosomes:
 	GeneticOperations::fixGenesSynchro(g);
+	// compute resultant velocity for new zygote:
+	b2Vec2 velocity = (body_.b2Body_->GetMass() * body_.b2Body_->GetLinearVelocity()
+			+ other->body_.b2Body_->GetMass() * other->body_.b2Body_->GetLinearVelocity());
+	velocity *= 1.f / (body_.b2Body_->GetMass() + other->body_.b2Body_->GetMass());
+	// now create the zygote:
 	Bug *newlySpawnedBug = new Bug(g,
 			body_.b2Body_->GetMass() + other->body_.b2Body_->GetMass(),
-			(body_.getPosition() + other->body_.getPosition()) * 0.5f);
+			(body_.getPosition() + other->body_.getPosition()) * 0.5f, b2g(velocity));
 	World::getInstance()->takeOwnershipOf(newlySpawnedBug);
+	// destroy these gamettes:
 	destroy();
 	other->destroy();
 }
@@ -80,7 +88,7 @@ void Gamete::update(float dt) {
 			// found another gamete, let's attract each other
 			// p.s.: only attract and fuse if they don't differ by more than N in the number of genes - N is the same as the new gene recorded history
 			Gamete* other = (Gamete*)((PhysicsBody*)b->GetUserData())->userPointer_;
-			if (abs((int)other->getChromosome().genes.size() - (int)chromosome_.genes.size()) > WorldConst::MaxGenomeLengthDifference)
+			if ((uint)abs((int)other->getChromosome().genes.size() - (int)chromosome_.genes.size()) > WorldConst::MaxGenomeLengthDifference)
 				continue;
 			b2Vec2 force = body_.b2Body_->GetPosition() - b->GetPosition();
 			float distance = force.Normalize();

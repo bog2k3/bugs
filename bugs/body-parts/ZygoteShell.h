@@ -12,7 +12,7 @@
 
 class ZygoteShell: public BodyPart {
 public:
-	ZygoteShell(glm::vec2 position, float mass);
+	ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass);
 	~ZygoteShell() override;
 
 	void draw(RenderContext const& ctx) override;

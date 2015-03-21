@@ -26,7 +26,7 @@
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
-Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
+Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity)
 	: genome_(genome)
 	, neuralNet_(new NeuralNet())
 	, ribosome_(nullptr)
@@ -47,7 +47,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position)
 	, eggMass_(BodyConst::initialEggMass)
 {
 	// create embryo shell:
-	zygoteShell_ = new ZygoteShell(position, zygoteMass);
+	zygoteShell_ = new ZygoteShell(position, velocity, zygoteMass);
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
 	zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
@@ -705,7 +705,7 @@ Chromosome Bug::createBasicChromosome() {
 Bug* Bug::newBasicBug(glm::vec2 position) {
 	Genome g;
 	g.first = g.second = createBasicChromosome(); // make a duplicate of all genes into the second chromosome
-	return new Bug(g, 2*BodyConst::initialEggMass, position);
+	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0));
 }
 
 Bug* Bug::newBasicMutantBug(glm::vec2 position) {
@@ -714,5 +714,5 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 	GeneticOperations::alterChromosome(g.first);
 	GeneticOperations::alterChromosome(g.second);
 	GeneticOperations::fixGenesSynchro(g);
-	return new Bug(g, 2*BodyConst::initialEggMass, position);
+	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0));
 }
