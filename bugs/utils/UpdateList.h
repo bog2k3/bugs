@@ -21,22 +21,22 @@ public:
 		pendingAdd_.push_back(w);
 	}
 
-	void remove(updatable_wrap w) {
-		pendingRemove_.push_back(w);
+	void remove(void* ptr) {
+		pendingRemove_.push_back(ptr);
 	}
 
 	void update(float dt) {
+		// add pending:
+		std::move(pendingAdd_.begin(), pendingAdd_.end(), std::back_inserter(list_));
+		pendingAdd_.clear();
 		// remove pending:
 		list_.erase(std::remove_if(list_.begin(), list_.end(), [this] (const updatable_wrap& x) {
-			for (auto &r : pendingRemove_)
-				if (x.equal_value(r))
+			for (void* ptr : pendingRemove_)
+				if (x.equal_raw(ptr))
 					return true;
 			return false;
 		}), list_.end());
 		pendingRemove_.clear();
-		// add pending:
-		std::move(pendingAdd_.begin(), pendingAdd_.end(), std::back_inserter(list_));
-		pendingAdd_.clear();
 		// do update on current elements:
 		for (auto &w : list_)
 			w.update(dt);
@@ -45,7 +45,7 @@ public:
 private:
 	std::vector<updatable_wrap> list_;
 	std::vector<updatable_wrap> pendingAdd_;
-	std::vector<updatable_wrap> pendingRemove_;
+	std::vector<void*> pendingRemove_;
 };
 
 #endif /* UPDATELIST_H_ */

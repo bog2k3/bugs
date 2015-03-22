@@ -43,8 +43,6 @@ public:
 
 	void addTorque(float t, float maxSpeed);
 
-	Event<void(Joint*)> onDie;
-
 protected:
 	b2RevoluteJoint* physJoint_;
 	float phiMin_;
@@ -59,6 +57,11 @@ protected:
 	void die() override;
 	void onAddedToParent() override;
 	void onDetachedFromParent() override;
+	void onPhysJointDestroyed(b2Joint* joint);
+	void destroyPhysJoint();
+
+private:
+	unsigned jointListenerHandle_ = 0;
 };
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

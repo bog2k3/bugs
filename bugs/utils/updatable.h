@@ -28,6 +28,10 @@ public:
 		return self_->getRawPtr() == w.self_->getRawPtr();
 	}
 
+	bool equal_raw(void* ptr) const {
+		return self_->getRawPtr() == ptr;
+	}
+
 	void update(float dt) {
 		self_->update_(dt);
 	}

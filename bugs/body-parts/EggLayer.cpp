@@ -47,6 +47,7 @@ EggLayer::EggLayer()
 	registerAttribute(GENE_ATTRIB_EGG_EJECT_SPEED, data->ejectSpeed);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_EGGLAYER;
+	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 

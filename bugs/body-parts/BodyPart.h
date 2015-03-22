@@ -151,15 +151,17 @@ public:
 	 */
 	virtual float add(BodyPart* part, float angle);
 	/*
-	 * Flatten the hierarchy, adding each body part and its children into the list past as parameter.
-	 * After this operation no body part will have a parent or children any more.
+	 * remove all links, to parent and children. Calling this makes you responsible for the children, make sure
+	 * they don't get leaked.
 	 */
-	void flattenHierarchy(std::vector<BodyPart*> &holderList);
+	void removeAllLinks();
 
 	inline bool isDead() { return dead_; }
 
 	float getFoodValue() { return foodValueLeft_; }
 	void consumeFoodValue(float amount);
+
+	Event<void(BodyPart* part)> onDied;
 
 protected:
 	// these are used when initializing the body and whenever a new commit is called.
@@ -224,6 +226,9 @@ protected:
 	// call this if the fixture changed for any reason:
 	void reattachChildren();
 	void computeBodyPhysProps();
+	// adds the part to this parent just as reference (does not place it on the current part)
+	void addRef(BodyPart* part);
+	friend class Joint;
 
 	virtual void detachMotorLines(std::vector<int> const& lines);
 	virtual void hierarchyMassChanged();

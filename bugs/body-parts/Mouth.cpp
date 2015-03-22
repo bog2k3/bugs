@@ -133,9 +133,9 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	// check how much food there is:
 	switch (pOther->userObjectType_) {
 	case ObjectTypes::FOOD_CHUNK: {
-		FoodChunk* pChunk = static_cast<FoodChunk*>(pOther->userPointer_);
-		maxFoodAvailable = pChunk->getMassLeft();
+		maxFoodAvailable = static_cast<FoodChunk*>(pOther->userPointer_)->getMassLeft();
 		break;
+	}
 	case ObjectTypes::BPART_BONE:
 	case ObjectTypes::BPART_EGGLAYER:
 	case ObjectTypes::BPART_GRIPPER:
@@ -145,16 +145,17 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 		break;
 	//case ObjectTypes::BPART_ZYGOTE:
 		//break;
-	}
 	default:
 		ERROR("Mouth can't handle object type "<<(int)pOther->userObjectType_)
 	};
 
 	// compute food amount that will be transfered:
-	float maxSwallow = min(maxFoodAvailable, maxSwallowRatio * pChunk->getInitialMass()); // how much mass could we swallow if buffer allowed it?
+	float maxSwallow = min(maxFoodAvailable, maxSwallowRatio * maxFoodAvailable); // how much mass could we swallow if buffer allowed it?
 	float bufferAvail = bufferSize_ - usedBuffer_;
 	float actualFoodAmountTransferred = min(bufferAvail, maxSwallow);
 	usedBuffer_ += actualFoodAmountTransferred;
+
+	// LOGLN("eat " << (int)pOther->userObjectType_ << " in amount: " << actualFoodAmountTransferred);
 
 	// consume the food:
 	switch (pOther->userObjectType_) {

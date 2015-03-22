@@ -82,7 +82,7 @@ Muscle::Muscle(Joint* joint, int motorDirSign)
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
 
-	joint_->onDie.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
+	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
 }
 
 Muscle::~Muscle() {
@@ -93,7 +93,7 @@ void Muscle::die() {
 		getUpdateList()->remove(this);
 }
 
-void Muscle::onJointDied(Joint* joint) {
+void Muscle::onJointDied(BodyPart* joint) {
 	assert(joint == joint_);
 	joint_ = nullptr;
 	if (getUpdateList())

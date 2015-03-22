@@ -16,6 +16,7 @@
 class b2World;
 class b2Body;
 class Entity;
+class PhysDestroyListener;
 
 class World : public IOperationSpatialLocator, public b2QueryCallback {
 public:
@@ -35,6 +36,8 @@ public:
 	bool ReportFixture(b2Fixture* fixture) override;
 
 	void setPhysics(b2World* physWld);
+	void setDestroyListener(PhysDestroyListener *listener) { destroyListener_ = listener; }
+	PhysDestroyListener* getDestroyListener() { return destroyListener_; }
 	b2World* getPhysics() { return physWld; }
 	b2Body* getGroundBody() { return groundBody; }
 
@@ -54,6 +57,7 @@ protected:
 	std::vector<Entity*> entsToDestroy;
 	std::vector<Entity*> entsToTakeOver;
 	std::vector<b2Fixture*> b2QueryResult;
+	PhysDestroyListener *destroyListener_ = nullptr;
 
 	void destroyPending();
 	void takeOverPending();

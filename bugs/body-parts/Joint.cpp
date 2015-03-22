@@ -14,6 +14,7 @@
 #include "../utils/log.h"
 #include "../utils/assert.h"
 #include "../utils/UpdateList.h"
+#include "../PhysDestroyListener.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -49,8 +50,10 @@ Joint::Joint()
 
 Joint::~Joint() {
 	if (committed_ && physJoint_) {
-		World::getInstance()->getPhysics()->DestroyJoint(physJoint_);
+		destroyPhysJoint();
 	}
+	if (getUpdateList())
+		getUpdateList()->remove(this);
 }
 
 void Joint::onAddedToParent() {
@@ -62,8 +65,7 @@ void Joint::commit() {
 	assert(nChildren_ == 1);
 
 	if (committed_) {
-		physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
-		physJoint_ = nullptr;
+		destroyPhysJoint();
 	}
 
 	b2RevoluteJointDef def;
@@ -90,15 +92,24 @@ void Joint::commit() {
 	//def.collideConnected = true;
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
+	jointListenerHandle_ = World::getInstance()->getDestroyListener()->addCallback(physJoint_,
+			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));
+}
+
+void Joint::destroyPhysJoint() {
+	World::getInstance()->getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
+	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
+	physJoint_ = nullptr;
 }
 
 glm::vec3 Joint::getWorldTransformation() {
 	if (!committed_)
 		return BodyPart::getWorldTransformation();
-	else {
+	else if (physJoint_) {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
 			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());
-	}
+	} else
+		return glm::vec3(0);
 }
 
 void Joint::draw(RenderContext const& ctx) {
@@ -108,6 +119,8 @@ void Joint::draw(RenderContext const& ctx) {
 	} else
 #endif
 	{
+		if (!physJoint_)
+			return;
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
 		ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
@@ -140,13 +153,13 @@ float Joint::getJointAngle() {
 }
 
 void Joint::addTorque(float t, float maxSpeed) {
-	assert(!std::isnan(t));
-	assert(!std::isnan(maxSpeed));
+	assertDbg(!std::isnan(t));
+	assertDbg(!std::isnan(maxSpeed));
 	vecTorques.push_back(std::make_pair(t, maxSpeed));
 }
 
 void Joint::update(float dt) {
-	if (isDead())
+	if (!physJoint_)
 		return;
 	float invdt = 1.f / dt;
 	float reactionTorque = physJoint_->GetReactionTorque(invdt);
@@ -155,11 +168,14 @@ void Joint::update(float dt) {
 		|| reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
 		// this joint is toast - must break free the downstream body parts
 		BodyPart* downStream = children_[0];
-		downStream->detach(true);
-#error who becomes the owner of downstream?
-		destroy();
+		downStream->detach(true); // this will be taken over by bug entity
+		detach(true);
+		destroyPhysJoint();
 		return;
 	}
+
+	if (isDead())
+		return;
 
 	// compute the resulting torque and speed and apply it to the joint
 	float minSpeed = 0, maxSpeed = 0;
@@ -193,13 +209,16 @@ void Joint::update(float dt) {
 void Joint::die() {
 	if (committed_ && physJoint_)
 		physJoint_->EnableMotor(false);
-	if (getUpdateList())
-		getUpdateList()->remove(this);
-	onDie.trigger(this);
 }
 
 void Joint::onDetachedFromParent() {
-	if (physJoint_)
+	/*if (physJoint_) {
 		World::getInstance()->getPhysics()->DestroyJoint(physJoint_);
+		physJoint_ = nullptr;
+	}*/
+}
+
+void Joint::onPhysJointDestroyed(b2Joint* joint) {
 	physJoint_ = nullptr;
 }
+

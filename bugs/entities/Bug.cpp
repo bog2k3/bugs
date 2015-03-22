@@ -17,6 +17,8 @@
 #include "../body-parts/Torso.h"
 #include "../body-parts/BodyConst.h"
 #include "../body-parts/EggLayer.h"
+#include "../body-parts/BodyPart.h"
+#include "../body-parts/Joint.h"
 #include "../utils/log.h"
 #include "../World.h"
 #include "Bug/ISensor.h"
@@ -77,6 +79,10 @@ Bug::~Bug() {
 	else if (body_) {
 		body_->destroy();
 		body_ = nullptr;
+	} else {
+		for (auto bp : deadBodyParts_)
+			if (bp != nullptr)
+				bp->destroy();
 	}
 	if (ribosome_)
 		delete ribosome_;
@@ -121,6 +127,14 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			delete ribosome_;
 			ribosome_ = nullptr;
 
+			body_->applyRecursive([this](BodyPart* part) {
+				part->onDied.add([this](BodyPart *dying) {
+					deadBodyParts_.push_back(dying);
+					dying->removeAllLinks();
+				});
+				return false;
+			});
+
 			if (randf() < 0.5)
 				kill();
 		}
@@ -138,21 +152,27 @@ void Bug::fixAllGeneValues() {
 }
 
 void Bug::updateDeadDecaying(float dt) {
-	// dead, decaying
 	// body parts loose their nutrient value gradually until they are deleted
+	for (unsigned i=0; i<deadBodyParts_.size(); i++) {
+		if (!!!deadBodyParts_[i])
+			continue;
+		deadBodyParts_[i]->consumeFoodValue(dt * WorldConst::BodyDecaySpeed);
+		if (deadBodyParts_[i]->getFoodValue() <= 0) {
+			deadBodyParts_[i]->destroy();
+			bodyPartsUpdateList_.remove(deadBodyParts_[i]);
+			deadBodyParts_[i] = nullptr;
+		}
+	}
 }
 
 void Bug::kill() {
 	LOGLN("bug DIED");
 	isAlive_ = false;
 	body_->die_tree();
+	body_ = nullptr;
 }
 
 void Bug::update(float dt) {
-	if (!isAlive_) {
-		updateDeadDecaying(dt);
-		return;
-	}
 	if (isDeveloping_) {
 		updateEmbryonicDevelopment(dt);
 		return;
@@ -160,6 +180,11 @@ void Bug::update(float dt) {
 
 	lifeTimeSensor_.update(dt);
 	bodyPartsUpdateList_.update(dt);
+	updateDeadDecaying(dt); // this updates all dead body parts
+
+	if (!isAlive_)
+		return;
+
 	neuralNet_->iterate();
 
 	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
@@ -196,8 +221,12 @@ void Bug::update(float dt) {
 void Bug::draw(RenderContext const &ctx) {
 	if (zygoteShell_)
 		zygoteShell_->draw_tree(ctx);
-	else
+	else if (body_)
 		body_->draw_tree(ctx);
+	else
+		for (auto bp : deadBodyParts_)
+			if (bp)
+				bp->draw(ctx);
 }
 
 void Bug::onFoodProcessed(float mass) {

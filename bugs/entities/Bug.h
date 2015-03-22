@@ -25,6 +25,7 @@ class Ribosome;
 class Torso;
 class ZygoteShell;
 class EggLayer;
+class BodyPart;
 
 class Bug : public Entity {
 public:
@@ -68,6 +69,7 @@ protected:
 	float cachedLeanMass_;		// lean body mass cached; stored here for reasons of float precision
 	bool cachedMassDirty_;		// flag to signal that cachedLeanMass_ must be recomputed
 	std::vector<EggLayer*> eggLayers_;
+	std::vector<BodyPart*> deadBodyParts_;
 
 	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
 	CummulativeValue initialFatMassRatio_;

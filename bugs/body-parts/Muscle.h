@@ -63,7 +63,7 @@ protected:
 	void die() override;
 
 private:
-	void onJointDied(Joint* j);
+	void onJointDied(BodyPart* j);
 };
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

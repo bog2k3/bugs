@@ -14,6 +14,7 @@
 #include "body-parts/Joint.h"
 #include "World.h"
 #include "PhysContactListener.h"
+#include "PhysDestroyListener.h"
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
 #include "utils/log.h"
@@ -80,7 +81,11 @@ int main() {
 	PhysContactListener contactListener;
 	physWld.SetContactListener(&contactListener);
 
+	PhysDestroyListener destroyListener;
+	physWld.SetDestructionListener(&destroyListener);
+
 	World::getInstance()->setPhysics(&physWld);
+	World::getInstance()->setDestroyListener(&destroyListener);
 
 	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 	GLFWInput::initialize(gltGetWindow());

@@ -59,6 +59,7 @@ BodyPart::~BodyPart() {
 void BodyPart::destroy() {
 	destroyCalled_ = true;
 	detach(true);
+
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->destroy();
 	delete this;
@@ -184,6 +185,11 @@ void BodyPart::pushBodyParts(int index, float delta) {
 		checkCircularBuffer(false, false);
 #endif
 	}
+}
+
+void BodyPart::addRef(BodyPart* part) {
+	assertDbg(!!!initialData_); // this can only be called after initialization, otherwise it would screw the circular buffer
+	children_[nChildren_++] = part;
 }
 
 float BodyPart::add(BodyPart* part, float angle) {
@@ -367,7 +373,7 @@ void BodyPart::detach(bool die) {
 		parent_->hierarchyMassChanged();
 	}
 	parent_ = nullptr;
-	if (die)
+	if (die && !dead_)
 		die_tree();
 }
 
@@ -561,12 +567,14 @@ void BodyPart::consumeEnergy(float amount) {
 }
 
 void BodyPart::die_tree() {
-	if (!dead_)
+	if (!dead_) {
 		die();
-	dead_ = true;
-	foodValueLeft_ = size_ * density_;
+		dead_ = true;
+		foodValueLeft_ = size_ * density_;
+	}
 	for (int i=0; i<nChildren_; i++)
 		children_[i]->die_tree();
+	onDied.trigger(this);
 }
 
 void BodyPart::consumeFoodValue(float amount) {
@@ -575,11 +583,9 @@ void BodyPart::consumeFoodValue(float amount) {
 	}
 }
 
-void BodyPart::flattenHierarchy(std::vector<BodyPart*> &holderList) {
-	detach();
-	holderList.push_back(this);
-	while (nChildren_)
-		children_[0]->flattenHierarchy(holderList);
+void BodyPart::removeAllLinks() {
+	parent_ = nullptr;
+	nChildren_ = 0;
 }
 
 void BodyPart::reattachChildren() {
