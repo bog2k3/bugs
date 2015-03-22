@@ -134,9 +134,6 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				});
 				return false;
 			});
-
-			if (randf() < 0.5)
-				kill();
 		}
 	}
 }
