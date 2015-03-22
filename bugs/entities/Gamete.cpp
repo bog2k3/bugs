@@ -13,6 +13,7 @@
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../World.h"
+#include "../utils/log.h"
 #include "Bug.h"
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
