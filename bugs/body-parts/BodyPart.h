@@ -150,6 +150,11 @@ public:
 	 * returns the actual angle at which the part was inserted.
 	 */
 	virtual float add(BodyPart* part, float angle);
+	/*
+	 * Flatten the hierarchy, adding each body part and its children into the list past as parameter.
+	 * After this operation no body part will have a parent or children any more.
+	 */
+	void flattenHierarchy(std::vector<BodyPart*> &holderList);
 
 	inline bool isDead() { return dead_; }
 

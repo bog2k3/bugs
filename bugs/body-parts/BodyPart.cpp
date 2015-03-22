@@ -224,7 +224,6 @@ float BodyPart::add(BodyPart* part, float angle) {
 	initialData_->circularBuffer[bufferPos].set(gapLeftBefore, gapLeftAfter);
 	// done
 	if (overlapsNext || overlapsPrev) {
-#warning if this was the MAX_CHILDRENth child, the following will fail (must fix):
 		fixOverlaps(bufferPos);
 		// fix order if some parts crossed the zero line
 		while (children_[0]->attachmentDirectionParent_ > children_[1]->attachmentDirectionParent_) {
@@ -522,8 +521,6 @@ float BodyPart::getMass_tree() {
 	for (int i=0; i<nChildren_; i++)
 		mass += children_[i]->getMass_tree();
 	return mass;
-
-#warning "muscle mass must somehow count toward total body mass - maybe add it to torso?"
 }
 
 void BodyPart::applyScale_tree(float scale) {
@@ -575,14 +572,14 @@ void BodyPart::die_tree() {
 void BodyPart::consumeFoodValue(float amount) {
 	if (dead_) {
 		foodValueLeft_ -= amount;
-		if (foodValueLeft_ <= 0)
-			detach(false);
-		for (int i=0; i<nChildren_; i++)
-			children_[i]->detach(false);
-		nChildren_ = 0;
-		destroy();
-#error "must attach children to parent (but if this is zygote?). must somehow inform bug entity"
 	}
+}
+
+void BodyPart::flattenHierarchy(std::vector<BodyPart*> &holderList) {
+	detach();
+	holderList.push_back(this);
+	while (nChildren_)
+		children_[0]->flattenHierarchy(holderList);
 }
 
 void BodyPart::reattachChildren() {

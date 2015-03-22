@@ -156,6 +156,7 @@ void Joint::update(float dt) {
 		// this joint is toast - must break free the downstream body parts
 		BodyPart* downStream = children_[0];
 		downStream->detach(true);
+#error who becomes the owner of downstream?
 		destroy();
 		return;
 	}
