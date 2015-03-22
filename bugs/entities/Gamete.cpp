@@ -54,6 +54,7 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 		return;
 	if ((uint)abs((int)other->getChromosome().genes.size() - (int)chromosome_.genes.size()) > WorldConst::MaxGenomeLengthDifference)
 		return;
+	LOGLN("gametes fused -> new bug embryo !!!");
 	Genome g;
 	// combine the two chromosomes into a single genome
 	g.first = chromosome_;
