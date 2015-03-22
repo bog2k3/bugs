@@ -67,20 +67,25 @@ float EggLayer::getMass_tree() {
 void EggLayer::draw(RenderContext const& ctx) {
 	if (committed_) {
 #ifdef DEBUG_DRAW_EGGLAYER
-		if (isDead())
-			return;
-		glm::vec3 transform = getWorldTransformation();
-		glm::vec2 pos = vec3xy(transform);
-		float r_2 = sqrtf(size_*PI_INV) * 0.5f;
-		glm::vec3 color = eggMassBuffer_ >= targetEggMass_ ? debug_color_ripe : (suppressGrowth_ ? debug_color_suppressed : debug_color);
-		ctx.shape->drawLine(
-			pos - glm::rotate(glm::vec2(r_2, 0), transform.z),
-			pos + glm::rotate(glm::vec2(r_2, 0), transform.z),
-			0, color);
-		ctx.shape->drawLine(
-			pos - glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
-			pos + glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
-			0, color);
+		if (isDead()) {
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			float sizeLeft = getFoodValue() / density_;
+			ctx.shape->drawCircle(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 0, 12, glm::vec3(0.5f,0,1));
+		} else {
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			float r_2 = sqrtf(size_*PI_INV) * 0.5f;
+			glm::vec3 color = eggMassBuffer_ >= targetEggMass_ ? debug_color_ripe : (suppressGrowth_ ? debug_color_suppressed : debug_color);
+			ctx.shape->drawLine(
+				pos - glm::rotate(glm::vec2(r_2, 0), transform.z),
+				pos + glm::rotate(glm::vec2(r_2, 0), transform.z),
+				0, color);
+			ctx.shape->drawLine(
+				pos - glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
+				pos + glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
+				0, color);
+		}
 #endif // DEBUG_DRAW_EGGLAYER
 	} else {
 		glm::vec3 transform = getWorldTransformation();

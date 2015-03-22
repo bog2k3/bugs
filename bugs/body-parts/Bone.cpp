@@ -17,6 +17,8 @@
 
 const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
+#define DEBUG_DRAW_BONE
+
 BoneInitializationData::BoneInitializationData()
 	: aspectRatio(BodyConst::initialBoneAspectRatio) {
 	density.reset(BodyConst::initialBoneDensity);
@@ -82,6 +84,16 @@ glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
 void Bone::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing to draw, physics will draw for us
+#ifdef DEBUG_DRAW_BONE
+		if (isDead()) {
+			float ratio = sqrt((getFoodValue() / density_) / size_);
+			float widthLeft = width_ * ratio;
+			float lengthLeft = length_ * ratio;
+			glm::vec3 worldTransform = getWorldTransformation();
+			ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
+				glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
+		}
+#endif
 	} else {
 		glm::vec3 worldTransform = getWorldTransformation();
 		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,

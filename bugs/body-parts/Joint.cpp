@@ -123,10 +123,15 @@ void Joint::draw(RenderContext const& ctx) {
 			return;
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
-		ctx.shape->drawLine(pos,
-				pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z),
-				0, debug_color);
+		if (isDead()) {
+			float sizeLeft = getFoodValue() / density_;
+			ctx.shape->drawCircle(pos, sqrtf(sizeLeft*PI_INV), 0, 12, glm::vec3(0.5f,0,1));
+		} else {
+			ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
+			ctx.shape->drawLine(pos,
+					pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z),
+					0, debug_color);
+		}
 	}
 }
 

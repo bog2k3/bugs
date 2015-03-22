@@ -79,12 +79,17 @@ void Torso::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 #ifdef DEBUG_DRAW_TORSO
-		if (isDead())
-			return;
-		// draw the inner circle - actual torso size without fat
-		glm::vec3 transform = getWorldTransformation();
-		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
+		if (isDead()) {
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			float sizeLeft = getFoodValue() / density_;
+			ctx.shape->drawCircle(pos, sqrtf(sizeLeft/PI), 0, 12, glm::vec3(0.5f,0,1));
+		} else {
+			// draw the inner circle - actual torso size without fat
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
+		}
 #endif
 	} else {
 		glm::vec3 transform = getWorldTransformation();

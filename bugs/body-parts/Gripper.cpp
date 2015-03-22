@@ -85,7 +85,12 @@ void Gripper::draw(RenderContext const& ctx) {
 	if (committed_) {
 		// nothing, physics draws
 #ifdef DEBUG_DRAW_GRIPPER
-		if (active_) {
+		if (isDead()) {
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			float sizeLeft = getFoodValue() / density_;
+			ctx.shape->drawCircle(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 0, 12, glm::vec3(0.5f,0,1));
+		} else if (active_) {
 			glm::vec3 transform = getWorldTransformation();
 			glm::vec2 pos = vec3xy(transform);
 			ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV)*0.6f, 0, 12, debug_color);
