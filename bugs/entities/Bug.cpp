@@ -223,10 +223,9 @@ void Bug::draw(RenderContext const &ctx) {
 		zygoteShell_->draw_tree(ctx);
 	else if (body_)
 		body_->draw_tree(ctx);
-	else
-		for (auto bp : deadBodyParts_)
-			if (bp)
-				bp->draw(ctx);
+	for (auto bp : deadBodyParts_)
+		if (bp)
+			bp->draw(ctx);
 }
 
 void Bug::onFoodProcessed(float mass) {
