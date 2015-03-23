@@ -45,7 +45,7 @@ BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> i
 	, destroyCalled_(false)
 	, dead_(false)
 {
-	assert (initialData != nullptr);
+	assertDbg (initialData != nullptr);
 
 	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->angleOffset);
 	registerAttribute(GENE_ATTRIB_ATTACHMENT_OFFSET, initialData_->lateralOffset);
@@ -53,7 +53,7 @@ BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> i
 }
 
 BodyPart::~BodyPart() {
-	assert(destroyCalled_);
+	assertDbg(destroyCalled_);
 }
 
 void BodyPart::destroy() {

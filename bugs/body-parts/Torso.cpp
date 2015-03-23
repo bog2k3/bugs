@@ -40,7 +40,7 @@ Torso::~Torso() {
 }
 
 void Torso::onAddedToParent() {
-	assert(getUpdateList() && "update list should be available to the body at this time");
+	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
 }
 
@@ -110,12 +110,12 @@ glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle)
 	float fatSize = fatMass_*BodyConst::FatDensityInv;
 	float fullSize = size_ + fatSize;
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(fullSize * PI_INV), 0), relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
 void Torso::setInitialFatMass(float fat) {
-	assert(!committed_);
+	assertDbg(!committed_);
 	fatMass_ = fat;
 }
 

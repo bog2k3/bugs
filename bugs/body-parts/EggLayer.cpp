@@ -102,7 +102,7 @@ glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
 		cacheInitializationData();
 	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
@@ -171,6 +171,6 @@ void EggLayer::commit() {
 }
 
 void EggLayer::onAddedToParent() {
-	assert(getUpdateList() && "update list should be available to the body at this time");
+	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
 }

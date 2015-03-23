@@ -21,13 +21,13 @@ PhysicsBody::PhysicsBody(ObjectTypes userObjType, void* userPtr, EventCategoryFl
 }
 
 void PhysicsBody::create(const PhysicsProperties& props) {
-	assert(b2Body_==nullptr);
-	assert(!std::isnan(props.angle));
-	assert(!std::isnan(props.angularVelocity));
-	assert(!std::isnan(props.position.x));
-	assert(!std::isnan(props.position.y));
-	assert(!std::isnan(props.velocity.x));
-	assert(!std::isnan(props.velocity.y));
+	assertDbg(b2Body_==nullptr);
+	assertDbg(!std::isnan(props.angle));
+	assertDbg(!std::isnan(props.angularVelocity));
+	assertDbg(!std::isnan(props.position.x));
+	assertDbg(!std::isnan(props.position.y));
+	assertDbg(!std::isnan(props.velocity.x));
+	assertDbg(!std::isnan(props.velocity.y));
 
 	b2BodyDef def;
 	def.angle = props.angle;

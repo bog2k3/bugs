@@ -2,6 +2,7 @@
 #include "Network.h"
 #include "Neuron.h"
 #include "../utils/rand.h"
+#include "../utils/assert.h"
 
 #include <vector>
 #include <cassert>
@@ -15,7 +16,7 @@ Traverser::Traverser(NeuralNet* pNet)
 	, finished(false)
 {
 #warning "traversals must be exclusive due to Neuron's RID being shared by all contexts. Must use common mutex on constructor"
-	assert(pNetwork != NULL);
+	assertDbg(pNetwork != NULL);
 }
 
 Traverser::~Traverser() {

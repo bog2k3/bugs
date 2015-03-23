@@ -57,12 +57,12 @@ Joint::~Joint() {
 }
 
 void Joint::onAddedToParent() {
-	assert(getUpdateList() && "update list should be available to the body at this time");
+	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
 }
 
 void Joint::commit() {
-	assert(nChildren_ == 1);
+	assertDbg(nChildren_ == 1);
 
 	if (committed_) {
 		destroyPhysJoint();
@@ -141,7 +141,7 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 		cacheInitializationData();
 	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

@@ -40,7 +40,7 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 }
 
 void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
-	assert(amount > 0);
+	assertDbg(amount > 0);
 	for (uint i=0; i<c.insertions.size(); i++) {
 		int from = i + amount;
 		if (from < c.insertions.size())
@@ -77,7 +77,7 @@ void GeneticOperations::trimInsertionList(Chromosome &c) {
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
 	LOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
-	assert(abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
+	assertDbg(abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
 
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
 	Chromosome &c1 = gen.first;
@@ -88,14 +88,14 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// pull back the insertions on the one chromosome that is shorter until the difference in size matches the difference
 	// in number of insertions:
 	if (dif > 0) {
-		assert(c1.insertions.size() >= c2.insertions.size());
+		assertDbg(c1.insertions.size() >= c2.insertions.size());
 		// C2 is shorter
 		int pullback = dif - (c1.insertions.size() - c2.insertions.size());
 		if (pullback > 0)
 			pullBackInsertions(c2, pullback);
 	} else if (dif < 0) {
 		// C1 is shorter
-		assert(c1.insertions.size() <= c2.insertions.size());
+		assertDbg(c1.insertions.size() <= c2.insertions.size());
 		int pullback = dif - (c2.insertions.size() - c1.insertions.size());
 		if (pullback > 0)
 			pullBackInsertions(c1, pullback);

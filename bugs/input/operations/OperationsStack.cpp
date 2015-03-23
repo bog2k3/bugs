@@ -33,7 +33,7 @@ void OperationsStack::pushOperation(std::unique_ptr<IOperation> pOperation)
 
 void OperationsStack::swapTopOperation(std::unique_ptr<IOperation> pNewOperation)
 {
-	assert(m_stack.size() > 0);
+	assertDbg(m_stack.size() > 0);
 	m_stack.back()->loseFocus();
 	m_stack.back()->leave();
 
@@ -47,7 +47,7 @@ void OperationsStack::swapTopOperation(std::unique_ptr<IOperation> pNewOperation
 
 void OperationsStack::removeTopOperation()
 {
-	assert(m_stack.size() > 0);
+	assertDbg(m_stack.size() > 0);
 	m_stack.back()->loseFocus();
 	m_stack.back()->leave();
 	m_stack.pop_back();

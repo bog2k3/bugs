@@ -268,7 +268,7 @@ void Bug::onMotorLinesDetached(std::vector<int> const& lines) {
 	if (!isAlive_)
 		return;
 	for (int i : lines) {
-		assert(i < neuralNet_->outputs.size() && neuralNet_->outputs[i]->pParentNeuron);
+		assertDbg(i < neuralNet_->outputs.size() && neuralNet_->outputs[i]->pParentNeuron);
 		neuralNet_->outputs[i]->pParentNeuron->output.getTargets().clear();
 	}
 }

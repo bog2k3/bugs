@@ -3,6 +3,7 @@
 #include <glm/vec2.hpp>
 #include <glm/geometric.hpp>
 #include "constants.h"
+#include "../utils/assert.h"
 
 template<typename T> constexpr T sqr(T const &x) { return x*x; }
 template<typename T> inline void xchg(T &x1, T &x2) { T aux(x1); x1 = x2; x2 = aux; }
@@ -96,7 +97,7 @@ template<typename T> inline T lerp_lookup(const T* v, int nV, float position) {
 		// lerp with next value
 		value = lerp(value, v[index+1], lerpFact - 0.5f);
 	}
-	assert(!std::isnan(value));
+	assertDbg(!std::isnan(value));
 	return value;
 }
 

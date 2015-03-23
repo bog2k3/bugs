@@ -127,7 +127,7 @@ public:
 	void draw_tree(RenderContext const& ctx);
 
 	inline int getChildrenCount() const { return nChildren_; }
-	inline BodyPart* getChild(int i) const { assert(i<nChildren_); return children_[i]; }
+	inline BodyPart* getChild(int i) const { assertDbg(i<nChildren_); return children_[i]; }
 	inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
 	void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
 	PhysicsBody const& getBody() { return physBody_; }

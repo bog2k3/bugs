@@ -11,6 +11,7 @@
 #include <functional>
 #include <vector>
 #include <cassert>
+#include "assert.h"
 
 template <typename T>
 class Event {
@@ -22,7 +23,7 @@ public:
 	}
 
 	void remove(int handle) {
-		assert(handle >= 0 && (unsigned)handle < callbackList_.size());
+		assertDbg(handle >= 0 && (unsigned)handle < callbackList_.size());
 		callbackList_[handle] = nullptr;
 	}
 

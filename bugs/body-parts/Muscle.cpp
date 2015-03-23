@@ -94,14 +94,14 @@ void Muscle::die() {
 }
 
 void Muscle::onJointDied(BodyPart* joint) {
-	assert(joint == joint_);
+	assertDbg(joint == joint_);
 	joint_ = nullptr;
 	if (getUpdateList())
 		getUpdateList()->remove(this);
 }
 
 void Muscle::onAddedToParent() {
-	assert(getUpdateList() && "update list should be available to the body at this time");
+	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
 }
 
@@ -226,7 +226,7 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
 	float l = aspectRatio_ * w;
 #warning check this shit, might be l & w reversed:
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 

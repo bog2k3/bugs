@@ -463,7 +463,7 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 		else
 			return;	// invalid index
 	} else {
-		assert(hasNeuron(from));	// should be there, since synapses dictate neurons
+		assertDbg(hasNeuron(from));	// should be there, since synapses dictate neurons
 		pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
 	}
 	Neuron* pTo;
@@ -473,7 +473,7 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 		else
 			return; // invalid index
 	} else {
-		assert(hasNeuron(to));
+		assertDbg(hasNeuron(to));
 		pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
 	}
 
@@ -496,7 +496,7 @@ void Ribosome::createFeedbackSynapse(int from, int to, int commandNeuronsOfs, fl
 		else
 			return; // invalid index
 	} else {
-		assert(hasNeuron(to));
+		assertDbg(hasNeuron(to));
 		pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
 	}
 

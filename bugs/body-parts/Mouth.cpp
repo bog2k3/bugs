@@ -62,7 +62,7 @@ void Mouth::die() {
 }
 
 void Mouth::onAddedToParent() {
-	assert(getUpdateList() && "update list should be available to the body at this time");
+	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
 }
 
@@ -71,7 +71,7 @@ glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {
 		cacheInitializationData();
 	}
 	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
-	assert(!std::isnan(ret.x) && !std::isnan(ret.y));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
