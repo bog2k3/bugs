@@ -11,31 +11,38 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdlib>
 
 class BigFile {
 public:
 	struct FileDescriptor {
-		unsigned size = 0;
+		size_t size = 0;
 		void* pStart = nullptr;
 		std::string fileName;
+
+		~FileDescriptor() {
+			if (ownsMemory_)
+				free(pStart);
+		}
+	private:
+		bool ownsMemory_ = false;
+		friend class BigFile;
 	};
 
-	enum AccessMode {
-		MODE_READ,
-		MODE_REWRITE
-	};
+	BigFile() = default;
+	~BigFile() = default;
 
-	BigFile(const std::string &path, AccessMode mode);
-	~BigFile();
+	void loadFromDisk(const std::string &path);
+	void saveToDisk(const std::string &path);
 
 	FileDescriptor getFile(const std::string &name);
 	std::vector<FileDescriptor> getAllFiles();
 
+	void addFile(const std::string &filename, void* buffer, size_t size);
 	void extractAll(const std::string &pathOut);
 	void extractFile(const std::string &pathOut, const std::string &filename);
 
 private:
-	AccessMode mode_;
 	std::map<std::string, FileDescriptor> mapFiles;
 };
 
