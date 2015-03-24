@@ -6,6 +6,7 @@
  */
 
 #include "BigFile.h"
+#include <memory.h>
 
 union bigFile_header {
 	struct v1 {

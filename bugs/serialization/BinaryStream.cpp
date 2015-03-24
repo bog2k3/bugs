@@ -8,17 +8,17 @@
 #include "BinaryStream.h"
 #include "../utils/assert.h"
 #include <cstdlib>
-#include <memory>
+#include <memory.h>
 #include <stdexcept>
+
+static constexpr union {
+	uint32_t i;
+	char c[4];
+} bigEndianTest = {0x01020304};
 
 constexpr bool is_big_endian()
 {
-    union {
-        uint32_t i;
-        char c[4];
-    } bint = {0x01020304};
-
-    return bint.c[0] == 1;
+	return bigEndianTest.c[0] == 1;
 }
 
 BinaryStream::BinaryStream(size_t initial_capacity) {
@@ -51,7 +51,7 @@ void BinaryStream::expandBuffer() {
 	buffer_ = newBuf;
 }
 
-template<typename T, typename std::enable_if<std::is_fundamental<T>::value>>
+template<typename T, typename std::enable_if<std::is_fundamental<T>::value>::type>
 BinaryStream& BinaryStream::operator << (T& t) {
 	size_t dataSize = sizeof(t);
 	if (pos_ + dataSize > capacity_) {
@@ -77,7 +77,7 @@ BinaryStream& BinaryStream::operator << (T& t) {
 	}
 }
 
-template<typename T, typename std::enable_if<std::is_fundamental<T>::value>>
+template<typename T, typename std::enable_if<std::is_fundamental<T>::value>::type>
 BinaryStream& BinaryStream::operator >> (T& t) const {
 	size_t dataSize = sizeof(t);
 	if (pos_ + dataSize > size_)

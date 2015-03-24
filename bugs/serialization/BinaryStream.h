@@ -9,6 +9,7 @@
 #define SERIALIZATION_BINARYSTREAM_H_
 
 #include <type_traits>
+#include <cstddef>
 
 class BinaryStream {
 public:
@@ -36,14 +37,14 @@ public:
 	 * 	OR:
 	 * 	b. an exception is generated if the underlying buffer is not owned by the stream.
 	 */
-	template<typename T, typename std::enable_if<std::is_fundamental<T>::value>>
+	template<typename T, typename std::enable_if<std::is_fundamental<T>::value>::type>
 	BinaryStream& operator << (T& t);
 
 	/**
 	 * outputs data from the stream, incrementing the position.
 	 * If attempting to read past the end of the stream, an exception is generated.
 	 */
-	template<typename T, typename std::enable_if<std::is_fundamental<T>::value>>
+	template<typename T, typename std::enable_if<std::is_fundamental<T>::value>::type>
 	BinaryStream& operator >> (T& t) const;
 
 protected:
