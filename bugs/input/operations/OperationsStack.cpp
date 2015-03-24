@@ -58,6 +58,8 @@ void OperationsStack::removeTopOperation()
 
 void OperationsStack::handleInputEvent(InputEvent &ev)
 {
+	if (ev.isConsumed())
+		return;
 	int i=m_stack.size()-1;
 	while (!ev.isConsumed() && i>=0) {
 		m_stack[i--]->handleInputEvent(ev);

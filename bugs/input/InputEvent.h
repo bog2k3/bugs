@@ -17,6 +17,7 @@ public:
 		EV_MOUSE_SCROLL,
 		EV_KEY_DOWN,
 		EV_KEY_UP,
+		EV_KEY_CHAR,
 	} const type;
 	float x, y;
 	float dx, dy, dz;
@@ -27,9 +28,10 @@ public:
 		MB_MIDDLE,
 	} mouseButton;
 	int key;
+	char ch;
 
-	InputEvent(EVENT_TYPE type, float x, float y, float dx, float dy, int dz, MOUSE_BUTTON button, int key)
-		: type(type), x(x), y(y), dx(dx), dy(dy), dz(dz), mouseButton(button), key(key), mIsConsumed(false)
+	InputEvent(EVENT_TYPE type, float x, float y, float dx, float dy, int dz, MOUSE_BUTTON button, int key, char ch)
+		: type(type), x(x), y(y), dx(dx), dy(dy), dz(dz), mouseButton(button), key(key), ch(ch)
 	{
 	}
 
@@ -40,7 +42,7 @@ public:
 		mIsConsumed = true;
 	}
 private:
-	bool mIsConsumed;
+	bool mIsConsumed = false;
 };
 
 #endif /* INPUT_INPUTEVENT_H_ */

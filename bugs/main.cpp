@@ -24,6 +24,7 @@
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
 #include "OSD/ScaleDisplay.h"
+#include "GUI/GuiSystem.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -39,11 +40,17 @@ template<> void draw(b2World* wld, RenderContext const &ctx) {
 	wld->DrawDebugData();
 }
 
+template<> void draw(GuiSystem* gui, RenderContext const &ctx) {
+	gui->draw(ctx);
+}
+
 template<> void update(b2World* wld, float dt) {
 	wld->Step(dt, 6, 2);
 }
 
 void onInputEventHandler(InputEvent& ev) {
+	if (ev.isConsumed())
+		return;
 	if (ev.key == GLFW_KEY_SPACE) {
 		if (ev.type == InputEvent::EV_KEY_DOWN) {
 			skipRendering ^= true;
@@ -87,6 +94,9 @@ int main() {
 	World::getInstance()->setPhysics(&physWld);
 	World::getInstance()->setDestroyListener(&destroyListener);
 
+	GuiSystem Gui;
+	GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
+
 	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 	GLFWInput::initialize(gltGetWindow());
 	GLFWInput::onInputEvent.add(onInputEventHandler);
@@ -125,6 +135,7 @@ int main() {
 	drawList.add(&physWld);
 	ScaleDisplay scale(glm::vec2(15, 25), 300);
 	drawList.add(&scale);
+	drawList.add(&Gui);
 
 	UpdateList updateList;
 	updateList.add(&opStack);

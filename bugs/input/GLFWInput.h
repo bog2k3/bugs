@@ -30,6 +30,7 @@ private:
 	static void glfwMouseButton(GLFWwindow* win, int button, int action, int mods);
 	static void glfwMousePos(GLFWwindow* win, double x, double y);
 	static void glfwKey(GLFWwindow* win, int key, int scancode, int action, int mods);
+	static void glfwChar(GLFWwindow* win, unsigned int ch);
 
 	static std::vector<InputEvent> eventQueue;
 	static GLFWwindow *window;

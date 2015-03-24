@@ -15,7 +15,7 @@
 
 class Renderer;
 
-class GLText : public IRenderable{
+class GLText : public IRenderable {
 public:
 	GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar, int defaultSize);
 	~GLText() override;
