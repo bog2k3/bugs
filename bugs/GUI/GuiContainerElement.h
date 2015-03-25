@@ -23,15 +23,23 @@ public:
 
 protected:
 
-	virtual void mouseEnter() override;
-	virtual void mouseLeave() override;
+	virtual void draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec2 frameScale) override;
 	virtual void mouseDown(MouseButtons button) override;
 	virtual void mouseUp(MouseButtons button) override;
 	virtual void mouseMoved(glm::vec2 delta, glm::vec2 position) override;
 	virtual void clicked(glm::vec2 clickPosition, MouseButtons button) override;
 
+	void setClientArea(glm::vec2 offset, glm::vec2 counterOffset);
+	void getClientArea(glm::vec2 &outOffset, glm::vec2 &outSize);
+
 private:
+	glm::vec2 clientAreaOffset_{0};	// (positive) offset from top left corner of container to top-left corner of client area
+	glm::vec2 clientAreaCounterOffset_{0}; // (positive) offset from bottom-right corner of client area to corner of container
+	glm::vec2 clientAreaSize_{0};
 	std::vector<std::shared_ptr<GuiBasicElement>> children_;
+	std::shared_ptr<GuiBasicElement> elementUnderMouse_ = nullptr;
+
+	void updateClientArea();
 };
 
 #endif /* GUI_GUICONTAINERELEMENT_H_ */

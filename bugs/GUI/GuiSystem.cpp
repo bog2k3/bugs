@@ -7,18 +7,19 @@
 
 #include "GuiSystem.h"
 #include "IGuiElement.h"
+#include "GuiHelper.h"
 #include "../input/InputEvent.h"
 #include "../utils/log.h"
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <algorithm>
 
-void GuiSystem::addElement(std::shared_ptr<IGuiElement> &e) {
+void GuiSystem::addElement(std::shared_ptr<IGuiElement> e) {
 	elements_.push_back(e);
 	e->setCaptureManager(this);
 }
 
-void GuiSystem::removeElement(std::shared_ptr<IGuiElement> &e) {
+void GuiSystem::removeElement(std::shared_ptr<IGuiElement> e) {
 	elements_.erase(std::find(elements_.begin(), elements_.end(), e));
 	e->setCaptureManager(nullptr);
 }
@@ -96,19 +97,5 @@ void GuiSystem::handleInput(InputEvent &ev) {
 }
 
 IGuiElement* GuiSystem::getElementUnderMouse(float x, float y) {
-	std::vector<IGuiElement*> vec;
-	for (auto &e : elements_) {
-		glm::vec2 min, max;
-		e->getBoundingBox(min, max);
-		if (x >= min.x && y >= min.y && x <= max.x && y <= max.y)
-			vec.push_back(e.get());
-	}
-	IGuiElement* top = nullptr;
-	float topZ = 0.f;
-	for (auto &e : vec)
-		if (e->getZValue() >= topZ) {
-			topZ = e->getZValue();
-			top = e;
-		}
-	return top;
+	return GuiHelper::getTopElementAtPosition(elements_, x, y).get();
 }

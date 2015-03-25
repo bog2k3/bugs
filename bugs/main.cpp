@@ -25,6 +25,7 @@
 #include "utils/UpdateList.h"
 #include "OSD/ScaleDisplay.h"
 #include "GUI/GuiSystem.h"
+#include "GUI/Window.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -96,6 +97,9 @@ int main() {
 
 	GuiSystem Gui;
 	GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
+
+	std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(100, 100), glm::vec2(300, 200));
+	Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
 
 	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 	GLFWInput::initialize(gltGetWindow());

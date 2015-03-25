@@ -15,7 +15,7 @@ public:
 	Window(glm::vec2 position, glm::vec2 size);
 	virtual ~Window();
 
-
+	virtual void draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec2 frameScale) override;
 };
 
 #endif /* GUI_WINDOW_H_ */

@@ -26,7 +26,11 @@ public:
 	float getZValue() override { return zValue_; }
 	void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) override { outMin = bboxMin_; outMax = bboxMax_; }
 
+	bool isMouseIn() { return isMouseIn_; }
+	bool isMousePressed(MouseButtons button) { return isMousePressed_[(int)button]; }
+
 protected:
+	friend class GuiContainerElement;
 	virtual void mouseEnter() override;
 	virtual void mouseLeave() override;
 	virtual void mouseDown(MouseButtons button) override;

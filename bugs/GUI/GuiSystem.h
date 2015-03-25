@@ -25,8 +25,8 @@ public:
 		pCaptured = elementOrNull;
 	}
 
-	void addElement(std::shared_ptr<IGuiElement> &e);
-	void removeElement(std::shared_ptr<IGuiElement> &e);
+	void addElement(std::shared_ptr<IGuiElement> e);
+	void removeElement(std::shared_ptr<IGuiElement> e);
 	void draw(RenderContext const &ctx);
 	void handleInput(InputEvent &ev);
 

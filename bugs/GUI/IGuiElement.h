@@ -22,6 +22,9 @@ public:
 	virtual void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) = 0;
 	virtual float getZValue() = 0;
 
+	void setCaptureManager(ICaptureManager* mgr) { captureManager_ = mgr; }
+	ICaptureManager* getCaptureManager() { return captureManager_; }
+
 protected:
 	friend class GuiSystem;
 
@@ -39,9 +42,6 @@ protected:
 
 	virtual void focusGot() {}
 	virtual void focusLost() {}
-
-	void setCaptureManager(ICaptureManager* mgr) { captureManager_ = mgr; }
-	ICaptureManager* getCaptureManager() { return captureManager_; }
 
 private:
 	ICaptureManager *captureManager_ = nullptr;
