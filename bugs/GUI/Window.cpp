@@ -7,7 +7,9 @@
 
 #include "Window.h"
 
-Window::Window() {
+Window::Window(glm::vec2 position, glm::vec2 size)
+	: GuiContainerElement(position, size)
+{
 	// TODO Auto-generated constructor stub
 
 }

@@ -18,7 +18,7 @@ GuiContainerElement::~GuiContainerElement() {
 }
 
 void GuiContainerElement::setSize(glm::vec2 size) {
-	glm::vec2 oldSize = size_;
+	glm::vec2 oldSize = getSize();
 	GuiBasicElement::setSize(size);
 	for (auto e : children_) {
 		//TODO: adjust e position and size based on anchors

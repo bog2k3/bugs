@@ -12,7 +12,7 @@
 
 class Window: public GuiContainerElement {
 public:
-	Window();
+	Window(glm::vec2 position, glm::vec2 size);
 	virtual ~Window();
 
 

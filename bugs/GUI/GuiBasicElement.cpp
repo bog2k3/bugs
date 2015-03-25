@@ -56,6 +56,6 @@ void GuiBasicElement::mouseMoved(glm::vec2 delta, glm::vec2 position) {
 	lastMousePosition_ = position;
 }
 
-void updateBBox() {
+void GuiBasicElement::updateBBox() {
 
 }

@@ -10,6 +10,7 @@
 
 #include "GuiBasicElement.h"
 #include <vector>
+#include <memory>
 
 class GuiContainerElement: public GuiBasicElement {
 public:
