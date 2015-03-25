@@ -18,8 +18,16 @@ public:
 
 	void addElement(std::shared_ptr<GuiBasicElement> e);
 	void removeElement(std::shared_ptr<GuiBasicElement> e);
+	void setSize(glm::vec2 size) override;
 
 protected:
+
+	virtual void mouseEnter() override;
+	virtual void mouseLeave() override;
+	virtual void mouseDown(MouseButtons button) override;
+	virtual void mouseUp(MouseButtons button) override;
+	virtual void mouseMoved(glm::vec2 delta, glm::vec2 position) override;
+	virtual void clicked(glm::vec2 clickPosition, MouseButtons button) override;
 
 private:
 	std::vector<std::shared_ptr<GuiBasicElement>> children_;
