@@ -10,6 +10,7 @@
 #include "GuiHelper.h"
 #include "../input/InputEvent.h"
 #include "../utils/log.h"
+#include "../renderOpenGL/Shape2D.h"
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <algorithm>
@@ -25,8 +26,10 @@ void GuiSystem::removeElement(std::shared_ptr<IGuiElement> e) {
 }
 
 void GuiSystem::draw(RenderContext const &ctx) {
+	ctx.shape->setViewportSpaceDraw(true);
 	for (auto &e : elements_)
 		e->draw(ctx, glm::vec3(0), glm::vec2(1));
+	ctx.shape->setViewportSpaceDraw(false);
 }
 
 void GuiSystem::handleInput(InputEvent &ev) {

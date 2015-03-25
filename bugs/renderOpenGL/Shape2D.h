@@ -22,6 +22,9 @@ public:
 	Shape2D(Renderer* renderer);
 	virtual ~Shape2D();
 
+	// set up the next draw calls to be executed in viewport space or world space
+	void setViewportSpaceDraw(bool value) { viewportSpace_ = value; }
+
 	// draw a single line segment
 	void drawLine(glm::vec2 point1, glm::vec2 point2, float z, glm::vec3 rgb);
 	// draw a list of separate lines (pairs of two vertices)
@@ -52,6 +55,7 @@ private:
 	unsigned indexPos;
 	unsigned indexColor;
 	unsigned indexMatViewProj;
+	bool viewportSpace_ = false;
 };
 
 #endif /* RENDEROPENGL_SHAPE2D_H_ */
