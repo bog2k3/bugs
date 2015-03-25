@@ -11,15 +11,12 @@
 #include <memory.h>
 #include <stdexcept>
 
-static constexpr union {
+static union {
 	uint32_t i;
 	char c[4];
-} bigEndianTest = {0x01020304};
+} constexpr bigEndianTest {0x01020304};
 
-constexpr bool is_big_endian()
-{
-	return bigEndianTest.c[0] == 1;
-}
+#define IS_LITTLE_ENDIAN() (bigEndianTest.c[0] == 1)
 
 BinaryStream::BinaryStream(size_t initial_capacity) {
 	capacity_ = initial_capacity;
@@ -60,8 +57,8 @@ BinaryStream& BinaryStream::operator << (T& t) {
 		else
 			throw std::runtime_error("attempted to write past the end of unmanaged buffer!");
 	}
-	if (!!!is_big_endian()) {
-		// small endian, write directly:
+	if (IS_LITTLE_ENDIAN()) {
+		// little endian, write directly:
 		memcpy((char*)buffer_+pos_, &t, dataSize);
 		pos_ += dataSize;
 		if (pos_ > size_)
@@ -82,8 +79,8 @@ BinaryStream& BinaryStream::operator >> (T& t) const {
 	size_t dataSize = sizeof(t);
 	if (pos_ + dataSize > size_)
 		throw std::runtime_error("attempted to read past the end of the buffer!");
-	if (!!!is_big_endian()) {
-		// small endian, read directly:
+	if (IS_LITTLE_ENDIAN()) {
+		// little endian, read directly:
 		memcpy(&t, (char*)buffer_+pos_, dataSize);
 		pos_ += dataSize;
 	} else {

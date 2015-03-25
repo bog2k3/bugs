@@ -19,12 +19,13 @@ class IGuiElement {
 public:
 	virtual ~IGuiElement() {}
 
+	virtual void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) = 0;
+	virtual float getZValue() = 0;
+
 protected:
 	friend class GuiSystem;
 
 	virtual void draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec2 frameScale) = 0;
-	virtual void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) = 0;
-	virtual float getZValue() = 0;
 
 	virtual void mouseEnter() {}
 	virtual void mouseLeave() {}

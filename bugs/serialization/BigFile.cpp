@@ -8,6 +8,7 @@
 #include "BigFile.h"
 #include <memory.h>
 #include <stdint.h>
+#include <fstream>
 
 struct bigFile_header {
 	uint32_t version;
@@ -42,7 +43,10 @@ void BigFile::saveToDisk_v1(const std::string &path) {
 }
 
 void BigFile::loadFromDisk(const std::string &path) {
-
+	std::ifstream file(path, std::ios::in | std::ios::binary);
+	bigFile_header hdr;
+	file >> hdr.version;
+	file >> hdr.headerSize;
 }
 
 void BigFile::saveToDisk(const std::string &path) {

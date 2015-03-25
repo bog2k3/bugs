@@ -16,33 +16,41 @@ public:
 	GuiBasicElement(glm::vec2 position, glm::vec2 size);
 	virtual ~GuiBasicElement();
 
-	void setAnchors(Anchors anch);
+	void setAnchors(Anchors anch) { anchors_ = anch; }
 	glm::vec2 getPosition() { return position_; }
-	void setPosition(glm::vec2 position);
+	virtual void setPosition(glm::vec2 position);
 	glm::vec2 getSize() { return size_; }
-	void setSize(glm::vec2 size);
-	void setZValue(float z);
+	virtual void setSize(glm::vec2 size);
+	void setZValue(float z) { zValue_ = z; }
+
+	float getZValue() override { return zValue_; }
+	void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) override { outMin = bboxMin_; outMax = bboxMax_; }
 
 protected:
-	void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) override { outMin = bboxMin_; outMax = bboxMax_; }
-	float getZValue() override { return zValue_; }
-
 	virtual void mouseEnter() override;
 	virtual void mouseLeave() override;
 	virtual void mouseDown(MouseButtons button) override;
 	virtual void mouseUp(MouseButtons button) override;
+	virtual void mouseMoved(glm::vec2 delta, glm::vec2 position) override;
 	/**
 	 * override this to be informed when a valid click has occurred inside the area of the element
 	 */
-	virtual void clicked(glm::vec2 clickPosition) {}
+	virtual void clicked(glm::vec2 clickPosition, MouseButtons button) {}
 
 private:
+
+	static constexpr float MAX_CLICK_TRAVEL = 5.f;
+
 	glm::vec2 position_{0};
 	glm::vec2 size_{0};
 	glm::vec2 bboxMin_{0};
 	glm::vec2 bboxMax_{0};
 	float zValue_ = 0;
-	Anchors anchors = Anchors::Top | Anchors::Left;
+	Anchors anchors_ = Anchors::Top | Anchors::Left;
+	bool isMouseIn_ = false;
+	bool isMousePressed_[3] {false};
+	glm::vec2 lastMousePosition_ {0};
+	glm::vec2 mouseTravel_[3] {glm::vec2(0)};
 
 	void updateBBox();
 };
