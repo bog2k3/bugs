@@ -44,6 +44,9 @@ public:
 
 private:
 	std::map<std::string, FileDescriptor> mapFiles;
+
+	void loadFromDisk_v1(const std::string &path);
+	void saveToDisk_v1(const std::string &path);
 };
 
 #endif /* SERIALIZATION_BIGFILE_H_ */

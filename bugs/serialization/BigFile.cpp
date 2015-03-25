@@ -7,19 +7,30 @@
 
 #include "BigFile.h"
 #include <memory.h>
+#include <stdint.h>
 
-union bigFile_header {
-	struct v1 {
-		unsigned version; // assume 1
-	};
+struct bigFile_header {
+	uint32_t version;
+	uint32_t headerSize;
+	union VERSIONS {
+		struct V1 {
+			uint32_t tableSize;
+			uint32_t numEntries;
+			uint32_t maxEntrySize;
+			uint32_t reserved[8]; // for future extension
+		} v1;
+	} headerData;
 };
 
-void BigFile::loadFromDisk(const std::string &path) {
+void BigFile::loadFromDisk_v1(const std::string &path) {
 
 }
 
-void BigFile::saveToDisk(const std::string &path) {
+void BigFile::saveToDisk_v1(const std::string &path) {
 	// 1. build header
+	bigFile_header hdr;
+	hdr.version = 1;
+	hdr.headerSize = sizeof(hdr.version) + sizeof(hdr.headerSize) + sizeof(hdr.headerData.v1);
 
 	// 2. build file table
 
@@ -28,6 +39,14 @@ void BigFile::saveToDisk(const std::string &path) {
 		FileDescriptor &fd = pair.second;
 		std::string const &filename = pair.first;
 	}
+}
+
+void BigFile::loadFromDisk(const std::string &path) {
+
+}
+
+void BigFile::saveToDisk(const std::string &path) {
+	saveToDisk_v1(path);
 }
 
 BigFile::FileDescriptor BigFile::getFile(const std::string &name) {
