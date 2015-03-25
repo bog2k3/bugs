@@ -14,6 +14,15 @@ enum class MouseButtons {
 	Middle
 };
 
-
+// bit flags, can be combined together:
+enum class Anchors {
+	Left = 1,
+	Right = 2,
+	Top = 4,
+	Bottom = 8,
+};
+constexpr Anchors operator | (Anchors a1, Anchors a2) {
+	return (Anchors)((int)a1 | (int)a2);
+}
 
 #endif /* GUI_CONSTANTS_H_ */
