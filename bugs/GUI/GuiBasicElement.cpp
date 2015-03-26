@@ -57,5 +57,6 @@ void GuiBasicElement::mouseMoved(glm::vec2 delta, glm::vec2 position) {
 }
 
 void GuiBasicElement::updateBBox() {
-
+	bboxMin_ = position_;
+	bboxMax_ = bboxMin_ + size_;
 }

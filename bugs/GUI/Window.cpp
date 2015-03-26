@@ -26,7 +26,7 @@ void Window::draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec
 	glm::vec2 scaledSize = getSize();
 	scaledSize.x *= frameScale.x;
 	scaledSize.y *= frameScale.y;
-	ctx.shape->drawRectangle(vec3xy(frameTranslation), frameTranslation.z+getZValue(), scaledSize, 0, GuiTheme::getWindowFrameColor());
+	ctx.shape->drawRectangle(vec3xy(frameTranslation), frameTranslation.z, scaledSize, 0, GuiTheme::getWindowFrameColor());
 
 	// draw client area frame:
 	glm::vec2 clientOffset, clientSize;
