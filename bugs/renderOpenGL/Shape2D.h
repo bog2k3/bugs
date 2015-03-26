@@ -38,12 +38,21 @@ public:
 	// draw a rectangle
 	void drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
 	void drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
+	// draw a filled rectangle
+	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
+	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
 	// draw a polygon
 	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 const &rgb);
 	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec4 const &rgba);
+	// draw a filled polygon
+	void drawPolygonFilled(glm::vec2 *verts, int nVerts, float z, glm::vec3 const &rgb);
+	void drawPolygonFilled(glm::vec2 *verts, int nVerts, float z, glm::vec4 const &rgba);
 	// draw a circle
 	void drawCircle(glm::vec2 const &pos, float radius, float , int nSides, glm::vec3 const &rgb);
 	void drawCircle(glm::vec2 const &pos, float radius, float , int nSides, glm::vec4 const &rgba);
+	// draw a filled circle
+	void drawCircleFilled(glm::vec2 const &pos, float radius, float , int nSides, glm::vec3 const &rgb);
+	void drawCircleFilled(glm::vec2 const &pos, float radius, float , int nSides, glm::vec4 const &rgba);
 
 private:
 	void render(Viewport* vp) override;

@@ -146,6 +146,14 @@ void Shape2D::drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec4 const
 	pInd->push_back(pBuf->size()-nVerts);
 }
 
+void Shape2D::drawPolygonFilled(glm::vec2 *verts, int nVerts, float z, glm::vec3 const &rgb) {
+	drawPolygonFilled(verts, nVerts, z, glm::vec4(rgb, 1));
+}
+
+void Shape2D::drawPolygonFilled(glm::vec2 *verts, int nVerts, float z, glm::vec4 const &rgba) {
+	//TODO must tesselate into triangles
+}
+
 void Shape2D::drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb) {
 	drawRectangle(pos, z, size, rotation, glm::vec4(rgb, 1));
 }
@@ -178,6 +186,36 @@ void Shape2D::drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size
 	pInd->push_back(pBuf->size()-1);
 	// top left again
 	pInd->push_back(pBuf->size()-4);
+}
+
+void Shape2D::drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb) {
+	drawRectangleFilled(pos, z, size, rotation, glm::vec4(rgb, 1));
+}
+
+void Shape2D::drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba) {
+	/*auto *pBuf = viewportSpaceEnabled_ ? &bufferVPSP : &buffer;
+	auto *pInd = viewportSpaceEnabled_ ? &indicesVPSP : &indices;
+	float halfW = size.x * 0.5f;
+	float halfH = size.y * 0.5f;
+	s_lineVertex sVertex;
+	sVertex.rgba = rgba;
+	// top left
+	sVertex.pos = glm::vec3(glm::rotate(glm::vec2(-halfW, halfH), rotation) + pos, z);
+	pBuf->push_back(sVertex);
+	pInd->push_back(pBuf->size()-1);
+	// top right
+	sVertex.pos = glm::vec3(glm::rotate(glm::vec2(halfW, halfH), rotation) + pos, z);
+	pBuf->push_back(sVertex);
+	pInd->push_back(pBuf->size()-1);
+	pInd->push_back(pBuf->size()-1);
+	// bottom right
+	sVertex.pos = glm::vec3(glm::rotate(glm::vec2(halfW, -halfH), rotation) + pos, z);
+	pBuf->push_back(sVertex);
+	pInd->push_back(pBuf->size()-1);
+	pInd->push_back(pBuf->size()-1);
+	// top left again
+	pInd->push_back(pBuf->size()-4);*/
+#warning "must use a separate buffer for GL_TRIANGLES than the one for GL_LINES and render them separately"
 }
 
 void Shape2D::drawCircle(glm::vec2 const &pos, float radius, float z, int nSides, glm::vec3 const &rgb) {
