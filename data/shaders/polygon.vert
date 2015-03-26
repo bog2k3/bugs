@@ -1,7 +1,7 @@
 attribute vec3 vPos;
-attribute vec3 vColor;
+attribute vec4 vColor;
  
-varying vec3 fColor;
+varying vec4 fColor;
 
 uniform mat4 mViewProj;
  

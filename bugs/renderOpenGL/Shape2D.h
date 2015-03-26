@@ -12,6 +12,7 @@
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <vector>
 
 class Renderer;
@@ -23,39 +24,44 @@ public:
 	virtual ~Shape2D();
 
 	// set up the next draw calls to be executed in viewport space or world space
-	void setViewportSpaceDraw(bool value) { viewportSpace_ = value; }
+	void setViewportSpaceDraw(bool value) { viewportSpaceEnabled_ = value; }
 
 	// draw a single line segment
-	void drawLine(glm::vec2 point1, glm::vec2 point2, float z, glm::vec3 rgb);
+	void drawLine(glm::vec2 const &point1, glm::vec2 const &point2, float z, glm::vec3 const &rgb);
+	void drawLine(glm::vec2 const &point1, glm::vec2 const &point2, float z, glm::vec4 const &rgba);
 	// draw a list of separate lines (pairs of two vertices)
-	void drawLineList(glm::vec2* verts, int nVerts, float z, glm::vec3 rgb);
+	void drawLineList(glm::vec2* verts, int nVerts, float z, glm::vec3 const &rgb);
+	void drawLineList(glm::vec2* verts, int nVerts, float z, glm::vec4 const &rgba);
 	// draw a line strip (connected lines)
-	void drawLineStrip(glm::vec2* verts, int nVerts, float z, glm::vec3 rgb);
-	// draw a line strip in viewport space
-	void drawLineStripViewport(glm::vec2* verts, int nVerts, float z, glm::vec3 rgb, Viewport const& vp);
+	void drawLineStrip(glm::vec2* verts, int nVerts, float z, glm::vec3 const &rgb);
+	void drawLineStrip(glm::vec2* verts, int nVerts, float z, glm::vec4 const &rgba);
 	// draw a rectangle
-	void drawRectangle(glm::vec2 pos, float z, glm::vec2 size, float rotation, glm::vec3 rgb);
+	void drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
+	void drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
 	// draw a polygon
-	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 rgb);
+	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 const &rgb);
+	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec4 const &rgba);
 	// draw a circle
-	void drawCircle(glm::vec2 pos, float radius, float , int nSides, glm::vec3 rgb);
+	void drawCircle(glm::vec2 const &pos, float radius, float , int nSides, glm::vec3 const &rgb);
+	void drawCircle(glm::vec2 const &pos, float radius, float , int nSides, glm::vec4 const &rgba);
 
 private:
 	void render(Viewport* vp) override;
 	void purgeRenderQueue() override;
-	void transformViewportToWorld(glm::vec2* vIn, glm::vec2* vOut, int n, Viewport const& vp);
 
 	struct s_lineVertex {
 		glm::vec3 pos;	// position X,Y,Z
-		glm::vec3 rgb; 	// color
+		glm::vec4 rgba; 	// color
 	};
 	std::vector<s_lineVertex> buffer;
 	std::vector<unsigned short> indices;
-	unsigned shaderProgram;
+	std::vector<s_lineVertex> bufferVPSP;	// vertex buffer for ViewPortSPace rendering
+	std::vector<unsigned short> indicesVPSP; // index buffer for ViewPortSPace rendering
+	unsigned lineShaderProgram;
 	unsigned indexPos;
 	unsigned indexColor;
 	unsigned indexMatViewProj;
-	bool viewportSpace_ = false;
+	bool viewportSpaceEnabled_ = false;
 };
 
 #endif /* RENDEROPENGL_SHAPE2D_H_ */

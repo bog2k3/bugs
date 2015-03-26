@@ -64,7 +64,9 @@ void ScaleDisplay::draw(RenderContext const& ctx) {
 	}
 	vList[nVertex-1] = glm::vec2(cx, cy-segmentHeight);
 
-	ctx.shape->drawLineStripViewport(vList, nVertex, 0, LINE_COLOR, *ctx.viewport);
+	ctx.shape->setViewportSpaceDraw(true);
+	ctx.shape->drawLineStrip(vList, nVertex, 0, LINE_COLOR);
+	ctx.shape->setViewportSpaceDraw(false);
 
 	char scaleLabel[100];
 
