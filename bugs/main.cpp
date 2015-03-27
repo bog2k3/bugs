@@ -63,135 +63,143 @@ void onInputEventHandler(InputEvent& ev) {
 int main() {
 	LOGGER("app_main");
 
-	if (!gltInit(800, 600, "Bugs"))
-		return -1;
+	try {
+		if (!gltInit(800, 600, "Bugs"))
+			return -1;
 
-	Renderer renderer;
-	Viewport vp1(0, 0, 800, 600);
-	renderer.addViewport(&vp1);
-	RenderContext renderContext(
-			&vp1,
-			new Shape2D(&renderer),
-			new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22));
+		Renderer renderer;
+		Viewport vp1(0, 0, 800, 600);
+		renderer.addViewport(&vp1);
+		RenderContext renderContext(
+				&vp1,
+				new Shape2D(&renderer),
+				new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22));
 
-	b2World physWld(b2Vec2_zero);
-	pPhysWld = &physWld;
-	PhysicsDebugDraw physicsDraw(renderContext);
-	pPhysicsDraw = &physicsDraw;
-	physicsDraw.SetFlags(
-				  b2Draw::e_shapeBit
-				//| b2Draw::e_centerOfMassBit
-				//| b2Draw::e_jointBit
-				//| b2Draw::e_aabbBit
-			);
-	physWld.SetDebugDraw(&physicsDraw);
+		b2World physWld(b2Vec2_zero);
+		pPhysWld = &physWld;
+		PhysicsDebugDraw physicsDraw(renderContext);
+		pPhysicsDraw = &physicsDraw;
+		physicsDraw.SetFlags(
+					  b2Draw::e_shapeBit
+					//| b2Draw::e_centerOfMassBit
+					//| b2Draw::e_jointBit
+					//| b2Draw::e_aabbBit
+				);
+		physWld.SetDebugDraw(&physicsDraw);
 
-	PhysContactListener contactListener;
-	physWld.SetContactListener(&contactListener);
+		PhysContactListener contactListener;
+		physWld.SetContactListener(&contactListener);
 
-	PhysDestroyListener destroyListener;
-	physWld.SetDestructionListener(&destroyListener);
+		PhysDestroyListener destroyListener;
+		physWld.SetDestructionListener(&destroyListener);
 
-	World::getInstance()->setPhysics(&physWld);
-	World::getInstance()->setDestroyListener(&destroyListener);
+		World::getInstance()->setPhysics(&physWld);
+		World::getInstance()->setDestroyListener(&destroyListener);
 
-	GuiSystem Gui;
-	GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
+		GuiSystem Gui;
+		GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
 
-	std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(100, 100), glm::vec2(300, 200));
-	Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
+		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(100, 100), glm::vec2(300, 200));
+		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
 
-	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
-	GLFWInput::initialize(gltGetWindow());
-	GLFWInput::onInputEvent.add(onInputEventHandler);
-	opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
-	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
+		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
+		GLFWInput::initialize(gltGetWindow());
+		GLFWInput::onInputEvent.add(onInputEventHandler);
+		opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
+		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 
-	randSeed(1424118659);
-	//randSeed(time(NULL));
-	LOGLN("RAND seed: "<<rand_seed);
+		randSeed(1424118659);
+		//randSeed(time(NULL));
+		LOGLN("RAND seed: "<<rand_seed);
 
-	float worldRadius = 5.f;
+		float worldRadius = 5.f;
 
-	Wall* w1 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w1);
-	Wall* w2 = new Wall(glm::vec2(-worldRadius, +worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w2);
-	Wall* w3 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(-worldRadius, +worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w3);
-	Wall* w4 = new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w4);
+		Wall* w1 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f);
+		World::getInstance()->takeOwnershipOf(w1);
+		Wall* w2 = new Wall(glm::vec2(-worldRadius, +worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
+		World::getInstance()->takeOwnershipOf(w2);
+		Wall* w3 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(-worldRadius, +worldRadius), 0.2f);
+		World::getInstance()->takeOwnershipOf(w3);
+		Wall* w4 = new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
+		World::getInstance()->takeOwnershipOf(w4);
 
-	for (int i=0; i<15; i++) {
-		FoodDispenser* foodDisp = new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0);
-		World::getInstance()->takeOwnershipOf(foodDisp);
-	}
-
-	for (int i=0; i<20; i++) {
-		Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-		//Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-		//if (i==8)
-			World::getInstance()->takeOwnershipOf(bug);
-	}
-
-	DrawList drawList;
-	drawList.add(World::getInstance());
-	drawList.add(&physWld);
-	ScaleDisplay scale(glm::vec2(15, 25), 300);
-	drawList.add(&scale);
-	drawList.add(&Gui);
-
-	UpdateList updateList;
-	updateList.add(&opStack);
-	updateList.add(&physWld);
-	updateList.add(&contactListener);
-	updateList.add(World::getInstance());
-
-	float realTime = 0;							// [s]
-	float simulationTime = 0;					// [s]
-	float lastPrintedSimTime = 0;				// [s]
-	constexpr float simTimePrintInterval = 10.f; // [s]
-
-	float t = glfwGetTime();
-	while (GLFWInput::checkInput()) {
-		float newTime = glfwGetTime();
-		float realDT = newTime - t;
-		t = newTime;
-		realTime += realDT;
-
-		// fixed time step for simulation
-		float simDT = 0.02f;
-
-		simulationTime += simDT;
-		if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
-			LOGLN("SIMULATION TIME: " << simulationTime<<"\t real time: "<<realTime<<"\t instant ratio: "<<simDT/realDT<<"\t average ratio: "<<simulationTime/realTime);
-			lastPrintedSimTime = simulationTime;
+		for (int i=0; i<15; i++) {
+			FoodDispenser* foodDisp = new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0);
+			World::getInstance()->takeOwnershipOf(foodDisp);
 		}
 
-		if (simDT > 0) {
-			updateList.update(simDT);
+		for (int i=0; i<20; i++) {
+			Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+			//Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+			//if (i==8)
+				World::getInstance()->takeOwnershipOf(bug);
 		}
 
-		if (!skipRendering) {
-			// wait until previous frame finishes rendering and show frame output:
-			gltEnd();
-			// draw builds the render queue for the current frame
-			drawList.draw(renderContext);
+		DrawList drawList;
+		drawList.add(World::getInstance());
+		drawList.add(&physWld);
+		ScaleDisplay scale(glm::vec2(15, 25), 300);
+		drawList.add(&scale);
+		drawList.add(&Gui);
 
-			std::stringstream ss;
-			ss << "Salut Lume!\n[Powered by Box2D]";
-			renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 16, glm::vec3(0.2f, 0.4, 1.0f));
+		UpdateList updateList;
+		updateList.add(&opStack);
+		updateList.add(&physWld);
+		updateList.add(&contactListener);
+		updateList.add(World::getInstance());
 
-			// do the actual openGL render for the previous frame (which is independent of our world)
-			gltBegin();
-			renderer.render();
-			// now rendering is on-going, move on to the next update:
+		float realTime = 0;							// [s]
+		float simulationTime = 0;					// [s]
+		float lastPrintedSimTime = 0;				// [s]
+		constexpr float simTimePrintInterval = 10.f; // [s]
+
+		float t = glfwGetTime();
+		while (GLFWInput::checkInput()) {
+			float newTime = glfwGetTime();
+			float realDT = newTime - t;
+			t = newTime;
+			realTime += realDT;
+
+			// fixed time step for simulation
+			float simDT = 0.02f;
+
+			simulationTime += simDT;
+			if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
+				LOGLN("SIMULATION TIME: " << simulationTime<<"\t real time: "<<realTime<<"\t instant ratio: "<<simDT/realDT<<"\t average ratio: "<<simulationTime/realTime);
+				lastPrintedSimTime = simulationTime;
+			}
+
+			if (simDT > 0) {
+				updateList.update(simDT);
+			}
+
+			if (!skipRendering) {
+				// wait until previous frame finishes rendering and show frame output:
+				gltEnd();
+				// draw builds the render queue for the current frame
+				drawList.draw(renderContext);
+
+				std::stringstream ss;
+				ss << "Salut Lume!\n[Powered by Box2D]";
+				renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 16, glm::vec3(0.2f, 0.4, 1.0f));
+
+				// do the actual openGL render for the previous frame (which is independent of our world)
+				gltBegin();
+				renderer.render();
+				// now rendering is on-going, move on to the next update:
+			}
 		}
+
+		World::getInstance()->free();
+
+		delete renderContext.shape;
+	} catch (std::runtime_error &e) {
+		ERROR("EXCEPTION: " << e.what());
+		throw e;
+	} catch (...) {
+		ERROR("EXCEPTION (unknown)");
+		throw;
 	}
-
-	World::getInstance()->free();
-
-	delete renderContext.shape;
 
 	return 0;
 }

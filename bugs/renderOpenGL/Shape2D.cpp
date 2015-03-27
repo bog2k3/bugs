@@ -28,9 +28,9 @@ Shape2D::Shape2D(Renderer* renderer)
 	, indexMatViewProj(0)
 {
 	renderer->registerRenderable(this);
-	lineShaderProgram = Shaders::createProgram("data/shaders/line.vert", "data/shaders/line.frag");
+	lineShaderProgram = Shaders::createProgram("data/shaders/shape2d.vert", "data/shaders/shape2d.frag");
 	if (lineShaderProgram == 0) {
-		throw new std::runtime_error("Unable to load line shaders!!");
+		throw std::runtime_error("Unable to load line shaders!!");
 	}
 	indexPos = glGetAttribLocation(lineShaderProgram, "vPos");
 	indexColor = glGetAttribLocation(lineShaderProgram, "vColor");
