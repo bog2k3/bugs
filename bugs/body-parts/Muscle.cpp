@@ -248,7 +248,7 @@ void Muscle::draw(RenderContext const& ctx) {
 	float w = sqrtf(size_ / crtAspect);
 	float l = crtAspect * w;
 	glm::vec3 worldTransform = getWorldTransformation();
-	ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
+	ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0,
 			glm::vec2(l, w), worldTransform.z, debug_color);
 	ctx.shape->drawLine(
 			vec3xy(worldTransform),

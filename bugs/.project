@@ -41,19 +41,19 @@
 			<locationURI>PARENT-1-PROJECT_LOC/data/shaders/.DS_Store</locationURI>
 		</link>
 		<link>
-			<name>data/shaders/polygon.frag</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/data/shaders/polygon.frag</locationURI>
-		</link>
-		<link>
-			<name>data/shaders/polygon.vert</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/data/shaders/polygon.vert</locationURI>
-		</link>
-		<link>
 			<name>data/shaders/posuv.vert</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/data/shaders/posuv.vert</locationURI>
+		</link>
+		<link>
+			<name>data/shaders/shape2d.frag</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/data/shaders/shape2d.frag</locationURI>
+		</link>
+		<link>
+			<name>data/shaders/shape2d.vert</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/data/shaders/shape2d.vert</locationURI>
 		</link>
 		<link>
 			<name>data/shaders/text.frag</name>

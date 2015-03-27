@@ -32,6 +32,7 @@
 
 #include <sstream>
 #include <functional>
+#include <stdexcept>
 
 bool skipRendering = false;
 b2World *pPhysWld = nullptr;
@@ -99,7 +100,7 @@ int main() {
 		GuiSystem Gui;
 		GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
 
-		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(10, 10), glm::vec2(780, 580));
+		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
 
 		OperationsStack opStack(&vp1, World::getInstance(), &physWld);

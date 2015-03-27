@@ -154,6 +154,38 @@ void Shape2D::drawPolygonFilled(glm::vec2 *verts, int nVerts, float z, glm::vec4
 	//TODO must tesselate into triangles
 }
 
+void Shape2D::drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, glm::vec3 const &rgb) {
+	drawRectangle(pos, z, size, glm::vec4(rgb, 1));
+}
+
+void Shape2D::drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, glm::vec4 const &rgba) {
+	auto *pBuf = viewportSpaceEnabled_ ? &bufferVPSP : &buffer;
+	auto *pInd = viewportSpaceEnabled_ ? &indicesVPSP : &indices;
+	s_lineVertex sVertex;
+	sVertex.rgba = rgba;
+	// top left
+	sVertex.pos = glm::vec3(pos, z);
+	pBuf->push_back(sVertex);
+	pInd->push_back(pBuf->size()-1);
+	// top right
+	sVertex.pos = glm::vec3(pos+glm::vec2(size.x, 0), z);
+	pBuf->push_back(sVertex);
+	pInd->push_back(pBuf->size()-1);
+	pInd->push_back(pBuf->size()-1);
+	// bottom right
+	sVertex.pos = glm::vec3(pos+size, z);
+	pBuf->push_back(sVertex);
+	pInd->push_back(pBuf->size()-1);
+	pInd->push_back(pBuf->size()-1);
+	// bottom left
+	sVertex.pos = glm::vec3(pos+glm::vec2(0, size.y), z);
+	pBuf->push_back(sVertex);
+	pInd->push_back(pBuf->size()-1);
+	pInd->push_back(pBuf->size()-1);
+	// top left again
+	pInd->push_back(pBuf->size()-4);
+}
+
 void Shape2D::drawRectangleCentered(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb) {
 	drawRectangleCentered(pos, z, size, rotation, glm::vec4(rgb, 1));
 }

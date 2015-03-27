@@ -90,13 +90,13 @@ void Bone::draw(RenderContext const& ctx) {
 			float widthLeft = width_ * ratio;
 			float lengthLeft = length_ * ratio;
 			glm::vec3 worldTransform = getWorldTransformation();
-			ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
+			ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0,
 				glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
 		}
 #endif
 	} else {
 		glm::vec3 worldTransform = getWorldTransformation();
-		ctx.shape->drawRectangle(vec3xy(worldTransform), 0,
+		ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0,
 				glm::vec2(length_, width_), worldTransform.z, debug_color);
 		ctx.shape->drawLine(
 				vec3xy(worldTransform),
