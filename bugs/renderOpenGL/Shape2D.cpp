@@ -58,7 +58,7 @@ void Shape2D::render(Viewport* vp) {
 	float sy = -2.f / vp->getHeight();
 	float sz = 1.e-2f;
 	glm::mat4x4 matVP_to_UniformScale(glm::scale(glm::mat4(), glm::vec3(sx, sy, sz)));
-	glm::mat4x4 matVP_to_Uniform(glm::translate(matVP_to_UniformScale, glm::vec3(-1, +1, -1)));
+	glm::mat4x4 matVP_to_Uniform(glm::translate(matVP_to_UniformScale, glm::vec3(-vp->getWidth()/2, -vp->getHeight()/2, -1)));
 	glUniformMatrix4fv(indexMatViewProj, 1, GL_FALSE, glm::value_ptr(matVP_to_Uniform));
 	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferVPSP[0].pos);
 	glEnableVertexAttribArray(indexPos);

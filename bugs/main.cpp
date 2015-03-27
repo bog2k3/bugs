@@ -99,7 +99,7 @@ int main() {
 		GuiSystem Gui;
 		GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
 
-		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(100, 100), glm::vec2(300, 200));
+		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(10, 10), glm::vec2(780, 580));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
 
 		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
@@ -129,8 +129,9 @@ int main() {
 		}
 
 		for (int i=0; i<20; i++) {
-			Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-			//Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+#warning "crash in fixGenesSynchro on basicMutantBug"
+			//Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+			Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
 			//if (i==8)
 				World::getInstance()->takeOwnershipOf(bug);
 		}
