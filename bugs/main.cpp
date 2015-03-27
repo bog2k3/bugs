@@ -42,10 +42,6 @@ template<> void draw(b2World* wld, RenderContext const &ctx) {
 	wld->DrawDebugData();
 }
 
-template<> void draw(GuiSystem* gui, RenderContext const &ctx) {
-	gui->draw(ctx);
-}
-
 template<> void update(b2World* wld, float dt) {
 	wld->Step(dt, 6, 2);
 }
@@ -101,7 +97,9 @@ int main() {
 		GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
 
 		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
+		std::shared_ptr<Window> win2 = std::make_shared<Window>(glm::vec2(300, 130), glm::vec2(350, 200));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
+		Gui.addElement(std::static_pointer_cast<IGuiElement>(win2));
 
 		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 		GLFWInput::initialize(gltGetWindow());

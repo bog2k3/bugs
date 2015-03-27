@@ -42,8 +42,8 @@ public:
 	void drawRectangleCentered(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
 	void drawRectangleCentered(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
 	// draw a filled rectangle; pos is the center position
-	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
-	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
+	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, glm::vec3 const &rgb);
+	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, glm::vec4 const &rgba);
 	// draw a polygon
 	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec3 const &rgb);
 	void drawPolygon(glm::vec2 *verts, int nVerts, float z, glm::vec4 const &rgba);
@@ -65,10 +65,16 @@ private:
 		glm::vec3 pos;	// position X,Y,Z
 		glm::vec4 rgba; 	// color
 	};
+	// line buffers for world-space and viewport-space rendering:
 	std::vector<s_lineVertex> buffer;
 	std::vector<unsigned short> indices;
 	std::vector<s_lineVertex> bufferVPSP;	// vertex buffer for ViewPortSPace rendering
 	std::vector<unsigned short> indicesVPSP; // index buffer for ViewPortSPace rendering
+	// triangle buffers for world-space and viewport-space rendering:
+	std::vector<s_lineVertex> bufferTri;
+	std::vector<unsigned short> indicesTri;
+	std::vector<s_lineVertex> bufferTriVPSP;	// triangle vertex buffer for ViewPortSPace rendering
+	std::vector<unsigned short> indicesTriVPSP; // triangle index buffer for ViewPortSPace rendering
 	unsigned lineShaderProgram;
 	unsigned indexPos;
 	unsigned indexColor;

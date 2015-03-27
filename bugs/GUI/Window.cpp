@@ -14,7 +14,7 @@
 Window::Window(glm::vec2 position, glm::vec2 size)
 	: GuiContainerElement(position, size)
 {
-	setClientArea(glm::vec2(2, 20), glm::vec2(2, 2));
+	setClientArea(glm::vec2(3, 20), glm::vec2(3, 3));
 }
 
 Window::~Window() {
@@ -26,6 +26,7 @@ void Window::draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec
 	glm::vec2 scaledSize = getSize();
 	scaledSize.x *= frameScale.x;
 	scaledSize.y *= frameScale.y;
+	ctx.shape->drawRectangleFilled(vec3xy(frameTranslation), frameTranslation.z, scaledSize, GuiTheme::getWindowColor());
 	ctx.shape->drawRectangle(vec3xy(frameTranslation), frameTranslation.z, scaledSize, GuiTheme::getWindowFrameColor());
 
 	// draw client area frame:
@@ -33,6 +34,8 @@ void Window::draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec
 	getClientArea(clientOffset, clientSize);
 	clientSize.x *= frameScale.x;
 	clientSize.y *= frameScale.y;
+	ctx.shape->drawRectangleFilled(vec3xy(frameTranslation)+clientOffset, frameTranslation.z+getZValue(),
+			clientSize, GuiTheme::getClientColor());
 	ctx.shape->drawRectangle(vec3xy(frameTranslation)+clientOffset, frameTranslation.z+getZValue(),
 			clientSize, GuiTheme::getClientFrameColor());
 
