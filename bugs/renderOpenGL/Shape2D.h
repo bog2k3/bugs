@@ -35,10 +35,10 @@ public:
 	// draw a line strip (connected lines)
 	void drawLineStrip(glm::vec2* verts, int nVerts, float z, glm::vec3 const &rgb);
 	void drawLineStrip(glm::vec2* verts, int nVerts, float z, glm::vec4 const &rgba);
-	// draw a rectangle
-	void drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
-	void drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
-	// draw a filled rectangle
+	// draw a rectangle; pos is the center position
+	void drawRectangleCentered(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
+	void drawRectangleCentered(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
+	// draw a filled rectangle; pos is the center position
 	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb);
 	void drawRectangleFilled(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba);
 	// draw a polygon

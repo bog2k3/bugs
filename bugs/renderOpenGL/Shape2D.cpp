@@ -154,11 +154,11 @@ void Shape2D::drawPolygonFilled(glm::vec2 *verts, int nVerts, float z, glm::vec4
 	//TODO must tesselate into triangles
 }
 
-void Shape2D::drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb) {
-	drawRectangle(pos, z, size, rotation, glm::vec4(rgb, 1));
+void Shape2D::drawRectangleCentered(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec3 const &rgb) {
+	drawRectangleCentered(pos, z, size, rotation, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawRectangle(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba) {
+void Shape2D::drawRectangleCentered(glm::vec2 const &pos, float z, glm::vec2 const &size, float rotation, glm::vec4 const &rgba) {
 	auto *pBuf = viewportSpaceEnabled_ ? &bufferVPSP : &buffer;
 	auto *pInd = viewportSpaceEnabled_ ? &indicesVPSP : &indices;
 	float halfW = size.x * 0.5f;
