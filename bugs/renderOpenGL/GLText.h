@@ -21,6 +21,7 @@ public:
 	~GLText() override;
 
 	void print(const std::string text, int x, int y, int size, glm::vec3 const& color);
+	void print(const std::string text, int x, int y, int size, glm::vec4 const& color);
 
 	void render(Viewport* pCrtViewport) override;
 	void purgeRenderQueue() override;

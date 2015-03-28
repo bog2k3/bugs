@@ -27,6 +27,7 @@
 #include "OSD/ScaleDisplay.h"
 #include "GUI/GuiSystem.h"
 #include "GUI/Window.h"
+#include "GUI/controls/Button.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -68,10 +69,9 @@ int main() {
 		Renderer renderer;
 		Viewport vp1(0, 0, 800, 600);
 		renderer.addViewport(&vp1);
-		RenderContext renderContext(
-				&vp1,
-				new Shape2D(&renderer),
-				new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22));
+		auto shape2d = new Shape2D(&renderer);
+		auto gltext = new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
+		RenderContext renderContext( &vp1, shape2d, gltext);
 
 		b2World physWld(b2Vec2_zero);
 		pPhysWld = &physWld;
@@ -99,6 +99,7 @@ int main() {
 		std::shared_ptr<Window> win2 = std::make_shared<Window>(glm::vec2(300, 130), glm::vec2(350, 200));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win2));
+		win1->addElement(std::make_shared<Button>(glm::vec2(100, 100), glm::vec2(60, 35), "buton1"));
 
 		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 		GLFWInput::initialize(gltGetWindow());

@@ -49,38 +49,41 @@ void Shape2D::render(Viewport* vp) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendEquation(GL_BLEND_EQUATION_ALPHA);
 
-	// render world-space line primitives:
 	glUniformMatrix4fv(indexMatViewProj, 1, GL_FALSE, glm::value_ptr(vp->getCamera()->getMatViewProj()));
-	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &buffer[0].pos);
 	glEnableVertexAttribArray(indexPos);
-	glVertexAttribPointer(indexColor, 4, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &buffer[0].rgba);
 	glEnableVertexAttribArray(indexColor);
-	glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 
 	// render world-space triangle primitives:
 	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferTri[0].pos);
 	glVertexAttribPointer(indexColor, 4, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferTri[0].rgba);
 	glDrawElements(GL_TRIANGLES, indicesTri.size(), GL_UNSIGNED_SHORT, &indicesTri[0]);
 
-	// render vieport-space line primitives:
+	// render world-space line primitives:
+	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &buffer[0].pos);
+	glVertexAttribPointer(indexColor, 4, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &buffer[0].rgba);
+	glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
+
+	// set up viewport space settings:
 	float sx = 2.f / (vp->getWidth()-1);
 	float sy = -2.f / (vp->getHeight()-1);
-	float sz = 1.e-2f;
+	float sz = -1.e-2f;
 	glm::mat4x4 matVP_to_UniformScale(glm::scale(glm::mat4(), glm::vec3(sx, sy, sz)));
 	int vpw = vp->getWidth(), vph = vp->getHeight();
 	glm::mat4x4 matVP_to_Uniform(glm::translate(matVP_to_UniformScale,
-			glm::vec3(-vpw/2, -vph/2, -1)));
+			glm::vec3(-vpw/2, -vph/2, 0)));
 	glUniformMatrix4fv(indexMatViewProj, 1, GL_FALSE, glm::value_ptr(matVP_to_Uniform));
-	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferVPSP[0].pos);
 	glEnableVertexAttribArray(indexPos);
-	glVertexAttribPointer(indexColor, 4, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferVPSP[0].rgba);
 	glEnableVertexAttribArray(indexColor);
-	glDrawElements(GL_LINES, indicesVPSP.size(), GL_UNSIGNED_SHORT, &indicesVPSP[0]);
 
 	// render viewport-space triangle primitives:
 	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferTriVPSP[0].pos);
 	glVertexAttribPointer(indexColor, 4, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferTriVPSP[0].rgba);
 	glDrawElements(GL_TRIANGLES, indicesTriVPSP.size(), GL_UNSIGNED_SHORT, &indicesTriVPSP[0]);
+
+	// render vieport-space line primitives:
+	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferVPSP[0].pos);
+	glVertexAttribPointer(indexColor, 4, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferVPSP[0].rgba);
+	glDrawElements(GL_LINES, indicesVPSP.size(), GL_UNSIGNED_SHORT, &indicesVPSP[0]);
 
 	glDisable(GL_BLEND);
 }

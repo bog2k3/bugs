@@ -37,6 +37,8 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	//glfwWindowHint(GLFW_DEPTH_BITS, 24);
+	//glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
 	winWidth = windowWidth;
 	winHeight = windowHeight;
@@ -53,6 +55,8 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 		cout << "FAILED glewInit" << endl;
 		return false;
 	}
+
+	glEnable(GL_DEPTH_TEST);
 
 	/*GLfloat vertices[] = {
 		// x, y, z, u, v
@@ -114,7 +118,7 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 // begins a frame
 void gltBegin()
 {
-	glClear(GL_COLOR_BUFFER_BIT);	// =======================================================
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// ================================
 }
 
 // finishes a frame and displays the result

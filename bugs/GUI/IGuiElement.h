@@ -21,6 +21,7 @@ public:
 
 	virtual void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) = 0;
 	virtual float getZValue() = 0;
+	virtual void setZValue(float z) = 0;
 
 	void setCaptureManager(ICaptureManager* mgr) { captureManager_ = mgr; }
 	ICaptureManager* getCaptureManager() { return captureManager_; }

@@ -21,13 +21,14 @@ public:
 	virtual void setPosition(glm::vec2 position);
 	glm::vec2 getSize() { return size_; }
 	virtual void setSize(glm::vec2 size);
-	void setZValue(float z) { zValue_ = z; }
+	void setZValue(float z) override { zValue_ = z; }
 
 	float getZValue() override { return zValue_; }
 	void getBoundingBox(glm::vec2 &outMin, glm::vec2 &outMax) override { outMin = bboxMin_; outMax = bboxMax_; }
 
 	bool isMouseIn() { return isMouseIn_; }
 	bool isMousePressed(MouseButtons button) { return isMousePressed_[(int)button]; }
+	glm::vec2 getLastMousePosition() { return lastMousePosition_; }
 
 protected:
 	friend class GuiContainerElement;

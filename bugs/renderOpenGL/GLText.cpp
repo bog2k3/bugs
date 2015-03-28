@@ -62,9 +62,13 @@ GLText::~GLText() {
 }
 
 void GLText::print(const std::string text, int x, int y, int size, glm::vec3 const& color) {
+	print(text, x, y, size, glm::vec4(color, 1));
+}
+
+void GLText::print(const std::string text, int x, int y, int size, glm::vec4 const& color) {
 	unsigned int length = text.length();
 	float xSize = size*cellRatio;
-	glm::vec4 altColor = glm::vec4(color, 1.f);
+	glm::vec4 altColor = color;
 	if (size < defaultSize_)
 		altColor.a *= (float)defaultSize_ / size;
 

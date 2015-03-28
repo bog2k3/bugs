@@ -20,6 +20,7 @@ public:
 	void addElement(std::shared_ptr<GuiBasicElement> e);
 	void removeElement(std::shared_ptr<GuiBasicElement> e);
 	void setSize(glm::vec2 size) override;
+	std::shared_ptr<GuiBasicElement> getPointedElement() { return elementUnderMouse_; }
 
 protected:
 

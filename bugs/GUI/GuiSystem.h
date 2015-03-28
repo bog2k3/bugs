@@ -37,6 +37,7 @@ private:
 	IGuiElement *lastUnderMouse = nullptr;
 
 	IGuiElement* getElementUnderMouse(float x, float y);
+	void normalizeZValuesAndSort(IGuiElement* top);
 };
 
 #endif /* GUI_GUISYSTEM_H_ */

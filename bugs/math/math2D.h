@@ -57,6 +57,10 @@ inline glm::vec2 vec3xy(glm::vec3 const &in) {
 	return glm::vec2(in.x, in.y);
 }
 
+inline glm::vec2 vec3xy(glm::ivec3 const &in) {
+	return glm::vec2(in.x, in.y);
+}
+
 /**
  * computes the distance from point P to the line defined by lineOrigin and lineDirection.
  * lineDirection is assumed to be normalized.

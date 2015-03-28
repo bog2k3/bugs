@@ -12,6 +12,7 @@
 #include "../utils/log.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
+#include "../math/math2D.h"
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <algorithm>
@@ -19,6 +20,9 @@
 void GuiSystem::addElement(std::shared_ptr<IGuiElement> e) {
 	elements_.push_back(e);
 	e->setCaptureManager(this);
+	if (elements_.size() > 1)
+		e->setZValue(elements_[0]->getZValue()+1);
+	normalizeZValuesAndSort(nullptr);
 }
 
 void GuiSystem::removeElement(std::shared_ptr<IGuiElement> e) {
@@ -35,6 +39,24 @@ void GuiSystem::draw(RenderContext const &ctx) {
 		e->draw(ctx, glm::vec3(bboxMin, e->getZValue()), glm::vec2(1));
 	}
 	ctx.shape->setViewportSpaceDraw(false);
+}
+
+void GuiSystem::normalizeZValuesAndSort(IGuiElement* top) {
+	float maxZ = 0;
+	if (top)
+		maxZ = top->getZValue();
+	else
+		for (auto &e : elements_)
+			if (e->getZValue() > maxZ)
+				maxZ = e->getZValue();
+
+	float invMax = maxZ ? 1.f / maxZ : 1;
+	for (unsigned i=0; i<elements_.size(); i++) {
+		for (unsigned j=i+1; j<elements_.size(); j++)
+			if (elements_[j]->getZValue() < elements_[i]->getZValue())
+				xchg(elements_[i], elements_[j]);
+		elements_[i]->setZValue(elements_[i]->getZValue() * invMax);
+	}
 }
 
 void GuiSystem::handleInput(InputEvent &ev) {
@@ -66,11 +88,16 @@ void GuiSystem::handleInput(InputEvent &ev) {
 		} else {
 			if (lastUnderMouse) {
 				lastUnderMouse->mouseDown((MouseButtons)ev.mouseButton);
+				int lastZ = 1;
 				if (pFocusedElement_ != lastUnderMouse) {
-					if (pFocusedElement_)
+					if (pFocusedElement_) {
 						pFocusedElement_->focusLost();
+						lastZ += pFocusedElement_->getZValue();
+					}
 					pFocusedElement_ = lastUnderMouse;
 					pFocusedElement_->focusGot();
+					pFocusedElement_->setZValue(lastZ+1);
+					normalizeZValuesAndSort(pFocusedElement_);
 				}
 				ev.consume();
 			}
@@ -96,12 +123,13 @@ void GuiSystem::handleInput(InputEvent &ev) {
 			if (crt != lastUnderMouse) {
 				if (lastUnderMouse)
 					lastUnderMouse->mouseLeave();
-				if (crt) {
-					crt->mouseEnter();
-					crt->mouseMoved(glm::vec2(ev.dx, ev.dy), glm::vec2(ev.x, ev.y));
-				}
 				lastUnderMouse = crt;
+				if (lastUnderMouse) {
+					lastUnderMouse->mouseEnter();
+				}
 			}
+			if (lastUnderMouse)
+				lastUnderMouse->mouseMoved(glm::vec2(ev.dx, ev.dy), glm::vec2(ev.x, ev.y));
 		}
 		break;
 	case InputEvent::EV_MOUSE_SCROLL:
