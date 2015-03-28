@@ -63,14 +63,13 @@ void Shape2D::render(Viewport* vp) {
 	glDrawElements(GL_TRIANGLES, indicesTri.size(), GL_UNSIGNED_SHORT, &indicesTri[0]);
 
 	// render vieport-space line primitives:
-	float sx = 2.f / vp->getWidth();
-	float sy = -2.f / vp->getHeight();
+	float sx = 2.f / (vp->getWidth()-1);
+	float sy = -2.f / (vp->getHeight()-1);
 	float sz = 1.e-2f;
 	glm::mat4x4 matVP_to_UniformScale(glm::scale(glm::mat4(), glm::vec3(sx, sy, sz)));
 	int vpw = vp->getWidth(), vph = vp->getHeight();
-#error "fix the translations"
-	glm::mat4x4 matVP_to_Uniform(glm::translate(matVP_to_UniformScale, \
-			glm::vec3(-vpw/2 - 1.f/vpw, -vph/2 - 1.f/vph, -1)));
+	glm::mat4x4 matVP_to_Uniform(glm::translate(matVP_to_UniformScale,
+			glm::vec3(-vpw/2, -vph/2, -1)));
 	glUniformMatrix4fv(indexMatViewProj, 1, GL_FALSE, glm::value_ptr(matVP_to_Uniform));
 	glVertexAttribPointer(indexPos, 3, GL_FLOAT, GL_FALSE, sizeof(s_lineVertex), &bufferVPSP[0].pos);
 	glEnableVertexAttribArray(indexPos);
