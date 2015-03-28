@@ -10,6 +10,7 @@
 #include "input/operations/OperationsStack.h"
 #include "input/operations/OperationPan.h"
 #include "input/operations/OperationSpring.h"
+#include "input/operations/OperationGui.h"
 #include "body-parts/Bone.h"
 #include "body-parts/Joint.h"
 #include "World.h"
@@ -94,8 +95,6 @@ int main() {
 		World::getInstance()->setDestroyListener(&destroyListener);
 
 		GuiSystem Gui;
-		GLFWInput::onInputEvent.add(std::bind(&GuiSystem::handleInput, &Gui, std::placeholders::_1));
-
 		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
 		std::shared_ptr<Window> win2 = std::make_shared<Window>(glm::vec2(300, 130), glm::vec2(350, 200));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
@@ -104,8 +103,9 @@ int main() {
 		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 		GLFWInput::initialize(gltGetWindow());
 		GLFWInput::onInputEvent.add(onInputEventHandler);
-		opStack.pushOperation(std::unique_ptr<OperationPan>(new OperationPan(InputEvent::MB_RIGHT)));
+		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationPan(InputEvent::MB_RIGHT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
+		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
 
 		randSeed(1424118659);
 		//randSeed(time(NULL));

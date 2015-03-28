@@ -42,21 +42,28 @@ void GuiSystem::handleInput(InputEvent &ev) {
 		return;
 	switch (ev.type) {
 	case InputEvent::EV_KEY_DOWN:
-		if (pFocusedElement_)
+		if (pFocusedElement_) {
 			pFocusedElement_->keyDown(ev.key);
+			ev.consume();
+		}
 		break;
 	case InputEvent::EV_KEY_UP:
-		if (pFocusedElement_)
+		if (pFocusedElement_) {
 			pFocusedElement_->keyUp(ev.key);
+			ev.consume();
+		}
 		break;
 	case InputEvent::EV_KEY_CHAR:
-		if (pFocusedElement_)
+		if (pFocusedElement_) {
 			pFocusedElement_->keyChar(ev.ch);
+			ev.consume();
+		}
 		break;
 	case InputEvent::EV_MOUSE_DOWN:
-		if (pCaptured)
+		if (pCaptured) {
 			pCaptured->mouseDown((MouseButtons)ev.mouseButton);
-		else {
+			ev.consume();
+		} else {
 			if (lastUnderMouse) {
 				lastUnderMouse->mouseDown((MouseButtons)ev.mouseButton);
 				if (pFocusedElement_ != lastUnderMouse) {
@@ -65,21 +72,26 @@ void GuiSystem::handleInput(InputEvent &ev) {
 					pFocusedElement_ = lastUnderMouse;
 					pFocusedElement_->focusGot();
 				}
+				ev.consume();
 			}
 		}
 		break;
 	case InputEvent::EV_MOUSE_UP:
-		if (pCaptured)
+		if (pCaptured) {
 			pCaptured->mouseUp((MouseButtons)ev.mouseButton);
-		else {
-			if (lastUnderMouse)
+			ev.consume();
+		} else {
+			if (lastUnderMouse) {
 				lastUnderMouse->mouseUp((MouseButtons)ev.mouseButton);
+				ev.consume();
+			}
 		}
 		break;
 	case InputEvent::EV_MOUSE_MOVED:
-		if (pCaptured)
+		if (pCaptured) {
 			pCaptured->mouseMoved(glm::vec2(ev.dx, ev.dy), glm::vec2(ev.x, ev.y));
-		else {
+			ev.consume();
+		} else {
 			IGuiElement *crt = getElementUnderMouse(ev.x, ev.y);
 			if (crt != lastUnderMouse) {
 				if (lastUnderMouse)
@@ -93,11 +105,14 @@ void GuiSystem::handleInput(InputEvent &ev) {
 		}
 		break;
 	case InputEvent::EV_MOUSE_SCROLL:
-		if (pCaptured)
+		if (pCaptured) {
 			pCaptured->mouseScroll(ev.dz);
-		else {
-			if (lastUnderMouse)
+			ev.consume();
+		} else {
+			if (lastUnderMouse) {
 				lastUnderMouse->mouseScroll(ev.dz);
+				ev.consume();
+			}
 		}
 		break;
 	default:

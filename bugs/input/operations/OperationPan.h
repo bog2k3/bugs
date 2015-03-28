@@ -17,14 +17,14 @@ class OperationContext;
 class OperationPan: public IOperation {
 public:
 	OperationPan(InputEvent::MOUSE_BUTTON assignedButton);
-	virtual ~OperationPan();
+	virtual ~OperationPan() override;
 
-	virtual void enter(const OperationContext* pContext);
-	virtual void leave();
-	virtual void getFocus();
-	virtual void loseFocus();
-	virtual void handleInputEvent(InputEvent& ev);
-	virtual void update(float dt);
+	void enter(const OperationContext* pContext) override;
+	void leave() override;
+	void getFocus() override;
+	void loseFocus() override;
+	void handleInputEvent(InputEvent& ev) override;
+	void update(float dt) override;
 
 protected:
 	const OperationContext* pContext;
