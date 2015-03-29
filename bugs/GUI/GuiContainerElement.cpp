@@ -52,8 +52,14 @@ void GuiContainerElement::removeElement(std::shared_ptr<GuiBasicElement> e) {
 
 void GuiContainerElement::mouseDown(MouseButtons button) {
 	GuiBasicElement::mouseDown(button);
-	if (elementUnderMouse_)
+	if (elementUnderMouse_) {
+		if (elementUnderMouse_ != focusedElement_) {
+			focusedElement_->focusLost();
+			focusedElement_ = elementUnderMouse_;
+			focusedElement_->focusGot();
+		}
 		elementUnderMouse_->mouseDown(button);
+	}
 }
 
 void GuiContainerElement::mouseUp(MouseButtons button) {
@@ -79,6 +85,21 @@ void GuiContainerElement::clicked(glm::vec2 clickPosition, MouseButtons button) 
 	GuiBasicElement::clicked(clickPosition, button);
 	if (elementUnderMouse_)
 		elementUnderMouse_->clicked(clickPosition - clientAreaOffset_ - elementUnderMouse_->getPosition(), button);
+}
+
+void GuiContainerElement::keyDown(int keyCode) {
+	if (focusedElement_)
+		focusedElement_->keyDown(keyCode);
+}
+
+void GuiContainerElement::keyUp(int keyCode) {
+	if (focusedElement_)
+		focusedElement_->keyUp(keyCode);
+}
+
+void GuiContainerElement::keyChar(char c) {
+	if (focusedElement_)
+		focusedElement_->keyChar(c);
 }
 
 void GuiContainerElement::setClientArea(glm::vec2 offset, glm::vec2 counterOffset) {

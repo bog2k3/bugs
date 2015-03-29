@@ -29,6 +29,9 @@ protected:
 	virtual void mouseUp(MouseButtons button) override;
 	virtual void mouseMoved(glm::vec2 delta, glm::vec2 position) override;
 	virtual void clicked(glm::vec2 clickPosition, MouseButtons button) override;
+	virtual void keyDown(int keyCode) override;
+	virtual void keyUp(int keyCode) override;
+	virtual void keyChar(char c) override;
 
 	void setClientArea(glm::vec2 offset, glm::vec2 counterOffset);
 	void getClientArea(glm::vec2 &outOffset, glm::vec2 &outSize);
@@ -39,6 +42,7 @@ private:
 	glm::vec2 clientAreaSize_{0};
 	std::vector<std::shared_ptr<GuiBasicElement>> children_;
 	std::shared_ptr<GuiBasicElement> elementUnderMouse_ = nullptr;
+	std::shared_ptr<GuiBasicElement> focusedElement_ = nullptr;
 
 	void updateClientArea();
 };

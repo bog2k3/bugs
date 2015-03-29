@@ -28,6 +28,7 @@
 #include "GUI/GuiSystem.h"
 #include "GUI/Window.h"
 #include "GUI/controls/Button.h"
+#include "GUI/controls/TextField.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -100,6 +101,7 @@ int main() {
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win2));
 		win1->addElement(std::make_shared<Button>(glm::vec2(100, 100), glm::vec2(60, 35), "buton1"));
+		win1->addElement(std::make_shared<TextField>(glm::vec2(50, 170), glm::vec2(200, 40), "text"));
 
 		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 		GLFWInput::initialize(gltGetWindow());
