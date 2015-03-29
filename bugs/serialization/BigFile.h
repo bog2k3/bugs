@@ -20,6 +20,12 @@ public:
 		void* pStart = nullptr;
 		std::string fileName;
 
+		FileDescriptor() = default;
+
+		FileDescriptor(size_t size, void* start, std::string const& fileName)
+			: size(size), pStart(start), fileName(fileName) {
+		}
+
 		~FileDescriptor() {
 			if (ownsMemory_)
 				free(pStart);
@@ -32,21 +38,21 @@ public:
 	BigFile() = default;
 	~BigFile() = default;
 
-	void loadFromDisk(const std::string &path);
-	void saveToDisk(const std::string &path);
+	bool loadFromDisk(const std::string &path);
+	bool saveToDisk(const std::string &path);
 
-	FileDescriptor getFile(const std::string &name);
-	std::vector<FileDescriptor> getAllFiles();
+	const FileDescriptor getFile(const std::string &name) const;
+	const std::vector<FileDescriptor> getAllFiles() const;
 
-	void addFile(const std::string &filename, void* buffer, size_t size);
+	void addFile(const std::string &filename, const void* buffer, size_t size);
 	void extractAll(const std::string &pathOut);
 	void extractFile(const std::string &pathOut, const std::string &filename);
 
 private:
 	std::map<std::string, FileDescriptor> mapFiles;
 
-	void loadFromDisk_v1(const std::string &path);
-	void saveToDisk_v1(const std::string &path);
+	bool loadFromDisk_v1(const std::string &path);
+	bool saveToDisk_v1(const std::string &path);
 };
 
 #endif /* SERIALIZATION_BIGFILE_H_ */

@@ -10,17 +10,28 @@
 
 #include "serializable.h"
 #include <string>
+#include <functional>
+#include <map>
+#include <vector>
 
 class Serializer {
 public:
 	Serializer();
 	virtual ~Serializer();
 
-	void queueObject(serializable_wrap &&obj);
-	void serializeToFile(const std::string &path);
+	typedef std::function<void(BinaryStream &stream)> DeserializeFuncType;
 
-	void setDeserializationObjectMapping(enum objectType objType, std::function<objType?*(binaryStream)> func);
-	void deserializeFromFile(const std::string &path); ? return something?
+	void queueObject(serializable_wrap &&obj);
+	bool serializeToFile(const std::string &path);
+
+	void setDeserializationObjectMapping(SerializationObjectTypes objType, DeserializeFuncType func);
+	bool deserializeFromFile(const std::string &path);
+
+private:
+	std::vector<serializable_wrap> serializationQueue_;
+	std::map<SerializationObjectTypes, DeserializeFuncType> mapTypesToFuncs_;
+
+	std::string getObjectTypeString(SerializationObjectTypes type);
 };
 
 #endif /* SERIALIZATION_SERIALIZER_H_ */

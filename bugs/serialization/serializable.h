@@ -12,8 +12,16 @@
 
 class BinaryStream;
 
+enum class SerializationObjectTypes {
+	BUG,
+	GENOME,
+	GAMETE,
+};
+
 // serialize a T object into the given stream
 template<typename T> void serialize(T* t, BinaryStream &stream);
+
+template<typename T> SerializationObjectTypes getSerializationType(T* t);
 
 class serializable_wrap {
 public:
@@ -35,10 +43,15 @@ public:
 		self_->serialize_(stream);
 	}
 
+	SerializationObjectTypes getType() {
+		return self_->getType_();
+	}
+
 private:
 	struct concept_t {
 		virtual ~concept_t() noexcept = default;
 		virtual void serialize_(BinaryStream &stream) = 0;
+		virtual SerializationObjectTypes getType_() = 0;
 		virtual concept_t* copy()=0;
 		virtual void* getRawPtr() = 0;
 	};
@@ -50,6 +63,9 @@ private:
 		void serialize_(BinaryStream &stream) override {
 			serializeImpl(obj_, stream, true);
 		}
+		SerializationObjectTypes getType_() override {
+			return getTypeImpl(obj_, true);
+		}
 		concept_t* copy() override {
 			return new model_t<T>(obj_);
 		}
@@ -57,14 +73,22 @@ private:
 			return obj_;
 		}
 
-		template<typename T1>
-		static decltype(&T1::serialize) serializeImpl(T1* t, BinaryStream &stream, bool dummyToUseMember) {
+		template<typename T1, decltype(T1::serialize) T2>
+		static void serializeImpl(T1* t, BinaryStream &stream, bool dummyToUseMember) {
 			t->serialize(stream);
-			return nullptr;
 		}
 		template<typename T1>
 		static void serializeImpl(T1* t, BinaryStream &stream, ...) {
 			::serialize(t, stream);
+		}
+
+		template<typename T1, decltype(T1::getSerializationType) T2>
+		static SerializationObjectTypes getTypeImpl(T1* t, bool dummyToUseMember) {
+			return t->getSerializationType();
+		}
+		template<typename T1>
+		static SerializationObjectTypes getTypeImpl(T1* t, ...) {
+			return ::getSerializationType(t);
 		}
 	};
 

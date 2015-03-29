@@ -8,15 +8,6 @@
 #include "BinaryStream.h"
 #include "../utils/assert.h"
 #include <cstdlib>
-#include <memory.h>
-#include <stdexcept>
-
-static union {
-	uint32_t i;
-	char c[4];
-} constexpr bigEndianTest {0x01020304};
-
-#define IS_LITTLE_ENDIAN() (bigEndianTest.c[0] == 1)
 
 BinaryStream::BinaryStream(size_t initial_capacity) {
 	capacity_ = initial_capacity;
@@ -48,46 +39,21 @@ void BinaryStream::expandBuffer() {
 	buffer_ = newBuf;
 }
 
-template<typename T, typename std::enable_if<std::is_fundamental<T>::value>::type>
-BinaryStream& BinaryStream::operator << (T& t) {
-	size_t dataSize = sizeof(t);
-	if (pos_ + dataSize > capacity_) {
-		if (ownsBuffer_)
-			expandBuffer();
-		else
-			throw std::runtime_error("attempted to write past the end of unmanaged buffer!");
-	}
-	if (IS_LITTLE_ENDIAN()) {
-		// little endian, write directly:
-		memcpy((char*)buffer_+pos_, &t, dataSize);
-		pos_ += dataSize;
-		if (pos_ > size_)
-			size_ = pos_;
-	} else {
-		// big endian, must write byte by byte in reverse order
-		char* ptr = (char*)&t + dataSize-1;
-		while (ptr >= (char*)&t) {
-			*(((char*)buffer_) + pos_++) = *(ptr--);
-		}
-		if (pos_ > size_)
-			size_ = pos_;
-	}
+BinaryStream& BinaryStream::operator << (std::string const& str) {
+	operator <<((uint16_t)str.length());
+	for (int i=0, n=str.length(); i<n; i++)
+		operator <<((uint16_t)str[i]);
+	return *this;
 }
 
-template<typename T, typename std::enable_if<std::is_fundamental<T>::value>::type>
-BinaryStream& BinaryStream::operator >> (T& t) const {
-	size_t dataSize = sizeof(t);
-	if (pos_ + dataSize > size_)
-		throw std::runtime_error("attempted to read past the end of the buffer!");
-	if (IS_LITTLE_ENDIAN()) {
-		// little endian, read directly:
-		memcpy(&t, (char*)buffer_+pos_, dataSize);
-		pos_ += dataSize;
-	} else {
-		// big endian, must write byte by byte in reverse order
-		char* ptr = (char*)&t + dataSize-1;
-		while (ptr >= (char*)&t) {
-			*(ptr--) = *(((char*)buffer_) + pos_++);
-		}
+const BinaryStream& BinaryStream::operator >> (std::string &str) const {
+	uint16_t length = 0;
+	operator >>(length);
+	str = "";
+	for (int i=0; i<length; i++) {
+		uint16_t c = 0;
+		operator >>(c);
+		str += c;
 	}
+	return *this;
 }

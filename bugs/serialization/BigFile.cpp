@@ -23,11 +23,11 @@ struct bigFile_header {
 	} headerData;
 };
 
-void BigFile::loadFromDisk_v1(const std::string &path) {
+bool BigFile::loadFromDisk_v1(const std::string &path) {
 
 }
 
-void BigFile::saveToDisk_v1(const std::string &path) {
+bool BigFile::saveToDisk_v1(const std::string &path) {
 	// 1. build header
 	bigFile_header hdr;
 	hdr.version = 1;
@@ -42,32 +42,29 @@ void BigFile::saveToDisk_v1(const std::string &path) {
 	}
 }
 
-void BigFile::loadFromDisk(const std::string &path) {
+bool BigFile::loadFromDisk(const std::string &path) {
 	std::ifstream file(path, std::ios::in | std::ios::binary);
 	bigFile_header hdr;
 	file >> hdr.version;
 	file >> hdr.headerSize;
 }
 
-void BigFile::saveToDisk(const std::string &path) {
+bool BigFile::saveToDisk(const std::string &path) {
 	saveToDisk_v1(path);
 }
 
-BigFile::FileDescriptor BigFile::getFile(const std::string &name) {
+const BigFile::FileDescriptor BigFile::getFile(const std::string &name) const {
 
 }
 
-std::vector<BigFile::FileDescriptor> BigFile::getAllFiles() {
+const std::vector<BigFile::FileDescriptor> BigFile::getAllFiles() const {
 
 }
 
-void BigFile::addFile(const std::string &filename, void* buffer, size_t size) {
-	FileDescriptor &fd = mapFiles[filename] = FileDescriptor();
-	fd.fileName = filename;
+void BigFile::addFile(const std::string &filename, const void* buffer, size_t size) {
+	FileDescriptor &fd = mapFiles[filename] = FileDescriptor(size, malloc(size), filename);
 	fd.ownsMemory_ = true;
-	fd.pStart = malloc(size);
 	memcpy(fd.pStart, buffer, size);
-	fd.size = size;
 }
 
 void BigFile::extractAll(const std::string &pathOut) {
