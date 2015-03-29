@@ -54,7 +54,8 @@ void GuiContainerElement::mouseDown(MouseButtons button) {
 	GuiBasicElement::mouseDown(button);
 	if (elementUnderMouse_) {
 		if (elementUnderMouse_ != focusedElement_) {
-			focusedElement_->focusLost();
+			if (focusedElement_)
+				focusedElement_->focusLost();
 			focusedElement_ = elementUnderMouse_;
 			focusedElement_->focusGot();
 		}
@@ -73,9 +74,11 @@ void GuiContainerElement::mouseMoved(glm::vec2 delta, glm::vec2 position) {
 	glm::vec2 clientPos = position - clientAreaOffset_;
 	std::shared_ptr<GuiBasicElement> crt = GuiHelper::getTopElementAtPosition(children_, clientPos.x, clientPos.y);
 	if (crt != elementUnderMouse_) {
-		elementUnderMouse_->mouseLeave();
+		if (elementUnderMouse_)
+			elementUnderMouse_->mouseLeave();
 		elementUnderMouse_ = crt;
-		elementUnderMouse_->mouseEnter();
+		if (elementUnderMouse_)
+			elementUnderMouse_->mouseEnter();
 	}
 	if (elementUnderMouse_)
 		elementUnderMouse_->mouseMoved(delta, clientPos - elementUnderMouse_->getPosition());

@@ -96,12 +96,12 @@ int main() {
 		World::getInstance()->setDestroyListener(&destroyListener);
 
 		GuiSystem Gui;
-		std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
+		/*std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
 		std::shared_ptr<Window> win2 = std::make_shared<Window>(glm::vec2(300, 130), glm::vec2(350, 200));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
 		Gui.addElement(std::static_pointer_cast<IGuiElement>(win2));
 		win1->addElement(std::make_shared<Button>(glm::vec2(100, 100), glm::vec2(60, 35), "buton1"));
-		win1->addElement(std::make_shared<TextField>(glm::vec2(50, 170), glm::vec2(200, 40), "text"));
+		win1->addElement(std::make_shared<TextField>(glm::vec2(50, 170), glm::vec2(200, 40), "text"));*/
 
 		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
 		GLFWInput::initialize(gltGetWindow());

@@ -24,6 +24,8 @@ public:
 
 protected:
 
+#warning "must change coordinate space for draw and mouse events"
+#warning "all coordinates must be in parent-space. Add support in shape2D for translation stack to simplify drawing code"
 	virtual void draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec2 frameScale) override;
 	virtual void mouseDown(MouseButtons button) override;
 	virtual void mouseUp(MouseButtons button) override;

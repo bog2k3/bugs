@@ -23,7 +23,8 @@ public:
 
 	drawable_wrap(const drawable_wrap& w) : self_(w.self_->copy()) {}
 	drawable_wrap(drawable_wrap &&w) : self_(std::move(w.self_)) {}
-	drawable_wrap operator = (drawable_wrap const &w) { return drawable_wrap(w); }
+	drawable_wrap& operator = (drawable_wrap const &w) { self_ = decltype(self_)(w.self_->copy()); return *this; }
+	drawable_wrap& operator = (drawable_wrap &&w) { self_ = std::move(w.self_); return *this; }
 
 	bool equal_value(drawable_wrap const& w) const {
 		return self_->getRawPtr() == w.self_->getRawPtr();
