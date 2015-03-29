@@ -38,5 +38,6 @@ void Button::draw(RenderContext const& ctx, glm::vec3 frameTranslation, glm::vec
 			GuiTheme::getButtonFrameColor());
 	int tx = frameTranslation.x + 10;
 	int ty = frameTranslation.y + 15;
-	ctx.text->print(text_, tx, ty, 14, GuiTheme::getButtonTextColor());
+	int tz = frameTranslation.z + 1;
+	ctx.text->print(text_, tx, ty, tz, 14, GuiTheme::getButtonTextColor());
 }

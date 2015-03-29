@@ -20,8 +20,10 @@ public:
 	GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar, int defaultSize);
 	~GLText() override;
 
-	void print(const std::string text, int x, int y, int size, glm::vec3 const& color);
-	void print(const std::string text, int x, int y, int size, glm::vec4 const& color);
+	// z is between [0..100] (bottom to top)
+	void print(const std::string text, int x, int y, int z, int size, glm::vec3 const& color);
+	// z is between [0..100] (bottom to top)
+	void print(const std::string text, int x, int y, int z, int size, glm::vec4 const& color);
 
 	void render(Viewport* pCrtViewport) override;
 	void purgeRenderQueue() override;
@@ -40,7 +42,7 @@ private:
 	int rows, cols, firstChar;
 	float cellRatio; 						// cellWeight / cellHidth
 	int defaultSize_;					// text size from the texture
-	std::vector<glm::vec2> vertices;
+	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> UVs;
 	std::vector<glm::vec4> colors;
 };

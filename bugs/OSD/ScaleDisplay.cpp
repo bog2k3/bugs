@@ -12,7 +12,7 @@
 static const glm::vec3 LINE_COLOR(0.8f, 0.8f, 0.8f);
 static const glm::vec3 TEXT_COLOR(1.f, 1.f, 1.f);
 
-ScaleDisplay::ScaleDisplay(glm::vec2 pos, int maxPixelsPerUnit)
+ScaleDisplay::ScaleDisplay(glm::vec3 pos, int maxPixelsPerUnit)
 	: pos_(pos)
 	, segmentsXOffset(50)
 	, segmentHeight(10)
@@ -71,10 +71,14 @@ void ScaleDisplay::draw(RenderContext const& ctx) {
 	char scaleLabel[100];
 
 	snprintf(scaleLabel, 100, "(10^%d)", exponent);
-	ctx.text->print(scaleLabel, pos_.x, pos_.y, 14, TEXT_COLOR);
+	ctx.text->print(scaleLabel, pos_.x, pos_.y, pos_.z, 14, TEXT_COLOR);
 	for (int i=0; i<segments+1; i++) {
 		snprintf(scaleLabel, 100, "%g", i*segIncrement);
 		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? 0 : segmentHeight / 2;
-		ctx.text->print(scaleLabel, pos_.x - localSegHeight +segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement), pos_.y - 10 + localSegHeight, 12, TEXT_COLOR);
+		ctx.text->print(scaleLabel,
+				pos_.x - localSegHeight +segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement),
+				pos_.y - 10 + localSegHeight,
+				pos_.z,
+				12, TEXT_COLOR);
 	}
 }

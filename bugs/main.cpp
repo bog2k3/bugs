@@ -139,7 +139,7 @@ int main() {
 		DrawList drawList;
 		drawList.add(World::getInstance());
 		drawList.add(&physWld);
-		ScaleDisplay scale(glm::vec2(15, 25), 300);
+		ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
 		drawList.add(&scale);
 		drawList.add(&Gui);
 
@@ -182,7 +182,7 @@ int main() {
 
 				std::stringstream ss;
 				ss << "Salut Lume!\n[Powered by Box2D]";
-				renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 16, glm::vec3(0.2f, 0.4, 1.0f));
+				renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
 
 				// do the actual openGL render for the previous frame (which is independent of our world)
 				gltBegin();

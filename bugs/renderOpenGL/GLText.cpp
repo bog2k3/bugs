@@ -61,16 +61,17 @@ GLText::~GLText() {
 	glDeleteProgram(shaderID);
 }
 
-void GLText::print(const std::string text, int x, int y, int size, glm::vec3 const& color) {
-	print(text, x, y, size, glm::vec4(color, 1));
+void GLText::print(const std::string text, int x, int y, int z, int size, glm::vec3 const& color) {
+	print(text, x, y, z, size, glm::vec4(color, 1));
 }
 
-void GLText::print(const std::string text, int x, int y, int size, glm::vec4 const& color) {
+void GLText::print(const std::string text, int x, int y, int z, int size, glm::vec4 const& color) {
 	unsigned int length = text.length();
 	float xSize = size*cellRatio;
 	glm::vec4 altColor = color;
 	if (size < defaultSize_)
 		altColor.a *= (float)defaultSize_ / size;
+	float zf = -z * 0.01f;
 
 	// Fill buffers
 	int initialX = x;
@@ -86,10 +87,10 @@ void GLText::print(const std::string text, int x, int y, int size, glm::vec4 con
 			continue;
 		}
 
-		glm::vec2 vertex_up_left    = glm::vec2(x      , y-size);
-		glm::vec2 vertex_up_right   = glm::vec2(x+xSize, y-size);
-		glm::vec2 vertex_down_right = glm::vec2(x+xSize, y);
-		glm::vec2 vertex_down_left  = glm::vec2(x      , y);
+		glm::vec3 vertex_up_left    = glm::vec3(x      , y-size, zf);
+		glm::vec3 vertex_up_right   = glm::vec3(x+xSize, y-size, zf);
+		glm::vec3 vertex_down_right = glm::vec3(x+xSize, y,      zf);
+		glm::vec3 vertex_down_left  = glm::vec3(x      , y,      zf);
 
 		x += xSize;
 
@@ -140,7 +141,7 @@ void GLText::render(Viewport* pCrtViewport) {
 	glEnableVertexAttribArray(vertexPosition_screenspaceID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(vertexPosition_screenspaceID, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	glVertexAttribPointer(vertexPosition_screenspaceID, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 
 	// 2nd attribute buffer : UVs
 	glEnableVertexAttribArray(vertexUVID);
