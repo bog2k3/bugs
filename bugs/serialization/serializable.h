@@ -13,6 +13,7 @@
 class BinaryStream;
 
 enum class SerializationObjectTypes {
+	UNDEFINED = 0,
 	BUG,
 	GENOME,
 	GAMETE,
@@ -73,7 +74,7 @@ private:
 			return obj_;
 		}
 
-		template<typename T1, decltype(T1::serialize) T2>
+		template<typename T1, typename T2 = decltype(&T1::serialize)>
 		static void serializeImpl(T1* t, BinaryStream &stream, bool dummyToUseMember) {
 			t->serialize(stream);
 		}
@@ -82,7 +83,7 @@ private:
 			::serialize(t, stream);
 		}
 
-		template<typename T1, decltype(T1::getSerializationType) T2>
+		template<typename T1, typename T2 = decltype(&T1::getSerializationType)>
 		static SerializationObjectTypes getTypeImpl(T1* t, bool dummyToUseMember) {
 			return t->getSerializationType();
 		}

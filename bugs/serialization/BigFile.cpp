@@ -6,22 +6,49 @@
  */
 
 #include "BigFile.h"
+#include "BinaryStream.h"
+#include "../utils/log.h"
 #include <memory.h>
 #include <stdint.h>
 #include <fstream>
 
+static uint32_t BIGFILE_MAGIC = 0x17F3AB9E;
+
 struct bigFile_header {
+	uint32_t magic = BIGFILE_MAGIC;
 	uint32_t version;
 	uint32_t headerSize;
-	union VERSIONS {
-		struct V1 {
-			uint32_t tableSize;
-			uint32_t numEntries;
-			uint32_t maxEntrySize;
-			uint32_t reserved[8]; // for future extension
-		} v1;
-	} headerData;
+	uint32_t reserved[8]; // for future extension
 };
+BinaryStream& operator << (BinaryStream& stream, bigFile_header const& h) {
+	stream << h.magic << h.version << h.headerSize;
+	for (int i=0; i<8; i++)
+		stream << h.reserved[i];
+	return stream;
+}
+
+struct bigFile_tableHeader_v1 {
+	uint32_t tableSize;
+	uint32_t numEntries;
+	uint32_t reserved[8]; // for future extension
+};
+BinaryStream& operator << (BinaryStream& stream, bigFile_tableHeader_v1 const& h) {
+	stream << h.tableSize << h.numEntries;
+	for (int i=0; i<8; i++)
+		stream << h.reserved[i];
+	return stream;
+}
+
+struct bigFile_tableEntry_v1 {
+	std::string filename;
+	uint32_t offset;	// offset from the beginning of the contents; first file body has offset 0
+	uint32_t size;
+	uint32_t reserved[2]; // for future extension
+};
+BinaryStream& operator << (BinaryStream& stream, bigFile_tableEntry_v1 const& e) {
+	stream << e.filename << e.offset << e.size;
+	return stream;
+}
 
 bool BigFile::loadFromDisk_v1(const std::string &path) {
 
@@ -31,15 +58,44 @@ bool BigFile::saveToDisk_v1(const std::string &path) {
 	// 1. build header
 	bigFile_header hdr;
 	hdr.version = 1;
-	hdr.headerSize = sizeof(hdr.version) + sizeof(hdr.headerSize) + sizeof(hdr.headerData.v1);
+	hdr.headerSize = sizeof(hdr);
 
 	// 2. build file table
-
-	// 3. write file data
+	bigFile_tableHeader_v1 tableHeader;
+	tableHeader.numEntries = mapFiles.size();
+	BinaryStream tableStream(mapFiles.size() * sizeof(bigFile_tableEntry_v1) * 2);
+	unsigned offset = 0;
 	for (auto &pair : mapFiles) {
 		FileDescriptor &fd = pair.second;
-		std::string const &filename = pair.first;
+		bigFile_tableEntry_v1 entry;
+		entry.filename = pair.first;
+		entry.offset = offset;
+		entry.size = fd.size;
+		tableStream << entry;
+		offset += fd.size;
 	}
+	// update table header tableSize field:
+	tableHeader.tableSize = tableStream.getSize();
+
+	// 3. serialize header & table header:
+	BinaryStream headerAndTableStream(sizeof(hdr)+sizeof(tableHeader));
+	headerAndTableStream << hdr << tableHeader;
+
+	// 4. write file data
+	try {
+		std::ofstream file(path, std::ios::out | std::ios::binary);
+		file.write((const char*)headerAndTableStream.getBuffer(), headerAndTableStream.getSize());
+		file.write((const char*)tableStream.getBuffer(), tableStream.getSize());
+		for (auto &pair : mapFiles) {
+			FileDescriptor &fd = pair.second;
+			file.write((const char*)fd.pStart, fd.size);
+		}
+		file.close();
+	} catch (std::ios::failure &e) {
+		ERROR(e.what());
+		return false;
+	}
+	return true;
 }
 
 bool BigFile::loadFromDisk(const std::string &path) {

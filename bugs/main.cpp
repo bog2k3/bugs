@@ -115,13 +115,6 @@ int main() {
 		//randSeed(time(NULL));
 		LOGLN("RAND seed: "<<rand_seed);
 
-		Serializer serializer;
-#error - left
-		auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
-		for (auto &e : vecSer)
-			serializer.queueObject(e);
-		serializer.serializeToFile("autosave.bin");
-
 		float worldRadius = 5.f;
 
 		Wall* w1 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f);
@@ -140,11 +133,17 @@ int main() {
 
 		for (int i=0; i<20; i++) {
 #warning "crash in fixGenesSynchro on basicMutantBug"
-			//Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-			Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+			Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+			//Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
 			//if (i==8)
 				World::getInstance()->takeOwnershipOf(bug);
 		}
+
+		Serializer serializer;
+		auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
+		for (auto e : vecSer)
+			serializer.queueObject(e);
+		serializer.serializeToFile("autosave.bin");
 
 		DrawList drawList;
 		drawList.add(World::getInstance());

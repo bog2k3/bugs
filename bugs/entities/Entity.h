@@ -10,6 +10,7 @@
 
 class RenderContext;
 class BinaryStream;
+enum class SerializationObjectTypes;
 
 class Entity {
 public:
@@ -27,6 +28,7 @@ public:
 	virtual void update(float dt) {}
 	virtual void draw(RenderContext const& ctx) {}
 	virtual void serialize(BinaryStream &stream) {}
+	virtual SerializationObjectTypes getSerializationType() { return (SerializationObjectTypes)0; }
 
 	void destroy();
 	bool isZombie() { return markedForDeletion_; }
