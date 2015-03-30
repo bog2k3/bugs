@@ -35,7 +35,7 @@ std::string Serializer::getObjectTypeString(SerializationObjectTypes type) {
 	}
 }
 
-#error "add logs for all types of errors"
+#warning "add logs for all types of errors"
 
 bool Serializer::serializeToFile(const std::string &path) {
 	BinaryStream masterStream(serializationQueue_.size() * 50); // estimate about 50 bytes per entry in master
@@ -56,8 +56,11 @@ bool Serializer::serializeToFile(const std::string &path) {
 	}
 	BigFile bigFile;
 	bigFile.addFile("master", masterStream.getBuffer(), masterStream.getSize());
-	for (unsigned i=0; i<vecStreams.size(); i++)
+	for (unsigned i=0; i<vecStreams.size(); i++) {
 		bigFile.addFile(vecFilenames[i], vecStreams[i]->getBuffer(), vecStreams[i]->getSize());
+		vecStreams[i].reset();
+	}
+	serializationQueue_.clear();
 	return bigFile.saveToDisk(path);
 }
 

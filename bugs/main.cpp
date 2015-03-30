@@ -29,6 +29,7 @@
 #include "GUI/Window.h"
 #include "GUI/controls/Button.h"
 #include "GUI/controls/TextField.h"
+#include "serialization/Serializer.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -113,6 +114,8 @@ int main() {
 		randSeed(1424118659);
 		//randSeed(time(NULL));
 		LOGLN("RAND seed: "<<rand_seed);
+
+		Serializer serializer;
 
 		float worldRadius = 5.f;
 
