@@ -8,6 +8,7 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
+#include "entities/Entity.h"
 #include "input/operations/IOperationSpatialLocator.h"
 #include "renderOpenGL/RenderContext.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
@@ -15,7 +16,6 @@
 
 class b2World;
 class b2Body;
-class Entity;
 class PhysDestroyListener;
 
 class World : public IOperationSpatialLocator, public b2QueryCallback {
@@ -43,6 +43,9 @@ public:
 
 	void takeOwnershipOf(Entity* e);
 	void destroyEntity(Entity* e);
+
+	// returns a vector of all entities that match ALL of the requested features
+	std::vector<Entity*> getEntities(Entity::FunctionalityFlags filterFlags);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);

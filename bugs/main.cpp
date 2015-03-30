@@ -116,6 +116,11 @@ int main() {
 		LOGLN("RAND seed: "<<rand_seed);
 
 		Serializer serializer;
+#error - left
+		auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
+		for (auto &e : vecSer)
+			serializer.queueObject(e);
+		serializer.serializeToFile("autosave.bin");
 
 		float worldRadius = 5.f;
 

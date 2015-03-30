@@ -154,3 +154,12 @@ void World::draw(RenderContext const& ctx) {
 	for (auto e : entsToDraw)
 		e->draw(ctx);
 }
+
+std::vector<Entity*> World::getEntities(Entity::FunctionalityFlags filterFlags) {
+	std::vector<Entity*> vec;
+	for (auto &e : entities) {
+		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags)
+			vec.push_back(e);
+	}
+	return vec;
+}
