@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <fstream>
 
-static constexpr uint32_t BIGFILE_MAGIC = 0xB16F17E69;
+static constexpr uint32_t BIGFILE_MAGIC = 0xB16F17E5;
 
 struct bigFile_header {
 	uint32_t magic = BIGFILE_MAGIC;
@@ -87,6 +87,7 @@ bool BigFile::loadFromDisk(const std::string &path) {
 		file.read((char*)hdrBinData, sizeof(bigFile_header));
 		BinaryStream hdrStream(hdrBinData, sizeof(bigFile_header));
 		bigFile_header hdr;
+		hdrStream >> hdr;
 		if (hdr.magic != BIGFILE_MAGIC) {
 			LOGLN("WARNING: Invalid or corrupted BigFile (wrong magic!) at: "<<path);
 			return false;

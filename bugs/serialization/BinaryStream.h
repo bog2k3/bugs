@@ -65,7 +65,7 @@ public:
 	 * 	b. an exception is generated if the underlying buffer is not owned by the stream.
 	 */
 	template<typename T, typename std::enable_if<std::is_fundamental<T>::value, T>::type* = nullptr>
-	BinaryStream& operator << (T t) {
+	BinaryStream& operator << (T const& t) {
 		size_t dataSize = sizeof(t);
 		if (pos_ + dataSize > capacity_) {
 			if (ownsBuffer_)
@@ -98,7 +98,7 @@ public:
 	 * If attempting to read past the end of the stream, an exception is generated.
 	 */
 	template<typename T, typename std::enable_if<std::is_fundamental<T>::value, T>::type* = nullptr>
-	BinaryStream& operator >> (T t) {
+	BinaryStream& operator >> (T &t) {
 		size_t dataSize = sizeof(t);
 		size_t maxSize = ifstream_ ? fileSize_ : size_;
 		if (pos_ + dataSize > maxSize)

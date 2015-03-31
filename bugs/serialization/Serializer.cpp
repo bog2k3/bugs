@@ -79,7 +79,7 @@ bool Serializer::deserializeFromFile(const std::string &path) {
 	while (!masterStream.eof()) {
 		SerializationObjectTypes type;
 		std::string filename;
-		masterStream >> (unsigned)type >> filename;
+		masterStream >> (unsigned&)type >> filename;
 		DeserializeFuncType deserializeFunc = mapTypesToFuncs_[type];
 		if (!deserializeFunc)
 			return false;
