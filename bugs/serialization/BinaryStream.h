@@ -45,10 +45,10 @@ public:
 	virtual ~BinaryStream();
 
 	size_t getCapacity() const { return capacity_; }
-	size_t getSize() const { return size_; }
-	const void* getBuffer() const { return buffer_; }
+	size_t getSize() const { return ifstream ? fileSize_ : size_; }
+	const void* getBuffer() const { assert(!ifstream_); return buffer_; }
 	void seek(size_t offset) const;
-	bool eof() { return pos_ >= size_; }
+	bool eof() { return ifstream ? pos_ >= fileSize_ : pos_ >= size_; }
 
 	/**
 	 * reads raw data from the stream and copies it into the supplied buffer.
@@ -97,6 +97,8 @@ public:
 	 */
 	template<typename T, typename std::enable_if<std::is_fundamental<T>::value, T>::type* = nullptr>
 	const BinaryStream& operator >> (T t) const {
+#warning "must fix >> operator to work correctly on ifstream; use buffer_ as temp buffer to read from ifstream"
+#warning "also fix all seek, getpos and stuff for this case"
 		size_t dataSize = sizeof(t);
 		if (pos_ + dataSize > size_)
 			throw std::runtime_error("attempted to read past the end of the buffer!");
@@ -120,11 +122,14 @@ protected:
 	size_t capacity_ = 0;
 	size_t size_ = 0;
 	mutable size_t pos_ = 0;
+	mutable size_t bufferOffset_ = 0; // for BinaryStreams over ifstream; tells where in the file our internal buffer begins
+	size_t fileSize_ = 0; // for BinaryStreams over ifstream;
 	void *buffer_ = nullptr;
 	bool ownsBuffer_ = false;
 	std::ifstream *ifstream_ = nullptr;
 
-	void expandBuffer();
+	void expandBuffer(); // for write-BinaryStream: expands the internal buffer by doubling it's size
+	void readNextBufferChunk(); // (for BinaryStream over ifstream only) reads next chunk from the file into the internal buffer
 };
 
 #endif /* SERIALIZATION_BINARYSTREAM_H_ */

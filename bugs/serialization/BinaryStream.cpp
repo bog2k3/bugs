@@ -63,9 +63,39 @@ BinaryStream::BinaryStream(std::ifstream &fileStream)
 {
 	if (!fileStream.is_open())
 		throw std::runtime_error("BinaryStream constructed over closed std::ifstream");
+	auto initialPos = fileStream.tellg();
+	fileStream.seekg(0, fileStream.end);
+	fileSize_ = fileStream.tellg() - initialPos;
+	fileStream.seekg(initialPos);
+	size_ = min(512, fileSize_);
+	ownsBuffer_ = true;
+	buffer_ = malloc(size_);
 }
 
-void BinaryStream::read(void* buffer, size_t size) {
-#error "must fix all >> operators to work correctly on ifstream; use buffer_ as temp buffer to read from ifstream"
-	// also fix all seek, getpos and stuff for this case
+void BinaryStream::readNextBufferChunk() {
+	if (pos_ >= fileSize_)  // this also asserts ifstream otherwise fileSize_ would be zero
+		throw std::runtime_error("Attempted to read past the end of the file!");
+	assert(pos_ - bufferOffset_ == size_); // all internal buffer has been consumed
+	size_t toRead = min(size_, fileSize_ - bufferOffset_ - size_);
+	ifstream_->read((char*)buffer_, toRead);
+	bufferOffset_ += toRead;
+	// check if the contents of internal buffer are less than its capacity:
+	if (toRead < size_)
+		size_ = toRead;
+}
+
+void BinaryStream::read(void* outBuffer, size_t size) {
+	char *cbuffer = (char*)outBuffer;
+	size_t readSize = 0;
+	while (readSize < size) {
+		// check if buffer needs update from file (if we have a file at all):
+		if (pos_ - bufferOffset_ == size_)
+			readNextBufferChunk();
+		// copy data from the internal buffer:
+		size_t positionInBuffer = pos_ - bufferOffset_;
+		size_t toCopy = min(size-readSize, size_ - positionInBuffer);
+		memcpy(cbuffer, (char*)buffer_ + positionInBuffer, toCopy);
+		pos_ += toCopy;
+		readSize += toCopy;
+	}
 }

@@ -84,7 +84,7 @@ bool BigFile::loadFromDisk(const std::string &path) {
 	try {
 		std::ifstream file(path, std::ios::in | std::ios::binary);
 		void* hdrBinData = malloc(sizeof(bigFile_header));
-		file.read(hdrBinData, sizeof(bigFile_header));
+		file.read((char*)hdrBinData, sizeof(bigFile_header));
 		BinaryStream hdrStream(hdrBinData, sizeof(bigFile_header));
 		bigFile_header hdr;
 		if (hdr.magic != BIGFILE_MAGIC) {
