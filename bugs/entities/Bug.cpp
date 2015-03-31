@@ -748,3 +748,17 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 	GeneticOperations::fixGenesSynchro(g);
 	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0));
 }
+
+glm::vec2 Bug::getPosition() {
+	if (zygoteShell_)
+		return vec2xy(zygoteShell_->getWorldTransformation());
+	if (body_)
+		return vec2xy(body_->getWorldTransformation());
+	return glm::vec2(0);
+}
+
+void Bug::serialize(BinaryStream &stream) {
+	glm::vec2 pos = getPosition();
+	stream << pos.x << pos.y;
+	stream << genome_;
+}

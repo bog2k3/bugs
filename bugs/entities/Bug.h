@@ -32,13 +32,15 @@ public:
 	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity);
 	virtual ~Bug();
 	FunctionalityFlags getFunctionalityFlags() override {
-		return FF_UPDATABLE | FF_DRAWABLE;
+		return FF_UPDATABLE | FF_DRAWABLE | FF_SERIALIZABLE;
 	}
 
 	void update(float dt) override;
 	void draw(RenderContext const &ctx) override;
+	void serialize(BinaryStream &stream) override;
 
 	const Genome& getGenome() { return genome_; }
+	glm::vec2 getPosition();
 
 	void kill();
 

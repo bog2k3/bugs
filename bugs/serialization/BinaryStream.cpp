@@ -50,7 +50,7 @@ BinaryStream& BinaryStream::operator << (std::string const& str) {
 BinaryStream& BinaryStream::operator >> (std::string &str) {
 	uint16_t length = 0;
 	operator >>(length);
-	str = "";
+	str = ""; str.reserve(length);
 	for (int i=0; i<length; i++) {
 		uint16_t c = 0;
 		operator >>(c);

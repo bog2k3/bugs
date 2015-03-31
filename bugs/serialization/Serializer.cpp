@@ -53,11 +53,13 @@ bool Serializer::serializeToFile(const std::string &path) {
 	std::vector<std::string> vecFilenames;
 	int fileIndex = 1;
 	for (auto &e : serializationQueue_) {
-		masterStream << e.getType() << "\n";
+		SerializationObjectTypes objType = e.getType();
+		assert(objType != SerializationObjectTypes::UNDEFINED);
+		masterStream << objType;
 		std::stringstream pathBuild;
 		pathBuild << getObjectTypeString(e.getType()) << fileIndex << ".data";
 		vecFilenames.push_back(pathBuild.str());
-		masterStream << pathBuild.str() << "\n";
+		masterStream << pathBuild.str();
 		std::unique_ptr<BinaryStream> fileStream(new BinaryStream(100));
 		e.serialize(*fileStream);
 		vecStreams.push_back(std::move(fileStream));

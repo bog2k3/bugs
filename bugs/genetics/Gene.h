@@ -170,6 +170,8 @@ public:
 	Gene(GeneNeuralConstant const &gnc) : Gene(GENE_TYPE_NEURAL_CONST, gnc) {}
 	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
 
+	Gene() : Gene(GeneNoOp()) {}
+
 	Gene(const Gene& original)
 		: RID(original.RID)
 		, type(original.type)
