@@ -33,8 +33,24 @@ BinaryStream& operator >> (BinaryStream& stream, bigFile_header &h) {
 	return stream;
 }
 
-bool BigFile::loadFromDisk_v1(std::ifstream &file) {
-
+bool BigFile::loadFromDisk_v1(BinaryStream &fileStream) {
+	bigFile_tableHeader_v1 tableHeader;
+	fileStream >> tableHeader;
+	std::vector<bigFile_tableEntry_v1> tableEntries;
+	for (unsigned i=0; i<tableHeader.numEntries; i++) {
+		bigFile_tableEntry_v1 entry;
+		fileStream >> entry;
+		tableEntries.push_back(entry);
+	}
+	for (unsigned i=0; i<tableHeader.numEntries; i++) {
+		FileDescriptor &fd = mapFiles[fd.fileName];
+		fd.fileName = tableEntries[i].filename;
+		fd.size = tableEntries[i].size;
+		fd.ownsMemory_ = true;
+		fd.pStart = malloc(fd.size);
+		fileStream.read(fd.pStart, fd.size);
+	}
+	return true;
 }
 
 bool BigFile::saveToDisk_v1(const std::string &path) {
@@ -83,18 +99,19 @@ bool BigFile::saveToDisk_v1(const std::string &path) {
 bool BigFile::loadFromDisk(const std::string &path) {
 	try {
 		std::ifstream file(path, std::ios::in | std::ios::binary);
-		void* hdrBinData = malloc(sizeof(bigFile_header));
-		file.read((char*)hdrBinData, sizeof(bigFile_header));
-		BinaryStream hdrStream(hdrBinData, sizeof(bigFile_header));
+		// void* hdrBinData = malloc(sizeof(bigFile_header));
+		// file.read((char*)hdrBinData, sizeof(bigFile_header));
+		//BinaryStream hdrStream(hdrBinData, sizeof(bigFile_header));
+		BinaryStream fileStream(file);
 		bigFile_header hdr;
-		hdrStream >> hdr;
+		fileStream >> hdr;
 		if (hdr.magic != BIGFILE_MAGIC) {
 			LOGLN("WARNING: Invalid or corrupted BigFile (wrong magic!) at: "<<path);
 			return false;
 		}
 		switch (hdr.version) {
 		case 1:
-			return loadFromDisk_v1(file);
+			return loadFromDisk_v1(fileStream);
 		default:
 			LOGLN("WARNING: No known method to handle version "<<hdr.version<<" of BigFile! canceling...");
 			return false;
@@ -106,19 +123,26 @@ bool BigFile::loadFromDisk(const std::string &path) {
 		ERROR("EXCEPTION during deserialization from file "<< path<<":\n" << e.what());
 		return false;
 	}
-	return true;
 }
 
 bool BigFile::saveToDisk(const std::string &path) {
 	saveToDisk_v1(path);
+	return true;
 }
 
 const BigFile::FileDescriptor BigFile::getFile(const std::string &name) const {
-
+	auto it = mapFiles.find(name);
+	if (it != mapFiles.end())
+		return it->second;
+	else
+		return FileDescriptor();
 }
 
 const std::vector<BigFile::FileDescriptor> BigFile::getAllFiles() const {
-
+	std::vector<FileDescriptor> vec;
+	for (auto &pair : mapFiles)
+		vec.push_back(pair.second);
+	return vec;
 }
 
 void BigFile::addFile(const std::string &filename, const void* buffer, size_t size) {

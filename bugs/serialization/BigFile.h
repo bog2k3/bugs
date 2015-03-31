@@ -13,6 +13,8 @@
 #include <map>
 #include <cstdlib>
 
+class BinaryStream;
+
 class BigFile {
 public:
 	struct FileDescriptor {
@@ -21,6 +23,11 @@ public:
 		std::string fileName;
 
 		FileDescriptor() = default;
+
+		FileDescriptor(const FileDescriptor &original)
+			: size(original.size), pStart(original.pStart), fileName(original.fileName)
+			, ownsMemory_(false) {
+		}
 
 		FileDescriptor(size_t size, void* start, std::string const& fileName)
 			: size(size), pStart(start), fileName(fileName) {
@@ -51,7 +58,7 @@ public:
 private:
 	std::map<std::string, FileDescriptor> mapFiles;
 
-	bool loadFromDisk_v1(std::ifstream &file);
+	bool loadFromDisk_v1(BinaryStream &fileStream);
 	bool saveToDisk_v1(const std::string &path);
 };
 
