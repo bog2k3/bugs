@@ -6,7 +6,6 @@
  */
 
 #include "Genome.h"
-#include "Gene.h"
 #include "../utils/rand.h"
 #include "../utils/log.h"
 #include "../math/math2D.h"

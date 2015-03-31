@@ -19,9 +19,6 @@
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
 #include "utils/log.h"
-#include "entities/Bug.h"
-#include "entities/food/FoodDispenser.h"
-#include "entities/Wall.h"
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
 #include "OSD/ScaleDisplay.h"
@@ -30,6 +27,7 @@
 #include "GUI/controls/Button.h"
 #include "GUI/controls/TextField.h"
 #include "serialization/Serializer.h"
+#include "session/SessionManager.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -59,6 +57,19 @@ void onInputEventHandler(InputEvent& ev) {
 			pPhysWld->SetDebugDraw(skipRendering ? nullptr : pPhysicsDraw);
 		}
 	}
+}
+
+void save(const std::string &path) {
+	Serializer serializer;
+	auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
+	for (auto e : vecSer)
+		serializer.queueObject(e);
+	serializer.serializeToFile(path);
+}
+
+void autosave() {
+#warning TODO: cycle autosave files first
+	save("autosave.bin");
 }
 
 int main() {
@@ -115,35 +126,11 @@ int main() {
 		//randSeed(time(NULL));
 		LOGLN("RAND seed: "<<rand_seed);
 
-		float worldRadius = 5.f;
+		SessionManager sessionMgr;
+		sessionMgr.startDefaultSession();
 
-		Wall* w1 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f);
-		World::getInstance()->takeOwnershipOf(w1);
-		Wall* w2 = new Wall(glm::vec2(-worldRadius, +worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
-		World::getInstance()->takeOwnershipOf(w2);
-		Wall* w3 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(-worldRadius, +worldRadius), 0.2f);
-		World::getInstance()->takeOwnershipOf(w3);
-		Wall* w4 = new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
-		World::getInstance()->takeOwnershipOf(w4);
-
-		for (int i=0; i<15; i++) {
-			FoodDispenser* foodDisp = new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0);
-			World::getInstance()->takeOwnershipOf(foodDisp);
-		}
-
-		for (int i=0; i<20; i++) {
-#warning "crash in fixGenesSynchro on basicMutantBug"
-			Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-			//Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-			//if (i==8)
-				World::getInstance()->takeOwnershipOf(bug);
-		}
-
-		Serializer serializer;
-		auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
-		for (auto e : vecSer)
-			serializer.queueObject(e);
-		serializer.serializeToFile("autosave.bin");
+		autosave();
+		sessionMgr.loadSessionFromFile("autosave.bin");
 
 		DrawList drawList;
 		drawList.add(World::getInstance());

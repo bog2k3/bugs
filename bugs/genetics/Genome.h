@@ -9,10 +9,10 @@
 #define GENETICS_GENOME_H_
 
 #include "../entities/WorldConst.h"
+#include "Gene.h"
 #include <vector>
 #include <utility>
 
-class Gene;
 class MetaGene;
 
 struct Chromosome {
