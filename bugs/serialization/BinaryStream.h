@@ -8,6 +8,7 @@
 #ifndef SERIALIZATION_BINARYSTREAM_H_
 #define SERIALIZATION_BINARYSTREAM_H_
 
+#include "../utils/assert.h"
 #include <type_traits>
 #include <cstddef>
 #include <string>
@@ -41,14 +42,15 @@ public:
 	 * The BinaryStream will read data from the file as needed.
 	 */
 	BinaryStream(std::ifstream &fileStream);
+	#warning "must fix  all seek, getpos and stuff for this case"
 
 	virtual ~BinaryStream();
 
 	size_t getCapacity() const { return capacity_; }
-	size_t getSize() const { return ifstream ? fileSize_ : size_; }
-	const void* getBuffer() const { assert(!ifstream_); return buffer_; }
-	void seek(size_t offset) const;
-	bool eof() { return ifstream ? pos_ >= fileSize_ : pos_ >= size_; }
+	size_t getSize() const { return ifstream_ ? fileSize_ : size_; }
+	const void* getBuffer() const { assertDbg(!ifstream_); return buffer_; }
+	void seek(size_t offset);
+	bool eof() { return ifstream_ ? pos_ >= fileSize_ : pos_ >= size_; }
 
 	/**
 	 * reads raw data from the stream and copies it into the supplied buffer.
@@ -96,33 +98,43 @@ public:
 	 * If attempting to read past the end of the stream, an exception is generated.
 	 */
 	template<typename T, typename std::enable_if<std::is_fundamental<T>::value, T>::type* = nullptr>
-	const BinaryStream& operator >> (T t) const {
-#warning "must fix >> operator to work correctly on ifstream; use buffer_ as temp buffer to read from ifstream"
-#warning "also fix all seek, getpos and stuff for this case"
+	BinaryStream& operator >> (T t) {
 		size_t dataSize = sizeof(t);
-		if (pos_ + dataSize > size_)
+		size_t maxSize = ifstream_ ? fileSize_ : size_;
+		if (pos_ + dataSize > maxSize)
 			throw std::runtime_error("attempted to read past the end of the buffer!");
+		void *readBuffer = buffer_;
+		size_t readPos = pos_;
+		// if we're over an ifstream, must use a temp buffer into which we copy the data, then we deserialize from it
+		// because the main buffer may not contain all the bytes needed, and a re-read from file may occur half-way
+		char tempBuffer[32];
+		assertDbg(dataSize < sizeof(tempBuffer)); // if this ever fails, we need to increase tempBuffer capacity
+		if (ifstream_) {
+			readBuffer = tempBuffer;
+			readPos = 0;
+			read((void*)tempBuffer, dataSize);
+		}
 		if (IS_LITTLE_ENDIAN) {
 			// little endian, read directly:
-			memcpy(&t, (char*)buffer_+pos_, dataSize);
-			pos_ += dataSize;
+			memcpy(&t, (char*)readBuffer+readPos, dataSize);
 		} else {
 			// big endian, must write byte by byte in reverse order
 			char* ptr = (char*)&t + dataSize-1;
 			while (ptr >= (char*)&t) {
-				*(ptr--) = *(((char*)buffer_) + pos_++);
+				*(ptr--) = *(((char*)readBuffer) + readPos++);
 			}
 		}
+		pos_ += dataSize;
 		return *this;
 	}
 
-	const BinaryStream& operator >> (std::string &str) const;
+	BinaryStream& operator >> (std::string &str);
 
 protected:
 	size_t capacity_ = 0;
 	size_t size_ = 0;
-	mutable size_t pos_ = 0;
-	mutable size_t bufferOffset_ = 0; // for BinaryStreams over ifstream; tells where in the file our internal buffer begins
+	size_t pos_ = 0;
+	size_t bufferOffset_ = 0; // for BinaryStreams over ifstream; tells where in the file our internal buffer begins
 	size_t fileSize_ = 0; // for BinaryStreams over ifstream;
 	void *buffer_ = nullptr;
 	bool ownsBuffer_ = false;

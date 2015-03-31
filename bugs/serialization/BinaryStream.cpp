@@ -8,6 +8,7 @@
 #include "BinaryStream.h"
 #include "../utils/assert.h"
 #include <cstdlib>
+#include <algorithm>
 
 BinaryStream::BinaryStream(size_t initial_capacity) {
 	capacity_ = initial_capacity;
@@ -26,7 +27,7 @@ BinaryStream::~BinaryStream() {
 	}
 }
 
-void BinaryStream::seek(size_t offset) const {
+void BinaryStream::seek(size_t offset) {
 	assertDbg(offset <= size_);
 	pos_ = offset;
 }
@@ -46,7 +47,7 @@ BinaryStream& BinaryStream::operator << (std::string const& str) {
 	return *this;
 }
 
-const BinaryStream& BinaryStream::operator >> (std::string &str) const {
+BinaryStream& BinaryStream::operator >> (std::string &str) {
 	uint16_t length = 0;
 	operator >>(length);
 	str = "";
@@ -67,7 +68,7 @@ BinaryStream::BinaryStream(std::ifstream &fileStream)
 	fileStream.seekg(0, fileStream.end);
 	fileSize_ = fileStream.tellg() - initialPos;
 	fileStream.seekg(initialPos);
-	size_ = min(512, fileSize_);
+	size_ = std::min(size_t(512), fileSize_);
 	ownsBuffer_ = true;
 	buffer_ = malloc(size_);
 }
@@ -76,7 +77,7 @@ void BinaryStream::readNextBufferChunk() {
 	if (pos_ >= fileSize_)  // this also asserts ifstream otherwise fileSize_ would be zero
 		throw std::runtime_error("Attempted to read past the end of the file!");
 	assert(pos_ - bufferOffset_ == size_); // all internal buffer has been consumed
-	size_t toRead = min(size_, fileSize_ - bufferOffset_ - size_);
+	size_t toRead = std::min(size_, fileSize_ - bufferOffset_ - size_);
 	ifstream_->read((char*)buffer_, toRead);
 	bufferOffset_ += toRead;
 	// check if the contents of internal buffer are less than its capacity:
@@ -93,7 +94,7 @@ void BinaryStream::read(void* outBuffer, size_t size) {
 			readNextBufferChunk();
 		// copy data from the internal buffer:
 		size_t positionInBuffer = pos_ - bufferOffset_;
-		size_t toCopy = min(size-readSize, size_ - positionInBuffer);
+		size_t toCopy = std::min(size-readSize, size_ - positionInBuffer);
 		memcpy(cbuffer, (char*)buffer_ + positionInBuffer, toCopy);
 		pos_ += toCopy;
 		readSize += toCopy;
