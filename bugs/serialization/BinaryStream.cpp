@@ -57,3 +57,15 @@ const BinaryStream& BinaryStream::operator >> (std::string &str) const {
 	}
 	return *this;
 }
+
+BinaryStream::BinaryStream(std::ifstream &fileStream)
+	: ifstream_(&fileStream)
+{
+	if (!fileStream.is_open())
+		throw std::runtime_error("BinaryStream constructed over closed std::ifstream");
+}
+
+void BinaryStream::read(void* buffer, size_t size) {
+#error "must fix all >> operators to work correctly on ifstream; use buffer_ as temp buffer to read from ifstream"
+	// also fix all seek, getpos and stuff for this case
+}

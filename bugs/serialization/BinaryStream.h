@@ -13,6 +13,7 @@
 #include <string>
 #include <stdexcept>
 #include <memory.h>
+#include <fstream>
 
 static union {
 	uint32_t i;
@@ -34,6 +35,12 @@ public:
 	 * The underlying buffer is owned by the caller and cannot be resized.
 	 */
 	BinaryStream(void* buffer, size_t size);
+	/**
+	 * creates a READ-ONLY binary stream over the specified file. The file must be opened in binary mode otherwise
+	 * an std::runtime_error is thrown.
+	 * The BinaryStream will read data from the file as needed.
+	 */
+	BinaryStream(std::ifstream &fileStream);
 
 	virtual ~BinaryStream();
 
@@ -42,6 +49,12 @@ public:
 	const void* getBuffer() const { return buffer_; }
 	void seek(size_t offset) const;
 	bool eof() { return pos_ >= size_; }
+
+	/**
+	 * reads raw data from the stream and copies it into the supplied buffer.
+	 * The data will be written exactly as encoded in the stream, no translations or deserialization will occur.
+	 */
+	void read(void* buffer, size_t size);
 
 	/**
 	 * inputs data into the stream, incrementing the position. If the size of the stream grows larger than its capacity:
@@ -109,6 +122,7 @@ protected:
 	mutable size_t pos_ = 0;
 	void *buffer_ = nullptr;
 	bool ownsBuffer_ = false;
+	std::ifstream *ifstream_ = nullptr;
 
 	void expandBuffer();
 };

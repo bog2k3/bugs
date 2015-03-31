@@ -51,7 +51,7 @@ public:
 private:
 	std::map<std::string, FileDescriptor> mapFiles;
 
-	bool loadFromDisk_v1(const std::string &path);
+	bool loadFromDisk_v1(std::ifstream &file);
 	bool saveToDisk_v1(const std::string &path);
 };
 

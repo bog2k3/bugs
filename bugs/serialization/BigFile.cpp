@@ -13,7 +13,27 @@
 #include <stdint.h>
 #include <fstream>
 
-bool BigFile::loadFromDisk_v1(const std::string &path) {
+static constexpr uint32_t BIGFILE_MAGIC = 0xB16F17E69;
+
+struct bigFile_header {
+	uint32_t magic = BIGFILE_MAGIC;
+	uint32_t version;
+	uint32_t reserved[8]; // for future extension
+};
+BinaryStream& operator << (BinaryStream& stream, bigFile_header const& h) {
+	stream << h.magic << h.version;
+	for (int i=0; i<8; i++)
+		stream << h.reserved[i];
+	return stream;
+}
+BinaryStream& operator >> (BinaryStream& stream, bigFile_header &h) {
+	stream >> h.magic >> h.version;
+	for (int i=0; i<8; i++)
+		stream >> h.reserved[i];
+	return stream;
+}
+
+bool BigFile::loadFromDisk_v1(std::ifstream &file) {
 
 }
 
@@ -21,7 +41,6 @@ bool BigFile::saveToDisk_v1(const std::string &path) {
 	// 1. build header
 	bigFile_header hdr;
 	hdr.version = 1;
-	hdr.headerSize = sizeof(hdr);
 
 	// 2. build file table
 	bigFile_tableHeader_v1 tableHeader;
@@ -62,10 +81,31 @@ bool BigFile::saveToDisk_v1(const std::string &path) {
 }
 
 bool BigFile::loadFromDisk(const std::string &path) {
-	std::ifstream file(path, std::ios::in | std::ios::binary);
-	bigFile_header hdr;
-	file >> hdr.version;
-	file >> hdr.headerSize;
+	try {
+		std::ifstream file(path, std::ios::in | std::ios::binary);
+		void* hdrBinData = malloc(sizeof(bigFile_header));
+		file.read(hdrBinData, sizeof(bigFile_header));
+		BinaryStream hdrStream(hdrBinData, sizeof(bigFile_header));
+		bigFile_header hdr;
+		if (hdr.magic != BIGFILE_MAGIC) {
+			LOGLN("WARNING: Invalid or corrupted BigFile (wrong magic!) at: "<<path);
+			return false;
+		}
+		switch (hdr.version) {
+		case 1:
+			return loadFromDisk_v1(file);
+		default:
+			LOGLN("WARNING: No known method to handle version "<<hdr.version<<" of BigFile! canceling...");
+			return false;
+		}
+	} catch (std::ios::failure &e) {
+		ERROR("EXCEPTION during loading from disk (" << path<<"):\n" << e.what());
+		return false;
+	} catch (std::runtime_error &e) {
+		ERROR("EXCEPTION during deserialization from file "<< path<<":\n" << e.what());
+		return false;
+	}
+	return true;
 }
 
 bool BigFile::saveToDisk(const std::string &path) {
