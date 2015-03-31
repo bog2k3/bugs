@@ -17,6 +17,16 @@ Serializer::Serializer() {
 Serializer::~Serializer() {
 }
 
+BinaryStream& operator << (BinaryStream &stream, SerializationObjectTypes x) {
+	stream << (uint16_t)x;
+	return stream;
+}
+
+BinaryStream& operator >> (BinaryStream &stream, SerializationObjectTypes x) {
+	stream >> (uint16_t&)x;
+	return stream;
+}
+
 
 void Serializer::queueObject(serializable_wrap &&obj) {
 	serializationQueue_.push_back(obj);
@@ -43,7 +53,7 @@ bool Serializer::serializeToFile(const std::string &path) {
 	std::vector<std::string> vecFilenames;
 	int fileIndex = 1;
 	for (auto &e : serializationQueue_) {
-		masterStream << (unsigned)e.getType() << "\n";
+		masterStream << e.getType() << "\n";
 		std::stringstream pathBuild;
 		pathBuild << getObjectTypeString(e.getType()) << fileIndex << ".data";
 		vecFilenames.push_back(pathBuild.str());
@@ -79,7 +89,7 @@ bool Serializer::deserializeFromFile(const std::string &path) {
 	while (!masterStream.eof()) {
 		SerializationObjectTypes type;
 		std::string filename;
-		masterStream >> (unsigned&)type >> filename;
+		masterStream >> type >> filename;
 		DeserializeFuncType deserializeFunc = mapTypesToFuncs_[type];
 		if (!deserializeFunc)
 			return false;
