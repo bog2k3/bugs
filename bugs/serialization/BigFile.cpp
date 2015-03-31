@@ -7,48 +7,11 @@
 
 #include "BigFile.h"
 #include "BinaryStream.h"
+#include "BigFile_v1.h"
 #include "../utils/log.h"
 #include <memory.h>
 #include <stdint.h>
 #include <fstream>
-
-static uint32_t BIGFILE_MAGIC = 0x17F3AB9E;
-
-struct bigFile_header {
-	uint32_t magic = BIGFILE_MAGIC;
-	uint32_t version;
-	uint32_t headerSize;
-	uint32_t reserved[8]; // for future extension
-};
-BinaryStream& operator << (BinaryStream& stream, bigFile_header const& h) {
-	stream << h.magic << h.version << h.headerSize;
-	for (int i=0; i<8; i++)
-		stream << h.reserved[i];
-	return stream;
-}
-
-struct bigFile_tableHeader_v1 {
-	uint32_t tableSize;
-	uint32_t numEntries;
-	uint32_t reserved[8]; // for future extension
-};
-BinaryStream& operator << (BinaryStream& stream, bigFile_tableHeader_v1 const& h) {
-	stream << h.tableSize << h.numEntries;
-	for (int i=0; i<8; i++)
-		stream << h.reserved[i];
-	return stream;
-}
-
-struct bigFile_tableEntry_v1 {
-	std::string filename;
-	uint32_t offset;	// offset from the beginning of the contents; first file body has offset 0
-	uint32_t size;
-	uint32_t reserved[2]; // for future extension
-};
-BinaryStream& operator << (BinaryStream& stream, bigFile_tableEntry_v1 const& e) {
-	stream << e.filename << e.offset << e.size;
-	return stream;
-}
 
 bool BigFile::loadFromDisk_v1(const std::string &path) {
 
@@ -65,7 +28,7 @@ bool BigFile::saveToDisk_v1(const std::string &path) {
 	tableHeader.numEntries = mapFiles.size();
 	BinaryStream tableStream(mapFiles.size() * sizeof(bigFile_tableEntry_v1) * 2);
 	unsigned offset = 0;
-	for (auto &pair : mapFiles) {
+	for (std::pair<const std::string, FileDescriptor> &pair : mapFiles) {
 		FileDescriptor &fd = pair.second;
 		bigFile_tableEntry_v1 entry;
 		entry.filename = pair.first;

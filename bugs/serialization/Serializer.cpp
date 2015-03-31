@@ -54,13 +54,13 @@ bool Serializer::serializeToFile(const std::string &path) {
 
 		fileIndex++;
 	}
+	serializationQueue_.clear();
 	BigFile bigFile;
 	bigFile.addFile("master", masterStream.getBuffer(), masterStream.getSize());
 	for (unsigned i=0; i<vecStreams.size(); i++) {
 		bigFile.addFile(vecFilenames[i], vecStreams[i]->getBuffer(), vecStreams[i]->getSize());
 		vecStreams[i].reset();
 	}
-	serializationQueue_.clear();
 	return bigFile.saveToDisk(path);
 }
 

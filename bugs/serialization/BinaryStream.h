@@ -19,7 +19,8 @@ static union {
 	char c[4];
 } constexpr bigEndianTest {0x01020304};
 
-#define IS_LITTLE_ENDIAN() (bigEndianTest.c[0] == 1)
+#define IS_BIG_ENDIAN (bigEndianTest.c[0] == 1)
+#define IS_LITTLE_ENDIAN (!(IS_BIG_ENDIAN))
 
 class BinaryStream {
 public:
@@ -57,7 +58,7 @@ public:
 			else
 				throw std::runtime_error("attempted to write past the end of unmanaged buffer!");
 		}
-		if (IS_LITTLE_ENDIAN()) {
+		if (IS_LITTLE_ENDIAN) {
 			// little endian, write directly:
 			memcpy((char*)buffer_+pos_, &t, dataSize);
 			pos_ += dataSize;
@@ -86,7 +87,7 @@ public:
 		size_t dataSize = sizeof(t);
 		if (pos_ + dataSize > size_)
 			throw std::runtime_error("attempted to read past the end of the buffer!");
-		if (IS_LITTLE_ENDIAN()) {
+		if (IS_LITTLE_ENDIAN) {
 			// little endian, read directly:
 			memcpy(&t, (char*)buffer_+pos_, dataSize);
 			pos_ += dataSize;
