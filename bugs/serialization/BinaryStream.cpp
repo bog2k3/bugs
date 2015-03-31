@@ -64,22 +64,25 @@ BinaryStream::BinaryStream(std::ifstream &fileStream)
 {
 	if (!fileStream.is_open())
 		throw std::runtime_error("BinaryStream constructed over closed std::ifstream");
-	auto initialPos = fileStream.tellg();
+	initialFilePosition_ = fileStream.tellg();
 	fileStream.seekg(0, fileStream.end);
-	fileSize_ = fileStream.tellg() - initialPos;
-	fileStream.seekg(initialPos);
+	fileSize_ = (size_t)fileStream.tellg() - initialFilePosition_;
+	fileStream.seekg(initialFilePosition_);
 	size_ = std::min(size_t(512), fileSize_);
 	ownsBuffer_ = true;
 	buffer_ = malloc(size_);
+	readNextBufferChunk();
 }
 
 void BinaryStream::readNextBufferChunk() {
 	if (pos_ >= fileSize_)  // this also asserts ifstream otherwise fileSize_ would be zero
 		throw std::runtime_error("Attempted to read past the end of the file!");
-	assert(pos_ - bufferOffset_ == size_); // all internal buffer has been consumed
-	size_t toRead = std::min(size_, fileSize_ - bufferOffset_ - size_);
+	bool isInitialRead = (size_t)ifstream_->tellg() == initialFilePosition_;
+	assert(isInitialRead || pos_ - bufferOffset_ == size_); // all internal buffer has been consumed
+	if (!isInitialRead)
+		bufferOffset_ += size_;
+	size_t toRead = std::min(size_, fileSize_ - bufferOffset_);
 	ifstream_->read((char*)buffer_, toRead);
-	bufferOffset_ += toRead;
 	// check if the contents of internal buffer are less than its capacity:
 	if (toRead < size_)
 		size_ = toRead;

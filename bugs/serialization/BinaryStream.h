@@ -104,27 +104,28 @@ public:
 		if (pos_ + dataSize > maxSize)
 			throw std::runtime_error("attempted to read past the end of the buffer!");
 		void *readBuffer = buffer_;
-		size_t readPos = pos_;
+		size_t *readPos = &pos_;
 		// if we're over an ifstream, must use a temp buffer into which we copy the data, then we deserialize from it
 		// because the main buffer may not contain all the bytes needed, and a re-read from file may occur half-way
 		char tempBuffer[32];
+		size_t tempReadPos = 0;
 		assertDbg(dataSize < sizeof(tempBuffer)); // if this ever fails, we need to increase tempBuffer capacity
 		if (ifstream_) {
 			readBuffer = tempBuffer;
-			readPos = 0;
+			readPos = &tempReadPos;
 			read((void*)tempBuffer, dataSize);
 		}
 		if (IS_LITTLE_ENDIAN) {
 			// little endian, read directly:
-			memcpy(&t, (char*)readBuffer+readPos, dataSize);
+			memcpy(&t, (char*)readBuffer+(*readPos), dataSize);
+			*readPos += dataSize;
 		} else {
 			// big endian, must write byte by byte in reverse order
 			char* ptr = (char*)&t + dataSize-1;
 			while (ptr >= (char*)&t) {
-				*(ptr--) = *(((char*)readBuffer) + readPos++);
+				*(ptr--) = *(((char*)readBuffer) + (*readPos)++);
 			}
 		}
-		pos_ += dataSize;
 		return *this;
 	}
 
@@ -136,6 +137,7 @@ protected:
 	size_t pos_ = 0;
 	size_t bufferOffset_ = 0; // for BinaryStreams over ifstream; tells where in the file our internal buffer begins
 	size_t fileSize_ = 0; // for BinaryStreams over ifstream;
+	size_t initialFilePosition_ = 0;
 	void *buffer_ = nullptr;
 	bool ownsBuffer_ = false;
 	std::ifstream *ifstream_ = nullptr;
