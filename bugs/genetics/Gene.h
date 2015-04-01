@@ -123,7 +123,7 @@ struct GeneBodyAttribute {
 
 class Gene {
 public:
-	unsigned long RID;	// this is unique to this gene, when the gene is mutated, the RID changes
+	uint32_t RID;	// this is unique to this gene, when the gene is mutated, the RID changes
 	gene_type type;		// the type of gene
 	union GeneData {
 		GeneStop gene_stop;

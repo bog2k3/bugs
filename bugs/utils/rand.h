@@ -73,8 +73,8 @@ inline int randi(int min, int max) {
 }
 
 // generates a new Random IDentifier
-inline unsigned long new_RID() {
-	return (unsigned long)(ULONG_MAX * randd());
+inline uint32_t new_RID() {
+	return (uint32_t)(UINT32_MAX * randd());
 }
 
 

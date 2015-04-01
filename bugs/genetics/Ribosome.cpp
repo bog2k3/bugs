@@ -60,9 +60,9 @@ void Ribosome::cleanUp() {
 // This model guarantees that any number has half other numbers greater than it and half smaller than it,
 // which is a needed condition for gene dominance, so that no number is privileged in an absolute manner,
 // only relative to other genes.
-static bool isCircularGreater(unsigned long x1, unsigned long x2) {
-	unsigned long d1 = x1 - x2;
-	unsigned long d2 = x2 - x1;
+static bool isCircularGreater(decltype(Gene::RID) x1, decltype(Gene::RID) x2) {
+	decltype(Gene::RID) d1 = x1 - x2;
+	decltype(Gene::RID) d2 = x2 - x1;
 	return d1 < d2;
 }
 
