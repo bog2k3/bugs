@@ -21,6 +21,8 @@
 #include "../body-parts/Joint.h"
 #include "../utils/log.h"
 #include "../World.h"
+#include "../serialization/BinaryStream.h"
+#include "../serialization/GenomeSerialization.h"
 #include "Bug/ISensor.h"
 #include "Bug/Motor.h"
 #include "Gamete.h"
@@ -751,9 +753,9 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 
 glm::vec2 Bug::getPosition() {
 	if (zygoteShell_)
-		return vec2xy(zygoteShell_->getWorldTransformation());
+		return vec3xy(zygoteShell_->getWorldTransformation());
 	if (body_)
-		return vec2xy(body_->getWorldTransformation());
+		return vec3xy(body_->getWorldTransformation());
 	return glm::vec2(0);
 }
 

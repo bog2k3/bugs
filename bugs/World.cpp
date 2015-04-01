@@ -158,7 +158,11 @@ void World::draw(RenderContext const& ctx) {
 std::vector<Entity*> World::getEntities(Entity::FunctionalityFlags filterFlags) {
 	std::vector<Entity*> vec;
 	for (auto &e : entities) {
-		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags)
+		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags && !e->isZombie())
+			vec.push_back(e);
+	}
+	for (auto &e : entsToTakeOver) {
+		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags && !e->isZombie())
 			vec.push_back(e);
 	}
 	return vec;

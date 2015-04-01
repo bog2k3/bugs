@@ -11,13 +11,7 @@
 #include <memory>
 
 class BinaryStream;
-
-enum class SerializationObjectTypes {
-	UNDEFINED = 0,
-	BUG,
-	GENOME,
-	GAMETE,
-};
+enum class SerializationObjectTypes;
 
 // serialize a T object into the given stream
 template<typename T> void serialize(T* t, BinaryStream &stream);

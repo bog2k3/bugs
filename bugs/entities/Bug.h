@@ -18,6 +18,7 @@
 #include <map>
 #include "Bug/LifetimeSensor.h"
 #include "Bug/Motor.h"
+#include "../serialization/objectTypes.h"
 
 class ISensor;
 class NeuralNet;
@@ -38,6 +39,7 @@ public:
 	void update(float dt) override;
 	void draw(RenderContext const &ctx) override;
 	void serialize(BinaryStream &stream) override;
+	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::BUG; }
 
 	const Genome& getGenome() { return genome_; }
 	glm::vec2 getPosition();

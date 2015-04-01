@@ -15,10 +15,10 @@
 
 class MetaGene {
 public:
-	double value;
-	double dynamic_variation;
+	float value;
+	float dynamic_variation;
 
-	MetaGene(double initial_reference_value, double dynamic_variation)
+	MetaGene(float initial_reference_value, float dynamic_variation)
 		: value (initial_reference_value * randd())
 		, dynamic_variation(dynamic_variation)
 	{ }

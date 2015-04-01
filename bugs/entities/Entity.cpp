@@ -22,3 +22,6 @@ void Entity::destroy() {
 	markedForDeletion_ = true;
 	World::getInstance()->destroyEntity(this);
 }
+
+void Entity::serialize(BinaryStream &stream) { assertDbg(false && "forgot to override this?"); }
+SerializationObjectTypes Entity::getSerializationType() { assertDbg(false && "forgot to override this?"); }

@@ -8,6 +8,7 @@
 #include "Serializer.h"
 #include "BigFile.h"
 #include "BinaryStream.h"
+#include "objectTypes.h"
 #include <memory>
 #include <sstream>
 

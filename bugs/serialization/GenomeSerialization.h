@@ -8,7 +8,8 @@
 #ifndef SERIALIZATION_GENOMESERIALIZATION_H_
 #define SERIALIZATION_GENOMESERIALIZATION_H_
 
-class Genome;
+#include "../genetics/Genome.h"
+
 class BinaryStream;
 
 BinaryStream& operator << (BinaryStream &stream, Genome const& genome);
