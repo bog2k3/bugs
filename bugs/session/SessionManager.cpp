@@ -39,8 +39,8 @@ void SessionManager::startDefaultSession() {
 
 	for (int i=0; i<20; i++) {
 #warning "crash in fixGenesSynchro on basicMutantBug"
-		Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-		//Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+		//Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+		Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
 		//if (i==8)
 			World::getInstance()->takeOwnershipOf(bug);
 	}

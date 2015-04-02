@@ -75,6 +75,8 @@ void autosave() {
 int main() {
 	LOGGER("app_main");
 
+	Serializer::setDeserializationObjectMapping(SerializationObjectTypes::BUG, &Bug::deserialize);
+
 	try {
 		if (!gltInit(800, 600, "Bugs"))
 			return -1;

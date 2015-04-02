@@ -12,6 +12,12 @@
 #include <memory>
 #include <sstream>
 
+std::map<SerializationObjectTypes, Serializer::DeserializeFuncType> Serializer::mapTypesToFuncs_;
+
+void Serializer::setDeserializationObjectMapping(SerializationObjectTypes objType, DeserializeFuncType func) {
+	mapTypesToFuncs_[objType] = func;
+}
+
 Serializer::Serializer() {
 }
 
@@ -75,10 +81,6 @@ bool Serializer::serializeToFile(const std::string &path) {
 		vecStreams[i].reset();
 	}
 	return bigFile.saveToDisk(path);
-}
-
-void Serializer::setDeserializationObjectMapping(SerializationObjectTypes objType, DeserializeFuncType func) {
-	mapTypesToFuncs_[objType] = func;
 }
 
 bool Serializer::deserializeFromFile(const std::string &path) {

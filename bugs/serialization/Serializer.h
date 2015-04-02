@@ -24,12 +24,12 @@ public:
 	void queueObject(serializable_wrap &&obj);
 	bool serializeToFile(const std::string &path);
 
-	void setDeserializationObjectMapping(SerializationObjectTypes objType, DeserializeFuncType func);
+	static void setDeserializationObjectMapping(SerializationObjectTypes objType, DeserializeFuncType func);
 	bool deserializeFromFile(const std::string &path);
 
 private:
 	std::vector<serializable_wrap> serializationQueue_;
-	std::map<SerializationObjectTypes, DeserializeFuncType> mapTypesToFuncs_;
+	static std::map<SerializationObjectTypes, DeserializeFuncType> mapTypesToFuncs_;
 
 	std::string getObjectTypeString(SerializationObjectTypes type);
 };
