@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <time.h>
 #include <climits>
+#include <cstdint>
 
 // define this symbol to disable automatic random seeding. This will enhance performance a little, because
 // an additional check doesn't have to be made at every call to rand..() functions.
