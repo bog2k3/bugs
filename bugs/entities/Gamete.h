@@ -11,6 +11,7 @@
 #include "Entity.h"
 #include "../genetics/Genome.h"
 #include "../PhysicsBody.h"
+#include "../serialization/objectTypes.h"
 
 #define DEBUG_DRAW_GAMETE
 
@@ -18,6 +19,10 @@ class Gamete: public Entity {
 public:
 	Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass);
 	virtual ~Gamete();
+
+	// deserialize a Gamete from the stream and add it to the world
+	static void deserialize(BinaryStream &stream);
+
 #ifdef DEBUG_DRAW_GAMETE
 	FunctionalityFlags getFunctionalityFlags() override { return FF_DRAWABLE | FF_UPDATABLE; }
 #endif
@@ -26,6 +31,9 @@ public:
 #ifdef DEBUG_DRAW_GAMETE
 	void draw(RenderContext const& ctx) override;
 #endif
+
+	void serialize(BinaryStream &stream) override;
+	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::GAMETE; }
 
 	const Chromosome& getChromosome() const { return chromosome_; }
 

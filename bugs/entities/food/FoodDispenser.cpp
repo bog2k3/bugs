@@ -53,7 +53,15 @@ void FoodDispenser::update(float dt) {
 		float randomAngle = srandf() * WorldConst::FoodDispenserSpreadAngleHalf;
 		offset = glm::rotate(offset, direction_ + randomAngle);
 		glm::vec2 velocity = glm::normalize(offset) * spawnVelocity_;
-		FoodChunk* chunk = new FoodChunk(position_ + offset, direction_+randomAngle, velocity, 0, spawnMass_);
-		World::getInstance()->takeOwnershipOf(chunk);
+		std::unique_ptr<FoodChunk> chunk(new FoodChunk(position_ + offset, direction_+randomAngle, velocity, 0, spawnMass_));
+		World::getInstance()->takeOwnershipOf(std::move(chunk));
 	}
+}
+
+void FoodDispenser::serialize(BinaryStream &stream) {
+	//TODO...
+}
+
+void FoodDispenser::deserialize(BinaryStream &stream) {
+	//TODO...
 }

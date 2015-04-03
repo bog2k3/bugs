@@ -35,13 +35,13 @@ World::~World() {
 }
 
 void World::free() {
-	for (Entity* e : entities) {
+	for (auto &e : entities) {
 		e->markedForDeletion_= true;
-		delete e;
+		e.reset();
 	}
-	for (Entity* e : entsToTakeOver) {
+	for (auto &e : entsToTakeOver) {
 		e->markedForDeletion_ = true;
-		delete e;
+		e.reset();
 	}
 	entities.clear();
 	entsToTakeOver.clear();
@@ -89,8 +89,8 @@ void World::getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std:
 	b2QueryResult.clear();	// reset
 }
 
-void World::takeOwnershipOf(Entity* e) {
-	entsToTakeOver.push_back(e);
+void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
+	entsToTakeOver.push_back(std::move(e));
 }
 
 void World::destroyEntity(Entity* e) {
@@ -101,7 +101,7 @@ void World::destroyPending() {
 	decltype(entsToDestroy) destroyNow;
 	destroyNow.swap(entsToDestroy);
 	for (auto e : destroyNow) {
-		auto it = std::find(entities.begin(), entities.end(), e);
+		auto it = std::find_if(entities.begin(), entities.end(), [e] (auto const& it) { return it.get() == e; });
 		if (it != entities.end()) {
 			entities.erase(it);
 			Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
@@ -125,15 +125,15 @@ void World::destroyPending() {
 void World::takeOverPending() {
 	decltype(entsToTakeOver) takeOverNow;
 	takeOverNow.swap(entsToTakeOver);
-	for (auto e : takeOverNow) {
-		entities.push_back(e);
+	for (auto &e : takeOverNow) {
+		entities.push_back(std::move(e));
 		// add to update and draw lists if appropriate
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 		if (flags & Entity::FF_DRAWABLE) {
-			entsToDraw.push_back(e);
+			entsToDraw.push_back(e.get());
 		}
 		if (flags & Entity::FF_UPDATABLE) {
-			entsToUpdate.push_back(e);
+			entsToUpdate.push_back(e.get());
 		}
 	}
 }
@@ -159,11 +159,11 @@ std::vector<Entity*> World::getEntities(Entity::FunctionalityFlags filterFlags) 
 	std::vector<Entity*> vec;
 	for (auto &e : entities) {
 		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags && !e->isZombie())
-			vec.push_back(e);
+			vec.push_back(e.get());
 	}
 	for (auto &e : entsToTakeOver) {
 		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags && !e->isZombie())
-			vec.push_back(e);
+			vec.push_back(e.get());
 	}
 	return vec;
 }

@@ -36,6 +36,9 @@ public:
 		return FF_UPDATABLE | FF_DRAWABLE | FF_SERIALIZABLE;
 	}
 
+	// deserialize a Bug from the stream and add it to the world
+	static void deserialize(BinaryStream &stream);
+
 	void update(float dt) override;
 	void draw(RenderContext const &ctx) override;
 	void serialize(BinaryStream &stream) override;

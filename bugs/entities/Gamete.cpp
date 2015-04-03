@@ -67,10 +67,10 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 			+ other->body_.b2Body_->GetMass() * other->body_.b2Body_->GetLinearVelocity());
 	velocity *= 1.f / (body_.b2Body_->GetMass() + other->body_.b2Body_->GetMass());
 	// now create the zygote:
-	Bug *newlySpawnedBug = new Bug(g,
+	std::unique_ptr<Bug> newlySpawnedBug(new Bug(g,
 			body_.b2Body_->GetMass() + other->body_.b2Body_->GetMass(),
-			(body_.getPosition() + other->body_.getPosition()) * 0.5f, b2g(velocity));
-	World::getInstance()->takeOwnershipOf(newlySpawnedBug);
+			(body_.getPosition() + other->body_.getPosition()) * 0.5f, b2g(velocity)));
+	World::getInstance()->takeOwnershipOf(std::move(newlySpawnedBug));
 	// destroy these gamettes:
 	destroy();
 	other->destroy();
@@ -125,3 +125,11 @@ void Gamete::draw(RenderContext const& ctx) {
 	ctx.shape->drawLineStrip(v, nSeg+1, 0, debug_color);
 }
 #endif
+
+void Gamete::serialize(BinaryStream &stream) {
+	//TODO...
+}
+
+void Gamete::deserialize(BinaryStream &stream) {
+	//TODO...
+}

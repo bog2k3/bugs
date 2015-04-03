@@ -13,6 +13,7 @@
 #include "renderOpenGL/RenderContext.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <vector>
+#include <memory>
 
 class b2World;
 class b2Body;
@@ -41,7 +42,7 @@ public:
 	b2World* getPhysics() { return physWld; }
 	b2Body* getGroundBody() { return groundBody; }
 
-	void takeOwnershipOf(Entity* e);
+	void takeOwnershipOf(std::unique_ptr<Entity> &&e);
 	void destroyEntity(Entity* e);
 
 	// returns a vector of all entities that match ALL of the requested features
@@ -54,11 +55,11 @@ protected:
 	World();
 	b2World* physWld;
 	b2Body* groundBody;
-	std::vector<Entity*> entities;
+	std::vector<std::unique_ptr<Entity>> entities;
 	std::vector<Entity*> entsToUpdate;
 	std::vector<Entity*> entsToDraw;
 	std::vector<Entity*> entsToDestroy;
-	std::vector<Entity*> entsToTakeOver;
+	std::vector<std::unique_ptr<Entity>> entsToTakeOver;
 	std::vector<b2Fixture*> b2QueryResult;
 	PhysDestroyListener *destroyListener_ = nullptr;
 

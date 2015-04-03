@@ -12,7 +12,7 @@
 
 class SessionManager {
 public:
-	SessionManager() = default;
+	SessionManager();
 	virtual ~SessionManager() = default;
 
 	void startEmptySession();

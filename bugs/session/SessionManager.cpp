@@ -7,12 +7,23 @@
 
 #include "SessionManager.h"
 #include "../World.h"
+#include "../entities/Entity.h"
 #include "../entities/Bug.h"
 #include "../entities/food/FoodDispenser.h"
+#include "../entities/food/FoodChunk.h"
+#include "../entities/Gamete.h"
 #include "../entities/Wall.h"
 #include "../serialization/Serializer.h"
 #include "../utils/rand.h"
 #include <glm/vec2.hpp>
+
+SessionManager::SessionManager() {
+	Serializer::setDeserializationObjectMapping(SerializationObjectTypes::BUG, &Bug::deserialize);
+	Serializer::setDeserializationObjectMapping(SerializationObjectTypes::GAMETE, &Gamete::deserialize);
+	Serializer::setDeserializationObjectMapping(SerializationObjectTypes::FOOD_DISPENSER, &FoodDispenser::deserialize);
+	// Serializer::setDeserializationObjectMapping(SerializationObjectTypes::GENOME, &Bug::deserializeGenome!??!?!);
+
+}
 
 void SessionManager::startEmptySession() {
 	World::getInstance()->free();
@@ -23,26 +34,26 @@ void SessionManager::startDefaultSession() {
 
 	float worldRadius = 5.f;
 
-	Wall* w1 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w1);
-	Wall* w2 = new Wall(glm::vec2(-worldRadius, +worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w2);
-	Wall* w3 = new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(-worldRadius, +worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w3);
-	Wall* w4 = new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f);
-	World::getInstance()->takeOwnershipOf(w4);
+	std::unique_ptr<Wall> w1(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f));
+	World::getInstance()->takeOwnershipOf(std::move(w1));
+	std::unique_ptr<Wall> w2(new Wall(glm::vec2(-worldRadius, +worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f));
+	World::getInstance()->takeOwnershipOf(std::move(w2));
+	std::unique_ptr<Wall> w3(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(-worldRadius, +worldRadius), 0.2f));
+	World::getInstance()->takeOwnershipOf(std::move(w3));
+	std::unique_ptr<Wall> w4(new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f));
+	World::getInstance()->takeOwnershipOf(std::move(w4));
 
 	for (int i=0; i<15; i++) {
-		FoodDispenser* foodDisp = new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0);
-		World::getInstance()->takeOwnershipOf(foodDisp);
+		std::unique_ptr<FoodDispenser> foodDisp(new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0));
+		World::getInstance()->takeOwnershipOf(std::move(foodDisp));
 	}
 
 	for (int i=0; i<20; i++) {
 #warning "crash in fixGenesSynchro on basicMutantBug"
-		//Bug* bug = Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
-		Bug* bug = Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)));
+		//std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
+		std::unique_ptr<Bug> bug(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
 		//if (i==8)
-			World::getInstance()->takeOwnershipOf(bug);
+			World::getInstance()->takeOwnershipOf(std::move(bug));
 	}
 }
 

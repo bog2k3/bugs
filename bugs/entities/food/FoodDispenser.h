@@ -10,15 +10,23 @@
 
 #include "../Entity.h"
 #include "../../PhysicsBody.h"
+#include "../../serialization/objectTypes.h"
 
 class FoodDispenser: public Entity {
 public:
 	FoodDispenser(glm::vec2 position, float direction);
 	virtual ~FoodDispenser();
+
+	// deserialize a FoodDispenser from the stream and add it to the world
+	static void deserialize(BinaryStream &stream);
+
 	FunctionalityFlags getFunctionalityFlags() override { return FF_UPDATABLE; }
 
 	void draw(RenderContext const& ctx) override;
 	void update(float dt) override;
+
+	void serialize(BinaryStream &stream) override;
+	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::FOOD_DISPENSER; }
 
 protected:
 	PhysicsBody physBody_;

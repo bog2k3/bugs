@@ -13,6 +13,7 @@ enum class SerializationObjectTypes {
 	BUG,
 	GENOME,
 	GAMETE,
+	FOOD_DISPENSER,
 };
 
 #endif /* SERIALIZATION_OBJECTTYPES_H_ */

@@ -764,3 +764,7 @@ void Bug::serialize(BinaryStream &stream) {
 	stream << pos.x << pos.y;
 	stream << genome_;
 }
+
+void Bug::deserialize(BinaryStream &stream) {
+	//TODO...
+}

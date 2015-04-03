@@ -27,6 +27,7 @@
 #include "GUI/controls/Button.h"
 #include "GUI/controls/TextField.h"
 #include "serialization/Serializer.h"
+#include "serialization/objectTypes.h"
 #include "session/SessionManager.h"
 
 #include <GLFW/glfw3.h>
@@ -74,8 +75,6 @@ void autosave() {
 
 int main() {
 	LOGGER("app_main");
-
-	Serializer::setDeserializationObjectMapping(SerializationObjectTypes::BUG, &Bug::deserialize);
 
 	try {
 		if (!gltInit(800, 600, "Bugs"))
