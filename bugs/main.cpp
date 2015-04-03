@@ -60,17 +60,9 @@ void onInputEventHandler(InputEvent& ev) {
 	}
 }
 
-void save(const std::string &path) {
-	Serializer serializer;
-	auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
-	for (auto e : vecSer)
-		serializer.queueObject(e);
-	serializer.serializeToFile(path);
-}
-
-void autosave() {
+void autosave(SessionManager &sessionMgr) {
 #warning TODO: cycle autosave files first
-	save("autosave.bin");
+	sessionMgr.saveSessionToFile("autosave.bin");
 }
 
 int main() {
@@ -130,7 +122,7 @@ int main() {
 		SessionManager sessionMgr;
 		sessionMgr.startDefaultSession();
 
-		autosave();
+		autosave(sessionMgr);
 		sessionMgr.loadSessionFromFile("autosave.bin");
 
 		DrawList drawList;

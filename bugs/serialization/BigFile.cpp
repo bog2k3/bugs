@@ -54,6 +54,7 @@ bool BigFile::loadFromDisk_v1(BinaryStream &fileStream) {
 }
 
 bool BigFile::saveToDisk_v1(const std::string &path) {
+	LOGPREFIX("BigFile")
 	// 1. build header
 	bigFile_header hdr;
 	hdr.version = 1;
@@ -97,6 +98,7 @@ bool BigFile::saveToDisk_v1(const std::string &path) {
 }
 
 bool BigFile::loadFromDisk(const std::string &path) {
+	LOGPREFIX("BigFile")
 	try {
 		std::ifstream file(path, std::ios::in | std::ios::binary);
 		// void* hdrBinData = malloc(sizeof(bigFile_header));
@@ -123,19 +125,24 @@ bool BigFile::loadFromDisk(const std::string &path) {
 		ERROR("EXCEPTION during deserialization from file "<< path<<":\n" << e.what());
 		return false;
 	}
+	assert(!!!"should never reach this");
 }
 
 bool BigFile::saveToDisk(const std::string &path) {
+	LOGPREFIX("BigFile")
 	saveToDisk_v1(path);
 	return true;
 }
 
 const BigFile::FileDescriptor BigFile::getFile(const std::string &name) const {
+	LOGPREFIX("BigFile")
 	auto it = mapFiles.find(name);
 	if (it != mapFiles.end())
 		return it->second;
-	else
+	else {
+		LOGLN("WARNING: file \""<<name<<"\" doesn't exist in BigFile!!");
 		return FileDescriptor();
+	}
 }
 
 const std::vector<BigFile::FileDescriptor> BigFile::getAllFiles() const {

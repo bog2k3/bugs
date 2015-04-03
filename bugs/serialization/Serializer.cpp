@@ -9,6 +9,7 @@
 #include "BigFile.h"
 #include "BinaryStream.h"
 #include "objectTypes.h"
+#include "../utils/log.h"
 #include <memory>
 #include <sstream>
 
@@ -52,9 +53,8 @@ std::string Serializer::getObjectTypeString(SerializationObjectTypes type) {
 	}
 }
 
-#warning "add logs for all types of errors"
-
 bool Serializer::serializeToFile(const std::string &path) {
+	LOGGER("Serializer");
 	BinaryStream masterStream(serializationQueue_.size() * 50); // estimate about 50 bytes per entry in master
 	std::vector<std::unique_ptr<BinaryStream>> vecStreams;
 	std::vector<std::string> vecFilenames;
@@ -84,26 +84,37 @@ bool Serializer::serializeToFile(const std::string &path) {
 }
 
 bool Serializer::deserializeFromFile(const std::string &path) {
+	LOGGER("Serializer");
+	LOGLN("Deserializing file \""<<path<<"\"...");
 	BigFile bigFile;
-	if (!bigFile.loadFromDisk(path))
+	if (!bigFile.loadFromDisk(path)) {
+		LOGLN("WARNING: BigFile loading FAILED at: " << path);
 		return false;
+	}
 	BigFile::FileDescriptor master = bigFile.getFile("master");
-	if (master.pStart == nullptr)
+	if (master.pStart == nullptr) {
+		LOGLN("WARNING: BigFile MASTER record if empty at: " << path);
 		return false;
+	}
 	BinaryStream masterStream(master.pStart, master.size);
 	while (!masterStream.eof()) {
 		SerializationObjectTypes type;
 		std::string filename;
 		masterStream >> type >> filename;
 		DeserializeFuncType deserializeFunc = mapTypesToFuncs_[type];
-		if (!deserializeFunc)
+		if (!deserializeFunc) {
+			LOGLN("WARNING: no known method to deserialize object type (" <<(int)type<<") at: " << path);
 			return false;
+		}
 		BigFile::FileDescriptor fileDesc = bigFile.getFile(filename);
-		if (!fileDesc.pStart)
-			return false; // or continue and log warning?
+		if (!fileDesc.pStart) {
+			LOGLN("WARNING: file with internal name ("<<filename<<") has size zero! skipping...");
+			continue;
+		}
 		BinaryStream fileStream(fileDesc.pStart, fileDesc.size);
 		deserializeFunc(fileStream);
 	}
+	LOGLN("File deserialization SUCCESSFUL.");
 	return true;
 }
 

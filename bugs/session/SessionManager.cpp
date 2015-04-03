@@ -15,6 +15,7 @@
 #include "../entities/Wall.h"
 #include "../serialization/Serializer.h"
 #include "../utils/rand.h"
+#include "../utils/log.h"
 #include <glm/vec2.hpp>
 
 SessionManager::SessionManager() {
@@ -26,12 +27,20 @@ SessionManager::SessionManager() {
 }
 
 void SessionManager::startEmptySession() {
+	LOGGER("SessionManager");
+	LOGLN("Starting empty session... removing all existing entities...");
 	World::getInstance()->free();
+	LOGLN("Finished. Session is now clean.");
 }
 
 void SessionManager::startDefaultSession() {
+	LOGGER("SessionManager");
+	LOGLN("Creating default session...");
+	LOGLN("Removing all entities...");
 	World::getInstance()->free();
+	LOGLN("World is now clean.");
 
+	LOGLN("Building entities for default session...");
 	float worldRadius = 5.f;
 
 	std::unique_ptr<Wall> w1(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f));
@@ -55,14 +64,34 @@ void SessionManager::startDefaultSession() {
 		//if (i==8)
 			World::getInstance()->takeOwnershipOf(std::move(bug));
 	}
+	LOGLN("Finished building default session.");
 }
 
 void SessionManager::loadSessionFromFile(std::string const &path) {
+	LOGGER("SessionManager");
+	LOGLN("Loading session from file \"" << path << "\"...");
+	LOGLN("Removing all entities...");
 	World::getInstance()->free();
+	LOGLN("World is now clean.");
 	mergeSessionFromFile(path);
 }
 
 void SessionManager::mergeSessionFromFile(std::string const &path) {
+	LOGGER("SessionManager");
+	LOGLN("Merging session from file \"" << path << "\"...");
 	Serializer serializer;
-	serializer.deserializeFromFile(path);
+	if (!serializer.deserializeFromFile(path))
+		LOGLN("WARNING: There was an error during deserialization of the session file.");
+	LOGLN("Finished merging.");
+}
+
+void SessionManager::saveSessionToFile(std::string const& path) {
+	LOGGER("SessionManager");
+	LOGLN("Saving session to file \"" << path << "\"...");
+	Serializer serializer;
+	auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
+	for (auto e : vecSer)
+		serializer.queueObject(e);
+	serializer.serializeToFile(path);
+	LOGLN("Finished saving.");
 }

@@ -13,6 +13,7 @@
 #ifdef _ENABLE_LOGGING_
 
 #include <iostream>
+#include <string>
 
 #define LOGGER(NAME) logger logger_token(NAME)
 #define LOGPREFIX(PREF) logger_prefix logger_prefix_token(PREF);

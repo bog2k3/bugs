@@ -19,6 +19,7 @@ public:
 	void startDefaultSession();
 	void loadSessionFromFile(std::string const &path);
 	void mergeSessionFromFile(std::string const &path);
+	void saveSessionToFile(std::string const &path);
 };
 
 #endif /* SESSION_SESSIONMANAGER_H_ */
