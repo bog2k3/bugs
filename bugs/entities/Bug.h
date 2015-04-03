@@ -46,6 +46,7 @@ public:
 
 	const Genome& getGenome() { return genome_; }
 	glm::vec2 getPosition();
+	glm::vec2 getVelocity();
 
 	void kill();
 

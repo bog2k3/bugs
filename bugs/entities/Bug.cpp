@@ -759,12 +759,30 @@ glm::vec2 Bug::getPosition() {
 	return glm::vec2(0);
 }
 
+glm::vec2 Bug::getVelocity() {
+	if (zygoteShell_)
+		return b2g(zygoteShell_->getBody().b2Body_->GetLinearVelocity());
+	if (body_)
+		b2g(body_->getBody().b2Body_->GetLinearVelocity());
+	return glm::vec2(0);
+}
+
 void Bug::serialize(BinaryStream &stream) {
 	glm::vec2 pos = getPosition();
 	stream << pos.x << pos.y;
+	glm::vec2 vel = getVelocity();
+	stream << vel.x << vel.y;
+	float mass = zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
+	assertDbg(mass > 0);
+	stream << mass;
 	stream << genome_;
 }
 
 void Bug::deserialize(BinaryStream &stream) {
-	//TODO...
+	float posx, posy, velx, vely, mass;
+	stream >> posx >> posy >> velx >> vely >> mass;
+	Genome genome;
+	stream >> genome;
+	std::unique_ptr<Bug> ptr(new Bug(genome, mass, glm::vec2(posx, posy), glm::vec2(velx, vely)));
+	World::getInstance()->takeOwnershipOf(std::move(ptr));
 }
