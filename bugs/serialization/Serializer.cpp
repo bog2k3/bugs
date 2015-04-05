@@ -93,7 +93,7 @@ bool Serializer::deserializeFromFile(const std::string &path) {
 	}
 	BigFile::FileDescriptor master = bigFile.getFile("master");
 	if (master.pStart == nullptr) {
-		LOGLN("WARNING: BigFile MASTER record if empty at: " << path);
+		LOGLN("WARNING: BigFile MASTER record is empty at: " << path);
 		return false;
 	}
 	BinaryStream masterStream(master.pStart, master.size);
@@ -103,7 +103,7 @@ bool Serializer::deserializeFromFile(const std::string &path) {
 		masterStream >> type >> filename;
 		DeserializeFuncType deserializeFunc = mapTypesToFuncs_[type];
 		if (!deserializeFunc) {
-			LOGLN("WARNING: no known method to deserialize object type (" <<(int)type<<") at: " << path);
+			LOGLN("WARNING: no known method to deserialize object type (" <<(int)type<<") at: " << path<<"/"<<filename);
 			return false;
 		}
 		BigFile::FileDescriptor fileDesc = bigFile.getFile(filename);

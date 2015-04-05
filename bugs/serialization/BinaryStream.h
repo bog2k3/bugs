@@ -16,14 +16,6 @@
 #include <memory.h>
 #include <fstream>
 
-static union {
-	uint32_t i;
-	char c[4];
-} constexpr bigEndianTest {0x01020304};
-
-#define IS_BIG_ENDIAN (bigEndianTest.c[0] == 1)
-#define IS_LITTLE_ENDIAN (!(IS_BIG_ENDIAN))
-
 class BinaryStream {
 public:
 	/**

@@ -43,11 +43,12 @@ bool BigFile::loadFromDisk_v1(BinaryStream &fileStream) {
 		tableEntries.push_back(entry);
 	}
 	for (unsigned i=0; i<tableHeader.numEntries; i++) {
-		FileDescriptor &fd = mapFiles[fd.fileName];
+		FileDescriptor &fd = mapFiles[tableEntries[i].filename];
 		fd.fileName = tableEntries[i].filename;
 		fd.size = tableEntries[i].size;
 		fd.ownsMemory_ = true;
 		fd.pStart = malloc(fd.size);
+		#warning "may defer actual malloc and read until the file is requested"
 		fileStream.read(fd.pStart, fd.size);
 	}
 	return true;

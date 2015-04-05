@@ -10,6 +10,14 @@
 #include <cstdlib>
 #include <algorithm>
 
+static union {
+	uint32_t i;
+	char c[4];
+} constexpr bigEndianTest {0x01020304};
+
+#define IS_BIG_ENDIAN (bigEndianTest.c[0] == 1)
+#define IS_LITTLE_ENDIAN (!(IS_BIG_ENDIAN))
+
 BinaryStream::BinaryStream(size_t initial_capacity) {
 	capacity_ = initial_capacity;
 	buffer_ = malloc(capacity_);

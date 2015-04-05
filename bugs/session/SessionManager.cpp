@@ -36,9 +36,9 @@ void SessionManager::startEmptySession() {
 void SessionManager::startDefaultSession() {
 	LOGGER("SessionManager");
 	LOGLN("Creating default session...");
-	LOGLN("Removing all entities...");
+	//LOGLN("Removing all entities...");
 	World::getInstance()->free();
-	LOGLN("World is now clean.");
+	//LOGLN("World is now clean.");
 
 	LOGLN("Building entities for default session...");
 	float worldRadius = 5.f;
@@ -70,9 +70,9 @@ void SessionManager::startDefaultSession() {
 void SessionManager::loadSessionFromFile(std::string const &path) {
 	LOGGER("SessionManager");
 	LOGLN("Loading session from file \"" << path << "\"...");
-	LOGLN("Removing all entities...");
+	// LOGLN("Removing all entities...");
 	World::getInstance()->free();
-	LOGLN("World is now clean.");
+	// LOGLN("World is now clean.");
 	mergeSessionFromFile(path);
 }
 
@@ -80,8 +80,10 @@ void SessionManager::mergeSessionFromFile(std::string const &path) {
 	LOGGER("SessionManager");
 	LOGLN("Merging session from file \"" << path << "\"...");
 	Serializer serializer;
-	if (!serializer.deserializeFromFile(path))
+	if (!serializer.deserializeFromFile(path)) {
 		LOGLN("WARNING: There was an error during deserialization of the session file.");
+		return;
+	}
 	LOGLN("Finished merging.");
 }
 

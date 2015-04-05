@@ -101,7 +101,9 @@ void World::destroyPending() {
 	decltype(entsToDestroy) destroyNow;
 	destroyNow.swap(entsToDestroy);
 	for (auto e : destroyNow) {
-		auto it = std::find_if(entities.begin(), entities.end(), [e] (auto const& it) { return it.get() == e; });
+		auto it = std::find_if(entities.begin(), entities.end(), [e] (decltype(entities[0]) &it) {
+			return it.get() == e;
+		});
 		if (it != entities.end()) {
 			entities.erase(it);
 			Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
