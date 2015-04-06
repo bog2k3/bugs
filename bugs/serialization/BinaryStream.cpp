@@ -87,7 +87,7 @@ void BinaryStream::read(void* outBuffer, size_t size) {
 		// copy data from the internal buffer:
 		size_t positionInBuffer = pos_ - bufferOffset_;
 		size_t toCopy = std::min(size-readSize, size_ - positionInBuffer);
-		memcpy(cbuffer, (char*)buffer_ + positionInBuffer, toCopy);
+		memcpy(cbuffer+readSize, (char*)buffer_ + positionInBuffer, toCopy);
 		pos_ += toCopy;
 		readSize += toCopy;
 	}
