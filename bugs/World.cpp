@@ -101,12 +101,11 @@ void World::destroyEntity(Entity* e) {
 void World::destroyPending() {
 	decltype(entsToDestroy) destroyNow;
 	destroyNow.swap(entsToDestroy);
-	for (auto e : destroyNow) {
-		auto it = std::find_if(entities.begin(), entities.end(), [e] (decltype(entities[0]) &it) {
+	for (auto &e : destroyNow) {
+		auto it = std::find_if(entities.begin(), entities.end(), [&] (decltype(entities[0]) &it) {
 			return it.get() == e;
 		});
 		if (it != entities.end()) {
-			entities.erase(it);
 			Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 			if (flags & Entity::FF_UPDATABLE) {
 				auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
@@ -118,7 +117,8 @@ void World::destroyPending() {
 				assertDbg(it != entsToDraw.end());
 				entsToDraw.erase(it);
 			}
-			delete e;
+			entities.erase(it); // this will also delete
+#warning "optimize this, it will be O(n^2) - must move the pointer from entities to entsToDestroy when destroy()"
 		} else {
 			ERROR("[WARNING] World skip DESTROY unmanaged obj: "<<e);
 		}

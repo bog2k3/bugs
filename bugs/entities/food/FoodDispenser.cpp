@@ -10,10 +10,11 @@
 #include "../WorldConst.h"
 #include "../../utils/rand.h"
 #include "../../World.h"
+#include "../../serialization/BinaryStream.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
-FoodDispenser::FoodDispenser(glm::vec2 position, float direction)
+FoodDispenser::FoodDispenser(glm::vec2 const &position, float direction)
 	: radius_(sqrtf(WorldConst::FoodDispenserSize * PI_INV))
 	, position_(position)
 	, direction_(direction)
@@ -59,9 +60,13 @@ void FoodDispenser::update(float dt) {
 }
 
 void FoodDispenser::serialize(BinaryStream &stream) {
-	//TODO...
+	glm::vec2 pos = physBody_.getPosition();
+	stream << pos.x << pos.y << direction_;
 }
 
 void FoodDispenser::deserialize(BinaryStream &stream) {
-	//TODO...
+	glm::vec2 pos;
+	float dir;
+	stream >> pos.x >> pos.y >> dir;
+	World::getInstance()->takeOwnershipOf(std::unique_ptr<FoodDispenser>(new FoodDispenser(pos, dir)));
 }

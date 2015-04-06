@@ -14,6 +14,7 @@ enum class SerializationObjectTypes {
 	GENOME,
 	GAMETE,
 	FOOD_DISPENSER,
+	WALL,
 };
 
 #endif /* SERIALIZATION_OBJECTTYPES_H_ */

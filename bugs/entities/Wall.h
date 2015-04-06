@@ -10,15 +10,28 @@
 
 #include "Entity.h"
 #include "../PhysicsBody.h"
+#include "../serialization/objectTypes.h"
 #include <glm/vec2.hpp>
 
 class Wall : public Entity {
 public:
-	Wall(glm::vec2 from, glm::vec2 to, float width);
+	Wall(glm::vec2 const &from, glm::vec2 const &to, float width);
 	virtual ~Wall();
+
+	FunctionalityFlags getFunctionalityFlags() override {
+		return FF_SERIALIZABLE;
+	}
+
+	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::WALL; }
+	// deserialize a Wall from the stream and add it to the world
+	static void deserialize(BinaryStream &stream);
+	void serialize(BinaryStream &stream) override;
 
 protected:
 	PhysicsBody body_;
+	glm::vec2 from_;
+	glm::vec2 to_;
+	float width_;
 };
 
 #endif /* ENTITIES_WALL_H_ */

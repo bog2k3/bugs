@@ -48,6 +48,10 @@ std::string Serializer::getObjectTypeString(SerializationObjectTypes type) {
 		return "gamete";
 	case SerializationObjectTypes::GENOME:
 		return "genome";
+	case SerializationObjectTypes::WALL:
+		return "wall";
+	case SerializationObjectTypes::FOOD_DISPENSER:
+		return "food-dispenser";
 	default:
 		return "UNKNOWN_TYPE";
 	}

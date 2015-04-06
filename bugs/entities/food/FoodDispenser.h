@@ -14,19 +14,19 @@
 
 class FoodDispenser: public Entity {
 public:
-	FoodDispenser(glm::vec2 position, float direction);
+	FoodDispenser(glm::vec2 const &position, float direction);
 	virtual ~FoodDispenser();
 
-	// deserialize a FoodDispenser from the stream and add it to the world
-	static void deserialize(BinaryStream &stream);
+	FunctionalityFlags getFunctionalityFlags() override { return FF_UPDATABLE | FF_SERIALIZABLE; }
 
-	FunctionalityFlags getFunctionalityFlags() override { return FF_UPDATABLE; }
+	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::FOOD_DISPENSER; }
+	// deserialize a dispenser from the stream and add it to the world
+	static void deserialize(BinaryStream &stream);
+	void serialize(BinaryStream &stream) override;
+
 
 	void draw(RenderContext const& ctx) override;
 	void update(float dt) override;
-
-	void serialize(BinaryStream &stream) override;
-	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::FOOD_DISPENSER; }
 
 protected:
 	PhysicsBody physBody_;
