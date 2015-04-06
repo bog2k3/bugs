@@ -68,33 +68,38 @@ void SessionManager::startDefaultSession() {
 	LOGLN("Finished building default session.");
 }
 
-void SessionManager::loadSessionFromFile(std::string const &path) {
+bool SessionManager::loadSessionFromFile(std::string const &path) {
 	LOGGER("SessionManager");
 	LOGLN("Loading session from file \"" << path << "\"...");
 	// LOGLN("Removing all entities...");
 	World::getInstance()->free();
 	// LOGLN("World is now clean.");
-	mergeSessionFromFile(path);
+	return mergeSessionFromFile(path);
 }
 
-void SessionManager::mergeSessionFromFile(std::string const &path) {
+bool SessionManager::mergeSessionFromFile(std::string const &path) {
 	LOGGER("SessionManager");
 	LOGLN("Merging session from file \"" << path << "\"...");
 	Serializer serializer;
 	if (!serializer.deserializeFromFile(path)) {
 		LOGLN("WARNING: There was an error during deserialization of the session file.");
-		return;
+		return false;
 	}
 	LOGLN("Finished merging.");
+	return true;
 }
 
-void SessionManager::saveSessionToFile(std::string const& path) {
+bool SessionManager::saveSessionToFile(std::string const& path) {
 	LOGGER("SessionManager");
 	LOGLN("Saving session to file \"" << path << "\"...");
 	Serializer serializer;
 	auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);
 	for (auto e : vecSer)
 		serializer.queueObject(e);
-	serializer.serializeToFile(path);
+	if (!serializer.serializeToFile(path)) {
+		LOGLN("WARNING: failure to save session to file \"" << path << "\"");
+		return false;
+	}
 	LOGLN("Finished saving.");
+	return true;
 }

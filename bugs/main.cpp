@@ -36,6 +36,9 @@
 #include <sstream>
 #include <functional>
 #include <stdexcept>
+#include <cstdio>
+
+#include <sys/stat.h>
 
 bool skipRendering = false;
 b2World *pPhysWld = nullptr;
@@ -61,8 +64,27 @@ void onInputEventHandler(InputEvent& ev) {
 }
 
 void autosave(SessionManager &sessionMgr) {
-#warning TODO: cycle autosave files first
-	sessionMgr.saveSessionToFile("autosave.bin");
+	struct stat buffer;
+	bool primary_exists(stat("autosave.bin", &buffer) == 0);
+	bool secondary_exists(stat("autosave.prev.bin", &buffer) == 0);
+
+	// cycle files to always keep the last two autosaves
+	if (secondary_exists)
+		std::rename("autosave.prev.bin", "autosave.prev.bin.0");
+	if (primary_exists)
+		std::rename("autosave.bin", "autosave.prev.bin");
+
+	if (sessionMgr.saveSessionToFile("autosave.bin")) {
+		// success, remove old backup file:
+		if (secondary_exists)
+			std::remove("autosave.prev.bin.0");
+	} else {
+		// failure, put back backup files
+		std::remove("autosave.bin");
+		std::rename("autosave.prev.bin", "autosave.bin");
+		if (secondary_exists)
+			std::rename("autosave.prev.bin.0", "autosave.prev.bin");
+	}
 }
 
 int main() {
@@ -120,9 +142,8 @@ int main() {
 		LOGLN("RAND seed: "<<rand_seed);
 
 		SessionManager sessionMgr;
-		sessionMgr.startDefaultSession();
+		// sessionMgr.startDefaultSession();
 
-		autosave(sessionMgr);
 		sessionMgr.loadSessionFromFile("autosave.bin");
 
 		DrawList drawList;
@@ -143,12 +164,20 @@ int main() {
 		float lastPrintedSimTime = 0;				// [s]
 		constexpr float simTimePrintInterval = 10.f; // [s]
 
+		constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
+		float lastAutosaveTime = 0;
+
 		float t = glfwGetTime();
 		while (GLFWInput::checkInput()) {
 			float newTime = glfwGetTime();
 			float realDT = newTime - t;
 			t = newTime;
 			realTime += realDT;
+
+			if (realTime - lastAutosaveTime > autoSaveInterval) {
+				autosave(sessionMgr);
+				lastAutosaveTime = realTime;
+			}
 
 			// fixed time step for simulation
 			float simDT = 0.02f;
