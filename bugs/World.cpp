@@ -90,6 +90,7 @@ void World::getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std:
 }
 
 void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
+	assertDbg(e != nullptr);
 	entsToTakeOver.push_back(std::move(e));
 }
 

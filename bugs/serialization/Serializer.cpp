@@ -30,7 +30,7 @@ BinaryStream& operator << (BinaryStream &stream, SerializationObjectTypes x) {
 	return stream;
 }
 
-BinaryStream& operator >> (BinaryStream &stream, SerializationObjectTypes x) {
+BinaryStream& operator >> (BinaryStream &stream, SerializationObjectTypes &x) {
 	stream >> (uint16_t&)x;
 	return stream;
 }
@@ -106,6 +106,7 @@ bool Serializer::deserializeFromFile(const std::string &path) {
 			LOGLN("WARNING: no known method to deserialize object type (" <<(int)type<<") at: " << path<<"/"<<filename);
 			return false;
 		}
+		LOGLN("Deserializing entity type: " << getObjectTypeString(type));
 		BigFile::FileDescriptor fileDesc = bigFile.getFile(filename);
 		if (!fileDesc.pStart) {
 			LOGLN("WARNING: file with internal name ("<<filename<<") has size zero! skipping...");
