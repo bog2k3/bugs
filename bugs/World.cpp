@@ -129,7 +129,6 @@ void World::takeOverPending() {
 	decltype(entsToTakeOver) takeOverNow;
 	takeOverNow.swap(entsToTakeOver);
 	for (auto &e : takeOverNow) {
-		entities.push_back(std::move(e));
 		// add to update and draw lists if appropriate
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 		if (flags & Entity::FF_DRAWABLE) {
@@ -138,6 +137,7 @@ void World::takeOverPending() {
 		if (flags & Entity::FF_UPDATABLE) {
 			entsToUpdate.push_back(e.get());
 		}
+		entities.push_back(std::move(e));
 	}
 }
 
