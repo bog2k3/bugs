@@ -59,7 +59,7 @@ private:
 	static int alterGene(Gene &g, float mutationChanceFactor);
 	static void alterMetaGene(MetaGene &m);
 	static void pullBackInsertions(Chromosome &c, int amount);
-	static void insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g);
+	static int insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g);
 	static void trimInsertionList(Chromosome &c);
 };
 

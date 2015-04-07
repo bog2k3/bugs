@@ -51,16 +51,21 @@ void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
 	}
 }
 
-void GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g) {
+/*
+ * this will insert a new gene and return the index in the insertions vector where this change has been recorded
+ */
+int GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g) {
 	assertDbg(ins.index <= c.genes.size());
 	c.genes.insert(c.genes.begin() + ins.index, g);
 	// determine where in insertions we must add this new index
 	uint d=0;
 	while (d<c.insertions.size() && c.insertions[d].index < ins.index) d++;
 	c.insertions.insert(c.insertions.begin()+d, ins);
+	int ret = d;
 	// increment all insertions that are to the right of this one
 	for (++d; d<c.insertions.size(); d++)
 		c.insertions[d].index++;
+	return ret;
 }
 
 void GeneticOperations::trimInsertionList(Chromosome &c) {
@@ -124,14 +129,12 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 		}
 		if (fromFirst) {
 			// insert the current insertion from first to second;
-			insertNewGene(c2, ins1[i], GeneNoOp());
-			assertDbg(ins1[i].index < sizeof(c2_added)/sizeof(c2_added[0]));
-			c2_added[ins1[i].index] = true;
+			int c2ListIndex = insertNewGene(c2, ins1[i], GeneNoOp());
+			c2_added[c2ListIndex] = true;
 		} else if (j<ins2.size()) {
 			// insert the current insertion from second to first
-			insertNewGene(c1, ins2[j], GeneNoOp());
-			assertDbg(ins2[j].index < sizeof(c1_added)/sizeof(c1_added[0]));
-			c1_added[ins2[j].index] = true;
+			int c1ListIndex = insertNewGene(c1, ins2[j], GeneNoOp());
+			c1_added[c1ListIndex] = true;
 		}
 		i++, j++;
 	}
