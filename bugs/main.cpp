@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) {
 		float lastPrintedSimTime = 0;				// [s]
 		constexpr float simTimePrintInterval = 10.f; // [s]
 
-		constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
+		constexpr float autoSaveInterval = 120.f; // 2 minutes of real time
 		float lastAutosaveTime = 0;
 
 		float t = glfwGetTime();

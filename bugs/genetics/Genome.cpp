@@ -108,9 +108,9 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	decltype(c2.insertions) &ins2 = c2.insertions;
 
 	for (uint i=0, j=0; i<ins1.size() || j<ins2.size(); ) {
-		while (i<ins1.size() && c1_added[i])
+		while (i<ins1.size() && c1_added[ins1[i].index])
 			i++;
-		while (j<ins2.size() && c2_added[j])
+		while (j<ins2.size() && c2_added[ins2[j].index])
 			j++;
 		bool fromFirst = i<ins1.size();
 		if (fromFirst && j<ins2.size()) {
