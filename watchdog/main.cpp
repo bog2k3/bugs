@@ -32,7 +32,8 @@ int main() {
 		if (spawn(ret)) {
 			if (ret != 0) {
 				LOGLN("bugs crashed with code : " << ret);
-				LOGLN("restarting process...");
+				LOGLN("restarting process after 5 seconds...");
+				sleep(5);
 			}
 		} else {
 			LOGLN("failed to spawn bugs process. retrying after 5 seconds...");

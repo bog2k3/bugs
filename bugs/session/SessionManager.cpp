@@ -53,12 +53,12 @@ void SessionManager::startDefaultSession() {
 	std::unique_ptr<Wall> w4(new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f));
 	World::getInstance()->takeOwnershipOf(std::move(w4));
 
-	for (int i=0; i<20; i++) {
+	for (int i=0; i<25; i++) {
 		std::unique_ptr<FoodDispenser> foodDisp(new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0));
 		World::getInstance()->takeOwnershipOf(std::move(foodDisp));
 	}
 
-	for (int i=0; i<20; i++) {
+	for (int i=0; i<25; i++) {
 #warning "crash in fixGenesSynchro on basicMutantBug"
 		//std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
 		std::unique_ptr<Bug> bug(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));

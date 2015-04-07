@@ -92,9 +92,11 @@ bool autosave(SessionManager &sessionMgr) {
 int main(int argc, char* argv[]) {
 	LOGGER("app_main");
 	// parse command line parameters:
-	std::string loadFromFile;
+	std::string loadFilename;
+	std::string saveFilename;
 	bool loadSession = false;
 	bool defaultSession = false;
+	bool saveSession = false;
 	for (int i=1; i<argc; i++) {
 		if (!strcmp(argv[i], "--load")) {
 			if (defaultSession) {
@@ -107,13 +109,26 @@ int main(int argc, char* argv[]) {
 			}
 			// must load session
 			loadSession = true;
-			loadFromFile = argv[i+1];
+			loadFilename = argv[i+1];
+			i++;
 		} else if (!strcmp(argv[i], "--default")) {
 			if (loadSession) {
 				ERROR("--default and --load cannot be used together.");
 				return -1;
 			}
 			defaultSession = true;
+		} else if (!strcmp(argv[i], "--save")) {
+			if (i == argc-1) {
+				ERROR("Expected filename after --save");
+				return -1;
+			}
+			// must load session
+			saveSession = true;
+			saveFilename = argv[i+1];
+			i++;
+		} else {
+			ERROR("Unknown argument " << argv[i]);
+			return -1;
 		}
 	}
 	// initialize stuff:
@@ -173,13 +188,18 @@ int main(int argc, char* argv[]) {
 		if (defaultSession)
 			sessionMgr.startDefaultSession();
 		else if (loadSession) {
-			if (!sessionMgr.loadSessionFromFile(loadFromFile)) {
-				ERROR("Could not load session from file \""<<loadFromFile<<"\"");
+			if (!sessionMgr.loadSessionFromFile(loadFilename)) {
+				ERROR("Could not load session from file \""<<loadFilename<<"\"");
 				return -1;
 			}
 		}
 		else {
 			LOGLN("No parameters specified. Starting with empty session.");
+		}
+
+		if (saveSession) {
+			if (!sessionMgr.saveSessionToFile(saveFilename))
+				ERROR("Could not save session to file \"" << saveFilename << "\"");
 		}
 
 		DrawList drawList;
