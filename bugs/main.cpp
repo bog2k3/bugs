@@ -63,7 +63,7 @@ void onInputEventHandler(InputEvent& ev) {
 	}
 }
 
-void autosave(SessionManager &sessionMgr) {
+bool autosave(SessionManager &sessionMgr) {
 	struct stat buffer;
 	bool primary_exists(stat("autosave.bin", &buffer) == 0);
 	bool secondary_exists(stat("autosave.prev.bin", &buffer) == 0);
@@ -78,18 +78,45 @@ void autosave(SessionManager &sessionMgr) {
 		// success, remove old backup file:
 		if (secondary_exists)
 			std::remove("autosave.prev.bin.0");
+		return true;
 	} else {
 		// failure, put back backup files
 		std::remove("autosave.bin");
 		std::rename("autosave.prev.bin", "autosave.bin");
 		if (secondary_exists)
 			std::rename("autosave.prev.bin.0", "autosave.prev.bin");
+		return false;
 	}
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	LOGGER("app_main");
-
+	// parse command line parameters:
+	std::string loadFromFile;
+	bool loadSession = false;
+	bool defaultSession = false;
+	for (int i=1; i<argc; i++) {
+		if (!strcmp(argv[i], "--load")) {
+			if (defaultSession) {
+				ERROR("--default and --load cannot be used together.");
+				return -1;
+			}
+			if (i == argc-1) {
+				ERROR("Expected filename after --load");
+				return -1;
+			}
+			// must load session
+			loadSession = true;
+			loadFromFile = argv[i+1];
+		} else if (!strcmp(argv[i], "--default")) {
+			if (loadSession) {
+				ERROR("--default and --load cannot be used together.");
+				return -1;
+			}
+			defaultSession = true;
+		}
+	}
+	// initialize stuff:
 	try {
 		if (!gltInit(800, 600, "Bugs"))
 			return -1;
@@ -142,9 +169,18 @@ int main() {
 		LOGLN("RAND seed: "<<rand_seed);
 
 		SessionManager sessionMgr;
-		// sessionMgr.startDefaultSession();
 
-		sessionMgr.loadSessionFromFile("autosave.bin");
+		if (defaultSession)
+			sessionMgr.startDefaultSession();
+		else if (loadSession) {
+			if (!sessionMgr.loadSessionFromFile(loadFromFile)) {
+				ERROR("Could not load session from file \""<<loadFromFile<<"\"");
+				return -1;
+			}
+		}
+		else {
+			LOGLN("No parameters specified. Starting with empty session.");
+		}
 
 		DrawList drawList;
 		drawList.add(World::getInstance());
@@ -175,8 +211,14 @@ int main() {
 			realTime += realDT;
 
 			if (realTime - lastAutosaveTime > autoSaveInterval) {
-				autosave(sessionMgr);
-				lastAutosaveTime = realTime;
+				LOGLN("Autosaving...");
+				if (autosave(sessionMgr)) {
+					LOGLN("Autosave successful.");
+					lastAutosaveTime = realTime;
+				} else {
+					LOGLN("Autosave FAILED. Retrying in 10 seconds...");
+					lastAutosaveTime = realTime - autoSaveInterval + 10;
+				}
 			}
 
 			// fixed time step for simulation
