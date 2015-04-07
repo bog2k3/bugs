@@ -8,13 +8,17 @@
 
 #include "../bugs/utils/log.h"
 
+#include <string>
+
 extern char **environ;
+
+char* childPath = 0;
 
 bool spawn(int &ret) {
 	pid_t pid;
 	LOGLN("spawning new bugs process...")
-	char *argv[] = { "bugs-debug", "--load", "autosave.bin", (char *) 0 };
-	if (posix_spawn(&pid, "bugs-debug", NULL, NULL, argv, environ) == 0) {
+	char *argv[] = { childPath, "--load", "autosave.bin", (char *) 0 };
+	if (posix_spawn(&pid, childPath, NULL, NULL, argv, environ) == 0) {
 		LOGLN("bugs PID: " << pid);
 		waitpid(pid, &ret, 0);
 		return true;
@@ -24,8 +28,14 @@ bool spawn(int &ret) {
 	}
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	LOGGER("watchdog");
+
+	if (argc < 2) {
+		ERROR("Need argument (program to spawn)");
+		return -1;
+	}
+	childPath = argv[1];
 
 	int ret = -1;
 	do {
