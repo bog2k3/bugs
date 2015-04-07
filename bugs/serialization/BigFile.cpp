@@ -127,6 +127,7 @@ bool BigFile::loadFromDisk(const std::string &path) {
 		return false;
 	}
 	assert(!!!"should never reach this");
+	return false;
 }
 
 bool BigFile::saveToDisk(const std::string &path) {

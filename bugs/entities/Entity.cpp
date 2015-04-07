@@ -24,4 +24,7 @@ void Entity::destroy() {
 }
 
 void Entity::serialize(BinaryStream &stream) { assertDbg(false && "forgot to override this?"); }
-SerializationObjectTypes Entity::getSerializationType() { assertDbg(false && "forgot to override this?"); }
+SerializationObjectTypes Entity::getSerializationType() {
+	assertDbg(false && "forgot to override this?");
+	return (SerializationObjectTypes)0;
+}
