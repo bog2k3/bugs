@@ -16,7 +16,7 @@ Entity::~Entity() {
 
 void Entity::destroy() {
 	if (markedForDeletion_) {
-		LOGLN("WARNING: destroy called more than once!");
+		// LOGLN("WARNING: destroy called more than once!");
 		return;
 	}
 	markedForDeletion_ = true;

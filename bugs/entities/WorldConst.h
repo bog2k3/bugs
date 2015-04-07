@@ -20,7 +20,7 @@ public:
 	static constexpr float FoodDispenserPeriod					= 2.f;				// [s]
 	static constexpr float FoodDispenserSize					= PI*0.625e-1f;		// [m^2]
 	static constexpr float FoodDispenserSpawnVelocity			= 0.3f;				// [m/s]
-	static constexpr float FoodDispenserSpawnMass				= 50.e-3f;			// [kg]
+	static constexpr float FoodDispenserSpawnMass				= 60.e-3f;			// [kg]
 	static constexpr float FoodDispenserSpreadAngleHalf			= PI;				// [rad]
 
 	static constexpr float GameteAttractRadius					= 10;				// [m]
