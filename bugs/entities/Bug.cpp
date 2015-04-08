@@ -768,6 +768,8 @@ glm::vec2 Bug::getVelocity() {
 }
 
 void Bug::serialize(BinaryStream &stream) {
+	if (!isAlive_)
+		return;
 	glm::vec2 pos = getPosition();
 	stream << pos.x << pos.y;
 	glm::vec2 vel = getVelocity();

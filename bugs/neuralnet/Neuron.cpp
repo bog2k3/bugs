@@ -1,7 +1,8 @@
 #include "Neuron.h"
 #include "../utils/rand.h"
-#include <cassert>
 #include "InputSocket.h"
+#include <cassert>
+#include <cmath>
 
 using namespace std;
 
@@ -27,7 +28,10 @@ void Neuron::update_value()
 
 void Neuron::push_output()
 {
-	output.push_value(transfFunc(value, neuralConstant));
+	float val = transfFunc(value, neuralConstant);
+	if (std::isnan(val))
+		val = 0;
+	output.push_value(value);
 }
 
 void Neuron::retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets)
