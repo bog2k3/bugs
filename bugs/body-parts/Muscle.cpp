@@ -275,6 +275,7 @@ void Muscle::update(float dt) {
 	if (isDead())
 		return;
 	float signal_strength = clamp(inputSocket_->value, 0.f, 1.f);
+	assertDbg(!std::isnan(signal_strength));
 	float RSinAlphaHSinBeta = lerp_lookup(phiToRSinAlphaHSinBeta_, nAngleSteps, getCurrentPhiSlice());
 	float torque = maxForce_ * signal_strength * RSinAlphaHSinBeta;
 	joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);

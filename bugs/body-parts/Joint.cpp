@@ -164,12 +164,14 @@ void Joint::addTorque(float t, float maxSpeed) {
 }
 
 void Joint::update(float dt) {
-	if (!physJoint_)
+	if (!physJoint_ || dt == 0)
 		return;
 	float invdt = 1.f / dt;
 	float reactionTorque = physJoint_->GetReactionTorque(invdt);
 	float reactionForce = physJoint_->GetReactionForce(invdt).Length();
-	if (reactionForce > size_ * BodyConst::JointForceToleranceFactor
+	bool jointIsFUBAR = std::isnan(reactionTorque) || std::isnan(reactionForce);
+	if (jointIsFUBAR
+		|| reactionForce > size_ * BodyConst::JointForceToleranceFactor
 		|| reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
 		// this joint is toast - must break free the downstream body parts
 		BodyPart* downStream = children_[0];
@@ -195,6 +197,9 @@ void Joint::update(float dt) {
 			maxSpeed = vecTorques[i].second;
 	}
 	float speed = torque > 0 ? maxSpeed : minSpeed;
+
+	assertDbg(!std::isnan(speed));
+	assertDbg(!std::isnan(torque));
 
 	// apply the torque and max speed:
 	physJoint_->SetMotorSpeed(speed);
