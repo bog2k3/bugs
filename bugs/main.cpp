@@ -161,8 +161,10 @@ int main(int argc, char* argv[]) {
 		PhysDestroyListener destroyListener;
 		physWld.SetDestructionListener(&destroyListener);
 
-		World::getInstance()->setPhysics(&physWld);
-		World::getInstance()->setDestroyListener(&destroyListener);
+		World world;
+
+		world.setPhysics(&physWld);
+		world.setDestroyListener(&destroyListener);
 
 		GuiSystem Gui;
 		/*std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
@@ -270,8 +272,6 @@ int main(int argc, char* argv[]) {
 				// now rendering is on-going, move on to the next update:
 			}
 		}
-
-		World::getInstance()->free();
 
 		delete renderContext.shape;
 	} catch (std::runtime_error &e) {

@@ -22,6 +22,7 @@ class PhysDestroyListener;
 class World : public IOperationSpatialLocator, public b2QueryCallback {
 public:
 	static World* getInstance();
+	World();
 	virtual ~World();
 
 	/**
@@ -52,7 +53,6 @@ public:
 	void draw(RenderContext const& ctx);
 
 protected:
-	World();
 	b2World* physWld;
 	b2Body* groundBody;
 	std::vector<std::unique_ptr<Entity>> entities;

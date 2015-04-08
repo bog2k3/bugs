@@ -15,7 +15,11 @@
 #include <Box2D/Box2D.h>
 #include <algorithm>
 
+static World *instance = nullptr;
+
 World::World() : physWld(nullptr), groundBody(nullptr) {
+	assert(instance == nullptr && "attempting to initialize multiple instances of World!!!");
+	instance = this;
 }
 
 void World::setPhysics(b2World* phys) {
@@ -26,8 +30,8 @@ void World::setPhysics(b2World* phys) {
 }
 
 World* World::getInstance() {
-	static World instance;
-	return &instance;
+	assert(instance && "No existing World instance!!!");
+	return instance;
 }
 
 World::~World() {

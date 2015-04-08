@@ -100,26 +100,31 @@ bool Serializer::deserializeFromFile(const std::string &path) {
 		LOGLN("WARNING: BigFile MASTER record is empty at: " << path);
 		return false;
 	}
-	BinaryStream masterStream(master.pStart, master.size);
-	while (!masterStream.eof()) {
-		SerializationObjectTypes type;
-		std::string filename;
-		masterStream >> type >> filename;
-		DeserializeFuncType deserializeFunc = mapTypesToFuncs_[type];
-		if (!deserializeFunc) {
-			LOGLN("WARNING: no known method to deserialize object type (" <<(int)type<<") at: " << path<<"/"<<filename);
-			return false;
+	try {
+		BinaryStream masterStream(master.pStart, master.size);
+		while (!masterStream.eof()) {
+			SerializationObjectTypes type;
+			std::string filename;
+			masterStream >> type >> filename;
+			DeserializeFuncType deserializeFunc = mapTypesToFuncs_[type];
+			if (!deserializeFunc) {
+				LOGLN("WARNING: no known method to deserialize object type (" <<(int)type<<") at: " << path<<"/"<<filename);
+				return false;
+			}
+			LOGLN("Deserializing entity type: " << getObjectTypeString(type));
+			BigFile::FileDescriptor fileDesc = bigFile.getFile(filename);
+			if (!fileDesc.pStart) {
+				LOGLN("WARNING: file with internal name ("<<filename<<") has size zero! skipping...");
+				continue;
+			}
+			BinaryStream fileStream(fileDesc.pStart, fileDesc.size);
+			deserializeFunc(fileStream);
 		}
-		LOGLN("Deserializing entity type: " << getObjectTypeString(type));
-		BigFile::FileDescriptor fileDesc = bigFile.getFile(filename);
-		if (!fileDesc.pStart) {
-			LOGLN("WARNING: file with internal name ("<<filename<<") has size zero! skipping...");
-			continue;
-		}
-		BinaryStream fileStream(fileDesc.pStart, fileDesc.size);
-		deserializeFunc(fileStream);
+		LOGLN("File deserialization SUCCESSFUL.");
+		return true;
+	} catch (std::runtime_error &e) {
+		ERROR("EXCEPTION: " << e.what());
+		return false;
 	}
-	LOGLN("File deserialization SUCCESSFUL.");
-	return true;
 }
 
