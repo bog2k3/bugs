@@ -781,6 +781,8 @@ void Bug::serialize(BinaryStream &stream) {
 }
 
 void Bug::deserialize(BinaryStream &stream) {
+	if (stream.getSize() == 0)
+		return; // this was a dead bug
 	float posx, posy, velx, vely, mass;
 	stream >> posx >> posy >> velx >> vely >> mass;
 	Genome genome;
