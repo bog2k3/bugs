@@ -49,7 +49,7 @@ protected:
 	float initialSize_ = 0;
 	float eggMassBuffer_ = 0;
 	float targetEggMass_;
-	float ejectSpeed_;	// TODO put this in intialization data to be changed by genes
+	float ejectSpeed_;
 
 public:
 	decltype(inputs_) const& getInputSockets() const { return inputs_; }

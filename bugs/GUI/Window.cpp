@@ -19,7 +19,6 @@ Window::Window(glm::vec2 position, glm::vec2 size)
 }
 
 Window::~Window() {
-	// TODO Auto-generated destructor stub
 }
 
 void Window::draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec2 frameScale) {

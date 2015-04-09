@@ -26,7 +26,6 @@ OperationPan::OperationPan(InputEvent::MOUSE_BUTTON assignedButton)
 }
 
 OperationPan::~OperationPan() {
-	// TODO Auto-generated destructor stub
 }
 
 void OperationPan::enter(const OperationContext* pContext) {

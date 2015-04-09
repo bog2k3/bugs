@@ -14,11 +14,9 @@
 #include "math/math2D.h"
 
 PhysicsDebugDraw::PhysicsDebugDraw(RenderContext ctx) : rc(ctx) {
-	// TODO Auto-generated constructor stub
 }
 
 PhysicsDebugDraw::~PhysicsDebugDraw() {
-	// TODO Auto-generated destructor stub
 }
 
 /// Draw a closed polygon provided in CCW order.

@@ -10,7 +10,6 @@
 #include <stdexcept>
 
 Renderer::~Renderer() {
-	// TODO Auto-generated destructor stub
 }
 
 Renderer::Renderer() {

@@ -11,12 +11,10 @@
 #include <Box2D/Box2D.h>
 
 PhysContactListener::PhysContactListener() {
-	// TODO Auto-generated constructor stub
 
 }
 
 PhysContactListener::~PhysContactListener() {
-	// TODO Auto-generated destructor stub
 }
 
 /*void PhysContactListener::BeginContact(b2Contact* contact) {
