@@ -28,10 +28,10 @@ void Neuron::update_value()
 
 void Neuron::push_output()
 {
-	float val = transfFunc(value, neuralConstant);
-	if (std::isnan(val))
-		val = 0;
-	output.push_value(value);
+	float outVal = transfFunc(value, neuralConstant);
+	if (std::isnan(outVal))
+		outVal = 0;
+	output.push_value(outVal);
 }
 
 void Neuron::retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets)
