@@ -242,8 +242,6 @@ void Ribosome::updateNeuronTransfer(int virtualIndex, float transfer) {
 
 void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 	if (hasNeuron(virtualIndex)) {
-		if (std::isnan(constant))
-			constant = 0;
 		mapNeurons_[virtualIndex].constant.changeAbs(constant);
 	}
 }
@@ -439,10 +437,8 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 	checkAndAddNeuronMapping(g.from);
 	checkAndAddNeuronMapping(g.to);
 	int64_t key = synKey(g.from, g.to);
-	float weight = g.weight;
-	if (std::isnan(weight))
-		weight = 0;
-	mapSynapses[key].changeAbs(weight);
+	assert(!std::isnan(g.weight));
+	mapSynapses[key].changeAbs(g.weight);
 }
 
 void Ribosome::decodeFeedbackSynapse(GeneFeedbackSynapse const& g) {
@@ -457,6 +453,7 @@ void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
 }
 
 void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
+	assert(!std::isnan(g.value));
 	updateNeuronConstant(g.targetNeuron, g.value);
 }
 
