@@ -222,7 +222,7 @@ int main(int argc, char* argv[]) {
 		float lastPrintedSimTime = 0;				// [s]
 		constexpr float simTimePrintInterval = 10.f; // [s]
 
-		constexpr float autoSaveInterval = 120.f; // 2 minutes of sym time
+		constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
 		float lastAutosaveTime = 0;
 
 		float t = glfwGetTime();
@@ -232,14 +232,14 @@ int main(int argc, char* argv[]) {
 			t = newTime;
 			realTime += realDT;
 
-			if (simulationTime - lastAutosaveTime > autoSaveInterval) {
+			if (realTime - lastAutosaveTime > autoSaveInterval) {
 				LOGLN("Autosaving...");
 				if (autosave(sessionMgr)) {
 					LOGLN("Autosave successful.");
 					lastAutosaveTime = simulationTime;
 				} else {
 					LOGLN("Autosave FAILED. Retrying in 10 seconds...");
-					lastAutosaveTime = simulationTime - autoSaveInterval + 10;
+					lastAutosaveTime = realTime - autoSaveInterval + 10;
 				}
 			}
 
