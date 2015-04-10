@@ -1,3 +1,6 @@
+* print population & generations in status update
+* !!! fix autosave (doesn't save any more, wtf?)
+* fix world design to favour movers
 * print mutation statistics after meyosis
 * !!! add SENSORS
 * prevent fixture overlapping after load from file -> results in box2D hang (maybe do an epsilon update on physWorld after each entity is deserialized)
