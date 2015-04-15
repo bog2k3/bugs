@@ -30,7 +30,10 @@
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
-Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity)
+unsigned Bug::population = 0;
+unsigned Bug::maxGeneration = 0;
+
+Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation)
 	: genome_(genome)
 	, neuralNet_(new NeuralNet())
 	, ribosome_(nullptr)
@@ -49,6 +52,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, growthSpeed_(BodyConst::initialGrowthSpeed)
 	, reproductiveMassRatio_(BodyConst::initialReproductiveMassRatio)
 	, eggMass_(BodyConst::initialEggMass)
+	, generation_(generation)
 {
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(position, velocity, zygoteMass);
@@ -71,6 +75,9 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	mapBodyAttributes_[GENE_BODY_ATTRIB_EGG_MASS] = &eggMass_;
 
 	sensors_.push_back(&lifeTimeSensor_);
+
+	if (generation_ > maxGeneration)
+		maxGeneration = generation_;
 }
 
 Bug::~Bug() {
@@ -106,6 +113,8 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				body_ = nullptr;
 				return;
 			}
+
+			population++; // new member of the bug population
 
 			float currentMass = body_->getMass_tree();
 			float zygMass = zygoteShell_->getMass();
@@ -165,10 +174,13 @@ void Bug::updateDeadDecaying(float dt) {
 }
 
 void Bug::kill() {
-	LOGLN("bug DIED");
-	isAlive_ = false;
-	body_->die_tree();
-	body_ = nullptr;
+	if (isAlive_) {
+		LOGLN("bug DIED");
+		population--; // one less bug
+		isAlive_ = false;
+		body_->die_tree();
+		body_ = nullptr;
+	}
 }
 
 void Bug::update(float dt) {
@@ -739,7 +751,7 @@ Chromosome Bug::createBasicChromosome() {
 Bug* Bug::newBasicBug(glm::vec2 position) {
 	Genome g;
 	g.first = g.second = createBasicChromosome(); // make a duplicate of all genes into the second chromosome
-	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0));
+	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0), 1);
 }
 
 Bug* Bug::newBasicMutantBug(glm::vec2 position) {
@@ -748,7 +760,7 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 	GeneticOperations::alterChromosome(g.first);
 	GeneticOperations::alterChromosome(g.second);
 	GeneticOperations::fixGenesSynchro(g);
-	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0));
+	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0), 1);
 }
 
 glm::vec2 Bug::getPosition() {
@@ -767,6 +779,10 @@ glm::vec2 Bug::getVelocity() {
 	return glm::vec2(0);
 }
 
+float Bug::getMass() {
+	return zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
+}
+
 void Bug::serialize(BinaryStream &stream) {
 	if (!isAlive_)
 		return;
@@ -774,9 +790,10 @@ void Bug::serialize(BinaryStream &stream) {
 	stream << pos.x << pos.y;
 	glm::vec2 vel = getVelocity();
 	stream << vel.x << vel.y;
-	float mass = zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
+	float mass = getMass();
 	assertDbg(mass > 0);
 	stream << mass;
+	stream << generation_;
 	stream << genome_;
 }
 
@@ -785,8 +802,10 @@ void Bug::deserialize(BinaryStream &stream) {
 		return; // this was a dead bug
 	float posx, posy, velx, vely, mass;
 	stream >> posx >> posy >> velx >> vely >> mass;
+	unsigned generation;
+	stream >> generation;
 	Genome genome;
 	stream >> genome;
-	std::unique_ptr<Bug> ptr(new Bug(genome, mass, glm::vec2(posx, posy), glm::vec2(velx, vely)));
+	std::unique_ptr<Bug> ptr(new Bug(genome, mass, glm::vec2(posx, posy), glm::vec2(velx, vely), generation));
 	World::getInstance()->takeOwnershipOf(std::move(ptr));
 }

@@ -9,6 +9,7 @@
 #define OBJECTS_FOOD_FOODCHUNK_H_
 
 #include "../Entity.h"
+#include "../enttypes.h"
 #include "../../utils/Event.h"
 #include "../../PhysicsBody.h"
 
@@ -21,6 +22,8 @@ public:
 	FunctionalityFlags getFunctionalityFlags() override {
 		return FF_UPDATABLE | FF_DRAWABLE;
 	}
+	static constexpr EntityType entityType = ENTITY_FOOD_CHUNK;
+	virtual EntityType getEntityType() override { return entityType; }
 
 	void update(float dt) override;
 

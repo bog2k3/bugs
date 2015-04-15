@@ -174,3 +174,16 @@ std::vector<Entity*> World::getEntities(Entity::FunctionalityFlags filterFlags) 
 	}
 	return vec;
 }
+
+std::vector<Entity*> World::getEntitiesOfType(EntityType type) {
+	std::vector<Entity*> vec;
+	for (auto &e : entities) {
+		if (e->getEntityType() == type && !e->isZombie())
+			vec.push_back(e.get());
+	}
+	for (auto &e : entsToTakeOver) {
+		if (e->getEntityType() == type && !e->isZombie())
+			vec.push_back(e.get());
+	}
+	return vec;
+}

@@ -9,6 +9,7 @@
 #define OBJECTS_FOOD_FOODDISPENSER_H_
 
 #include "../Entity.h"
+#include "../enttypes.h"
 #include "../../PhysicsBody.h"
 #include "../../serialization/objectTypes.h"
 
@@ -16,6 +17,9 @@ class FoodDispenser: public Entity {
 public:
 	FoodDispenser(glm::vec2 const &position, float direction);
 	virtual ~FoodDispenser();
+
+	static constexpr EntityType entityType = ENTITY_FOOD_DISPENSER;
+	virtual EntityType getEntityType() override { return entityType; }
 
 	FunctionalityFlags getFunctionalityFlags() override { return FF_UPDATABLE | FF_SERIALIZABLE; }
 

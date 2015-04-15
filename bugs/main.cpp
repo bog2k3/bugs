@@ -89,6 +89,11 @@ bool autosave(SessionManager &sessionMgr) {
 	}
 }
 
+void printStatus(float simulationTime, float realTime, float simDTAcc, float realDTAcc, int population, int generations) {
+	LOGLN("SIM-TIME: " << simulationTime << "\tREAL-time: "<< realTime <<"\tINST-MUL: "<<simDTAcc/realDTAcc<<"\tAVG-MUL: "<<simulationTime/realTime
+			<< "\tPopulation: " << population << "\tGenerations: " << generations);
+}
+
 int main(int argc, char* argv[]) {
 	LOGGER("app_main");
 	// parse command line parameters:
@@ -97,6 +102,7 @@ int main(int argc, char* argv[]) {
 	bool loadSession = false;
 	bool defaultSession = false;
 	bool saveSession = false;
+	bool enableAutosave = false;
 	for (int i=1; i<argc; i++) {
 		if (!strcmp(argv[i], "--load")) {
 			if (defaultSession) {
@@ -126,6 +132,8 @@ int main(int argc, char* argv[]) {
 			saveSession = true;
 			saveFilename = argv[i+1];
 			i++;
+		} else if (!strcmp(argv[i], "--enable-autosave")) {
+			enableAutosave = true;
 		} else {
 			ERROR("Unknown argument " << argv[i]);
 			return -1;
@@ -220,6 +228,8 @@ int main(int argc, char* argv[]) {
 		float realTime = 0;							// [s]
 		float simulationTime = 0;					// [s]
 		float lastPrintedSimTime = 0;				// [s]
+		float simDTAcc = 0; // [s] accumulated sim dt values since last status print
+		float realDTAcc = 0; // [s] accumulated real dt values since last status print
 		constexpr float simTimePrintInterval = 10.f; // [s]
 
 		constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
@@ -229,14 +239,15 @@ int main(int argc, char* argv[]) {
 		while (GLFWInput::checkInput()) {
 			float newTime = glfwGetTime();
 			float realDT = newTime - t;
+			simDTAcc += realDT;
 			t = newTime;
 			realTime += realDT;
 
-			if (realTime - lastAutosaveTime > autoSaveInterval) {
+			if (enableAutosave && realTime - lastAutosaveTime > autoSaveInterval) {
 				LOGLN("Autosaving...");
 				if (autosave(sessionMgr)) {
 					LOGLN("Autosave successful.");
-					lastAutosaveTime = simulationTime;
+					lastAutosaveTime = realTime;
 				} else {
 					LOGLN("Autosave FAILED. Retrying in 10 seconds...");
 					lastAutosaveTime = realTime - autoSaveInterval + 10;
@@ -247,8 +258,13 @@ int main(int argc, char* argv[]) {
 			float simDT = 0.02f;
 
 			simulationTime += simDT;
+			simDTAcc += simDT;
+
 			if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
-				LOGLN("SIMULATION TIME: " << simulationTime<<"\t real time: "<<realTime<<"\t instant ratio: "<<simDT/realDT<<"\t average ratio: "<<simulationTime/realTime);
+				int population = Bug::getPopupationCount();
+				int maxGeneration = Bug::getMaxGeneration();
+				printStatus(simulationTime, realTime, simDTAcc, realDTAcc, population, maxGeneration);
+				simDTAcc = realDTAcc = 0;
 				lastPrintedSimTime = simulationTime;
 			}
 

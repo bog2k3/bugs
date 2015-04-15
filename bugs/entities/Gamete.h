@@ -9,6 +9,7 @@
 #define ENTITIES_GAMETE_H_
 
 #include "Entity.h"
+#include "enttypes.h"
 #include "../genetics/Genome.h"
 #include "../PhysicsBody.h"
 #include "../serialization/objectTypes.h"
@@ -19,6 +20,9 @@ class Gamete: public Entity {
 public:
 	Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass);
 	virtual ~Gamete();
+
+	static constexpr EntityType entityType = ENTITY_GAMETE;
+	virtual EntityType getEntityType() override { return entityType; }
 
 	// deserialize a Gamete from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
@@ -36,6 +40,8 @@ public:
 	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::GAMETE; }
 
 	const Chromosome& getChromosome() const { return chromosome_; }
+
+	unsigned generation_=0;  // the generation of the bug who spawned this gamete
 
 protected:
 	Chromosome chromosome_;

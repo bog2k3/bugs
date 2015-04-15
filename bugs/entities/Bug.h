@@ -9,6 +9,7 @@
 #define ENTITIES_BUG_H_
 
 #include "Entity.h"
+#include "enttypes.h"
 #include "../genetics/Genome.h"
 #include "../genetics/GeneDefinitions.h"
 #include "../utils/UpdateList.h"
@@ -30,11 +31,13 @@ class BodyPart;
 
 class Bug : public Entity {
 public:
-	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity);
+	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation);
 	virtual ~Bug();
 	FunctionalityFlags getFunctionalityFlags() override {
 		return FF_UPDATABLE | FF_DRAWABLE | FF_SERIALIZABLE;
 	}
+	static constexpr EntityType entityType = ENTITY_BUG;
+	virtual EntityType getEntityType() override { return entityType; }
 
 	// deserialize a Bug from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
@@ -47,6 +50,8 @@ public:
 	const Genome& getGenome() { return genome_; }
 	glm::vec2 getPosition();
 	glm::vec2 getVelocity();
+	float getMass();
+	unsigned getGeneration() { return generation_; }
 
 	void kill();
 
@@ -59,7 +64,12 @@ public:
 	 */
 	static Bug* newBasicMutantBug(glm::vec2 position);
 
+	static unsigned getPopupationCount() { return population; }
+	static unsigned getMaxGeneration() { return maxGeneration; }
+
 protected:
+	Bug(Bug const& orig) = delete; // no implementation because no usage
+
 	Genome genome_;
 	std::vector<ISensor*> sensors_;
 	std::vector<Motor> motors_;
@@ -86,6 +96,10 @@ protected:
 	CummulativeValue growthSpeed_;
 	CummulativeValue reproductiveMassRatio_;
 	CummulativeValue eggMass_;
+
+	unsigned generation_=0;  // the generation this bug represents
+	static unsigned population;
+	static unsigned maxGeneration;
 
 	friend class Ribosome;
 

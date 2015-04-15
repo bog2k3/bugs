@@ -48,6 +48,8 @@ public:
 
 	// returns a vector of all entities that match ALL of the requested features
 	std::vector<Entity*> getEntities(Entity::FunctionalityFlags filterFlags);
+	// returns a vector of all entities of a given type
+	std::vector<Entity*> getEntitiesOfType(EntityType type);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);

@@ -17,7 +17,7 @@ char* childPath = 0;
 bool spawn(int &ret) {
 	pid_t pid;
 	LOGLN("spawning new bugs process...")
-	char *argv[] = { childPath, "--load", "autosave.bin", (char *) 0 };
+	char *argv[] = { childPath, "--load", "autosave.bin", "--enable-autosave", (char *) 0 };
 	if (posix_spawn(&pid, childPath, NULL, NULL, argv, environ) == 0) {
 		LOGLN("bugs PID: " << pid);
 		waitpid(pid, &ret, 0);

@@ -9,6 +9,7 @@
 #define ENTITIES_WALL_H_
 
 #include "Entity.h"
+#include "enttypes.h"
 #include "../PhysicsBody.h"
 #include "../serialization/objectTypes.h"
 #include <glm/vec2.hpp>
@@ -21,6 +22,9 @@ public:
 	FunctionalityFlags getFunctionalityFlags() override {
 		return FF_SERIALIZABLE;
 	}
+
+	static constexpr EntityType entityType = ENTITY_WALL;
+	virtual EntityType getEntityType() override { return entityType; }
 
 	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::WALL; }
 	// deserialize a Wall from the stream and add it to the world

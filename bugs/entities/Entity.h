@@ -12,6 +12,8 @@ class RenderContext;
 class BinaryStream;
 enum class SerializationObjectTypes;
 
+typedef unsigned EntityType;
+
 class Entity {
 public:
 	virtual ~Entity();
@@ -29,6 +31,7 @@ public:
 	virtual void draw(RenderContext const& ctx) {}
 	virtual void serialize(BinaryStream &stream);
 	virtual SerializationObjectTypes getSerializationType();
+	virtual EntityType getEntityType() = 0;
 
 	void destroy();
 	bool isZombie() { return markedForDeletion_; }

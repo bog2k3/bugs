@@ -437,7 +437,7 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 	checkAndAddNeuronMapping(g.from);
 	checkAndAddNeuronMapping(g.to);
 	int64_t key = synKey(g.from, g.to);
-	assert(!std::isnan(g.weight));
+	assert(!std::isnan(g.weight.value));
 	mapSynapses[key].changeAbs(g.weight);
 }
 
@@ -453,7 +453,7 @@ void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
 }
 
 void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
-	assert(!std::isnan(g.value));
+	assert(!std::isnan(g.value.value));
 	updateNeuronConstant(g.targetNeuron, g.value);
 }
 
