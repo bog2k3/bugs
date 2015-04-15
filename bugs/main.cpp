@@ -140,6 +140,9 @@ int main(int argc, char* argv[]) {
 			return -1;
 		}
 	}
+	if (!enableAutosave) {
+		LOGLN("WARNING: Autosave is turned off! (use --enable-autosave to turn on)");
+	}
 	// initialize stuff:
 	try {
 		if (!gltInit(800, 600, "Bugs"))
@@ -243,7 +246,7 @@ int main(int argc, char* argv[]) {
 		while (GLFWInput::checkInput()) {
 			float newTime = glfwGetTime();
 			float realDT = newTime - t;
-			simDTAcc += realDT;
+			realDTAcc += realDT;
 			t = newTime;
 			realTime += realDT;
 

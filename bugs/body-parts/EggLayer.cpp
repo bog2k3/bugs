@@ -119,6 +119,7 @@ void EggLayer::update(float dt){
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 speed = glm::rotate(glm::vec2(1, 0), transform.z) * ejectSpeed_;
 		std::unique_ptr<Gamete> egg(new Gamete(chr, vec3xy(transform), speed, targetEggMass_));
+		egg->generation_ = todo // TODO
 		World::getInstance()->takeOwnershipOf(std::move(egg));
 		eggMassBuffer_ -= targetEggMass_;
 	}
