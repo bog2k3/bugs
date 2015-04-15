@@ -18,9 +18,6 @@
 #include "PhysDestroyListener.h"
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
-#include "utils/log.h"
-#include "utils/DrawList.h"
-#include "utils/UpdateList.h"
 #include "OSD/ScaleDisplay.h"
 #include "GUI/GuiSystem.h"
 #include "GUI/Window.h"
@@ -29,6 +26,10 @@
 #include "serialization/Serializer.h"
 #include "serialization/objectTypes.h"
 #include "session/SessionManager.h"
+#include "session/PopulationManager.h"
+#include "utils/log.h"
+#include "utils/DrawList.h"
+#include "utils/UpdateList.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -212,6 +213,8 @@ int main(int argc, char* argv[]) {
 				ERROR("Could not save session to file \"" << saveFilename << "\"");
 		}
 
+		PopulationManager populationMgr;
+
 		DrawList drawList;
 		drawList.add(World::getInstance());
 		drawList.add(&physWld);
@@ -223,6 +226,7 @@ int main(int argc, char* argv[]) {
 		updateList.add(&opStack);
 		updateList.add(&physWld);
 		updateList.add(&contactListener);
+		updateList.add(&populationMgr);
 		updateList.add(World::getInstance());
 
 		float realTime = 0;							// [s]
@@ -261,8 +265,8 @@ int main(int argc, char* argv[]) {
 			simDTAcc += simDT;
 
 			if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
-				int population = Bug::getPopupationCount();
-				int maxGeneration = Bug::getMaxGeneration();
+				int population = populationMgr.getPopulationCount();
+				int maxGeneration = populationMgr.getMaxGeneration();
 				printStatus(simulationTime, realTime, simDTAcc, realDTAcc, population, maxGeneration);
 				simDTAcc = realDTAcc = 0;
 				lastPrintedSimTime = simulationTime;

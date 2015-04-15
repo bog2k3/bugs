@@ -12,8 +12,11 @@
 
 class PopulationManager {
 public:
-	void udate(float dt);
+	void update(float dt);
 	void setWorldSize(glm::vec2 size) { worldSize_ = size; }
+
+	unsigned getPopulationCount();
+	unsigned getMaxGeneration();
 
 private:
 	glm::vec2 worldSize_{0};
