@@ -225,8 +225,6 @@ int main(int argc, char* argv[]) {
 				ERROR("Could not save session to file \"" << saveFilename << "\"");
 		}
 
-		PopulationManager populationMgr;
-
 		DrawList drawList;
 		drawList.add(World::getInstance());
 		drawList.add(&physWld);
@@ -238,7 +236,7 @@ int main(int argc, char* argv[]) {
 		updateList.add(&opStack);
 		updateList.add(&physWld);
 		updateList.add(&contactListener);
-		updateList.add(&populationMgr);
+		updateList.add(&sessionMgr.getPopulationManager());
 		updateList.add(World::getInstance());
 
 		float realTime = 0;							// [s]
@@ -277,8 +275,8 @@ int main(int argc, char* argv[]) {
 			simDTAcc += simDT;
 
 			if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
-				int population = populationMgr.getPopulationCount();
-				int maxGeneration = populationMgr.getMaxGeneration();
+				int population = sessionMgr.getPopulationManager().getPopulationCount();
+				int maxGeneration = sessionMgr.getPopulationManager().getMaxGeneration();
 				printStatus(simulationTime, realTime, simDTAcc, realDTAcc, population, maxGeneration);
 				simDTAcc = realDTAcc = 0;
 				lastPrintedSimTime = simulationTime;

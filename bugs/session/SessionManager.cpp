@@ -42,7 +42,8 @@ void SessionManager::startDefaultSession() {
 	//LOGLN("World is now clean.");
 
 	LOGLN("Building entities for default session...");
-	float worldRadius = 5.f;
+	float worldRadius = 10.f;
+	populationMgr.setWorldSize(glm::vec2(worldRadius*2, worldRadius*2));
 
 	std::unique_ptr<Wall> w1(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f));
 	World::getInstance()->takeOwnershipOf(std::move(w1));
@@ -75,6 +76,8 @@ bool SessionManager::loadSessionFromFile(std::string const &path) {
 	World::getInstance()->free();
 	// LOGLN("World is now clean.");
 	return mergeSessionFromFile(path);
+
+	// TODO update population manager world size
 }
 
 bool SessionManager::mergeSessionFromFile(std::string const &path) {
