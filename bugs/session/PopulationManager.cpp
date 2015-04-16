@@ -20,6 +20,10 @@ void PopulationManager::update(float dt) {
 		LOGPREFIX("PopulationManager");
 		LOGLN("Population reached the minimum point ("<<minPopulation<<"). Refilling up to "<<refillPopulationTarget<<"...");
 		auto vec = World::getInstance()->getEntitiesOfType(Bug::entityType);
+		vec.erase(std::remove_if(vec.begin(), vec.end(), [] (Entity* e) {
+			Bug* bug = static_cast<Bug*>(e);
+			return !bug->isAlive();
+		}), vec.end());
 		unsigned spawnCount = refillPopulationTarget - bugPopulation;
 		for (unsigned i=0; i<spawnCount; i++) {
 			int idx = randi(vec.size()-1);

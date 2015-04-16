@@ -52,6 +52,7 @@ public:
 	glm::vec2 getVelocity();
 	float getMass();
 	unsigned getGeneration() { return generation_; }
+	bool isAlive() { return isAlive_; }
 
 	void kill();
 

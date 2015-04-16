@@ -93,10 +93,11 @@ bool autosave(SessionManager &sessionMgr) {
 }
 
 #define FFMT(prec, X) std::fixed << std::setprecision(prec) << (X)
+#define IFMT(spac, X) std::fixed << std::setprecision(0) << std::setw(spac) << (X)
 
 void printStatus(float simulationTime, float realTime, float simDTAcc, float realDTAcc, int population, int generations) {
-	LOGLN(	"SIM-TIME: " << FFMT(0, simulationTime)
-			<< "\tREAL-time: "<< FFMT(0, realTime)
+	LOGLN(	"SIM-TIME: " << IFMT(5, simulationTime)
+			<< "\tREAL-time: "<< IFMT(5, realTime)
 			<< "\tINST-MUL: " << FFMT(2, simDTAcc/realDTAcc)
 			<< "\tAVG-MUL: " << FFMT(2, simulationTime/realTime)
 			<< "\tPopulation: " << population
