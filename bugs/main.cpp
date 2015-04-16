@@ -30,11 +30,13 @@
 #include "utils/log.h"
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
+#include "utils/rand.h"
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
 
 #include <sstream>
+#include <iomanip>
 #include <functional>
 #include <stdexcept>
 #include <cstdio>
@@ -90,9 +92,15 @@ bool autosave(SessionManager &sessionMgr) {
 	}
 }
 
+#define FFMT(prec, X) std::fixed << std::setprecision(prec) << (X)
+
 void printStatus(float simulationTime, float realTime, float simDTAcc, float realDTAcc, int population, int generations) {
-	LOGLN("SIM-TIME: " << simulationTime << "\tREAL-time: "<< realTime <<"\tINST-MUL: "<<simDTAcc/realDTAcc<<"\tAVG-MUL: "<<simulationTime/realTime
-			<< "\tPopulation: " << population << "\tGenerations: " << generations);
+	LOGLN(	"SIM-TIME: " << FFMT(0, simulationTime)
+			<< "\tREAL-time: "<< FFMT(0, realTime)
+			<< "\tINST-MUL: " << FFMT(2, simDTAcc/realDTAcc)
+			<< "\tAVG-MUL: " << FFMT(2, simulationTime/realTime)
+			<< "\tPopulation: " << population
+			<< "\tGenerations: " << generations);
 }
 
 int main(int argc, char* argv[]) {
@@ -143,8 +151,9 @@ int main(int argc, char* argv[]) {
 	if (!enableAutosave) {
 		LOGLN("WARNING: Autosave is turned off! (use --enable-autosave to turn on)");
 	}
-	// initialize stuff:
+
 	try {
+		// initialize stuff:
 		if (!gltInit(800, 600, "Bugs"))
 			return -1;
 

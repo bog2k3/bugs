@@ -10,8 +10,6 @@
 
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
-#include "../genetics/Gene.h"
-#include "../genetics/Genome.h"
 #include "../PhysicsBody.h"
 #include <vector>
 #include <map>
@@ -64,6 +62,7 @@ struct BodyPartInitializationData {
 
 class UpdateList;
 class RenderContext;
+class Bug;
 
 class BodyPart {
 public:
@@ -100,7 +99,7 @@ public:
 
 	inline int getDepth() { int d=1; if (parent_) d+=parent_->getDepth(); return d; }
 
-	virtual Genome* getGenome() { if (parent_) return parent_->getGenome(); return nullptr; }
+	virtual Bug* getOwner() { if (parent_) return parent_->getOwner(); return nullptr; }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.

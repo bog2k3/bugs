@@ -70,7 +70,7 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 	std::unique_ptr<Bug> newlySpawnedBug(new Bug(g,
 			body_.b2Body_->GetMass() + other->body_.b2Body_->GetMass(),
 			(body_.getPosition() + other->body_.getPosition()) * 0.5f, b2g(velocity),
-			std::max(generation_, other->generation_) + 1));
+			std::max(generation_, other->generation_)));
 	World::getInstance()->takeOwnershipOf(std::move(newlySpawnedBug));
 	// destroy these gamettes:
 	destroy();

@@ -26,7 +26,7 @@ public:
 	inline float getFatMass() { return fatMass_; }
 	inline float getBufferedEnergy() { return energyBuffer_; }
 	void replenishEnergyFromMass(float mass);
-	void setGenome(Genome* genome) { genome_ = genome; }
+	void setOwner(Bug* owner) { owner_ = owner; }
 
 	void consumeEnergy(float amount) override;
 	float addFood(float mass) override;
@@ -42,7 +42,7 @@ public:
 		BodyPart::applyScale_tree(scale);
 	}
 	void detach(bool die) override;
-	Genome* getGenome() override { return genome_; }
+	Bug* getOwner() override { return owner_; }
 
 	Event<void(float mass)> onFoodProcessed;
 	Event<void(std::vector<int> const&)> onMotorLinesDetached;
@@ -58,7 +58,7 @@ protected:
 	float foodProcessingSpeed_;
 	float foodBufferSize_;
 	float foodBuffer_;
-	Genome* genome_ = nullptr;
+	Bug* owner_ = nullptr;
 
 	void commit() override;
 	void die() override;

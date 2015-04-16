@@ -7,7 +7,7 @@
 
 #include "EggLayer.h"
 #include "BodyConst.h"
-// #include "../genetics/GeneDefinitions.h"
+#include "../entities/Bug.h"
 #include "../math/box2glm.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
@@ -115,11 +115,11 @@ void EggLayer::update(float dt){
 	if (eggMassBuffer_ >= targetEggMass_ && !suppressRelease_) {
 		// lay an egg here
 		LOGLN("MAKE EGG! !!!!! ! !");
-		Chromosome chr = GeneticOperations::meyosis(*getGenome());
+		Chromosome chr = GeneticOperations::meyosis(getOwner()->getGenome());
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 speed = glm::rotate(glm::vec2(1, 0), transform.z) * ejectSpeed_;
 		std::unique_ptr<Gamete> egg(new Gamete(chr, vec3xy(transform), speed, targetEggMass_));
-		egg->generation_ = todo // TODO
+		egg->generation_ = getOwner()->getGeneration() + 1;
 		World::getInstance()->takeOwnershipOf(std::move(egg));
 		eggMassBuffer_ -= targetEggMass_;
 	}

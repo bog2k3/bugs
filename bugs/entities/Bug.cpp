@@ -64,7 +64,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
 	body_->onMotorLinesDetached.add(std::bind(&Bug::onMotorLinesDetached, this, std::placeholders::_1));
 	body_->onBodyMassChanged.add([this] { cachedMassDirty_ = true; });
-	body_->setGenome(&genome_);
+	body_->setOwner(this);
 	ribosome_ = new Ribosome(this);
 
 	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
