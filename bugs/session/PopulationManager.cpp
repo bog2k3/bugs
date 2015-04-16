@@ -15,11 +15,12 @@ static unsigned minPopulation = 10;				// minimum population number that trigger
 static unsigned refillPopulationTarget = 20;	// target population after refill
 
 void PopulationManager::update(float dt) {
-	if (Bug::getPopupationCount() != 0 && Bug::getPopupationCount() <= minPopulation) {
+	unsigned bugPopulation = Bug::getPopulationCount() + Bug::getZygotesCount();
+	if (bugPopulation != 0 && bugPopulation <= minPopulation) {
 		LOGPREFIX("PopulationManager");
 		LOGLN("Population reached the minimum point ("<<minPopulation<<"). Refilling up to "<<refillPopulationTarget<<"...");
 		auto vec = World::getInstance()->getEntitiesOfType(Bug::entityType);
-		unsigned spawnCount = refillPopulationTarget - Bug::getPopupationCount();
+		unsigned spawnCount = refillPopulationTarget - bugPopulation;
 		for (unsigned i=0; i<spawnCount; i++) {
 			int idx = randi(vec.size()-1);
 			Bug* bug = static_cast<Bug*>(vec[idx]);
@@ -31,7 +32,7 @@ void PopulationManager::update(float dt) {
 }
 
 unsigned PopulationManager::getPopulationCount() {
-	return Bug::getPopupationCount();
+	return Bug::getPopulationCount();
 }
 
 unsigned PopulationManager::getMaxGeneration() {

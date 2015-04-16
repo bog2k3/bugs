@@ -64,7 +64,8 @@ public:
 	 */
 	static Bug* newBasicMutantBug(glm::vec2 position);
 
-	static unsigned getPopupationCount() { return population; }
+	static unsigned getPopulationCount() { return population; }
+	static unsigned getZygotesCount() { return freeZygotes; }
 	static unsigned getMaxGeneration() { return maxGeneration; }
 
 protected:
@@ -99,6 +100,7 @@ protected:
 
 	unsigned generation_=0;  // the generation this bug represents
 	static unsigned population;
+	static unsigned freeZygotes;
 	static unsigned maxGeneration;
 
 	friend class Ribosome;

@@ -32,6 +32,7 @@ const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
 unsigned Bug::population = 0;
 unsigned Bug::maxGeneration = 0;
+unsigned Bug::freeZygotes = 0;
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation)
 	: genome_(genome)
@@ -78,6 +79,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 
 	if (generation_ > maxGeneration)
 		maxGeneration = generation_;
+	freeZygotes++;
 }
 
 Bug::~Bug() {
@@ -103,7 +105,8 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 	if (tRibosomeStep_ >= DECODE_PERIOD) {
 		tRibosomeStep_ -= DECODE_PERIOD;
 		isDeveloping_ = ribosome_->step();
-		if (!isDeveloping_) {	// finished development?
+		if (!isDeveloping_) {	// finished development
+			freeZygotes--;
 			if (!isAlive_) {
 				// embryo not viable, discarded.
 				LOGLN("Embryo not viable. DISCARDED.");
