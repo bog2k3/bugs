@@ -67,26 +67,26 @@ struct GeneSkip {
 	}
 };
 
-struct GeneCommand {
-	gene_development_command command = GENE_DEV_GROW;
-	gene_part_type part_type = GENE_PART_INVALID;
-	unsigned age = 0;				// this is the genetic 'age' of this particular gene. always increments by one in meyosis
-	unsigned rereadAgeOffset = 0;	// the offset applied to age when reading the gene second time or more
-#warning must take care not to copy rereadAgeOffset when duplicating the gene
-	Atom<float> angle;				// angle is relative to the previous element's orientation
-	Atom<int> maxDepth;				// maximum depth at which this gene works
-	Atom<int> genomeOffset;			// offset from current gene to the start of the genes for the new part
-	Atom<int> genomeOffsetJoint;	// offset from current gene to the start of the genes for the new part's joint
-	Atom<int> genomeOffsetMuscle1;	// offset from current gene to the start of the genes for the new part's muscle 1
-	Atom<int> genomeOffsetMuscle2;	// offset from current gene to the start of the genes for the new part's muscle 2
+// this gene controls the genome offset (relative to the current part's) of the child spawned from a given target segment
+struct GeneOffset {
+	Atom<int> minDepth;
+	Atom<int> maxDepth;
+	Atom<int> offset;
+	Atom<int> targetSegment;
+};
 
-	GeneCommand() {
-		maxDepth.set(10);
-	}
+struct GeneProtein {
+	Atom<gene_protein_type> protein;				// the type of protein this gene produces
+	Atom<int> targetSegment;						// target segment of current part which protein affects
+	Atom<int> minDepth;								// min hierarchical level where gene activates
+	Atom<int> maxDepth;								// max hierarchical level where gene activates
 };
 
 struct GeneAttribute {
 	Atom<float> value;
+	Atom<int> minDepth;
+	Atom<int> maxDepth;
+#warning "implement minDepth & maxDepth and use it"
 	gene_part_attribute_type attribute = GENE_ATTRIB_INVALID;
 
 	GeneAttribute() = default;
@@ -129,7 +129,8 @@ public:
 		GeneStop gene_stop;
 		GeneNoOp gene_no_op;
 		GeneSkip gene_skip;
-		GeneCommand gene_command;
+		GeneProtein gene_protein;
+		GeneOffset gene_offset;
 		GeneAttribute gene_attribute;
 		GeneSynapse gene_synapse;
 		GeneTransferFunction gene_transfer_function;
@@ -140,7 +141,8 @@ public:
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
 		GeneData(GeneNoOp const &gnop) : gene_no_op(gnop) {}
 		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
-		GeneData(GeneCommand const &gc) : gene_command(gc) {}
+		GeneData(GeneProtein const &gp) : gene_protein(gp) {}
+		GeneData(GeneOffset const &go) : gene_offset(go) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneFeedbackSynapse const &gfs) : gene_feedback_synapse(gfs) {}
@@ -162,7 +164,8 @@ public:
 	Gene(GeneStop const &gs) : Gene(GENE_TYPE_STOP, gs) {}
 	Gene(GeneNoOp const &gnop) : Gene(GENE_TYPE_NO_OP, gnop) {}
 	Gene(GeneSkip const &gs) : Gene(GENE_TYPE_SKIP, gs) {}
-	Gene(GeneCommand const &gc) : Gene(GENE_TYPE_DEVELOPMENT, gc) {}
+	Gene(GeneProtein const &gp) : Gene(GENE_TYPE_PROTEIN, gp) {}
+	Gene(GeneOffset const &go) : Gene(GENE_TYPE_OFFSET, go) {}
 	Gene(GeneAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
 	Gene(GeneFeedbackSynapse const &gfs) : Gene(GENE_TYPE_FEEDBACK_SYNAPSE, gfs) {}
@@ -204,7 +207,8 @@ private:
 	void update_meta_genes_vec();
 
 	static Gene createRandomSkipGene(int spaceLeftAfter);
-	static Gene createRandomCommandGene(int spaceLeftAfter);
+	static Gene createRandomProteinGene();
+	static Gene createRandomOffsetGene(int spaceLeftAfter);
 	static Gene createRandomAttribGene();
 	static Gene createRandomSynapseGene(int nNeurons, int nMotors, int nSensors);
 	static Gene createRandomFeedbackSynapseGene(int nMotors, int nNeurons);

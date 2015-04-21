@@ -18,47 +18,36 @@ constexpr gene_type GENE_TYPE_INVALID = 0;
 constexpr gene_type GENE_TYPE_NO_OP = 1;			// no operation gene; dummy.
 constexpr gene_type GENE_TYPE_STOP = 2;				// signals the ribosome to stop reading genes after this one
 constexpr gene_type GENE_TYPE_SKIP = 3;				// control gene -> skip next N genes if all conditions are met
-constexpr gene_type GENE_TYPE_DEVELOPMENT = 4;		// developmental gene - commands the growth of the body
-constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 5;	// body part attribute - establishes characteristics of certain body parts
-constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 6;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+constexpr gene_type GENE_TYPE_PROTEIN = 4;			// protein gene -> produces a specific protein type in a body-part's segment
+constexpr gene_type GENE_TYPE_OFFSET = 5;			// controls the relative genome offset of a child part
+constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 6;	// body part attribute - establishes characteristics of certain body parts
+constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 7;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 													// such as metabolic parameters
-constexpr gene_type GENE_TYPE_SYNAPSE = 7;			// creates or alters a synapse between neurons (cummulative weight)
-constexpr gene_type GENE_TYPE_FEEDBACK_SYNAPSE = 8;	// creates or alters a feedback synapse (from motor command neuron to other neuron - cummulative)
-constexpr gene_type GENE_TYPE_TRANSFER = 9;			// controls the transfer function of a neuron (cummulative)
-constexpr gene_type GENE_TYPE_NEURAL_CONST = 10;		// neural constant (cummulative) - used in various computations
-constexpr gene_type GENE_TYPE_END = 11;
+constexpr gene_type GENE_TYPE_SYNAPSE = 8;			// creates or alters a synapse between neurons (cummulative weight)
+constexpr gene_type GENE_TYPE_FEEDBACK_SYNAPSE = 9;	// creates or alters a feedback synapse (from motor command neuron to other neuron - cummulative)
+constexpr gene_type GENE_TYPE_TRANSFER = 10;		// controls the transfer function of a neuron (cummulative)
+constexpr gene_type GENE_TYPE_NEURAL_CONST = 11;	// neural constant (cummulative) - used in various computations
+constexpr gene_type GENE_TYPE_END = 12;
 
-// ----------------------------------- gene_development_command -------------------------------//
+// ----------------------------------- gene_protein_type -------------------------------//
 
-typedef uint8_t gene_development_command;
+// proteins move the target point in potential body-part hyper-space along different axes.
+// The position of the target point relative to each axis determines what kind of body part a given segment will grow
+// There are 4 axes (X, Y, Z, W) of the 4-dimensional hyper-space which is split into 16 distinct regions joining at the origin.
+// Each of these regions (they are the equivalent of quadrants in a 2-dimensional plane) correspond to a body part type or to nothing.
 
-constexpr gene_development_command GENE_DEV_INVALID = 0;
-constexpr gene_development_command GENE_DEV_GROW = 1;			// grows a new body part in a specific direction
-constexpr gene_development_command GENE_DEV_SPLIT = 2;			// split the up-closest joint and duplicate all of its descendants
-constexpr gene_development_command GENE_DEV_END = 3;
+typedef uint8_t gene_protein_type;
 
-// ----------------------------------- gene_part_type -------------------------------//
-
-typedef uint8_t gene_part_type;
-
-constexpr gene_part_type GENE_PART_INVALID = 0;
-constexpr gene_part_type GENE_PART_MOUTH = 1;
-constexpr gene_part_type GENE_PART_BONE = 2;		// bone
-constexpr gene_part_type GENE_PART_GRIPPER = 3;		// gripper - used to move around, like a foot
-constexpr gene_part_type GENE_PART_SENSOR = 4;		// sensor - one of the sensor types
-constexpr gene_part_type GENE_PART_EGGLAYER = 5;	// sexual organ - used to grown and lay gamettes
-constexpr gene_part_type GENE_PART_END = 6;
-
-// ----------------------------------- gene_sensor_type -------------------------------//
-
-typedef uint8_t gene_sensor_type;
-
-constexpr gene_sensor_type GENE_SENSOR_INVALID = 0;
-constexpr gene_sensor_type GENE_SENSOR_EYE = 1;			// eye sight
-constexpr gene_sensor_type GENE_SENSOR_SMELL = 2;		// smell - proximity to certain materials
-constexpr gene_sensor_type GENE_SENSOR_JOINT_ANGLE = 3;
-constexpr gene_sensor_type GENE_SENSOR_GRIPPER_STATE = 4;
-constexpr gene_sensor_type GENE_SENSOR_END = 5;
+constexpr gene_protein_type GENE_PROT_NONE = 0;
+constexpr gene_protein_type GENE_PROT_A = 2;		// X-
+constexpr gene_protein_type GENE_PROT_B = 3;		// X+
+constexpr gene_protein_type GENE_PROT_C = 4;		// Y-
+constexpr gene_protein_type GENE_PROT_D = 5;		// Y+
+constexpr gene_protein_type GENE_PROT_E = 6;		// Z-
+constexpr gene_protein_type GENE_PROT_F = 7;		// Z+
+constexpr gene_protein_type GENE_PROT_G = 8;		// W-
+constexpr gene_protein_type GENE_PROT_H = 9;		// W+
+constexpr gene_protein_type GENE_PROT_END = 10;
 
 // ----------------------------------- gene_part_attribute_type -------------------------------//
 
@@ -70,9 +59,9 @@ constexpr gene_part_attribute_type GENE_ATTRIB_ATTACHMENT_OFFSET = 2;	// sideway
 constexpr gene_part_attribute_type GENE_ATTRIB_SIZE = 3;				// represents the surface area of the part
 constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 4;		// aspect_ratio = length / width
 constexpr gene_part_attribute_type GENE_ATTRIB_DENSITY = 5;				// density - for bones
-constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_LOW_LIMIT = 6;		// low angle limit for joint
-constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_HIGH_LIMIT = 7;	// high angle limit for joint
-constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_RESET_TORQUE = 8;	// torque that moves the joint back into rest position when no forces act on it
+constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_LOW_LIMIT = 6;		// low angle limit for up-stream joint
+constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_HIGH_LIMIT = 7;	// high angle limit for up-stream joint
+constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_RESET_TORQUE = 8;	// torque that moves the up-stream joint back into rest position when no forces act on it
 constexpr gene_part_attribute_type GENE_ATTRIB_EGG_EJECT_SPEED = 9;		// speed with which eggs are ejected from egg-layers
 constexpr gene_part_attribute_type GENE_ATTRIB_END = 10;
 

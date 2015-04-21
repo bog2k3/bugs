@@ -250,8 +250,11 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, int crtPosition, bool deferNe
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
 		break;
-	case GENE_TYPE_DEVELOPMENT:
-		decodeDevelopCommand(g.data.gene_command, part, crtPosition);
+	case GENE_TYPE_PROTEIN:
+		decodeProtein(g.data.gene_protein, part, crtPosition);
+		break;
+	case GENE_TYPE_OFFSET:
+		decodeOffset(g.data.gene_offset, part, crtPosition);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
 		decodePartAttrib(g.data.gene_attribute, part);
@@ -284,24 +287,28 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, int crtPosition, bool deferNe
 
 bool Ribosome::partMustGenerateJoint(int part_type) {
 	switch (part_type) {
-	case GENE_PART_BONE:
-	case GENE_PART_GRIPPER:
+	case BODY_PART_BONE:
+	case BODY_PART_GRIPPER:
 		return true;
 	default:
 		return false;
 	}
 }
 
-void Ribosome::decodeDevelopCommand(GeneCommand &g, BodyPart* part, int crtPosition) {
-	if (g.command == GENE_DEV_GROW) {
+void Ribosome::decodeProtein(GeneProtein &g, BodyPart* part, int crtPosition) {
+	/*if (g.command == GENE_DEV_GROW) {
 		decodeDevelopGrowth(g, part, crtPosition);
 	} else if (g.command == GENE_DEV_SPLIT) {
 		decodeDevelopSplit(g, part, crtPosition);
-	}
+	}*/
 	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 }
 
-void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPosition) {
+void Ribosome::decodeOffset(GeneOffset &g, BodyPart *part, int crtPosition) {
+
+}
+
+/*void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPosition) {
 	// now grow a new part on each adequate element in nodes list
 	// grow only works on bones and torso
 	if (part->getType() != BODY_PART_BONE && part->getType() != BODY_PART_TORSO)
@@ -413,18 +420,7 @@ void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPositi
 
 	// start a new development path from the new part:
 	activeSet_.push_back(std::make_pair(bp, crtPosition + g.genomeOffset));
-}
-void Ribosome::decodeDevelopSplit(GeneCommand &g, BodyPart* part, int crtPosition) {
-	// split may work on bones, joints and grippers only
-	if (   part->getType() != BODY_PART_BONE
-		&& part->getType() != BODY_PART_JOINT
-		&& part->getType() != BODY_PART_GRIPPER
-		)
-		return;
-	// split on bone or gripper actually splits its parent joint
-	// split on joint also duplicates the muscles around the joint
-	// angle of gene represents the angle to separate the newly split parts
-}
+}*/
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	CummulativeValue* pAttrib = part->getAttribute((gene_part_attribute_type)g.attribute);

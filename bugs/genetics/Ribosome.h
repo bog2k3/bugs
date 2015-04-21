@@ -51,16 +51,15 @@ private:
 	int nDefaultSensors = 0;
 	std::vector<Gene*> neuralGenes;
 	std::vector<std::pair<BodyPart*, int>> activeSet_;
-	std::map<GeneCommand*, int> mapGeneToIterations_; // maps growth genes to number of iterations (how many times they've been read so far)
+	// std::map<GeneCommand*, int> mapGeneToIterations_; // maps growth genes to number of iterations (how many times they've been read so far)
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
 	std::map<int64_t, CummulativeValue> mapSynapses;
 	std::map<int64_t, CummulativeValue> mapFeedbackSynapses;
 
 	void decodeGene(Gene &g, BodyPart* part, int crtPosition, bool deferNeural);
-	void decodeDevelopCommand(GeneCommand &g, BodyPart* part, int crtPosition);
-	void decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPosition);
-	void decodeDevelopSplit(GeneCommand &g, BodyPart* part, int crtPosition);
+	void decodeProtein(GeneProtein &g, BodyPart* part, int crtPosition);
+	void decodeOffset(GeneOffset &g, BodyPart* part, int crtPosition);
 	void decodePartAttrib(GeneAttribute const& g, BodyPart* part);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeFeedbackSynapse(GeneFeedbackSynapse const& g);

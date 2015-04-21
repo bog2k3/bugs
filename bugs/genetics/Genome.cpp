@@ -23,8 +23,9 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 		} else
 			g = &gen.second.genes[i];
 		c.genes.push_back(*g);
-		if (g->type == GENE_TYPE_DEVELOPMENT)
+		/*if (g->type == GENE_TYPE_DEVELOPMENT)
 			c.genes[i].data.gene_command.age++;	// should probably rebase all to 0 to avoid unsigned overflow - unlikely
+			*/
 		i++;
 	}
 	// copy insertion list:
@@ -169,7 +170,8 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 		// count
 		switch (c.genes[i].type) {
-		case GENE_TYPE_DEVELOPMENT:
+#warning "find a different way to approximate number of sensors/motors"
+		/*case GENE_TYPE_DEVELOPMENT:
 			if (c.genes[i].data.gene_command.command == GENE_DEV_SPLIT) {
 				nMotors += 5;
 				nSensors += 5;
@@ -193,7 +195,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 			default:
 				break;
 			}
-			break;
+			break;*/
 		case GENE_TYPE_FEEDBACK_SYNAPSE:
 			if (c.genes[i].data.gene_feedback_synapse.to >= 0)
 				mapNeuronsExist[c.genes[i].data.gene_feedback_synapse.to] = true;
@@ -272,7 +274,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 			c.genes[position] = newGene;
 		else {
 			// must keep a record of last genes inserted (at most N, and if gametes have a difference of more than N genes, they don't fuse)
-			// when combining two gametes we must insert dummy genes at corespondend positions in the other chromosome, in order to realign the alelles.
+			// when combining two gametes we must insert dummy genes at correspondent positions in the other chromosome, in order to realign the alelles.
 			insertNewGene(c, Chromosome::insertion(position, 0), newGene);
 		}
 #ifdef DEBUG
@@ -316,11 +318,17 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		altered += alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
 		break;
-	case GENE_TYPE_DEVELOPMENT:
-		altered += alterAtom(g.data.gene_command.angle, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_command.genomeOffset, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_command.genomeOffsetMuscle1, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_command.genomeOffsetMuscle2, mutationChanceFactor);
+	case GENE_TYPE_PROTEIN:
+		altered += alterAtom(g.data.gene_protein.maxDepth, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_protein.minDepth, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_protein.protein, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_protein.targetSegment, mutationChanceFactor);
+		break;
+	case GENE_TYPE_OFFSET:
+		altered += alterAtom(g.data.gene_offset.maxDepth, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_offset.minDepth, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_offset.offset, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_offset.targetSegment, mutationChanceFactor);
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
 		altered += alterAtom(g.data.gene_feedback_synapse.from, mutationChanceFactor);
@@ -374,12 +382,17 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		ret += g.data.gene_body_attribute.value.chanceToMutate.value;
 		break;
-	case GENE_TYPE_DEVELOPMENT:
-		ret += g.data.gene_command.angle.chanceToMutate.value;
-		ret += g.data.gene_command.genomeOffset.chanceToMutate.value;
-		ret += g.data.gene_command.genomeOffsetJoint.chanceToMutate.value;
-		ret += g.data.gene_command.genomeOffsetMuscle1.chanceToMutate.value;
-		ret += g.data.gene_command.genomeOffsetMuscle2.chanceToMutate.value;
+	case GENE_TYPE_PROTEIN:
+		ret += g.data.gene_protein.maxDepth.chanceToMutate.value;
+		ret += g.data.gene_protein.minDepth.chanceToMutate.value;
+		ret += g.data.gene_protein.protein.chanceToMutate.value;
+		ret += g.data.gene_protein.targetSegment.chanceToMutate.value;
+		break;
+	case GENE_TYPE_OFFSET:
+		ret += g.data.gene_offset.maxDepth.chanceToMutate.value;
+		ret += g.data.gene_offset.minDepth.chanceToMutate.value;
+		ret += g.data.gene_offset.offset.chanceToMutate.value;
+		ret += g.data.gene_offset.targetSegment.chanceToMutate.value;
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
 		ret += g.data.gene_feedback_synapse.from.chanceToMutate.value;

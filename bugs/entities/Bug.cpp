@@ -467,30 +467,30 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gs);
 
 	// Mouth:
-	GeneCommand gc;
+	/*GeneCommand gc;
 	gc.command = GENE_DEV_GROW;
 	gc.angle.set(0);
 	gc.part_type = GENE_PART_MOUTH;
 	gc.genomeOffset.set(5);
 	gc.age = 10;
-	c.genes.push_back(gc);
+	c.genes.push_back(gc);*/
 
 	// Egg-layer:
-	gc.angle.set(2.5f*PI/4);
+	/*gc.angle.set(2.5f*PI/4);
 	gc.part_type = GENE_PART_EGGLAYER;
 	gc.genomeOffset.set(10);
 	gc.age = 9;
-	c.genes.push_back(gc);
+	c.genes.push_back(gc);*/
 
 	// bone 1:
-	gc.age = 8;
+	/*gc.age = 8;
 	gc.angle.set(PI);
 	gc.part_type = GENE_PART_BONE;
 	gc.genomeOffset.set(21);
 	gc.genomeOffsetJoint.set(15);
 	gc.genomeOffsetMuscle1.set(65);
 	gc.genomeOffsetMuscle2.set(65);
-	c.genes.push_back(gc);
+	c.genes.push_back(gc);*/
 
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
@@ -557,13 +557,13 @@ Chromosome Bug::createBasicChromosome() {
 
 	// bone1 offs:
 	// grow bone2:
-	gc.age = 7;
+	/*gc.age = 7;
 	gc.angle.set(0);
 	gc.genomeOffset.set(20);
 	gc.genomeOffsetJoint.set(8);
 	gc.genomeOffsetMuscle1.set(14);
 	gc.genomeOffsetMuscle2.set(14);
-	c.genes.push_back(gc);
+	c.genes.push_back(gc);*/
 
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
@@ -630,13 +630,13 @@ Chromosome Bug::createBasicChromosome() {
 
 	// bone2 offs:
 	// grow gripper:
-	gc.age = 6;
+	/*gc.age = 6;
 	gc.part_type = GENE_PART_GRIPPER;
 	gc.genomeOffset.set(14);
 	gc.genomeOffsetJoint.set(8);
 	gc.genomeOffsetMuscle1.set(18);
 	gc.genomeOffsetMuscle2.set(18);
-	c.genes.push_back(gc);
+	c.genes.push_back(gc);*/
 
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
@@ -740,11 +740,8 @@ Chromosome Bug::createBasicChromosome() {
 		if (c.genes[i].type == GENE_TYPE_SKIP) {
 			c.genes[i].data.gene_skip.count.set(c.genes[i].data.gene_skip.count * (padding+1));
 		}
-		if (c.genes[i].type == GENE_TYPE_DEVELOPMENT) {
-			c.genes[i].data.gene_command.genomeOffset.set(c.genes[i].data.gene_command.genomeOffset * (padding+1));
-			c.genes[i].data.gene_command.genomeOffsetJoint.set(c.genes[i].data.gene_command.genomeOffsetJoint * (padding+1));
-			c.genes[i].data.gene_command.genomeOffsetMuscle1.set(c.genes[i].data.gene_command.genomeOffsetMuscle1 * (padding+1));
-			c.genes[i].data.gene_command.genomeOffsetMuscle2.set(c.genes[i].data.gene_command.genomeOffsetMuscle2 * (padding+1));
+		if (c.genes[i].type == GENE_TYPE_OFFSET) {
+			c.genes[i].data.gene_offset.offset.set(c.genes[i].data.gene_offset.offset * (padding+1));
 		}
 	}
 

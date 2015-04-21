@@ -41,16 +41,17 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_body_attribute.attribute;
 		stream << gene.data.gene_body_attribute.value;
 		break;
-	case GENE_TYPE_DEVELOPMENT:
-		stream << gene.data.gene_command.command;
-		stream << gene.data.gene_command.angle;
-		stream << gene.data.gene_command.age;
-		stream << gene.data.gene_command.maxDepth;
-		stream << gene.data.gene_command.part_type;
-		stream << gene.data.gene_command.genomeOffset;
-		stream << gene.data.gene_command.genomeOffsetJoint;
-		stream << gene.data.gene_command.genomeOffsetMuscle1;
-		stream << gene.data.gene_command.genomeOffsetMuscle2;
+	case GENE_TYPE_PROTEIN:
+		stream << gene.data.gene_protein.maxDepth;
+		stream << gene.data.gene_protein.minDepth;
+		stream << gene.data.gene_protein.protein;
+		stream << gene.data.gene_protein.targetSegment;
+		break;
+	case GENE_TYPE_OFFSET:
+		stream << gene.data.gene_offset.maxDepth;
+		stream << gene.data.gene_offset.minDepth;
+		stream << gene.data.gene_offset.offset;
+		stream << gene.data.gene_offset.targetSegment;
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
 		stream << gene.data.gene_feedback_synapse.from;
@@ -98,16 +99,17 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_body_attribute.attribute;
 		stream >> gene.data.gene_body_attribute.value;
 		break;
-	case GENE_TYPE_DEVELOPMENT:
-		stream >> gene.data.gene_command.command;
-		stream >> gene.data.gene_command.angle;
-		stream >> gene.data.gene_command.age;
-		stream >> gene.data.gene_command.maxDepth;
-		stream >> gene.data.gene_command.part_type;
-		stream >> gene.data.gene_command.genomeOffset;
-		stream >> gene.data.gene_command.genomeOffsetJoint;
-		stream >> gene.data.gene_command.genomeOffsetMuscle1;
-		stream >> gene.data.gene_command.genomeOffsetMuscle2;
+	case GENE_TYPE_PROTEIN:
+		stream >> gene.data.gene_protein.maxDepth;
+		stream >> gene.data.gene_protein.minDepth;
+		stream >> gene.data.gene_protein.protein;
+		stream >> gene.data.gene_protein.targetSegment;
+		break;
+	case GENE_TYPE_OFFSET:
+		stream >> gene.data.gene_offset.maxDepth;
+		stream >> gene.data.gene_offset.minDepth;
+		stream >> gene.data.gene_offset.offset;
+		stream >> gene.data.gene_offset.targetSegment;
 		break;
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
 		stream >> gene.data.gene_feedback_synapse.from;

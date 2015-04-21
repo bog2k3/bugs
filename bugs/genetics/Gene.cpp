@@ -1,6 +1,7 @@
 #include "Gene.h"
 #include "../utils/log.h"
 #include "../body-parts/BodyConst.h"
+#include "../body-parts/BodyPart.h"
 #include "../neuralnet/functions.h"
 
 void Gene::update_meta_genes_vec() {
@@ -10,19 +11,31 @@ void Gene::update_meta_genes_vec() {
 	metaGenes.push_back(&chance_to_swap);
 
 	switch (type) {
-	case GENE_TYPE_DEVELOPMENT:
-		metaGenes.push_back(&data.gene_command.angle.chanceToMutate);
-		metaGenes.push_back(&data.gene_command.angle.changeAmount);
-		metaGenes.push_back(&data.gene_command.genomeOffset.chanceToMutate);
-		metaGenes.push_back(&data.gene_command.genomeOffset.changeAmount);
-		metaGenes.push_back(&data.gene_command.genomeOffsetJoint.chanceToMutate);
-		metaGenes.push_back(&data.gene_command.genomeOffsetJoint.changeAmount);
-		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle1.chanceToMutate);
-		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle1.changeAmount);
-		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle2.chanceToMutate);
-		metaGenes.push_back(&data.gene_command.genomeOffsetMuscle2.changeAmount);
+	case GENE_TYPE_PROTEIN:
+		metaGenes.push_back(&data.gene_protein.maxDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_protein.maxDepth.changeAmount);
+		metaGenes.push_back(&data.gene_protein.minDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_protein.minDepth.changeAmount);
+		metaGenes.push_back(&data.gene_protein.protein.chanceToMutate);
+		metaGenes.push_back(&data.gene_protein.protein.changeAmount);
+		metaGenes.push_back(&data.gene_protein.targetSegment.chanceToMutate);
+		metaGenes.push_back(&data.gene_protein.targetSegment.changeAmount);
+		break;
+	case GENE_TYPE_OFFSET:
+		metaGenes.push_back(&data.gene_offset.maxDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_offset.maxDepth.changeAmount);
+		metaGenes.push_back(&data.gene_offset.minDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_offset.minDepth.changeAmount);
+		metaGenes.push_back(&data.gene_offset.offset.chanceToMutate);
+		metaGenes.push_back(&data.gene_offset.offset.changeAmount);
+		metaGenes.push_back(&data.gene_offset.targetSegment.chanceToMutate);
+		metaGenes.push_back(&data.gene_offset.targetSegment.changeAmount);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
+		metaGenes.push_back(&data.gene_attribute.maxDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_attribute.maxDepth.changeAmount);
+		metaGenes.push_back(&data.gene_attribute.minDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_attribute.minDepth.changeAmount);
 		metaGenes.push_back(&data.gene_attribute.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_attribute.value.changeAmount);
 		break;
@@ -91,16 +104,21 @@ Gene Gene::createRandomBodyAttribGene() {
 	return g;
 }
 
-Gene Gene::createRandomCommandGene(int spaceLeftAfter) {
-	GeneCommand g;
-	g.angle.set(randf()*2*PI);
-	g.command = (gene_development_command)randi(GENE_DEV_INVALID+1, GENE_DEV_END-1);
-	g.genomeOffset.set(randi(spaceLeftAfter-1));
-	g.genomeOffsetJoint.set(randi(spaceLeftAfter-1));
-	g.genomeOffsetMuscle1.set(randi(spaceLeftAfter-1));
-	g.genomeOffsetMuscle2.set(randi(spaceLeftAfter-1));
-	g.maxDepth.set(randi(10));
-	g.part_type = (gene_part_type)randi(GENE_PART_INVALID+1, GENE_PART_END-1);
+Gene Gene::createRandomProteinGene() {
+	GeneProtein g;
+	g.maxDepth.set(randi(5));
+	g.minDepth.set(0);
+	g.protein.set((gene_protein_type)randi(GENE_PROT_NONE+1, GENE_PROT_END-1));
+	g.targetSegment.set(randi(MAX_CHILDREN));
+	return g;
+}
+
+Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
+	GeneOffset g;
+	g.maxDepth.set(randi(5));
+	g.minDepth.set(0);
+	g.targetSegment.set(randi(MAX_CHILDREN));
+	g.offset.set(randi(spaceLeftAfter));
 	return g;
 }
 
@@ -154,8 +172,10 @@ Gene Gene::createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeur
 	switch (type) {
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		return createRandomBodyAttribGene();
-	case GENE_TYPE_DEVELOPMENT:
-		return createRandomCommandGene(spaceLeftAfter);
+	case GENE_TYPE_PROTEIN:
+		return createRandomProteinGene();
+	case GENE_TYPE_OFFSET:
+		return createRandomOffsetGene(spaceLeftAfter);
 	case GENE_TYPE_FEEDBACK_SYNAPSE:
 		return createRandomFeedbackSynapseGene(nMotors, nNeurons);
 	case GENE_TYPE_NEURAL_CONST:
