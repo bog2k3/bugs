@@ -38,7 +38,7 @@ struct GrowthData {
 	int startGenomePos; // initial genome offset for this part (children are relative to this one)
 	int crtGenomePos; // current READ position in genome for this part
 	glm::vec4 hyperPositions[MAX_CHILDREN] {glm::vec4(0)};	// holds hyper-space positions for each segment in a body part
-	Atom<int> offsets[MAX_CHILDREN]; // holds relative genome offsets for each segment in a body part
+	CummulativeValue offsets[MAX_CHILDREN]; // holds relative genome offsets for each segment in a body part
 
 	GrowthData(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {

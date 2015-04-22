@@ -223,8 +223,6 @@ bool Ribosome::step() {
 			}
 			continue;
 		}
-
-#error: "only from depth 0 (torso) must the neural genes be taken into account"
 		// now decode the gene
 		decodeGene(*g, p, &activeSet_[i].second, true);
 	}
@@ -232,7 +230,156 @@ bool Ribosome::step() {
 }
 
 void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 hyperPosition, int genomeOffset) {
+	// grow only works on bones and torso
+	if (parent->getType() != BODY_PART_BONE && parent->getType() != BODY_PART_TORSO)
+		return;
 	// determine the body part type to grow from the hyperPosition
+	PART_TYPE partTypes[2][2][2][2] = {
+		/* W- */ {
+			/* Z- */ {
+				/* Y- */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+				/* Y+ */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+			},
+			/* Z+ */ {
+				/* Y- */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+				/* Y+ */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+			},
+		},
+		/* W+ */ {
+			/* Z- */ {
+				/* Y- */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+				/* Y+ */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+			},
+			/* Z+ */ {
+				/* Y- */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+				/* Y+ */ {
+					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+				},
+			},
+		}
+	};
+	// if any one axis is zero, we cannot determine the part type and none is grown
+	if (hyperPosition.x * hyperPosition.y * hyperPosition.z * hyperPosition.w == 0)
+		return;
+	PART_TYPE newPartType = partTypes[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y>0][hyperPosition.x>0];
+	if (newPartType == BODY_PART_INVALID)
+		return;
+
+	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
+
+	/*int age = g.age;
+	if (mapGeneToIterations_[&g]++ > 0) {
+		// this is not the first time we're reading this gene
+		if (!g.rereadAgeOffset)
+			g.rereadAgeOffset = -g.age;
+		// rereadAgeOffset must be carried over into the next generation
+		age += g.rereadAgeOffset;
+	}*/
+
+	float angle = attachmentSegment * 2*PI / MAX_CHILDREN;
+
+	// The child's attachment point relative to the parent's center is computed from the angle of the current segment,
+	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
+	// until it touches an edge of the parent. That point is used as attachment of the new part.
+
+	if (partMustGenerateJoint(newPartType)) {
+		// we cannot grow this part directly onto its parent, they must be connected by a joint
+		Joint* linkJoint = new Joint();
+		/*// now generate the two muscles around the joint
+		// 1. Right
+		Muscle* mRight = nullptr;
+		if (part->getChildrenCount() < MAX_CHILDREN) {
+			float mRightAngle = angle - 0.01f;
+			mRight = new Muscle(linkJoint, -1);
+			float origAngle = mRightAngle;
+			mRightAngle = part->add(mRight, mRightAngle);
+			mRightAngle = limitAngle(mRightAngle-origAngle, PI) + origAngle;
+			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
+			int motorLineId = bug_->motors_.size();
+			bug_->motors_.push_back(Motor(mRight->getInputSocket(), age));
+			mRight->addMotorLine(motorLineId);
+			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
+		}
+		// 2. Left
+		Muscle* mLeft = nullptr;
+		if (part->getChildrenCount() < MAX_CHILDREN) {
+			float mLeftAngle = angle + 0.01f;
+			mLeft = new Muscle(linkJoint, +1);
+			float origAngle = mLeftAngle;
+			mLeftAngle = part->add(mLeft, mLeftAngle);
+			mLeftAngle = limitAngle(mLeftAngle-origAngle, PI) + origAngle;
+			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
+			int motorLineId = bug_->motors_.size();
+			bug_->motors_.push_back(Motor(mLeft->getInputSocket(), age));
+			mLeft->addMotorLine(motorLineId);
+			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
+		}*/
+		parent->add(linkJoint, angle);
+
+		// set part to point to the joint's node, since that's where the actual part will be attached:
+		parent = linkJoint;
+		// recompute coordinates in joint's space:
+		angle = 0;
+	}
+
+	BodyPart* bp = nullptr;
+	switch (newPartType) {
+	case BODY_PART_BONE:
+		bp = new Bone();
+		break;
+	case BODY_PART_GRIPPER: {
+		Gripper* gr = new Gripper();
+		int motorLineId = bug_->motors_.size();
+		bug_->motors_.push_back(Motor(gr->getInputSocket(), age));
+		gr->addMotorLine(motorLineId);
+		bp = gr;
+		break;
+	}
+	case BODY_PART_MUSCLE: {
+		// todo
+		break;
+	}
+	case BODY_PART_MOUTH: {
+		Mouth* m = new Mouth();
+		bp = m;
+		break;
+	}
+	case BODY_PART_SENSOR:
+		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
+		break;
+	case BODY_PART_EGGLAYER: {
+		EggLayer* e = new EggLayer();
+		for (auto &is : e->getInputSockets())
+			bug_->motors_.push_back(Motor(is, age));
+		bug_->eggLayers_.push_back(e);
+		bp = e;
+		break;
+	}
+	default:
+		ERROR("unhandled gene part type: "<<newPartType);
+		break;
+	}
+	if (!bp)
+		return;
+
+	parent->add(bp, angle);
+
+	// start a new development path from the new part:
+	activeSet_.push_back(std::make_pair(bp, genomeOffset));
 }
 
 void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
@@ -257,6 +404,7 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 }
 
 void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
+#warning: "only from depth 0 (torso) must the neural genes be taken into account (?)"
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
 		break;
@@ -306,131 +454,44 @@ bool Ribosome::partMustGenerateJoint(int part_type) {
 }
 
 void Ribosome::decodeProtein(GeneProtein &g, BodyPart* part, GrowthData *growthData) {
-	/*if (g.command == GENE_DEV_GROW) {
-		decodeDevelopGrowth(g, part, crtPosition);
-	} else if (g.command == GENE_DEV_SPLIT) {
-		decodeDevelopSplit(g, part, crtPosition);
-	}*/
-	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
+	int crtDepth = part->getDepth();
+	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
+		return;
+	glm::vec4 &pos = growthData->hyperPositions[g.targetSegment];
+	switch (g.protein) {
+	case GENE_PROT_A:
+		pos.x--;
+		break;
+	case GENE_PROT_B:
+		pos.x++;
+		break;
+	case GENE_PROT_C:
+		pos.y--;
+		break;
+	case GENE_PROT_D:
+		pos.y++;
+		break;
+	case GENE_PROT_E:
+		pos.z--;
+		break;
+	case GENE_PROT_F:
+		pos.z++;
+		break;
+	case GENE_PROT_G:
+		pos.w--;
+		break;
+	case GENE_PROT_H:
+		pos.w++;
+		break;
+	}
 }
 
 void Ribosome::decodeOffset(GeneOffset &g, BodyPart *part, GrowthData *growthData) {
-
+	int crtDepth = part->getDepth();
+	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
+		return;
+	growthData->offsets[g.targetSegment].changeAbs(g.offset);
 }
-
-/*void Ribosome::decodeDevelopGrowth(GeneCommand &g, BodyPart* part, int crtPosition) {
-	// now grow a new part on each adequate element in nodes list
-	// grow only works on bones and torso
-	if (part->getType() != BODY_PART_BONE && part->getType() != BODY_PART_TORSO)
-		return;
-	if (part->getChildrenCount() == MAX_CHILDREN)
-		return;
-	if (part->getDepth() > g.maxDepth)
-		return;
-
-	int age = g.age;
-	if (mapGeneToIterations_[&g]++ > 0) {
-		// this is not the first time we're reading this gene
-		if (!g.rereadAgeOffset)
-			g.rereadAgeOffset = -g.age;
-		// rereadAgeOffset must be carried over into the next generation
-		age += g.rereadAgeOffset;
-	}
-
-	float angle = limitAngle(g.angle, 2*PI);
-
-	// The child's attachment point relative to the parent's center is computed from the angle specified in the gene,
-	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
-	// until it touches an edge of the parent. That point is used as attachment of the new part.
-	// glm::vec2 offset = part->bodyPart->getChildAttachmentPoint(angle);
-
-	if (partMustGenerateJoint(g.part_type)) {
-		// we cannot grow this part directly onto its parent, they must be connected by a joint
-		Joint* linkJoint = new Joint();
-		// now generate the two muscles around the joint
-		// 1. Right
-		Muscle* mRight = nullptr;
-		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mRightAngle = angle - 0.01f;
-			mRight = new Muscle(linkJoint, -1);
-			float origAngle = mRightAngle;
-			mRightAngle = part->add(mRight, mRightAngle);
-			mRightAngle = limitAngle(mRightAngle-origAngle, PI) + origAngle;
-			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
-			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(Motor(mRight->getInputSocket(), age));
-			mRight->addMotorLine(motorLineId);
-			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
-		}
-		// 2. Left
-		Muscle* mLeft = nullptr;
-		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mLeftAngle = angle + 0.01f;
-			mLeft = new Muscle(linkJoint, +1);
-			float origAngle = mLeftAngle;
-			mLeftAngle = part->add(mLeft, mLeftAngle);
-			mLeftAngle = limitAngle(mLeftAngle-origAngle, PI) + origAngle;
-			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
-			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(Motor(mLeft->getInputSocket(), age));
-			mLeft->addMotorLine(motorLineId);
-			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
-		}
-		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float span = limitAngle(mLeft->getAttachmentAngle() - mRight->getAttachmentAngle(), PI);
-			angle = mRight->getAttachmentAngle() + span * 0.5f;
-			part->add(linkJoint, angle);
-			activeSet_.push_back(std::make_pair(linkJoint, crtPosition + g.genomeOffsetJoint));
-		}
-
-		// set part to point to the joint's node, since that's where the actual part will be attached:
-		part = linkJoint;
-		// recompute coordinates in joint's space:
-		angle = 0;
-		// offset = part->bodyPart->getChildAttachmentPoint(0);
-	}
-
-	BodyPart* bp = nullptr;
-	switch (g.part_type) {
-	case GENE_PART_BONE:
-		bp = new Bone();
-		break;
-	case GENE_PART_GRIPPER: {
-		Gripper* gr = new Gripper();
-		int motorLineId = bug_->motors_.size();
-		bug_->motors_.push_back(Motor(gr->getInputSocket(), age));
-		gr->addMotorLine(motorLineId);
-		bp = gr;
-		break;
-	}
-	case GENE_PART_MOUTH: {
-		Mouth* m = new Mouth();
-		bp = m;
-		break;
-	}
-	case GENE_PART_SENSOR:
-		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
-		break;
-	case GENE_PART_EGGLAYER: {
-		EggLayer* e = new EggLayer();
-		for (auto &is : e->getInputSockets())
-			bug_->motors_.push_back(Motor(is, age));
-		bug_->eggLayers_.push_back(e);
-		bp = e;
-		break;
-	}
-	default:
-		ERROR("unhandled gene part type: "<<g.part_type);
-		break;
-	}
-	if (!bp)
-		return;
-
-	part->add(bp, angle);
-
-	// start a new development path from the new part:
-	activeSet_.push_back(std::make_pair(bp, crtPosition + g.genomeOffset));
-}*/
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	CummulativeValue* pAttrib = part->getAttribute((gene_part_attribute_type)g.attribute);
