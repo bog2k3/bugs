@@ -136,7 +136,7 @@ void Ribosome::decodeDeferredGenes() {
 	}
 	// now decode the deferred neural genes (neuron properties):
 	for (auto &g : neuralGenes)
-		decodeGene(*g, nullptr, 0, false);
+		decodeGene(*g, nullptr, nullptr, false);
 	// apply all neuron properties
 	for (auto n : mapNeurons_) {
 		if (n.second.transfer.hasValue()) {
@@ -184,7 +184,7 @@ bool Ribosome::step() {
 	int nCrtBranches = activeSet_.size();
 	for (int i=0; i<nCrtBranches; i++) {
 		BodyPart* p = activeSet_[i].first;
-		unsigned offset = activeSet_[i].second++;
+		unsigned offset = activeSet_[i].second.crtGenomePos++;
 		bool hasFirst = offset < bug_->genome_.first.genes.size();
 		bool hasSecond = offset < bug_->genome_.second.genes.size();
 		bool reachedTheEnd = !hasFirst && !hasSecond;
@@ -206,7 +206,12 @@ bool Ribosome::step() {
 				g = &bug_->genome_.second.genes[offset];
 		}
 		if (reachedTheEnd || g->type == GENE_TYPE_STOP) {
-			// so much for this development path:
+			// so much for this development path;
+			// grow body parts from all segments now
+			for (int k=0; k<MAX_CHILDREN; k++)
+				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
+						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);
+			// and remove this branch:
 			activeSet_.erase(activeSet_.begin()+i);
 			i--, nCrtBranches--;
 			continue;
@@ -214,15 +219,20 @@ bool Ribosome::step() {
 		if (g->type == GENE_TYPE_SKIP) {
 			int depth = p->getDepth();
 			if (depth <= g->data.gene_skip.maxDepth && depth >= g->data.gene_skip.minDepth) {
-				activeSet_[i].second += g->data.gene_skip.count;
+				activeSet_[i].second.crtGenomePos += g->data.gene_skip.count;
 			}
 			continue;
 		}
 
+#error: "only from depth 0 (torso) must the neural genes be taken into account"
 		// now decode the gene
-		decodeGene(*g, p, offset, true);
+		decodeGene(*g, p, &activeSet_[i].second, true);
 	}
 	return true;
+}
+
+void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 hyperPosition, int genomeOffset) {
+	// determine the body part type to grow from the hyperPosition
 }
 
 void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
@@ -246,15 +256,15 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 	}
 }
 
-void Ribosome::decodeGene(Gene &g, BodyPart* part, int crtPosition, bool deferNeural) {
+void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
 		break;
 	case GENE_TYPE_PROTEIN:
-		decodeProtein(g.data.gene_protein, part, crtPosition);
+		decodeProtein(g.data.gene_protein, part, growthData);
 		break;
 	case GENE_TYPE_OFFSET:
-		decodeOffset(g.data.gene_offset, part, crtPosition);
+		decodeOffset(g.data.gene_offset, part, growthData);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
 		decodePartAttrib(g.data.gene_attribute, part);
@@ -295,7 +305,7 @@ bool Ribosome::partMustGenerateJoint(int part_type) {
 	}
 }
 
-void Ribosome::decodeProtein(GeneProtein &g, BodyPart* part, int crtPosition) {
+void Ribosome::decodeProtein(GeneProtein &g, BodyPart* part, GrowthData *growthData) {
 	/*if (g.command == GENE_DEV_GROW) {
 		decodeDevelopGrowth(g, part, crtPosition);
 	} else if (g.command == GENE_DEV_SPLIT) {
@@ -304,7 +314,7 @@ void Ribosome::decodeProtein(GeneProtein &g, BodyPart* part, int crtPosition) {
 	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 }
 
-void Ribosome::decodeOffset(GeneOffset &g, BodyPart *part, int crtPosition) {
+void Ribosome::decodeOffset(GeneOffset &g, BodyPart *part, GrowthData *growthData) {
 
 }
 
