@@ -107,12 +107,13 @@ struct GeneFeedbackSynapse {
 /*
  * remove genetic age based matching
  *
- * gene-motor-cmd (out neuron) {
+ * gene-motor-cmd (out neuron) {			// in neural net
  * 		int srcNeuronVirtIndex;
  * 		float outCoord; // in virtual matching space
  * }
  *
- * gene-motor-nerve (input to motor) {
+ * gene-motor-nerve (input to motor) {		// on a motor body-part
+ * 		int motorIndex;		// the index of the motor input of the current body part
  * 		float inCoord; // in virtual matching space
  * }
  *

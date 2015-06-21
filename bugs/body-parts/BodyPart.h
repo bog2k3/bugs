@@ -24,7 +24,10 @@ enum PART_TYPE {
 	BODY_PART_JOINT,
 	BODY_PART_GRIPPER,
 	BODY_PART_ZYGOTE_SHELL,
-	BODY_PART_SENSOR,
+	BODY_PART_SENSOR_PROXIMITY,		// many inputs for multiple types of entities
+	BODY_PART_SENSOR_DIRECTION,		// many inputs for multiple types of entities
+	BODY_PART_SENSOR_COMPASS,		// 1 input - absolute orientation in world
+	BODY_PART_SENSOR_SIGHT,			// array of inputs for pixels (multiple channels maybe?)
 	BODY_PART_MOUTH,
 	BODY_PART_EGGLAYER,
 };

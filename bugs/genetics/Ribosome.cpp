@@ -259,7 +259,7 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
 				},
 				/* Y+ */ {
-					/* X- */ BODY_PART_SENSOR1, /* X+ */ BODY_PART_SENSOR2
+					/* X- */ BODY_PART_SENSOR_PROXIMITY, /* X+ */ BODY_PART_SENSOR_DIRECTION
 				},
 			},
 			/* Z+ */ {
@@ -267,7 +267,7 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
 				},
 				/* Y+ */ {
-					/* X- */ BODY_PART_SENSOR3, /* X+ */ BODY_PART_SENSOR4
+					/* X- */ BODY_PART_SENSOR_COMPASS, /* X+ */ BODY_PART_SENSOR_SIGHT
 				},
 			},
 		}
@@ -358,7 +358,16 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 		bp = m;
 		break;
 	}
-	case BODY_PART_SENSOR:
+	case BODY_PART_SENSOR_COMPASS:
+		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
+		break;
+	case BODY_PART_SENSOR_DIRECTION:
+		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
+		break;
+	case BODY_PART_SENSOR_PROXIMITY:
+		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
+		break;
+	case BODY_PART_SENSOR_SIGHT:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
 	case BODY_PART_EGGLAYER: {
