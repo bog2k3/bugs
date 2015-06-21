@@ -66,25 +66,6 @@ static bool isCircularGreater(decltype(Gene::RID) x1, decltype(Gene::RID) x2) {
 	return d1 < d2;
 }
 
-/*
- * remove genetic age based matching
- *
- * gene-motor-cmd (out neuron) {
- * 		int srcNeuronVirtIndex;
- * 		float outCoord; // in virtual matching space
- * }
- *
- * gene-motor-nerve (input to motor) {
- * 		float inCoord; // in virtual matching space
- * }
- *
- * out-neurons and in-nerves are matched in 2 passes by coord:
- * 	- from neuron to nerve: all neurons are linked to the nearest nerves (if nerve's coord != 0)
- * 	- from nerves to neuron: all unlinked nerves are linked to the nearest neurons (of nerve's coord != 0)
- *
- * 	same for output nerves (from sensors)
- */
-
 void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
