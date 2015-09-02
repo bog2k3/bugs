@@ -86,7 +86,6 @@ struct GeneAttribute {
 	Atom<float> value;
 	Atom<int> minDepth;
 	Atom<int> maxDepth;
-#warning "implement minDepth & maxDepth and use it"
 	gene_part_attribute_type attribute = GENE_ATTRIB_INVALID;
 
 	GeneAttribute() = default;

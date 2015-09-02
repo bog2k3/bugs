@@ -275,7 +275,7 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 	// if any one axis is zero, we cannot determine the part type and none is grown
 	if (hyperPosition.x * hyperPosition.y * hyperPosition.z * hyperPosition.w == 0)
 		return;
-	PART_TYPE newPartType = partTypes[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y>0][hyperPosition.x>0];
+	PART_TYPE newPartType = partTypes[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y > 0][hyperPosition.x > 0];
 	if (newPartType == BODY_PART_INVALID)
 		return;
 
@@ -503,9 +503,13 @@ void Ribosome::decodeOffset(GeneOffset &g, BodyPart *part, GrowthData *growthDat
 }
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
-	CummulativeValue* pAttrib = part->getAttribute((gene_part_attribute_type)g.attribute);
-	if (pAttrib)
-		pAttrib->changeAbs(g.value);
+	int depth = part->getDepth();
+	if (depth >= g.minDepth && depth <= g.maxDepth)
+	{
+		CummulativeValue* pAttrib = part->getAttribute(g.attribute);
+		if (pAttrib)
+			pAttrib->changeAbs(g.value);
+	}
 }
 
 void Ribosome::decodeSynapse(GeneSynapse const& g) {
