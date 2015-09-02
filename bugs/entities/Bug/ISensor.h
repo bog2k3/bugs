@@ -20,8 +20,6 @@ public:
 	 * returns the sensor's OutputSocket
 	 */
 	virtual std::shared_ptr<OutputSocket> getOutSocket() const = 0;
-
-	unsigned geneticAge = 0;
 };
 
 

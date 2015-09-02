@@ -13,7 +13,7 @@
 #include "../utils/assert.h"
 
 struct CummulativeValue {
-	CummulativeValue() : value_(0), cachedValue_(0), cacheUpdated_(false), n_(0), factor_(1.f) {}
+	CummulativeValue() {}
 	explicit CummulativeValue(float initial) : value_(initial), cachedValue_(value_), cacheUpdated_(true), n_(1), factor_(1.f) {}
 	inline operator float() {
 		if (!cacheUpdated_)
@@ -51,11 +51,11 @@ private:
 		cacheUpdated_ = true;
 	}
 
-	float value_;
-	float cachedValue_;
-	bool cacheUpdated_;
-	int n_;
-	float factor_;
+	float value_ = 0;
+	float cachedValue_ = 0;
+	bool cacheUpdated_ = false;
+	int n_ = 0;
+	float factor_ = 1;
 };
 
 

@@ -49,7 +49,6 @@ void Ribosome::cleanUp() {
 	activeSet_.clear();
 	mapNeurons_.clear();
 	mapSynapses.clear();
-	mapFeedbackSynapses.clear();
 }
 
 // compares two unsigned longs as if they were expressed as coordinates in a circular scale
@@ -70,6 +69,7 @@ void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
 	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
+	// todo: how do we link the inputs to neurons?
 	for (unsigned i=0; i<bug_->sensors_.size(); i++) {
 		// sort sensors by genetic age
 		if ((int)i>=nDefaultSensors) // skip the default sensors which must always be at the beginning
@@ -128,11 +128,6 @@ void Ribosome::decodeDeferredGenes() {
 		int32_t from = s.first >> 32;
 		int32_t to = (s.first) & 0xFFFFFFFF;
 		createSynapse(from, to, commandNeuronsStart, s.second);
-	}
-	for (auto s : mapFeedbackSynapses) {
-		int32_t from = s.first >> 32;
-		int32_t to = (s.first) & 0xFFFFFFFF;
-		createFeedbackSynapse(from, to, commandNeuronsStart, s.second);
 	}
 	// now decode the deferred neural genes (neuron properties):
 	for (auto &g : neuralGenes)
@@ -432,8 +427,23 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool 
 	case GENE_TYPE_SYNAPSE:
 		decodeSynapse(g.data.gene_synapse);
 		break;
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		decodeFeedbackSynapse(g.data.gene_feedback_synapse);
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		if (deferNeural)
+			neuralGenes.push_back(&g);
+		else
+			decodeNeuronOutputCoord(g.data.gene_neuron_output);
+		break;
+	case GENE_TYPE_MOTOR_INPUT_COORD:
+		decodeMotorInputCoord(g.data.gene_motor_input, part);
+		break;
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		if (deferNeural)
+			neuralGenes.push_back(&g);
+		else
+			decodeNeuronInputCoord(g.data.gene_neuron_input);
+		break;
+	case GENE_TYPE_SENSOR_OUTPUT_COORD:
+		decodeSensorOutputCoord(g.data.gene_sensor_output, part);
 		break;
 	case GENE_TYPE_TRANSFER:
 		if (deferNeural)
@@ -521,13 +531,6 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 	mapSynapses[key].changeAbs(g.weight);
 }
 
-void Ribosome::decodeFeedbackSynapse(GeneFeedbackSynapse const& g) {
-	// the number of neurons is derived from the synapse values
-	checkAndAddNeuronMapping(g.to);
-	int64_t key = synKey(g.from, g.to);
-	mapFeedbackSynapses[key].changeAbs(g.weight);
-}
-
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
 	updateNeuronTransfer(g.targetNeuron, g.functionID);
 }
@@ -537,7 +540,24 @@ void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
 	updateNeuronConstant(g.targetNeuron, g.value);
 }
 
+void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
+
+}
+
+void Ribosome::decodeMotorInputCoord(GeneMotorInputCoord const& g, BodyPart* part) {
+	// if the current body part is not a motor, this has no effect
+}
+
+void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
+
+}
+
+void Ribosome::decodeSensorOutputCoord(GeneSensorOutputCoord const& g, BodyPart* part) {
+	// if the body part is not a sensor, this has no effect
+}
+
 void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weight) {
+	// todo: must change this - synapses no longer link motor/sensors
 	OutputSocket* pFrom = nullptr;
 	if (from < 0) { // this apparently comes from an input socket
 		if (-from <= (int)bug_->neuralNet_->inputs.size())
@@ -564,25 +584,10 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 	pFrom->addTarget(i);
 }
 
-void Ribosome::createFeedbackSynapse(int from, int to, int commandNeuronsOfs, float weight) {
-	OutputSocket* pFrom = nullptr;
-	// from must be between [0, numOutputs-1]
-	if (from < 0 || from >= (int)bug_->neuralNet_->outputs.size())
-		return;	// invalid index
-	pFrom = &bug_->neuralNet_->neurons[commandNeuronsOfs + from]->output;
+void Ribosome::linkMotorNerves() {
+	// todo
+}
 
-	Neuron* pTo;
-	if (to < 0) { // apparently a motor command output socket
-		if (-to <= (int)bug_->neuralNet_->outputs.size())
-			pTo = bug_->neuralNet_->neurons[commandNeuronsOfs - to - 1];
-		else
-			return; // invalid index
-	} else {
-		assertDbg(hasNeuron(to));
-		pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
-	}
-
-	InputSocket* i = new InputSocket(pTo, weight);
-	pTo->inputs.push_back(std::unique_ptr<InputSocket>(i));
-	pFrom->addTarget(i);
+void Ribosome::linkSensorNerves() {
+	// todo
 }

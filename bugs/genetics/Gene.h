@@ -92,16 +92,16 @@ struct GeneAttribute {
 };
 
 struct GeneSynapse {
-	Atom<int> from;		// negative means sensor, positive or 0 means neuron index
-	Atom<int> to;		// negative means motor, positive or 0 means neuron index
+	Atom<int> from;		// todo: only positive; negative means sensor, positive or 0 means neuron index
+	Atom<int> to;		// todo: only positive: negative means motor, positive or 0 means neuron index
 	Atom<float> weight;
 };
 
-struct GeneFeedbackSynapse {
+/*struct GeneFeedbackSynapse {
 	Atom<int> from;		// always positive - index of motor command neuron
 	Atom<int> to;		// negative means motor, positive or 0 means neuron index
 	Atom<float> weight;
-};
+};*/
 
 /*
  * remove genetic age based matching
@@ -118,10 +118,32 @@ struct GeneFeedbackSynapse {
  *
  * out-neurons and in-nerves are matched in 2 passes by coord:
  * 	- from neuron to nerve: all neurons are linked to the nearest nerves (if nerve's coord != 0)
- * 	- from nerves to neuron: all unlinked nerves are linked to the nearest neurons (of nerve's coord != 0)
+ * 	- from nerves to neuron: all unlinked nerves are linked to the nearest neurons (if nerve's coord != 0)
  *
  * 	same for output nerves (from sensors)
  */
+
+struct GeneNeuronOutputCoord {
+	Atom<int> srcNeuronVirtIndex;		// virtual index of neuron in neural network that will output to a motor
+	Atom<float> outCoord;				// coordinate in motor virtual matching space
+};
+
+struct GeneMotorInputCoord {
+	Atom<int> motorIndex;				// the index of the motor input of the current body part
+	Atom<float> inCoord;				// coordinate in motor virtual matching space
+};
+
+struct GeneNeuronInputCoord {
+	Atom<int> destNeuronVirtIndex;		// virtual index of neuron in neural network that will receive the input from sensors
+	Atom<float> inCoord;				// coordinate in sensor virtual matching space
+};
+
+struct GeneSensorOutputCoord {
+	Atom<int> sensorIndex;				// index of the sensor of the current body part
+	Atom<float> outCoord;				// coord in sensor virtual matching space
+};
+
+
 
 struct GeneTransferFunction {
 	Atom<int> targetNeuron;
@@ -152,9 +174,12 @@ public:
 		GeneOffset gene_offset;
 		GeneAttribute gene_attribute;
 		GeneSynapse gene_synapse;
+		GeneNeuronOutputCoord gene_neuron_output;
+		GeneMotorInputCoord gene_motor_input;
+		GeneNeuronInputCoord gene_neuron_input;
+		GeneSensorOutputCoord gene_sensor_output;
 		GeneTransferFunction gene_transfer_function;
 		GeneNeuralConstant gene_neural_constant;
-		GeneFeedbackSynapse gene_feedback_synapse;
 		GeneBodyAttribute gene_body_attribute;
 
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
@@ -164,7 +189,10 @@ public:
 		GeneData(GeneOffset const &go) : gene_offset(go) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
-		GeneData(GeneFeedbackSynapse const &gfs) : gene_feedback_synapse(gfs) {}
+		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
+		GeneData(GeneMotorInputCoord const& gmi) : gene_motor_input(gmi) {}
+		GeneData(GeneNeuronInputCoord const& gni) : gene_neuron_input(gni) {}
+		GeneData(GeneSensorOutputCoord const& gso) : gene_sensor_output(gso) {}
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
 		GeneData(GeneNeuralConstant const &gnc) : gene_neural_constant(gnc) {}
 		GeneData(GeneBodyAttribute const &gba) : gene_body_attribute(gba) {}
@@ -187,7 +215,10 @@ public:
 	Gene(GeneOffset const &go) : Gene(GENE_TYPE_OFFSET, go) {}
 	Gene(GeneAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
-	Gene(GeneFeedbackSynapse const &gfs) : Gene(GENE_TYPE_FEEDBACK_SYNAPSE, gfs) {}
+	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(GENE_TYPE_NEURON_OUTPUT_COORD, gnoc) {}
+	Gene(GeneMotorInputCoord const& gmic) : Gene(GENE_TYPE_MOTOR_INPUT_COORD, gmic) {}
+	Gene(GeneNeuronInputCoord const& gnic) : Gene(GENE_TYPE_NEURON_INPUT_COORD, gnic) {}
+	Gene(GeneSensorOutputCoord const& gsoc) : Gene(GENE_TYPE_SENSOR_OUTPUT_COORD, gsoc) {}
 	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER, gt) {}
 	Gene(GeneNeuralConstant const &gnc) : Gene(GENE_TYPE_NEURAL_CONST, gnc) {}
 	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
