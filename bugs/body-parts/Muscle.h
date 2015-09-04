@@ -9,6 +9,7 @@
 #define OBJECTS_BODY_PARTS_MUSCLE_H_
 
 #include "BodyPart.h"
+#include "../entities/Bug/IMotor.h"
 
 #define DEBUG_DRAW_MUSCLE
 
@@ -20,9 +21,10 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 	MuscleInitializationData();
 
 	CummulativeValue aspectRatio;	// length/width
+	CummulativeValue inputVMSCoord = 0; // input nerve VMS coordinate
 };
 
-class Muscle: public BodyPart {
+class Muscle: public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent:
 	Muscle(Joint* joint, int motorDirSign);
@@ -32,7 +34,9 @@ public:
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 
-	std::shared_ptr<InputSocket> getInputSocket() { return inputSocket_; }
+	// IMotor::
+	std::shared_ptr<InputSocket> getInputSocket() const override { return inputSocket_; }
+	float getInputVMSCoord() const override;
 
 protected:
 	static constexpr int nAngleSteps = 10;

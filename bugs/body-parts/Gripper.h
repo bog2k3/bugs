@@ -9,12 +9,20 @@
 #define OBJECTS_BODY_PARTS_GRIPPER_H_
 
 #include "BodyPart.h"
+#include "../entities/Bug/IMotor.h"
 #include <memory>
 
 class b2WeldJoint;
-class InputSocket;
 
-class Gripper : public BodyPart {
+struct GripperInitializationData : public BodyPartInitializationData {
+	virtual ~GripperInitializationData() noexcept = default;
+	GripperInitializationData() = default;
+
+	CummulativeValue inputVMSCoord = 0; // input nerve VMS coordinate
+};
+
+
+class Gripper : public BodyPart, public IMotor {
 public:
 	Gripper();
 	~Gripper() override;
@@ -24,7 +32,9 @@ public:
 
 	void update(float dt);
 
-	std::shared_ptr<InputSocket> getInputSocket() { return inputSocket_; }
+	// IMotor::
+	std::shared_ptr<InputSocket> getInputSocket() const override { return inputSocket_; }
+	float getInputVMSCoord() const override;
 
 protected:
 	std::shared_ptr<InputSocket> inputSocket_;

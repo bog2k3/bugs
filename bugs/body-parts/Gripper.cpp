@@ -35,6 +35,14 @@ Gripper::Gripper()
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
+float Gripper::getInputVMSCoord() const {
+	auto initData = std::dynamic_pointer_cast<GripperInitializationData>(getInitializationData());
+	if (initData)
+		return initData->inputVMSCoord;
+	else
+		return 0;
+}
+
 void Gripper::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);

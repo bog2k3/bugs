@@ -62,6 +62,14 @@ void Muscle::cacheInitializationData() {
 	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
 }
 
+float Muscle::getInputVMSCoord() const {
+	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
+	if (initData)
+		return initData->inputVMSCoord.clamp(0, BodyConst::MaxVMSCoordinateValue);
+	else
+		return 0;
+}
+
 Muscle::Muscle(Joint* joint, int motorDirSign)
 	: BodyPart(BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
 	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
@@ -81,6 +89,7 @@ Muscle::Muscle(Joint* joint, int motorDirSign)
 
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
+	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, initData->inputVMSCoord);
 
 	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
 }

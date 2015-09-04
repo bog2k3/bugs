@@ -20,7 +20,7 @@ public:
 	virtual std::shared_ptr<InputSocket> getInputSocket() const = 0;
 
 	// returns the Virtual Matching Space coordinate of this sensor's nerve
-	virtual float getVMSCoord() = 0;
+	virtual float getInputVMSCoord() const = 0;
 };
 
 #endif /* ENTITIES_BUG_IMOTOR_H_ */
