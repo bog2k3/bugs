@@ -65,8 +65,8 @@ constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_LOW_LIMIT = 6;		// low angl
 constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_HIGH_LIMIT = 7;	// high angle limit for up-stream joint
 constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_RESET_TORQUE = 8;	// torque that moves the up-stream joint back into rest position when no forces act on it
 constexpr gene_part_attribute_type GENE_ATTRIB_EGG_EJECT_SPEED = 9;		// speed with which eggs are ejected from egg-layers
-constexpr gene_part_attribute_type GENE_ATTRIB_MOTOR_INPUT_COORD = 10;	// input coord in VMS
-constexpr gene_part_attribute_type GENE_ATTRIB_SENSOR_OUTPUT_COORD = 11;// output coord in VMS
+constexpr gene_part_attribute_type GENE_ATTRIB_MOTOR_INPUT_COORD = 10;	// input coord in VMS; uses attrib index
+constexpr gene_part_attribute_type GENE_ATTRIB_SENSOR_OUTPUT_COORD = 11;	// output coord in VMS; uses attrib index
 constexpr gene_part_attribute_type GENE_ATTRIB_END = 12;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//

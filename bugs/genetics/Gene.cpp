@@ -156,6 +156,7 @@ Gene Gene::createRandomAttribGene() {
 	GeneAttribute g;
 	g.attribute = (gene_part_attribute_type)randi(GENE_ATTRIB_INVALID+1, GENE_ATTRIB_END-1);
 	g.value.set(randf());
+	g.attribIndex = randi(constants::MAX_ATTRIB_INDEX_COUNT);
 	return g;
 }
 

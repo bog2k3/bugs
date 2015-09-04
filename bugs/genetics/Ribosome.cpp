@@ -532,7 +532,7 @@ void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	int depth = part->getDepth();
 	if (depth >= g.minDepth && depth <= g.maxDepth)
 	{
-		CummulativeValue* pAttrib = part->getAttribute(g.attribute);
+		CummulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
 		if (pAttrib)
 			pAttrib->changeAbs(g.value);
 	}

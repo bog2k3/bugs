@@ -86,6 +86,7 @@ struct GeneAttribute {
 	Atom<float> value;
 	Atom<int> minDepth;
 	Atom<int> maxDepth;
+	Atom<int> attribIndex;							// some attributes are indexed (like VMS coords for inputs/outputs)
 	gene_part_attribute_type attribute = GENE_ATTRIB_INVALID;
 
 	GeneAttribute() = default;
