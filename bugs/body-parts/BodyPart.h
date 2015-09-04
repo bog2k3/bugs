@@ -107,8 +107,14 @@ public:
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
-	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib) {
-		return mapAttributes_[attrib];
+	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib, int index=0) {
+		if (mapAttributes_.find(type) == mapAttributes_.end())
+			return nullptr;
+		auto &attrVec = mapAttributes_[attrib];
+		if (attrVec.size() > index)
+			return attrVec[index];
+		else
+			return attrVec[0];
 	}
 
 	/*
@@ -223,6 +229,7 @@ protected:
 
 
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
+	void registerAttribute(gene_part_attribute_type type, int index, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint();
 	UpdateList* getUpdateList();
 	// call this if the fixture changed for any reason:
@@ -246,7 +253,7 @@ private:
 	void pushBodyParts(int circularBufferIndex, float delta);
 	void remove(BodyPart* part);
 
-	std::map<gene_part_attribute_type, CummulativeValue*> mapAttributes_;
+	std::map<gene_part_attribute_type, std::vector<CummulativeValue*>> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
 	UpdateList* updateList_;
 	float lastCommitSize_inv_ = 0;

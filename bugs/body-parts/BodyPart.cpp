@@ -508,7 +508,14 @@ void BodyPart::draw(RenderContext const& ctx) {
 }
 
 void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue& value) {
-	mapAttributes_[type] = &value;
+	registerAttribute(type, 0, value);
+}
+
+void BodyPart::registerAttribute(gene_part_attribute_type type, int index, CummulativeValue& value) {
+	auto &attrVec = mapAttributes_[type];
+	while (attrVec.size() < index + 1);
+		attrVec.push_back(nullptr);
+	attrVec[index] = &value;
 }
 
 UpdateList* BodyPart::getUpdateList() {
