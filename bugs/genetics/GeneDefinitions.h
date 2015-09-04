@@ -27,11 +27,9 @@ constexpr gene_type GENE_TYPE_SYNAPSE = 8;			// creates or alters a synapse betw
 constexpr gene_type GENE_TYPE_TRANSFER = 9;			// controls the transfer function of a neuron (cummulative)
 constexpr gene_type GENE_TYPE_NEURAL_CONST = 10;	// neural constant (cummulative) - used in various computations
 constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 11;		// output coord (in MVMS) from a neuron
-constexpr gene_type GENE_TYPE_MOTOR_INPUT_COORD = 12;		// input coord (in MVMS) to a motor
-constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 13;		// input coord (in SVMS) to a neuron
-constexpr gene_type GENE_TYPE_SENSOR_OUTPUT_COORD = 14;		// output coord (in SVMS) from a sensor
+constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 12;		// input coord (in SVMS) to a neuron
 
-constexpr gene_type GENE_TYPE_END = 15;
+constexpr gene_type GENE_TYPE_END = 13;
 
 // ----------------------------------- gene_protein_type -------------------------------//
 
@@ -67,7 +65,9 @@ constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_LOW_LIMIT = 6;		// low angl
 constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_HIGH_LIMIT = 7;	// high angle limit for up-stream joint
 constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_RESET_TORQUE = 8;	// torque that moves the up-stream joint back into rest position when no forces act on it
 constexpr gene_part_attribute_type GENE_ATTRIB_EGG_EJECT_SPEED = 9;		// speed with which eggs are ejected from egg-layers
-constexpr gene_part_attribute_type GENE_ATTRIB_END = 10;
+constexpr gene_part_attribute_type GENE_ATTRIB_MOTOR_INPUT_COORD = 10;	// input coord in VMS
+constexpr gene_part_attribute_type GENE_ATTRIB_SENSOR_OUTPUT_COORD = 11;// output coord in VMS
+constexpr gene_part_attribute_type GENE_ATTRIB_END = 12;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//
 

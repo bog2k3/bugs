@@ -609,12 +609,12 @@ void BodyPart::cacheInitializationData() {
 	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }
 
-void BodyPart::updateMotorMappings(std::map<int, int> mapping) {
-	for (unsigned i=0; i<motorLines_.size(); i++)
-		motorLines_[i] = mapping[i];
-	for (int i=0; i<nChildren_; i++)
-		children_[i]->updateMotorMappings(mapping);
-}
+//void BodyPart::updateMotorMappings(std::map<int, int> mapping) {
+//	for (unsigned i=0; i<motorLines_.size(); i++)
+//		motorLines_[i] = mapping[i];
+//	for (int i=0; i<nChildren_; i++)
+//		children_[i]->updateMotorMappings(mapping);
+//}
 
 void BodyPart::hierarchyMassChanged() {
 	if (parent_)

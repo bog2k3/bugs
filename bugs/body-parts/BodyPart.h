@@ -15,7 +15,7 @@
 #include <map>
 #include <memory>
 
-enum PART_TYPE {
+enum class PART_TYPE {
 	BODY_PART_INVALID,
 
 	BODY_PART_TORSO,
@@ -144,7 +144,7 @@ public:
 	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
 	void addMotorLine(int line);
 	void addSensorLine(int line);
-	void updateMotorMappings(std::map<int, int> mapping);
+//	void updateMotorMappings(std::map<int, int> mapping);
 
 	/*
 	 * adds another body part as a child of this one, trying to fit it at the given relative angle.

@@ -23,8 +23,8 @@
 #include "../World.h"
 #include "../serialization/BinaryStream.h"
 #include "../serialization/GenomeSerialization.h"
+#include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
-#include "Bug/Motor.h"
 #include "Gamete.h"
 
 const float DECODE_FREQUENCY = 5.f; // genes per second

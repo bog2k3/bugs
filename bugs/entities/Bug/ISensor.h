@@ -20,6 +20,9 @@ public:
 	 * returns the sensor's OutputSocket
 	 */
 	virtual std::shared_ptr<OutputSocket> getOutSocket() const = 0;
+
+	// returns the Virtual Matching Space coordinate of this sensor's nerve
+	virtual float getVMSCoord() = 0;
 };
 
 

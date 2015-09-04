@@ -18,8 +18,8 @@
 #include <vector>
 #include <map>
 #include "Bug/LifetimeSensor.h"
-#include "Bug/Motor.h"
 #include "../serialization/objectTypes.h"
+#include "Bug/IMotor.h"
 
 class ISensor;
 class NeuralNet;
@@ -73,8 +73,8 @@ protected:
 	Bug(Bug const& orig) = delete; // no implementation because no usage
 
 	Genome genome_;
-	std::vector<ISensor*> sensors_;
-	std::vector<Motor> motors_;
+	std::vector<ISensor*> sensors_;		// holds pointers to sensors in the order they appear in the genome - sensor lines indices match these
+	std::vector<IMotor*> motors_;		// holds pointers to motors in the order they appear in the genome - motor lines indices match these
 	NeuralNet* neuralNet_;
 	Ribosome* ribosome_;
 	bool isAlive_;

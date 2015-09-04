@@ -68,57 +68,57 @@ static bool isCircularGreater(decltype(Gene::RID) x1, decltype(Gene::RID) x2) {
 void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
-	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
+//	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
 	// todo: how do we link the inputs to neurons?
-	for (unsigned i=0; i<bug_->sensors_.size(); i++) {
-		// sort sensors by genetic age
-		if ((int)i>=nDefaultSensors) // skip the default sensors which must always be at the beginning
-			for (unsigned j=i+1; j<bug_->sensors_.size(); j++)
-				if (bug_->sensors_[j]->geneticAge > bug_->sensors_[i]->geneticAge)
-					xchg(bug_->sensors_[i], bug_->sensors_[j]);
-		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
-	}
-	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
-	std::map<int, int> mapMotorIds, mapReverseMotorIds;
-	for (unsigned i=0; i<bug_->motors_.size(); i++) {
-		// sort motors by genetic age (oldest first)
-		for (unsigned j=i+1; j<bug_->motors_.size(); j++)
-			if (bug_->motors_[j].geneticAge > bug_->motors_[i].geneticAge) {
-				xchg(bug_->motors_[i], bug_->motors_[j]);
-				// update mapping of indices:
-				auto it1 = mapReverseMotorIds.find(i);
-				int indexWhereKeyIs_i = i;
-				if (it1 != mapReverseMotorIds.end())
-					indexWhereKeyIs_i = it1->second;
-				auto it2 = mapReverseMotorIds.find(j);
-				int indexWhereKeyIs_j = j;
-				if (it2 != mapReverseMotorIds.end())
-					indexWhereKeyIs_j = it2->second;
-				mapMotorIds[indexWhereKeyIs_i] = j;
-				mapMotorIds[indexWhereKeyIs_j] = i;
-				mapReverseMotorIds[j] = indexWhereKeyIs_i;
-				mapReverseMotorIds[i] = indexWhereKeyIs_j;
-			}
-		// now add all input sockets from all motors:
-		bug_->neuralNet_->outputs.push_back(bug_->motors_[i].inputSocket);	// create network outputs
-	}
-	bug_->body_->updateMotorMappings(mapMotorIds);
+//	for (unsigned i=0; i<bug_->sensors_.size(); i++) {
+//		// sort sensors by genetic age
+//		if ((int)i>=nDefaultSensors) // skip the default sensors which must always be at the beginning
+//			for (unsigned j=i+1; j<bug_->sensors_.size(); j++)
+//				if (bug_->sensors_[j]->geneticAge > bug_->sensors_[i]->geneticAge)
+//					xchg(bug_->sensors_[i], bug_->sensors_[j]);
+//		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
+//	}
+//	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
+//	std::map<int, int> mapMotorIds, mapReverseMotorIds;
+//	for (unsigned i=0; i<bug_->motors_.size(); i++) {
+//		// sort motors by genetic age (oldest first)
+//		for (unsigned j=i+1; j<bug_->motors_.size(); j++)
+//			if (bug_->motors_[j].geneticAge > bug_->motors_[i].geneticAge) {
+//				xchg(bug_->motors_[i], bug_->motors_[j]);
+//				// update mapping of indices:
+//				auto it1 = mapReverseMotorIds.find(i);
+//				int indexWhereKeyIs_i = i;
+//				if (it1 != mapReverseMotorIds.end())
+//					indexWhereKeyIs_i = it1->second;
+//				auto it2 = mapReverseMotorIds.find(j);
+//				int indexWhereKeyIs_j = j;
+//				if (it2 != mapReverseMotorIds.end())
+//					indexWhereKeyIs_j = it2->second;
+//				mapMotorIds[indexWhereKeyIs_i] = j;
+//				mapMotorIds[indexWhereKeyIs_j] = i;
+//				mapReverseMotorIds[j] = indexWhereKeyIs_i;
+//				mapReverseMotorIds[i] = indexWhereKeyIs_j;
+//			}
+//		// now add all input sockets from all motors:
+//		bug_->neuralNet_->outputs.push_back(bug_->motors_[i].inputSocket);	// create network outputs
+//	}
+//	bug_->body_->updateMotorMappings(mapMotorIds);
 	// create neurons:
-	int commandNeuronsStart = mapNeurons_.size();
-	int totalNeurons = commandNeuronsStart + bug_->motors_.size();
-	bug_->neuralNet_->neurons.reserve(totalNeurons);
-	for (int i=0; i<commandNeuronsStart; i++) {
+//	int commandNeuronsStart = mapNeurons_.size();
+//	int totalNeurons = commandNeuronsStart + bug_->motors_.size();
+	bug_->neuralNet_->neurons.reserve(mapNeurons_.size());
+	for (int i=0; i<mapNeurons_.size(); i++) {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
 	}
 	// create and initialize the output neurons:
-	for (int i=commandNeuronsStart; i<totalNeurons; i++) {
-		bug_->neuralNet_->neurons.push_back(new Neuron());
-		bug_->neuralNet_->neurons[i]->neuralConstant = 0.f;
-		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[transferFuncNames::FN_ONE];
-		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart].get());
-		// connect back the socket to the output neuron (in order to be able to locate the neuron later):
-		bug_->neuralNet_->outputs[i-commandNeuronsStart]->pParentNeuron = bug_->neuralNet_->neurons[i];
-	}
+//	for (int i=commandNeuronsStart; i<totalNeurons; i++) {
+//		bug_->neuralNet_->neurons.push_back(new Neuron());
+//		bug_->neuralNet_->neurons[i]->neuralConstant = 0.f;
+//		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[transferFuncNames::FN_ONE];
+//		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart].get());
+//		// connect back the socket to the output neuron (in order to be able to locate the neuron later):
+//		bug_->neuralNet_->outputs[i-commandNeuronsStart]->pParentNeuron = bug_->neuralNet_->neurons[i];
+//	}
 }
 
 void Ribosome::decodeDeferredGenes() {
@@ -143,6 +143,13 @@ void Ribosome::decodeDeferredGenes() {
 		if (n.second.constant.hasValue())
 			bug_->neuralNet_->neurons[n.second.index]->neuralConstant = n.second.constant;
 	}
+}
+
+template <typename T>
+void Ribosome::sortNervesByVMSCoord(std::vector<inputOutputNerve<T>> nerves) {
+	std::sort(nerves.begin(), nerves.end(), [] (inputOutputNerve<T> const& left, inputOutputNerve<T> const& right) -> bool {
+		return left.second < right.second;
+	});
 }
 
 bool Ribosome::step() {
@@ -170,6 +177,13 @@ bool Ribosome::step() {
 		// now decode the neural network:
 		initializeNeuralNetwork();
 		decodeDeferredGenes();
+		// sort the input/output nerves by their VMS coords:
+		sortNervesByVMSCoord(orderedInputNeurons_);
+		sortNervesByVMSCoord(orderedOutputNeurons_);
+		sortNervesByVMSCoord(orderedSensors_);
+		// link nerves to motors/sensors:
+		linkMotorNerves();
+		linkSensorNerves();
 
 		// clean up:
 		cleanUp();
@@ -396,15 +410,23 @@ void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
 }
 
 void Ribosome::updateNeuronTransfer(int virtualIndex, float transfer) {
-	if (hasNeuron(virtualIndex)) {
+	if (hasNeuron(virtualIndex))
 		mapNeurons_[virtualIndex].transfer.changeAbs(transfer);
-	}
 }
 
 void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
-	if (hasNeuron(virtualIndex)) {
+	if (hasNeuron(virtualIndex))
 		mapNeurons_[virtualIndex].constant.changeAbs(constant);
-	}
+}
+
+void Ribosome::updateNeuronOutputCoord(int virtualIndex, float VMScoord) {
+	if (hasNeuron(virtualIndex))
+		mapNeurons_[virtualIndex].outputVMSCoord.changeAbs(VMScoord);
+}
+
+void Ribosome::updateNeuronInputCoord(int virtualIndex, float VMScoord) {
+	if (hasNeuron(virtualIndex))
+		mapNeurons_[virtualIndex].inputVMSCoord.changeAbs(VMScoord);
 }
 
 void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
@@ -433,17 +455,11 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool 
 		else
 			decodeNeuronOutputCoord(g.data.gene_neuron_output);
 		break;
-	case GENE_TYPE_MOTOR_INPUT_COORD:
-		decodeMotorInputCoord(g.data.gene_motor_input, part);
-		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
 		if (deferNeural)
 			neuralGenes.push_back(&g);
 		else
 			decodeNeuronInputCoord(g.data.gene_neuron_input);
-		break;
-	case GENE_TYPE_SENSOR_OUTPUT_COORD:
-		decodeSensorOutputCoord(g.data.gene_sensor_output, part);
 		break;
 	case GENE_TYPE_TRANSFER:
 		if (deferNeural)
@@ -541,19 +557,11 @@ void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
 }
 
 void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
-
-}
-
-void Ribosome::decodeMotorInputCoord(GeneMotorInputCoord const& g, BodyPart* part) {
-	// if the current body part is not a motor, this has no effect
+	updateNeuronOutputCoord(g.srcNeuronVirtIndex, g.outCoord);
 }
 
 void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
-
-}
-
-void Ribosome::decodeSensorOutputCoord(GeneSensorOutputCoord const& g, BodyPart* part) {
-	// if the body part is not a sensor, this has no effect
+	updateNeuronInputCoord(g.destNeuronVirtIndex, g.inCoord);
 }
 
 void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weight) {
@@ -584,10 +592,83 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 	pFrom->addTarget(i);
 }
 
+// returns -1 if none found
+template <typename T>
+int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> nerves, float matchCoord) {
+	if (nerves.size() == 0)
+		return -1;
+	// binary-search the nearest output neuron:
+	int small = 0, big = nerves.size();
+	while (small != big) {
+		int pivot = (big-small) / 2;
+		if (matchCoord > nerves[pivot].second) { // look into the big interval
+			if (pivot < nerves.size()-1) {	// there are greater
+				float crtDelta = matchCoord - nerves[pivot].second;
+				float nextDelta = matchCoord - nerves[pivot+1].second;
+				if (fabs(crtDelta) > fabs(nextDelta)) {
+					// move to the greater interval:
+					small = pivot;
+				} else	// this is the closest we can get
+					return pivot;
+			} else // this is the closest we can get
+				return pivot;
+		} else if (matchCoord < nerves[pivot].second) { // look into the small interval
+			if (pivot > 0) {	// there are smaller
+				float crtDelta = matchCoord - nerves[pivot].second;
+				float prevDelta = matchCoord - nerves[pivot+1].second;
+				if (fabs(crtDelta) > fabs(prevDelta)) {
+					// move to the small interval
+					big = pivot;
+				} else	// this is the closest we can get
+					return pivot;
+			} else	// this is the closest we can get
+				return pivot;
+		} else
+			return pivot;	// perfect match!
+	}
+	return small;
+}
+
 void Ribosome::linkMotorNerves() {
-	// todo
+	// motors are matched 1:1 with the nearest output nerves from the neural network, in the direction from motor nerve to output nerve.
+	for (IMotor* m : bug_->motors_) {
+		float motorCoord = m->getVMSCoord();
+		int neuronIndex = getVMSNearestNerveIndex(orderedOutputNeurons_, motorCoord);
+		if (neuronIndex >= 0) {
+			// link this motor to this neuron
+			orderedOutputNeurons_[neuronIndex].first->output.addTarget(m->getInputSocket().get());
+		}
+	}
+
+	orderedOutputNeurons_.clear();
 }
 
 void Ribosome::linkSensorNerves() {
-	// todo
+	// sensors are matched n:m with nearest input nerves in two passes:
+	// 1. all input nerves are connected to the nearest sensor nerves
+	// 2. all unconnected sensor nerves are connected to the nearest input nerves
+
+	// stage 1:
+	for (auto &inerve : orderedInputNeurons_) {
+		int sensorIndex = getVMSNearestNerveIndex(orderedSensors_, inerve.second);
+		if (sensorIndex >= 0) {
+			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(nullptr, 1.f));
+			orderedSensors_[sensorIndex].first->getOutSocket()->addTarget(sock.get());
+			inerve.first->inputs.push_back(std::move(sock));
+			orderedSensors_.erase(orderedSensors_.begin() + sensorIndex);
+		}
+	}
+
+	// stage 2:
+	for (auto &sensor : orderedSensors_) {
+		int nerveIndex = getVMSNearestNerveIndex(orderedInputNeurons_, sensor.second);
+		if (nerveIndex >= 0) {
+			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(nullptr, 1.f));
+			sensor.first->getOutSocket()->addTarget(sock.get());
+			orderedInputNeurons_[nerveIndex].first->inputs.push_back(std::move(sock));
+		}
+	}
+
+	orderedSensors_.clear();
+	orderedInputNeurons_.clear();
 }

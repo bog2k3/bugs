@@ -25,7 +25,7 @@ public:
 	~Neuron();
 
 	//unsigned long timestamp;
-	unsigned long RID;
+//	unsigned long RID;
 
 	void update_value(); // recomputes the value of the neuron after input has been updated
 
@@ -33,7 +33,7 @@ public:
 	void push_output();
 
 	// retrieves the list of targets
-	void retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets);
+//	void retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets);
 
 	OutputSocket output; // this socket is connected to other inputs or to the network's main outputs
 };
