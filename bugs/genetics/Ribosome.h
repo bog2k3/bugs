@@ -76,7 +76,7 @@ private:
 	std::map<int64_t, CummulativeValue> mapSynapses;
 	std::vector<inputOutputNerve<Neuron*>> orderedOutputNeurons_;	// output neurons ordered by their VMS coordinate (smallest to greatest)
 	std::vector<inputOutputNerve<Neuron*>> orderedInputNeurons_;	// input neurons ordered by their VMS coordinate (smallest to greatest)
-	std::vector<inputOutputNerve<ISensor*>> orderedSensors_;		// sensors ordered by their VMS coordinate (smallest to greatest)
+	std::vector<inputOutputNerve<OutputSocket*>> orderedSensorOutputs_;	// sensors ordered by their VMS coordinate (smallest to greatest)
 
 	void decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural);
 	void decodeProtein(GeneProtein &g, BodyPart* part, GrowthData *growthData);

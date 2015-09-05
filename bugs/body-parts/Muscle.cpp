@@ -62,7 +62,9 @@ void Muscle::cacheInitializationData() {
 	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
 }
 
-float Muscle::getInputVMSCoord() const {
+float Muscle::getInputVMSCoord(unsigned index) const {
+	if (index != 0)
+		return 0;
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	if (initData)
 		return initData->inputVMSCoord.clamp(0, BodyConst::MaxVMSCoordinateValue);
@@ -112,6 +114,8 @@ void Muscle::onJointDied(BodyPart* joint) {
 void Muscle::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
+
+	// TODO: should add motor line recursively into parent and self; add this as motor into bug
 }
 
 void Muscle::commit() {

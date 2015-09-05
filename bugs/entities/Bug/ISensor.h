@@ -8,21 +8,20 @@
 #ifndef ENTITIES_ISENSOR_H_
 #define ENTITIES_ISENSOR_H_
 
-#include <memory>
-
 class OutputSocket;
 
 class ISensor {
 public:
 	virtual ~ISensor() {}
 
-	/**
-	 * returns the sensor's OutputSocket
-	 */
-	virtual std::shared_ptr<OutputSocket> getOutSocket() const = 0;
+	// return the number of outputs this sensor generates
+	virtual unsigned getOutputCount() const = 0;
 
-	// returns the Virtual Matching Space coordinate of this sensor's nerve
-	virtual float getVMSCoord() = 0;
+	// returns one of this sensor's OutputSockets
+	virtual OutputSocket* getOutSocket(unsigned index) const = 0;
+
+	// returns the Virtual Matching Space coordinate of one of this sensor's nerves
+	virtual float getVMSCoord(unsigned index) = 0;
 };
 
 

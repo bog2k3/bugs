@@ -35,10 +35,12 @@ Gripper::Gripper()
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
-float Gripper::getInputVMSCoord() const {
+float Gripper::getInputVMSCoord(unsigned index) const {
+	if (index != 0)
+		return 0;
 	auto initData = std::dynamic_pointer_cast<GripperInitializationData>(getInitializationData());
 	if (initData)
-		return initData->inputVMSCoord;
+		return initData->inputVMSCoord.clamp(0, BodyConst::MaxVMSCoordinateValue);
 	else
 		return 0;
 }

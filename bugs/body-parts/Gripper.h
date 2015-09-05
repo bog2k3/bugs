@@ -33,8 +33,9 @@ public:
 	void update(float dt);
 
 	// IMotor::
-	std::shared_ptr<InputSocket> getInputSocket() const override { return inputSocket_; }
-	float getInputVMSCoord() const override;
+	unsigned getInputCount() const override { return 1; }
+	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : 0; }
+	float getInputVMSCoord(unsigned index) const override;
 
 protected:
 	std::shared_ptr<InputSocket> inputSocket_;

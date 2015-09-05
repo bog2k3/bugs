@@ -38,6 +38,7 @@ Ribosome::Ribosome(Bug* bug)
 
 	// the number of default sensors (like lifeTime sensor) added by the bug before genetic decoding
 	nDefaultSensors = bug_->sensors_.size();
+	// TODO: must assign VMS coords to default sensors and push them into the orderedSensorOutputs_ vector
 }
 
 Ribosome::~Ribosome() {
@@ -180,7 +181,7 @@ bool Ribosome::step() {
 		// sort the input/output nerves by their VMS coords:
 		sortNervesByVMSCoord(orderedInputNeurons_);
 		sortNervesByVMSCoord(orderedOutputNeurons_);
-		sortNervesByVMSCoord(orderedSensors_);
+		sortNervesByVMSCoord(orderedSensorOutputs_);
 		// link nerves to motors/sensors:
 		linkMotorNerves();
 		linkSensorNerves();
@@ -632,11 +633,13 @@ int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> nerves, f
 void Ribosome::linkMotorNerves() {
 	// motors are matched 1:1 with the nearest output nerves from the neural network, in the direction from motor nerve to output nerve.
 	for (IMotor* m : bug_->motors_) {
-		float motorCoord = m->getVMSCoord();
-		int neuronIndex = getVMSNearestNerveIndex(orderedOutputNeurons_, motorCoord);
-		if (neuronIndex >= 0) {
-			// link this motor to this neuron
-			orderedOutputNeurons_[neuronIndex].first->output.addTarget(m->getInputSocket().get());
+		for (int i = 0; i < m->getInputCount(); i++) {
+			float motorCoord = m->getInputVMSCoord(i);
+			int neuronIndex = getVMSNearestNerveIndex(orderedOutputNeurons_, motorCoord);
+			if (neuronIndex >= 0) {
+				// link this motor to this neuron
+				orderedOutputNeurons_[neuronIndex].first->output.addTarget(m->getInputSocket(i));
+			}
 		}
 	}
 
@@ -650,25 +653,25 @@ void Ribosome::linkSensorNerves() {
 
 	// stage 1:
 	for (auto &inerve : orderedInputNeurons_) {
-		int sensorIndex = getVMSNearestNerveIndex(orderedSensors_, inerve.second);
-		if (sensorIndex >= 0) {
+		int sensorSocketIndex = getVMSNearestNerveIndex(orderedSensorOutputs_, inerve.second);
+		if (sensorSocketIndex >= 0) {
 			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(nullptr, 1.f));
-			orderedSensors_[sensorIndex].first->getOutSocket()->addTarget(sock.get());
+			orderedSensorOutputs_[sensorSocketIndex].first->addTarget(sock.get());
 			inerve.first->inputs.push_back(std::move(sock));
-			orderedSensors_.erase(orderedSensors_.begin() + sensorIndex);
+			orderedSensorOutputs_.erase(orderedSensorOutputs_.begin() + sensorSocketIndex);
 		}
 	}
 
 	// stage 2:
-	for (auto &sensor : orderedSensors_) {
+	for (auto &sensor : orderedSensorOutputs_) {
 		int nerveIndex = getVMSNearestNerveIndex(orderedInputNeurons_, sensor.second);
 		if (nerveIndex >= 0) {
 			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(nullptr, 1.f));
-			sensor.first->getOutSocket()->addTarget(sock.get());
+			sensor.first->addTarget(sock.get());
 			orderedInputNeurons_[nerveIndex].first->inputs.push_back(std::move(sock));
 		}
 	}
 
-	orderedSensors_.clear();
+	orderedSensorOutputs_.clear();
 	orderedInputNeurons_.clear();
 }

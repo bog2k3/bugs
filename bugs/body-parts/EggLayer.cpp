@@ -16,6 +16,7 @@
 #include "../utils/log.h"
 #include "../entities/Gamete.h"
 #include "../World.h"
+#include "../neuralnet/InputSocket.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -35,16 +36,28 @@ void EggLayer::cacheInitializationData() {
 	ejectSpeed_ = data->ejectSpeed.clamp(0, BodyConst::MaxEggEjectSpeed);
 }
 
+float EggLayer::getInputVMSCoord(unsigned index) const {
+	if (index >= 2)
+		return 0;
+	auto initData = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
+	if (initData)
+		return initData->inputVMSCoord[index].clamp(0, BodyConst::MaxVMSCoordinateValue);
+	else
+		return 0;
+}
+
 EggLayer::EggLayer()
 	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<EggLayerInitializationData>())
 	, targetEggMass_(BodyConst::initialEggMass)
 	, ejectSpeed_(0)
 {
-	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1));	// [0] - suppress growth
-	inputs_.push_back(std::make_shared<InputSocket>(nullptr, 1)); // [1] - suppress release
+	inputs_.push_back(new InputSocket(nullptr, 1));	// [0] - suppress growth
+	inputs_.push_back(new InputSocket(nullptr, 1)); // [1] - suppress release
 
 	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_EGG_EJECT_SPEED, data->ejectSpeed);
+	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, 0, data->inputVMSCoord[0]);
+	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, 1, data->inputVMSCoord[1]);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_EGGLAYER;
 	physBody_.userPointer_ = this;
@@ -52,6 +65,9 @@ EggLayer::EggLayer()
 }
 
 EggLayer::~EggLayer() {
+	for (auto &i : inputs_)
+		delete i;
+	inputs_.clear();
 }
 
 void EggLayer::die() {
@@ -106,7 +122,7 @@ glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
 	return ret;
 }
 
-void EggLayer::update(float dt){
+void EggLayer::update(float dt) {
 	if (isDead())
 		return;
 	suppressGrowth_ = inputs_[0]->value > 0;

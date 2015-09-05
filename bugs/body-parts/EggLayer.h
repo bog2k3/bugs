@@ -9,18 +9,19 @@
 #define BODY_PARTS_EGGLAYER_H_
 
 #include "BodyPart.h"
-#include "../neuralnet/InputSocket.h"
+#include "../entities/Bug/IMotor.h"
 
 struct EggLayerInitializationData : public BodyPartInitializationData {
 	virtual ~EggLayerInitializationData() noexcept = default;
 	EggLayerInitializationData();
 
 	CummulativeValue ejectSpeed;
+	CummulativeValue inputVMSCoord[2];
 };
 
 class b2WeldJoint;
 
-class EggLayer: public BodyPart {
+class EggLayer: public BodyPart, public IMotor {
 public:
 	EggLayer();
 	virtual ~EggLayer() override;
@@ -35,6 +36,11 @@ public:
 
 	float getMass_tree() override;
 
+	// IMotor::
+	unsigned getInputCount() const override { return 2; }
+	InputSocket* getInputSocket(unsigned index) const override { return index < 2 ? inputs_[index] : nullptr; }
+	float getInputVMSCoord(unsigned index) const override;
+
 protected:
 	void commit() override;
 	void onAddedToParent() override;
@@ -43,16 +49,13 @@ protected:
 	void checkScale();
 
 	b2WeldJoint* pJoint = nullptr;
-	std::vector<std::shared_ptr<InputSocket>> inputs_;
+	std::vector<InputSocket*> inputs_;
 	bool suppressGrowth_ = false;
 	bool suppressRelease_ = false;
 	float initialSize_ = 0;
 	float eggMassBuffer_ = 0;
 	float targetEggMass_;
 	float ejectSpeed_;
-
-public:
-	decltype(inputs_) const& getInputSockets() const { return inputs_; }
 };
 
 #endif /* BODY_PARTS_EGGLAYER_H_ */
