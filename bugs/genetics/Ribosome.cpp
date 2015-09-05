@@ -46,10 +46,10 @@ Ribosome::~Ribosome() {
 }
 
 void Ribosome::cleanUp() {
-	neuralGenes.clear();
+	neuralGenes_.clear();
 	activeSet_.clear();
 	mapNeurons_.clear();
-	mapSynapses.clear();
+	mapSynapses_.clear();
 }
 
 // compares two unsigned longs as if they were expressed as coordinates in a circular scale
@@ -125,13 +125,13 @@ void Ribosome::initializeNeuralNetwork() {
 void Ribosome::decodeDeferredGenes() {
 	int commandNeuronsStart = mapNeurons_.size();
 	// create all synapses
-	for (auto s : mapSynapses) {
+	for (auto s : mapSynapses_) {
 		int32_t from = s.first >> 32;
 		int32_t to = (s.first) & 0xFFFFFFFF;
 		createSynapse(from, to, commandNeuronsStart, s.second);
 	}
 	// now decode the deferred neural genes (neuron properties):
-	for (auto &g : neuralGenes)
+	for (auto &g : neuralGenes_)
 		decodeGene(*g, nullptr, nullptr, false);
 	// apply all neuron properties
 	for (auto n : mapNeurons_) {
@@ -178,13 +178,8 @@ bool Ribosome::step() {
 		// now decode the neural network:
 		initializeNeuralNetwork();
 		decodeDeferredGenes();
-		// sort the input/output nerves by their VMS coords:
-		sortNervesByVMSCoord(orderedInputNeurons_);
-		sortNervesByVMSCoord(orderedOutputNeurons_);
-		sortNervesByVMSCoord(orderedSensorOutputs_);
-		// link nerves to motors/sensors:
-		linkMotorNerves();
-		linkSensorNerves();
+
+		resolveNerveLinkage();
 
 		// clean up:
 		cleanUp();
@@ -452,25 +447,25 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool 
 		break;
 	case GENE_TYPE_NEURON_OUTPUT_COORD:
 		if (deferNeural)
-			neuralGenes.push_back(&g);
+			neuralGenes_.push_back(&g);
 		else
 			decodeNeuronOutputCoord(g.data.gene_neuron_output);
 		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
 		if (deferNeural)
-			neuralGenes.push_back(&g);
+			neuralGenes_.push_back(&g);
 		else
 			decodeNeuronInputCoord(g.data.gene_neuron_input);
 		break;
 	case GENE_TYPE_TRANSFER:
 		if (deferNeural)
-			neuralGenes.push_back(&g);
+			neuralGenes_.push_back(&g);
 		else
 			decodeTransferFn(g.data.gene_transfer_function);
 		break;
 	case GENE_TYPE_NEURAL_CONST:
 		if (deferNeural)
-			neuralGenes.push_back(&g);
+			neuralGenes_.push_back(&g);
 		else
 			decodeNeuralConst(g.data.gene_neural_constant);
 		break;
@@ -545,7 +540,7 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 	checkAndAddNeuronMapping(g.to);
 	int64_t key = synKey(g.from, g.to);
 	assert(!std::isnan(g.weight.value));
-	mapSynapses[key].changeAbs(g.weight);
+	mapSynapses_[key].changeAbs(g.weight);
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
@@ -674,4 +669,19 @@ void Ribosome::linkSensorNerves() {
 
 	orderedSensorOutputs_.clear();
 	orderedInputNeurons_.clear();
+}
+
+void Ribosome::resolveNerveLinkage() {
+	// sort the input/output nerves by their VMS coords:
+	std::vector<inputOutputNerve<Neuron*>> orderedOutputNeurons_;	// output neurons ordered by their VMS coordinate (smallest to greatest)
+	std::vector<inputOutputNerve<Neuron*>> orderedInputNeurons_;	// input neurons ordered by their VMS coordinate (smallest to greatest)
+	std::vector<inputOutputNerve<InputSocket*>> orderedMotorInputs_; // motor inputs ordered by their VMS coordinate
+	std::vector<inputOutputNerve<OutputSocket*>> orderedSensorOutputs_;	// sensor outputs ordered by their VMS coordinate (smallest to greatest)
+
+	sortNervesByVMSCoord(orderedInputNeurons_);
+	sortNervesByVMSCoord(orderedOutputNeurons_);
+	sortNervesByVMSCoord(orderedSensorOutputs_);
+	// link nerves to motors/sensors:
+	linkMotorNerves();
+	linkSensorNerves();
 }

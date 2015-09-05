@@ -285,8 +285,10 @@ void Bug::onMotorLinesDetached(std::vector<int> const& lines) {
 	if (!isAlive_)
 		return;
 	for (int i : lines) {
-		assertDbg(i < neuralNet_->outputs.size() && neuralNet_->outputs[i]->pParentNeuron);
-		neuralNet_->outputs[i]->pParentNeuron->output.getTargets().clear();
+		assertDbg(i < motorLines_.size());
+		if (motorLines_[i].second)
+			motorLines_[i].second->removeTarget(motorLines_[i].first);
+		motorLines_[i] = std::make_pair(nullptr, nullptr);
 	}
 }
 

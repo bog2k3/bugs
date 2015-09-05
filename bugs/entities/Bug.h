@@ -10,18 +10,17 @@
 
 #include "Entity.h"
 #include "enttypes.h"
+#include "Bug/LifetimeSensor.h"
 #include "../genetics/Genome.h"
 #include "../genetics/GeneDefinitions.h"
-#include "../utils/UpdateList.h"
 #include "../genetics/CummulativeValue.h"
+#include "../serialization/objectTypes.h"
+#include "../utils/UpdateList.h"
 #include <glm/fwd.hpp>
 #include <vector>
 #include <map>
-#include "Bug/LifetimeSensor.h"
-#include "../serialization/objectTypes.h"
-#include "Bug/IMotor.h"
 
-class ISensor;
+
 class NeuralNet;
 class Ribosome;
 class Torso;
@@ -73,9 +72,12 @@ protected:
 	Bug(Bug const& orig) = delete; // no implementation because no usage
 
 	Genome genome_;
-	std::vector<ISensor*> sensors_;		// holds pointers to sensors in the order they appear in the genome - sensor lines indices match these
-	std::vector<IMotor*> motors_;		// holds pointers to motors in the order they appear in the genome - motor lines indices match these
 	NeuralNet* neuralNet_;
+
+	// motor nerves in the order they are created from the genome - motor line indices match these
+	// 'first' is the inputSocket of the motor, 'second' is the outputSocket of the neuron connected to it.
+	std::vector<std::pair<InputSocket*, OutputSocket*>> motorLines_;
+
 	Ribosome* ribosome_;
 	bool isAlive_;
 	bool isDeveloping_;

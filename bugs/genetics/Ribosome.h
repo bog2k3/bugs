@@ -68,15 +68,17 @@ public:
 private:
 	Bug* bug_;
 //	int nDefaultSensors = 0;
-	std::vector<Gene*> neuralGenes;
+	std::vector<Gene*> neuralGenes_;
 	std::vector<std::pair<BodyPart*, GrowthData>> activeSet_;
 	// std::map<GeneCommand*, int> mapGeneToIterations_; // maps growth genes to number of iterations (how many times they've been read so far)
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
-	std::map<int64_t, CummulativeValue> mapSynapses;
-	std::vector<inputOutputNerve<Neuron*>> orderedOutputNeurons_;	// output neurons ordered by their VMS coordinate (smallest to greatest)
-	std::vector<inputOutputNerve<Neuron*>> orderedInputNeurons_;	// input neurons ordered by their VMS coordinate (smallest to greatest)
-	std::vector<inputOutputNerve<OutputSocket*>> orderedSensorOutputs_;	// sensors ordered by their VMS coordinate (smallest to greatest)
+	std::map<int64_t, CummulativeValue> mapSynapses_;
+	std::vector<Neuron*> outputNeurons_;
+	std::vector<Neuron*> inputNeurons_;
+	std::vector<IMotor*> motors_;
+	std::vector<ISensor*> sensors_;
+	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
 	void decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural);
 	void decodeProtein(GeneProtein &g, BodyPart* part, GrowthData *growthData);
