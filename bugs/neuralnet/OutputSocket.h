@@ -11,8 +11,9 @@ class InputSocket;
 class OutputSocket {
 public:
 	void addTarget(InputSocket* pTarget); // connect a new Input to this node
+	void removeTarget(InputSocket* pTarget);
 	void push_value(float value); // push the output value to all connected Inputs
-	std::vector<InputSocket*>& getTargets(); // retrieves the list of targets
+	std::vector<InputSocket*> const& getTargets() { return target_list; } // retrieves the list of targets
 
 	OutputSocket()
 		: target_list()

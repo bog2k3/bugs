@@ -43,6 +43,8 @@ public:
 	}
 	void detach(bool die) override;
 	Bug* getOwner() override { return owner_; }
+	int addMotorLine() override;
+	int addSensorLine() override;
 
 	Event<void(float mass)> onFoodProcessed;
 	Event<void(std::vector<int> const&)> onMotorLinesDetached;

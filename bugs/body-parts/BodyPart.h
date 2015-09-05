@@ -148,9 +148,12 @@ public:
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
 	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
-	void addMotorLine(int line);
-	void addSensorLine(int line);
-//	void updateMotorMappings(std::map<int, int> mapping);
+	// requests (recursively) a nerve line id from the parent and adds it into this node and all nodes above it recursively
+	// this id is the index of the nerve line from the neural network down to one of this motor's inputs
+	int addMotorLine();
+	// requests (recursively) a nerve line id from the parent and adds it into this node and all nodes above it recursively
+	// this id is the index of the nerve line from the neural network down to one of this sensor's outputs
+	int addSensorLine();
 
 	/*
 	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
@@ -200,12 +203,12 @@ protected:
 
 	/**
 	 * Lists of motor & sensor nerve lines that pass through this node.
-	 * Initially, each number represents the Nth motor/sensor that has been created for this body.
-	 * This does not correlate the Nth output/input from the brain, since the outputs/inputs are ordered by genetic age.
-	 * After finishing genetic decoding (after first commit), these values are remapped to the actual output/input neuron indices.
+	 * Each number represents the Nth motor/sensor input/output socket that has been created for this body.
+	 * This correlates with the Nth CONNECTED output/input nerve in the brain
+	 * (they are connected by VMS coordinates but kept in this order nonetheless)
 	 */
 	std::vector<int> motorLines_;
-	std::vector<int> sensorLines_; // a list of sensor nerve lines -..-
+	std::vector<int> sensorLines_;
 
 	/**
 	 * called after genome decoding finished, just before initializationData will be destroyed.

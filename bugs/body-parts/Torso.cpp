@@ -190,3 +190,15 @@ void Torso::detach(bool die) {
 void Torso::hierarchyMassChanged() {
 	onBodyMassChanged.trigger();
 }
+
+int Torso::addMotorLine() {
+	int lineId = owner_->motors_.size();
+	motorLines_.push_back(lineId);
+	return lineId;
+}
+
+int Torso::addSensorLine() {
+	int lineId = owner_->sensors_.size();
+	motorLines_.push_back(lineId);
+	return lineId;
+}

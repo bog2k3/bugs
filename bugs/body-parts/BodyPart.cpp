@@ -74,16 +74,18 @@ bool BodyPart::applyRecursive(std::function<bool(BodyPart* pCurrent)> pred) {
 	return false;
 }
 
-void BodyPart::addMotorLine(int line) {
-	motorLines_.push_back(line);
-	if (parent_)
-		parent_->addMotorLine(line);
+int BodyPart::addMotorLine() {
+	assert(parent_ && "cannot add a motor line unless have parent!");
+	int lineId = parent_->addMotorLine();
+	motorLines_.push_back(lineId);
+	return lineId;
 }
 
-void BodyPart::addSensorLine(int line) {
-	sensorLines_.push_back(line);
-	if (parent_)
-		parent_->addSensorLine(line);
+int BodyPart::addSensorLine() {
+	assert(parent_ && "cannot add a sensor line unless have parent!");
+	int lineId = parent_->addSensorLine();
+	sensorLines_.push_back(lineId);
+	return lineId;
 }
 
 int circularPrev(int index, int n) {
@@ -368,6 +370,7 @@ void BodyPart::detach(bool die) {
 	if (parent_) {
 		// first must detach all neural connections
 		detachMotorLines(motorLines_);
+		detachSensorLines(sensorLines_);
 		parent_->remove(this);
 		onDetachedFromParent();
 		parent_->hierarchyMassChanged();
