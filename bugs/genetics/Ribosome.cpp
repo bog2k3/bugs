@@ -590,7 +590,7 @@ void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weig
 
 // returns -1 if none found
 template <typename T>
-int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> nerves, float matchCoord) {
+int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> const& nerves, float matchCoord) {
 	if (nerves.size() == 0)
 		return -1;
 	// binary-search the nearest output neuron:
@@ -625,23 +625,25 @@ int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> nerves, f
 	return small;
 }
 
-void Ribosome::linkMotorNerves() {
+void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,
+							   std::vector<InputOutputNerve<InputSocket*>> const& orderedMotorInputs_) {
+	bug_->motorLines_.clear();
 	// motors are matched 1:1 with the nearest output nerves from the neural network, in the direction from motor nerve to output nerve.
-	for (IMotor* m : bug_->motors_) {
-		for (int i = 0; i < m->getInputCount(); i++) {
-			float motorCoord = m->getInputVMSCoord(i);
-			int neuronIndex = getVMSNearestNerveIndex(orderedOutputNeurons_, motorCoord);
-			if (neuronIndex >= 0) {
-				// link this motor to this neuron
-				orderedOutputNeurons_[neuronIndex].first->output.addTarget(m->getInputSocket(i));
-			}
+	for (int i = 0; i < orderedMotorInputs_.size(); i++) {
+		float motorCoord = orderedMotorInputs_[i].second;
+		int neuronIndex = getVMSNearestNerveIndex(orderedOutputNeurons_, motorCoord);
+		if (neuronIndex >= 0) {
+			// link this motor to this neuron
+			orderedOutputNeurons_[neuronIndex].first->output.addTarget(orderedMotorInputs_[i].first);
+			// add mapping for this motor line in bug:
+			int nerveLineId = mapInputNerves_[orderedMotorInputs_[i].first];
+			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, orderedOutputNeurons_[neuronIndex].first->output);
 		}
 	}
-
-	orderedOutputNeurons_.clear();
 }
 
-void Ribosome::linkSensorNerves() {
+void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedInputNeurons_,
+						  	    std::vector<InputOutputNerve<OutputSocket*>> orderedSensorOutputs_) {
 	// sensors are matched n:m with nearest input nerves in two passes:
 	// 1. all input nerves are connected to the nearest sensor nerves
 	// 2. all unconnected sensor nerves are connected to the nearest input nerves
@@ -650,7 +652,7 @@ void Ribosome::linkSensorNerves() {
 	for (auto &inerve : orderedInputNeurons_) {
 		int sensorSocketIndex = getVMSNearestNerveIndex(orderedSensorOutputs_, inerve.second);
 		if (sensorSocketIndex >= 0) {
-			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(nullptr, 1.f));
+			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(inerve.first, 1.f));
 			orderedSensorOutputs_[sensorSocketIndex].first->addTarget(sock.get());
 			inerve.first->inputs.push_back(std::move(sock));
 			orderedSensorOutputs_.erase(orderedSensorOutputs_.begin() + sensorSocketIndex);
@@ -661,27 +663,35 @@ void Ribosome::linkSensorNerves() {
 	for (auto &sensor : orderedSensorOutputs_) {
 		int nerveIndex = getVMSNearestNerveIndex(orderedInputNeurons_, sensor.second);
 		if (nerveIndex >= 0) {
-			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(nullptr, 1.f));
+			Neuron* neuron = orderedInputNeurons_[nerveIndex].first;
+			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(neuron, 1.f));
 			sensor.first->addTarget(sock.get());
-			orderedInputNeurons_[nerveIndex].first->inputs.push_back(std::move(sock));
+			neuron->inputs.push_back(std::move(sock));
 		}
 	}
-
-	orderedSensorOutputs_.clear();
-	orderedInputNeurons_.clear();
 }
 
 void Ribosome::resolveNerveLinkage() {
-	// sort the input/output nerves by their VMS coords:
-	std::vector<inputOutputNerve<Neuron*>> orderedOutputNeurons_;	// output neurons ordered by their VMS coordinate (smallest to greatest)
-	std::vector<inputOutputNerve<Neuron*>> orderedInputNeurons_;	// input neurons ordered by their VMS coordinate (smallest to greatest)
-	std::vector<inputOutputNerve<InputSocket*>> orderedMotorInputs_; // motor inputs ordered by their VMS coordinate
-	std::vector<inputOutputNerve<OutputSocket*>> orderedSensorOutputs_;	// sensor outputs ordered by their VMS coordinate (smallest to greatest)
+	// build the motor input nerves vector:
+	std::vector<InputOutputNerve<InputSocket*>> motorInputs;
+	for (int i=0; i<motors_.size(); i++) {
+		for (int j=0; j<motors_[i]->getInputCount(); j++)
+			mapInputNerves_[motors_[i]->getInputSocket(j)] = motorInputs.size();
+			motorInputs.push_back(std::make_pair(motors_[i]->getInputSocket(j), motors_[i]->getInputVMSCoord(j)));
+	}
+	// build the sensor output nerves vector:
+	std::vector<InputOutputNerve<OutputSocket*>> sensorOutputs;
+	for (int i=0; i<sensors_.size(); i++) {
+		for (int j=0; j<sensors_[i]->getOutputCount(); j++)
+			sensorOutputs.push_back(std::make_pair(sensors_[i]->getOutSocket(j), sensors_[i]->getOutputVMSCoord(j)));
+	}
+	// sort the input/output nerves by their VMS coords, smallest to greatest:
+	sortNervesByVMSCoord(motorInputs);
+	sortNervesByVMSCoord(sensorOutputs);
+	sortNervesByVMSCoord(outputNeurons_);
+	sortNervesByVMSCoord(inputNeurons_);
 
-	sortNervesByVMSCoord(orderedInputNeurons_);
-	sortNervesByVMSCoord(orderedOutputNeurons_);
-	sortNervesByVMSCoord(orderedSensorOutputs_);
 	// link nerves to motors/sensors:
-	linkMotorNerves();
-	linkSensorNerves();
+	linkMotorNerves(outputNeurons_, motorInputs_);
+	linkSensorNerves(inputNeurons_, sensorOutputs_);
 }

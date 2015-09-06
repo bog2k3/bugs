@@ -74,9 +74,9 @@ protected:
 	Genome genome_;
 	NeuralNet* neuralNet_;
 
-	// motor nerves in the order they are created from the genome - motor line indices match these
+	// motor nerves mapped by the indices representing the order in which they are created from the genome - motor line indices match these.
 	// 'first' is the inputSocket of the motor, 'second' is the outputSocket of the neuron connected to it.
-	std::vector<std::pair<InputSocket*, OutputSocket*>> motorLines_;
+	std::map<int, std::pair<InputSocket*, OutputSocket*>> motorLines_;
 
 	Ribosome* ribosome_;
 	bool isAlive_;

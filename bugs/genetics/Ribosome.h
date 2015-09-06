@@ -49,7 +49,7 @@ struct GrowthData {
 };
 
 template<typename T>
-using inputOutputNerve = std::pair<T, float>;	// first (T) is the nerve pointer, second is the VMS coordinate
+using InputOutputNerve = std::pair<T, float>;	// first (T) is the nerve pointer, second is the VMS coordinate
 
 /**
  * decodes the entity's genome and builds it step by step. When finished the entity will have its final
@@ -74,8 +74,8 @@ private:
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
 	std::map<int64_t, CummulativeValue> mapSynapses_;
-	std::vector<Neuron*> outputNeurons_;
-	std::vector<Neuron*> inputNeurons_;
+	std::vector<InputOutputNerve<Neuron*>> outputNeurons_;
+	std::vector<InputOutputNerve<Neuron*>> inputNeurons_;
 	std::vector<IMotor*> motors_;
 	std::vector<ISensor*> sensors_;
 	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
@@ -103,15 +103,18 @@ private:
 	// Compute a synapse key (unique id for from-to pair:
 	inline int64_t synKey(int64_t from, int64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
 	void createSynapse(int from, int to, int commandNeuronsOfs, float weight);
-	void linkMotorNerves();
-	void linkSensorNerves();
+	void resolveNerveLinkage();
+	void linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,
+						 std::vector<InputOutputNerve<InputSocket*>> const& orderedMotorInputs_);
+	void linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedInputNeurons_,
+						  std::vector<InputOutputNerve<OutputSocket*>> orderedSensorOutputs_);
 
 	// searches for the nerve nearest to the given matchCoordinate in the Virtual Matching Space; returns its index or -1 if none found
 	template<typename T>
-	int getVMSNearestNerveIndex(std::vector<inputOutputNerve<T>> nerves, float matchCoord);	// returns -1 if none found
+	int getVMSNearestNerveIndex(std::vector<InputOutputNerve<T>> const& nerves, float matchCoord);	// returns -1 if none found
 
 	template<typename T>
-	void sortNervesByVMSCoord(std::vector<inputOutputNerve<T>> nerves);
+	void sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> const& nerves);
 
 	void cleanUp();
 };
