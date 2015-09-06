@@ -22,6 +22,7 @@
 
 
 class NeuralNet;
+class InputSocket;
 class Ribosome;
 class Torso;
 class ZygoteShell;
@@ -78,6 +79,9 @@ protected:
 	// 'first' is the inputSocket of the motor, 'second' is the outputSocket of the neuron connected to it.
 	std::map<int, std::pair<InputSocket*, OutputSocket*>> motorLines_;
 
+	// default sensors (arguments represent VMS coordinates):
+	LifetimeSensor lifeTimeSensor_ { 50.f };
+
 	Ribosome* ribosome_;
 	bool isAlive_;
 	bool isDeveloping_;
@@ -85,7 +89,6 @@ protected:
 	Torso* body_;
 	ZygoteShell* zygoteShell_;
 	UpdateList bodyPartsUpdateList_;
-	LifetimeSensor lifeTimeSensor_;
 	float growthMassBuffer_;	// stores processed food to be used for growth (at the speed dictated by genes)
 	float maxGrowthMassBuffer_;	// max growth buffer capacity (depends on max growth speed)
 	float cachedLeanMass_;		// lean body mass cached; stored here for reasons of float precision

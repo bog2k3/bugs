@@ -21,7 +21,7 @@ public:
 	virtual OutputSocket* getOutSocket(unsigned index) const = 0;
 
 	// returns the Virtual Matching Space coordinate of one of this sensor's nerves
-	virtual float getOutputVMSCoord(unsigned index) = 0;
+	virtual float getOutputVMSCoord(unsigned index) const = 0;
 };
 
 

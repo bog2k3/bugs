@@ -47,13 +47,17 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_synapse.weight.chanceToMutate);
 		metaGenes.push_back(&data.gene_synapse.weight.changeAmount);
 		break;
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		metaGenes.push_back(&data.gene_feedback_synapse.from.chanceToMutate);
-		metaGenes.push_back(&data.gene_feedback_synapse.from.changeAmount);
-		metaGenes.push_back(&data.gene_feedback_synapse.to.chanceToMutate);
-		metaGenes.push_back(&data.gene_feedback_synapse.to.changeAmount);
-		metaGenes.push_back(&data.gene_feedback_synapse.weight.chanceToMutate);
-		metaGenes.push_back(&data.gene_feedback_synapse.weight.changeAmount);
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		metaGenes.push_back(&data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate);
+		metaGenes.push_back(&data.gene_neuron_input.destNeuronVirtIndex.changeAmount);
+		metaGenes.push_back(&data.gene_neuron_input.inCoord.chanceToMutate);
+		metaGenes.push_back(&data.gene_neuron_input.inCoord.changeAmount);
+		break;
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		metaGenes.push_back(&data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate);
+		metaGenes.push_back(&data.gene_neuron_output.srcNeuronVirtIndex.changeAmount);
+		metaGenes.push_back(&data.gene_neuron_output.outCoord.chanceToMutate);
+		metaGenes.push_back(&data.gene_neuron_output.outCoord.changeAmount);
 		break;
 	case GENE_TYPE_TRANSFER:
 		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.chanceToMutate);
@@ -122,19 +126,25 @@ Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
 	return g;
 }
 
-Gene Gene::createRandomSynapseGene(int nNeurons, int nMotors, int nSensors) {
+Gene Gene::createRandomSynapseGene(int nNeurons) {
 	GeneSynapse g;
-	g.from.set(randi(-nSensors, nNeurons-1));
-	g.to.set(randi(-nMotors, nNeurons-1));
+	g.from.set(randi(nNeurons-1));
+	g.to.set(randi(nNeurons-1));
 	g.weight.set(randf());
 	return g;
 }
 
-Gene Gene::createRandomFeedbackSynapseGene(int nMotors, int nNeurons) {
-	GeneFeedbackSynapse g;
-	g.from.set(randi(nMotors-1));
-	g.from.set(randi(-nMotors, nNeurons-1));
-	g.weight.set(srandf());
+Gene Gene::createRandomNeuronInputCoordGene(int nNeurons) {
+	GeneNeuronInputCoord g;
+	g.destNeuronVirtIndex.set(randi(nNeurons-1));
+	g.inCoord.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	return g;
+}
+
+Gene Gene::createRandomNeuronOutputCoordGene(int nNeurons) {
+	GeneNeuronOutputCoord g;
+	g.srcNeuronVirtIndex.set(randi(nNeurons-1));
+	g.outCoord.set(randf() * BodyConst::MaxVMSCoordinateValue);
 	return g;
 }
 
@@ -156,7 +166,7 @@ Gene Gene::createRandomAttribGene() {
 	GeneAttribute g;
 	g.attribute = (gene_part_attribute_type)randi(GENE_ATTRIB_INVALID+1, GENE_ATTRIB_END-1);
 	g.value.set(randf());
-	g.attribIndex = randi(constants::MAX_ATTRIB_INDEX_COUNT);
+	g.attribIndex.set(randi(constants::MAX_ATTRIB_INDEX_COUNT));
 	return g;
 }
 
@@ -168,7 +178,7 @@ Gene Gene::createRandomSkipGene(int spaceLeftAfter) {
 	return g;
 }
 
-Gene Gene::createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeurons) {
+Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 	gene_type type = (gene_type)randi(GENE_TYPE_INVALID+1, GENE_TYPE_END-1);
 	switch (type) {
 	case GENE_TYPE_BODY_ATTRIBUTE:
@@ -177,8 +187,10 @@ Gene Gene::createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeur
 		return createRandomProteinGene();
 	case GENE_TYPE_OFFSET:
 		return createRandomOffsetGene(spaceLeftAfter);
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		return createRandomFeedbackSynapseGene(nMotors, nNeurons);
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		return createRandomNeuronInputCoordGene(nNeurons);
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		return createRandomNeuronOutputCoordGene(nNeurons);
 	case GENE_TYPE_NEURAL_CONST:
 		return createRandomNeuralConstGene(nNeurons);
 	case GENE_TYPE_PART_ATTRIBUTE:
@@ -188,7 +200,7 @@ Gene Gene::createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeur
 	case GENE_TYPE_STOP:
 		return GeneStop();
 	case GENE_TYPE_SYNAPSE:
-		return createRandomSynapseGene(nNeurons, nMotors, nSensors);
+		return createRandomSynapseGene(nNeurons);
 	case GENE_TYPE_TRANSFER:
 		return createRandomTransferFuncGene(nNeurons);
 	case GENE_TYPE_NO_OP:

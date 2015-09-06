@@ -15,21 +15,22 @@
 #include <map>
 #include <memory>
 
-enum class PART_TYPE {
-	BODY_PART_INVALID,
+enum class BodyPartType {
+	INVALID,
 
-	BODY_PART_TORSO,
-	BODY_PART_BONE,
-	BODY_PART_MUSCLE,
-	BODY_PART_JOINT,
-	BODY_PART_GRIPPER,
-	BODY_PART_ZYGOTE_SHELL,
-	BODY_PART_SENSOR_PROXIMITY,		// many inputs for multiple types of entities
-	BODY_PART_SENSOR_DIRECTION,		// many inputs for multiple types of entities
-	BODY_PART_SENSOR_COMPASS,		// 1 input - absolute orientation in world
-	BODY_PART_SENSOR_SIGHT,			// array of inputs for pixels (multiple channels maybe?)
-	BODY_PART_MOUTH,
-	BODY_PART_EGGLAYER,
+	TORSO,
+	BONE,
+	PART_MUSCLE,
+	JOINT,
+	MUSCLE,
+	GRIPPER,
+	ZYGOTE_SHELL,
+	SENSOR_PROXIMITY,		// many inputs for multiple types of entities
+	SENSOR_DIRECTION,		// many inputs for multiple types of entities
+	SENSOR_COMPASS,		// 1 input - absolute orientation in world
+	SENSOR_SIGHT,			// array of inputs for pixels (multiple channels maybe?)
+	MOUTH,
+	EGGLAYER,
 };
 
 static constexpr int MAX_CHILDREN = 16;
@@ -69,7 +70,7 @@ class Bug;
 
 class BodyPart {
 public:
-	BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData);
+	BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData> initialData);
 	virtual ~BodyPart();
 
 	// call this to destroy and delete the object. Never delete directly
@@ -77,7 +78,7 @@ public:
 
 	virtual void draw(RenderContext const& ctx);
 
-	inline PART_TYPE getType() const { return type_; }
+	inline BodyPartType getType() const { return type_; }
 
 	// detaches this body part along with all its children from the parent part, breaking all neural connections.
 	// this part and its children may die as a result of this operation if the parameter is true
@@ -108,7 +109,7 @@ public:
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
 	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib, int index=0) {
-		if (mapAttributes_.find(type) == mapAttributes_.end())
+		if (mapAttributes_.find(attrib) == mapAttributes_.end())
 			return nullptr;
 		auto &attrVec = mapAttributes_[attrib];
 		if (attrVec.size() > index)
@@ -150,10 +151,10 @@ public:
 	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
 	// requests (recursively) a nerve line id from the parent and adds it into this node and all nodes above it recursively
 	// this id is the index of the nerve line from the neural network down to one of this motor's inputs
-	int addMotorLine();
+	virtual int addMotorLine();
 	// requests (recursively) a nerve line id from the parent and adds it into this node and all nodes above it recursively
 	// this id is the index of the nerve line from the neural network down to one of this sensor's outputs
-	int addSensorLine();
+	virtual int addSensorLine();
 
 	/*
 	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
@@ -179,7 +180,7 @@ protected:
 	// they contain world-space values that are updated only prior to committing
 	PhysicsProperties cachedProps_;
 	PhysicsBody physBody_;
-	PART_TYPE type_;
+	BodyPartType type_;
 	BodyPart* parent_;
 
 	BodyPart* children_[MAX_CHILDREN];

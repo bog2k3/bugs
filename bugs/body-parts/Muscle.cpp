@@ -73,8 +73,8 @@ float Muscle::getInputVMSCoord(unsigned index) const {
 }
 
 Muscle::Muscle(Joint* joint, int motorDirSign)
-	: BodyPart(BODY_PART_MUSCLE, std::make_shared<MuscleInitializationData>())
-	, inputSocket_(std::make_shared<InputSocket>(nullptr, 1.f))
+	: BodyPart(BodyPartType::MUSCLE, std::make_shared<MuscleInitializationData>())
+	, inputSocket_(new InputSocket(nullptr, 1.f))
 	, joint_(joint)
 	, aspectRatio_(1.f)
 	, rotationSign_(motorDirSign)
@@ -97,6 +97,7 @@ Muscle::Muscle(Joint* joint, int motorDirSign)
 }
 
 Muscle::~Muscle() {
+	delete inputSocket_;
 }
 
 void Muscle::die() {
@@ -159,7 +160,7 @@ void Muscle::commit() {
 		// compute insertion axis (phi0):
 		BodyPart* targetPart = joint_->getChild(0);
 		bool useOY = false;
-		if (targetPart->getType() == BODY_PART_BONE) {
+		if (targetPart->getType() == BodyPartType::BONE) {
 			Bone* bone = dynamic_cast<Bone*>(targetPart);
 			if (bone->getAspectRatio() < 1.f)
 				useOY = true;

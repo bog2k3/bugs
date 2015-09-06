@@ -21,7 +21,7 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 	MuscleInitializationData();
 
 	CummulativeValue aspectRatio;	// length/width
-	CummulativeValue inputVMSCoord = 0; // input nerve VMS coordinate
+	CummulativeValue inputVMSCoord { 0 }; // input nerve VMS coordinate
 };
 
 class Muscle: public BodyPart, public IMotor {
@@ -42,7 +42,7 @@ public:
 protected:
 	static constexpr int nAngleSteps = 10;
 
-	std::shared_ptr<InputSocket> inputSocket_;
+	InputSocket* inputSocket_;
 	Joint* joint_;
 	float aspectRatio_;
 	float rotationSign_;

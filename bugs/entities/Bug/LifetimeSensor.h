@@ -12,15 +12,19 @@
 
 class LifetimeSensor: public ISensor {
 public:
-	LifetimeSensor();
-	virtual ~LifetimeSensor() {}
+	LifetimeSensor(float defaultVMSCoord);
+	virtual ~LifetimeSensor();
 
 	void update(float dt);
 
-	std::shared_ptr<OutputSocket> getOutSocket() const override { return socket; }
+	// ISensor::
+	unsigned getOutputCount() const override { return 1; }
+	OutputSocket* getOutSocket(unsigned index) const override { return index==0 ? socket_ : nullptr; }
+	float getOutputVMSCoord(unsigned index) const override { return index==0 ? defaultVMSCoord_ : 0; }
 protected:
 	float time_;
-	std::shared_ptr<OutputSocket> socket;
+	OutputSocket* socket_;
+	float defaultVMSCoord_;
 };
 
 #endif /* ENTITIES_LIFETIMESENSOR_H_ */

@@ -53,10 +53,13 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_offset.offset;
 		stream << gene.data.gene_offset.targetSegment;
 		break;
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		stream << gene.data.gene_feedback_synapse.from;
-		stream << gene.data.gene_feedback_synapse.to;
-		stream << gene.data.gene_feedback_synapse.weight;
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		stream << gene.data.gene_neuron_input.destNeuronVirtIndex;
+		stream << gene.data.gene_neuron_input.inCoord;
+		break;
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		stream << gene.data.gene_neuron_output.srcNeuronVirtIndex;
+		stream << gene.data.gene_neuron_output.outCoord;
 		break;
 	case GENE_TYPE_NEURAL_CONST:
 		stream << gene.data.gene_neural_constant.targetNeuron;
@@ -111,10 +114,13 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_offset.offset;
 		stream >> gene.data.gene_offset.targetSegment;
 		break;
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		stream >> gene.data.gene_feedback_synapse.from;
-		stream >> gene.data.gene_feedback_synapse.to;
-		stream >> gene.data.gene_feedback_synapse.weight;
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		stream >> gene.data.gene_neuron_input.destNeuronVirtIndex;
+		stream >> gene.data.gene_neuron_input.inCoord;
+		break;
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		stream >> gene.data.gene_neuron_output.srcNeuronVirtIndex;
+		stream >> gene.data.gene_neuron_output.outCoord;
 		break;
 	case GENE_TYPE_NEURAL_CONST:
 		stream >> gene.data.gene_neural_constant.targetNeuron;

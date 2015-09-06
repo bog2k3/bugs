@@ -26,7 +26,7 @@ BodyPartInitializationData::BodyPartInitializationData()
 {
 }
 
-BodyPart::BodyPart(PART_TYPE type, std::shared_ptr<BodyPartInitializationData> initialData)
+BodyPart::BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData> initialData)
 	: type_(type)
 	, parent_(nullptr)
 	, children_{nullptr}
@@ -370,7 +370,6 @@ void BodyPart::detach(bool die) {
 	if (parent_) {
 		// first must detach all neural connections
 		detachMotorLines(motorLines_);
-		detachSensorLines(sensorLines_);
 		parent_->remove(this);
 		onDetachedFromParent();
 		parent_->hierarchyMassChanged();
@@ -414,23 +413,23 @@ void BodyPart::commit_tree(float initialScale) {
 		reverseUpdateCachedProps();
 	lastCommitSize_inv_ = 1.f / size_;
 	// perform commit on local node:
-	if (type_ != BODY_PART_JOINT) {
+	if (type_ != BodyPartType::JOINT) {
 		if (!physBody_.b2Body_ && !dontCreateBody_)
 			physBody_.create(cachedProps_);
 		commit();
 	}
 	// perform recursive commit on all non-muscle children:
 	for (int i=0; i<nChildren_; i++) {
-		if (children_[i]->type_ != BODY_PART_MUSCLE)
+		if (children_[i]->type_ != BodyPartType::MUSCLE)
 			children_[i]->commit_tree(initialScale);
 	}
 	// muscles go after all other children:
 	for (int i=0; i<nChildren_; i++) {
-		if (children_[i]->type_ == BODY_PART_MUSCLE)
+		if (children_[i]->type_ == BodyPartType::MUSCLE)
 			children_[i]->commit_tree(initialScale);
 	}
 
-	if (type_ == BODY_PART_JOINT) {
+	if (type_ == BodyPartType::JOINT) {
 		commit();
 	}
 	committed_ = true;
@@ -551,7 +550,7 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 				|| size_ * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
 		{
 			lastCommitSize_inv_ = 1.f / size_;
-			if (type_ != BODY_PART_JOINT) {
+			if (type_ != BodyPartType::JOINT) {
 				commit();
 				committed_now = true;
 			} else
@@ -562,7 +561,7 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 	for (int i=0; i<nChildren_; i++) {
 		child_changed |= children_[i]->applyScale_treeImpl(scale, committed_now);
 	}
-	if (type_ == BODY_PART_JOINT && committed_ && (should_commit_joint || parentChanged || child_changed)) {
+	if (type_ == BodyPartType::JOINT && committed_ && (should_commit_joint || parentChanged || child_changed)) {
 		// must commit a joint whenever the threshold is reached, or parent or child has committed
 		commit();
 		committed_now = true;

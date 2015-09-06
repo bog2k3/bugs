@@ -157,7 +157,6 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int stat_new = 0;
 #endif
 
-	int nMotors = 0, nSensors = 0;
 	std::map<int, bool> mapNeuronsExist;
 
 	static constexpr float numberAlterationsPerChromosome = 3;	// how many alterations we desire for a chromosome at most
@@ -170,36 +169,6 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 		// count
 		switch (c.genes[i].type) {
-#warning "find a different way to approximate number of sensors/motors"
-		/*case GENE_TYPE_DEVELOPMENT:
-			if (c.genes[i].data.gene_command.command == GENE_DEV_SPLIT) {
-				nMotors += 5;
-				nSensors += 5;
-				break;
-			}
-			switch (c.genes[i].data.gene_command.part_type) {
-			case GENE_PART_BONE:
-				nMotors += 2;
-				nSensors++;
-				break;
-			case GENE_PART_EGGLAYER:
-				nMotors += 2;
-				nSensors++;
-				break;
-			case GENE_PART_GRIPPER:
-				nMotors++;
-				break;
-			case GENE_PART_SENSOR:
-				nSensors++;
-				break;
-			default:
-				break;
-			}
-			break;*/
-		case GENE_TYPE_FEEDBACK_SYNAPSE:
-			if (c.genes[i].data.gene_feedback_synapse.to >= 0)
-				mapNeuronsExist[c.genes[i].data.gene_feedback_synapse.to] = true;
-			break;
 		case GENE_TYPE_SYNAPSE:
 			if (c.genes[i].data.gene_synapse.from >= 0)
 				mapNeuronsExist[c.genes[i].data.gene_synapse.from] = true;
@@ -269,7 +238,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	if (//false && // DEBUG: disable adding new genes
 			randf() < constants::global_chance_to_spawn_gene * c.genes.size()) {
 		int position = randi(c.genes.size()-1);
-		Gene newGene(Gene::createRandom(c.genes.size()-position, nMotors, nSensors, nNeurons));
+		Gene newGene(Gene::createRandom(c.genes.size()-position, nNeurons));
 		if (c.genes[position].type == GENE_TYPE_NO_OP)
 			c.genes[position] = newGene;
 		else {
@@ -330,10 +299,13 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered += alterAtom(g.data.gene_offset.offset, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_offset.targetSegment, mutationChanceFactor);
 		break;
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		altered += alterAtom(g.data.gene_feedback_synapse.from, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_feedback_synapse.to, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_feedback_synapse.weight, mutationChanceFactor);
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		altered += alterAtom(g.data.gene_neuron_input.destNeuronVirtIndex, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_neuron_input.inCoord, mutationChanceFactor);
+		break;
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		altered += alterAtom(g.data.gene_neuron_output.srcNeuronVirtIndex, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_neuron_output.outCoord, mutationChanceFactor);
 		break;
 	case GENE_TYPE_NEURAL_CONST:
 		altered += alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
@@ -394,10 +366,13 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 		ret += g.data.gene_offset.offset.chanceToMutate.value;
 		ret += g.data.gene_offset.targetSegment.chanceToMutate.value;
 		break;
-	case GENE_TYPE_FEEDBACK_SYNAPSE:
-		ret += g.data.gene_feedback_synapse.from.chanceToMutate.value;
-		ret += g.data.gene_feedback_synapse.to.chanceToMutate.value;
-		ret += g.data.gene_feedback_synapse.weight.chanceToMutate.value;
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		ret += g.data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate.value;
+		ret += g.data.gene_neuron_input.inCoord.chanceToMutate.value;
+		break;
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		ret += g.data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate.value;
+		ret += g.data.gene_neuron_output.outCoord.chanceToMutate.value;
 		break;
 	case GENE_TYPE_NEURAL_CONST:
 		ret += g.data.gene_neural_constant.value.chanceToMutate.value;

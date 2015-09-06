@@ -9,12 +9,17 @@
 
 #include "../../neuralnet/OutputSocket.h"
 
-LifetimeSensor::LifetimeSensor()
+LifetimeSensor::LifetimeSensor(float defaultVMSCoord)
 	: time_(0)
-	, socket(std::make_shared<OutputSocket>()) {
+	, socket_(new OutputSocket())
+	, defaultVMSCoord_(defaultVMSCoord) {
+}
+
+LifetimeSensor::~LifetimeSensor() {
+	delete socket_;
 }
 
 void LifetimeSensor::update(float dt) {
 	time_ += dt;
-	socket->push_value(time_);
+	socket_->push_value(time_);
 }

@@ -18,7 +18,7 @@ struct GripperInitializationData : public BodyPartInitializationData {
 	virtual ~GripperInitializationData() noexcept = default;
 	GripperInitializationData() = default;
 
-	CummulativeValue inputVMSCoord = 0; // input nerve VMS coordinate
+	CummulativeValue inputVMSCoord { 0 }; // input nerve VMS coordinate
 };
 
 
@@ -38,7 +38,7 @@ public:
 	float getInputVMSCoord(unsigned index) const override;
 
 protected:
-	std::shared_ptr<InputSocket> inputSocket_;
+	InputSocket* inputSocket_;
 	bool active_;
 	b2WeldJoint* groundJoint_;
 

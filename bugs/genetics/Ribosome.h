@@ -11,19 +11,24 @@
 #include "../body-parts/BodyPart.h"
 #include <glm/vec4.hpp>
 #include <vector>
+#include <set>
 #include <map>
 
 class Bug;
 class BodyPart;
 class Gene;
 class Neuron;
+class InputSocket;
+class OutputSocket;
+class IMotor;
+class ISensor;
 
 struct NeuronInfo {
 	int index;
 	CummulativeValue transfer;
 	CummulativeValue constant;
-	CummulativeValue inputVMSCoord = 0;
-	CummulativeValue outputVMSCoord = 0;
+	CummulativeValue inputVMSCoord { 0 };
+	CummulativeValue outputVMSCoord { 0 };
 	NeuronInfo(int index, float transfer, float constant)
 		: index(index), transfer(transfer), constant(constant) {
 	}
@@ -74,8 +79,8 @@ private:
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
 	std::map<int64_t, CummulativeValue> mapSynapses_;
-	std::vector<InputOutputNerve<Neuron*>> outputNeurons_;
-	std::vector<InputOutputNerve<Neuron*>> inputNeurons_;
+	std::set<InputOutputNerve<Neuron*>> outputNeurons_;
+	std::set<InputOutputNerve<Neuron*>> inputNeurons_;
 	std::vector<IMotor*> motors_;
 	std::vector<ISensor*> sensors_;
 	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
@@ -91,14 +96,14 @@ private:
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
 	bool partMustGenerateJoint(int part_type);
 	void growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 hyperPosition, int genomeOffset);
+	void addMotor(IMotor* motor, BodyPart* part);
+	void addSensor(ISensor* sensor);
 
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();
 	void checkAndAddNeuronMapping(int virtualIndex);
 	void updateNeuronTransfer(int virtualIndex, float transfer);
 	void updateNeuronConstant(int virtualIndex, float constant);
-	void updateNeuronOutputCoord(int virtualIndex, float VMScoord);
-	void updateNeuronInputCoord(int virtualIndex, float VMScoord);
 	inline bool hasNeuron(int virtualIndex) { return mapNeurons_.find(virtualIndex) != mapNeurons_.end(); }
 	// Compute a synapse key (unique id for from-to pair:
 	inline int64_t synKey(int64_t from, int64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }

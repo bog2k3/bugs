@@ -33,7 +33,7 @@ void Bone::cacheInitializationData() {
 }
 
 Bone::Bone()
-	: BodyPart(BODY_PART_BONE, std::make_shared<BoneInitializationData>())
+	: BodyPart(BodyPartType::BONE, std::make_shared<BoneInitializationData>())
 	, length_(0)
 	, width_(0)
 {

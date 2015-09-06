@@ -47,7 +47,7 @@ float EggLayer::getInputVMSCoord(unsigned index) const {
 }
 
 EggLayer::EggLayer()
-	: BodyPart(BODY_PART_EGGLAYER, std::make_shared<EggLayerInitializationData>())
+	: BodyPart(BodyPartType::EGGLAYER, std::make_shared<EggLayerInitializationData>())
 	, targetEggMass_(BodyConst::initialEggMass)
 	, ejectSpeed_(0)
 {

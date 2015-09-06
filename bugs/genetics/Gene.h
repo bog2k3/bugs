@@ -93,9 +93,9 @@ struct GeneAttribute {
 };
 
 struct GeneSynapse {
-	Atom<int> from;		// todo: only positive; negative means sensor, positive or 0 means neuron index
-	Atom<int> to;		// todo: only positive: negative means motor, positive or 0 means neuron index
-	Atom<float> weight;
+	Atom<int> from;		// virtual neuron index
+	Atom<int> to;		// virtual neuron index
+	Atom<float> weight;	// absolute weight of the synapse (cummulative)
 };
 
 struct GeneNeuronOutputCoord {
@@ -202,8 +202,9 @@ public:
 		return *this;
 	}
 
-	// parameter tells how many genes are in the chromosome after the position where this one will be inserted
-	static Gene createRandom(int spaceLeftAfter, int nMotors, int nSensors, int nNeurons);
+	// @spaceLeftAfter tells how many genes are in the chromosome after the position where this one will be inserted
+	// @nNeurons tells how many neurons the genome creates
+	static Gene createRandom(int spaceLeftAfter, int nNeurons);
 
 	std::vector<MetaGene*> metaGenes;
 
@@ -217,8 +218,9 @@ private:
 	static Gene createRandomProteinGene();
 	static Gene createRandomOffsetGene(int spaceLeftAfter);
 	static Gene createRandomAttribGene();
-	static Gene createRandomSynapseGene(int nNeurons, int nMotors, int nSensors);
-	static Gene createRandomFeedbackSynapseGene(int nMotors, int nNeurons);
+	static Gene createRandomSynapseGene(int nNeurons);
+	static Gene createRandomNeuronInputCoordGene(int nNeurons);
+	static Gene createRandomNeuronOutputCoordGene(int nNeurons);
 	static Gene createRandomTransferFuncGene(int nNeurons);
 	static Gene createRandomNeuralConstGene(int nNeurons);
 	static Gene createRandomBodyAttribGene();

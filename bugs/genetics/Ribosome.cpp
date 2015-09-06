@@ -147,8 +147,8 @@ void Ribosome::decodeDeferredGenes() {
 }
 
 template <typename T>
-void Ribosome::sortNervesByVMSCoord(std::vector<inputOutputNerve<T>> nerves) {
-	std::sort(nerves.begin(), nerves.end(), [] (inputOutputNerve<T> const& left, inputOutputNerve<T> const& right) -> bool {
+void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> nerves) {
+	std::sort(nerves.begin(), nerves.end(), [] (InputOutputNerve<T> const& left, InputOutputNerve<T> const& right) -> bool {
 		return left.second < right.second;
 	});
 }
@@ -160,9 +160,9 @@ bool Ribosome::step() {
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
 		bug_->body_->applyRecursive([&hasMouth, &hasEggLayer, this] (BodyPart* p) {
-			if (p->getType() == BODY_PART_MOUTH)
+			if (p->getType() == BodyPartType::MOUTH)
 				hasMouth = true;
-			if (p->getType() == BODY_PART_EGGLAYER) {
+			if (p->getType() == BodyPartType::EGGLAYER) {
 				hasEggLayer = true;
 				((EggLayer*)p)->setTargetEggMass(bug_->eggMass_);
 			}
@@ -236,43 +236,43 @@ bool Ribosome::step() {
 
 void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 hyperPosition, int genomeOffset) {
 	// grow only works on bones and torso
-	if (parent->getType() != BODY_PART_BONE && parent->getType() != BODY_PART_TORSO)
+	if (parent->getType() != BodyPartType::BONE && parent->getType() != BodyPartType::TORSO)
 		return;
 	// determine the body part type to grow from the hyperPosition
-	PART_TYPE partTypes[2][2][2][2] = {
+	BodyPartType partTypes[2][2][2][2] = {
 		/* W- */ {
 			/* Z- */ {
 				/* Y- */ {
-					/* X- */ BODY_PART_BONE, /* X+ */ BODY_PART_INVALID
+					/* X- */ BodyPartType::BONE, /* X+ */ BodyPartType::INVALID
 				},
 				/* Y+ */ {
-					/* X- */ BODY_PART_GRIPPER, /* X+ */ BODY_PART_MOUTH
+					/* X- */ BodyPartType::GRIPPER, /* X+ */ BodyPartType::MOUTH
 				},
 			},
 			/* Z+ */ {
 				/* Y- */ {
-					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+					/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
 				},
 				/* Y+ */ {
-					/* X- */ BODY_PART_MUSCLE, /* X+ */ BODY_PART_EGGLAYER
+					/* X- */ BodyPartType::MUSCLE, /* X+ */ BodyPartType::EGGLAYER
 				},
 			},
 		},
 		/* W+ */ {
 			/* Z- */ {
 				/* Y- */ {
-					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+					/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
 				},
 				/* Y+ */ {
-					/* X- */ BODY_PART_SENSOR_PROXIMITY, /* X+ */ BODY_PART_SENSOR_DIRECTION
+					/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::SENSOR_DIRECTION
 				},
 			},
 			/* Z+ */ {
 				/* Y- */ {
-					/* X- */ BODY_PART_INVALID, /* X+ */ BODY_PART_INVALID
+					/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
 				},
 				/* Y+ */ {
-					/* X- */ BODY_PART_SENSOR_COMPASS, /* X+ */ BODY_PART_SENSOR_SIGHT
+					/* X- */ BodyPartType::SENSOR_COMPASS, /* X+ */ BodyPartType::SENSOR_SIGHT
 				},
 			},
 		}
@@ -280,8 +280,8 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 	// if any one axis is zero, we cannot determine the part type and none is grown
 	if (hyperPosition.x * hyperPosition.y * hyperPosition.z * hyperPosition.w == 0)
 		return;
-	PART_TYPE newPartType = partTypes[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y > 0][hyperPosition.x > 0];
-	if (newPartType == BODY_PART_INVALID)
+	BodyPartType newBodyPartType = partTypes[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y > 0][hyperPosition.x > 0];
+	if (newBodyPartType == BodyPartType::INVALID)
 		return;
 
 	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
@@ -301,7 +301,7 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
 	// until it touches an edge of the parent. That point is used as attachment of the new part.
 
-	if (partMustGenerateJoint(newPartType)) {
+	if (partMustGenerateJoint(newBodyPartType)) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
 		Joint* linkJoint = new Joint();
 		/*// now generate the two muscles around the joint
@@ -342,49 +342,46 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 	}
 
 	BodyPart* bp = nullptr;
-	switch (newPartType) {
-	case BODY_PART_BONE:
+	switch (newBodyPartType) {
+	case BodyPartType::BONE:
 		bp = new Bone();
 		break;
-	case BODY_PART_GRIPPER: {
+	case BodyPartType::GRIPPER: {
 		Gripper* gr = new Gripper();
-		int motorLineId = bug_->motors_.size();
-		bug_->motors_.push_back(Motor(gr->getInputSocket(), age));
-		gr->addMotorLine(motorLineId);
+		addMotor(gr, gr);
 		bp = gr;
 		break;
 	}
-	case BODY_PART_MUSCLE: {
+	case BodyPartType::MUSCLE: {
 		// todo
 		break;
 	}
-	case BODY_PART_MOUTH: {
+	case BodyPartType::MOUTH: {
 		Mouth* m = new Mouth();
 		bp = m;
 		break;
 	}
-	case BODY_PART_SENSOR_COMPASS:
+	case BodyPartType::SENSOR_COMPASS:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
-	case BODY_PART_SENSOR_DIRECTION:
+	case BodyPartType::SENSOR_DIRECTION:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
-	case BODY_PART_SENSOR_PROXIMITY:
+	case BodyPartType::SENSOR_PROXIMITY:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
-	case BODY_PART_SENSOR_SIGHT:
+	case BodyPartType::SENSOR_SIGHT:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
-	case BODY_PART_EGGLAYER: {
+	case BodyPartType::EGGLAYER: {
 		EggLayer* e = new EggLayer();
-		for (auto &is : e->getInputSockets())
-			bug_->motors_.push_back(Motor(is, age));
+		addMotor(e, e);
 		bug_->eggLayers_.push_back(e);
 		bp = e;
 		break;
 	}
 	default:
-		ERROR("unhandled gene part type: "<<newPartType);
+		ERROR("unhandled gene part type: "<<newBodyPartType);
 		break;
 	}
 	if (!bp)
@@ -394,6 +391,15 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 
 	// start a new development path from the new part:
 	activeSet_.push_back(std::make_pair(bp, genomeOffset));
+}
+
+void Ribosome::addMotor(IMotor* motor, BodyPart* part) {
+	motors_.push_back(motor);
+	for (int i=0; i<motor->getInputCount(); i++)
+		part->addMotorLine();
+}
+void Ribosome::addSensor(ISensor* sensor) {
+	sensors_.push_back(sensor);
 }
 
 void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
@@ -413,16 +419,6 @@ void Ribosome::updateNeuronTransfer(int virtualIndex, float transfer) {
 void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 	if (hasNeuron(virtualIndex))
 		mapNeurons_[virtualIndex].constant.changeAbs(constant);
-}
-
-void Ribosome::updateNeuronOutputCoord(int virtualIndex, float VMScoord) {
-	if (hasNeuron(virtualIndex))
-		mapNeurons_[virtualIndex].outputVMSCoord.changeAbs(VMScoord);
-}
-
-void Ribosome::updateNeuronInputCoord(int virtualIndex, float VMScoord) {
-	if (hasNeuron(virtualIndex))
-		mapNeurons_[virtualIndex].inputVMSCoord.changeAbs(VMScoord);
 }
 
 void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
@@ -476,8 +472,8 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool 
 
 bool Ribosome::partMustGenerateJoint(int part_type) {
 	switch (part_type) {
-	case BODY_PART_BONE:
-	case BODY_PART_GRIPPER:
+	case BodyPartType::BONE:
+	case BodyPartType::GRIPPER:
 		return true;
 	default:
 		return false;
@@ -553,11 +549,17 @@ void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
 }
 
 void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
-	updateNeuronOutputCoord(g.srcNeuronVirtIndex, g.outCoord);
+	checkAndAddNeuronMapping(g.srcNeuronVirtIndex);
+	mapNeurons_[g.srcNeuronVirtIndex].outputVMSCoord.changeAbs(g.outCoord);
+	// add this neuron into the outputNeurons_ set:
+	outputNeurons_.emplace(mapNeurons_[g.srcNeuronVirtIndex]);
 }
 
 void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
-	updateNeuronInputCoord(g.destNeuronVirtIndex, g.inCoord);
+	checkAndAddNeuronMapping(g.destNeuronVirtIndex);
+	mapNeurons_[g.destNeuronVirtIndex].inputVMSCoord.changeAbs(g.inCoord);
+	// add this neuron into the inputNeurons_ set:
+	inputNeurons_.emplace(mapNeurons_[g.destNeuronVirtIndex]);
 }
 
 void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weight) {

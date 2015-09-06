@@ -36,7 +36,7 @@ void Joint::cacheInitializationData() {
 }
 
 Joint::Joint()
-	: BodyPart(BODY_PART_JOINT, std::make_shared<JointInitializationData>())
+	: BodyPart(BodyPartType::JOINT, std::make_shared<JointInitializationData>())
 	, physJoint_(nullptr)
 	, phiMin_(0)
 	, phiMax_(0)

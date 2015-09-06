@@ -36,7 +36,7 @@ void Mouth::cacheInitializationData() {
 }
 
 Mouth::Mouth()
-	: BodyPart(BODY_PART_MOUTH, std::make_shared<MouthInitializationData>())
+	: BodyPart(BodyPartType::MOUTH, std::make_shared<MouthInitializationData>())
 	, length_(0)
 	, width_(0)
 	, bufferSize_(0)
