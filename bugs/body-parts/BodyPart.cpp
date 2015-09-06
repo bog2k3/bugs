@@ -74,18 +74,10 @@ bool BodyPart::applyRecursive(std::function<bool(BodyPart* pCurrent)> pred) {
 	return false;
 }
 
-int BodyPart::addMotorLine() {
-	assert(parent_ && "cannot add a motor line unless have parent!");
-	int lineId = parent_->addMotorLine();
+void BodyPart::addMotorLine(int lineId) {
 	motorLines_.push_back(lineId);
-	return lineId;
-}
-
-int BodyPart::addSensorLine() {
-	assert(parent_ && "cannot add a sensor line unless have parent!");
-	int lineId = parent_->addSensorLine();
-	sensorLines_.push_back(lineId);
-	return lineId;
+	if (parent_)
+		parent_->addMotorLine(lineId);
 }
 
 int circularPrev(int index, int n) {

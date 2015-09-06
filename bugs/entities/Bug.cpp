@@ -75,7 +75,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	mapBodyAttributes_[GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO] = &reproductiveMassRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_EGG_MASS] = &eggMass_;
 
-	sensors_.push_back(&lifeTimeSensor_);
+	ribosome_->addDefaultSensor(&lifeTimeSensor_);
 
 	if (generation_ > maxGeneration)
 		maxGeneration = generation_;

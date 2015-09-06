@@ -35,10 +35,6 @@ Ribosome::Ribosome(Bug* bug)
 
 	// start decoding with root body part at offset 0 in the genome:
 	activeSet_.push_back(std::make_pair(bug_->body_, 0));
-
-	// the number of default sensors (like lifeTime sensor) added by the bug before genetic decoding
-	nDefaultSensors = bug_->sensors_.size();
-	// TODO: must assign VMS coords to default sensors and push them into the orderedSensorOutputs_ vector
 }
 
 Ribosome::~Ribosome() {
@@ -50,6 +46,11 @@ void Ribosome::cleanUp() {
 	activeSet_.clear();
 	mapNeurons_.clear();
 	mapSynapses_.clear();
+	outputNeurons_.clear();
+	inputNeurons_.clear();
+	motors_.clear();
+	sensors_.clear();
+	mapInputNerves_.clear();
 }
 
 // compares two unsigned longs as if they were expressed as coordinates in a circular scale
@@ -147,7 +148,7 @@ void Ribosome::decodeDeferredGenes() {
 }
 
 template <typename T>
-void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> nerves) {
+void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves) {
 	std::sort(nerves.begin(), nerves.end(), [] (InputOutputNerve<T> const& left, InputOutputNerve<T> const& right) -> bool {
 		return left.second < right.second;
 	});
@@ -395,8 +396,10 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 
 void Ribosome::addMotor(IMotor* motor, BodyPart* part) {
 	motors_.push_back(motor);
-	for (int i=0; i<motor->getInputCount(); i++)
-		part->addMotorLine();
+	for (int i=0; i<motor->getInputCount(); i++) {
+		int lineId = nMotorLines_++;
+		part->addMotorLine(lineId);
+	}
 }
 void Ribosome::addSensor(ISensor* sensor) {
 	sensors_.push_back(sensor);
@@ -470,7 +473,7 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool 
 	}
 }
 
-bool Ribosome::partMustGenerateJoint(int part_type) {
+bool Ribosome::partMustGenerateJoint(BodyPartType part_type) {
 	switch (part_type) {
 	case BodyPartType::BONE:
 	case BodyPartType::GRIPPER:
@@ -563,27 +566,11 @@ void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 }
 
 void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weight) {
-	// todo: must change this - synapses no longer link motor/sensors
-	OutputSocket* pFrom = nullptr;
-	if (from < 0) { // this apparently comes from an input socket
-		if (-from <= (int)bug_->neuralNet_->inputs.size())
-			pFrom = bug_->neuralNet_->inputs[-from-1].get();	// map -1..-n to 0..n-1
-		else
-			return;	// invalid index
-	} else {
-		assertDbg(hasNeuron(from));	// should be there, since synapses dictate neurons
-		pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
-	}
-	Neuron* pTo;
-	if (to < 0) { // apparently a motor command output socket
-		if (-to <= (int)bug_->neuralNet_->outputs.size())
-			pTo = bug_->neuralNet_->neurons[commandNeuronsOfs - to - 1];
-		else
-			return; // invalid index
-	} else {
-		assertDbg(hasNeuron(to));
-		pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
-	}
+	assertDbg(hasNeuron(from));	// should be there, since synapses dictate neurons
+	assertDbg(hasNeuron(to));
+
+	OutputSocket* pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
+	Neuron* pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
 
 	InputSocket* i = new InputSocket(pTo, weight);
 	pTo->inputs.push_back(std::unique_ptr<InputSocket>(i));

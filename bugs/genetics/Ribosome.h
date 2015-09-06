@@ -65,6 +65,10 @@ public:
 	Ribosome(Bug* the_bug);
 	~Ribosome();
 
+	void addDefaultSensor(ISensor* sensor) {
+		addSensor(sensor);
+	}
+
 	/**
 	 * develops the entity one more step. Returns true as long as the process is not finished.
 	 */
@@ -82,6 +86,7 @@ private:
 	std::set<InputOutputNerve<Neuron*>> outputNeurons_;
 	std::set<InputOutputNerve<Neuron*>> inputNeurons_;
 	std::vector<IMotor*> motors_;
+	int nMotorLines_ = 0;
 	std::vector<ISensor*> sensors_;
 	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
@@ -94,7 +99,7 @@ private:
 	void decodeNeuralConst(GeneNeuralConstant const& g);
 	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
-	bool partMustGenerateJoint(int part_type);
+	bool partMustGenerateJoint(BodyPartType part_type);
 	void growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 hyperPosition, int genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
@@ -119,7 +124,7 @@ private:
 	int getVMSNearestNerveIndex(std::vector<InputOutputNerve<T>> const& nerves, float matchCoord);	// returns -1 if none found
 
 	template<typename T>
-	void sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> const& nerves);
+	void sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves);
 
 	void cleanUp();
 };

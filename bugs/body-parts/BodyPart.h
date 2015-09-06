@@ -149,12 +149,10 @@ public:
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
 	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
-	// requests (recursively) a nerve line id from the parent and adds it into this node and all nodes above it recursively
+
+	// adds the motor line id into this node and all nodes above it recursively
 	// this id is the index of the nerve line from the neural network down to one of this motor's inputs
-	virtual int addMotorLine();
-	// requests (recursively) a nerve line id from the parent and adds it into this node and all nodes above it recursively
-	// this id is the index of the nerve line from the neural network down to one of this sensor's outputs
-	virtual int addSensorLine();
+	void addMotorLine(int lineId);
 
 	/*
 	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
