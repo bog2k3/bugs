@@ -29,6 +29,7 @@ JointInitializationData::JointInitializationData()
 
 void Joint::cacheInitializationData() {
 	BodyPart::cacheInitializationData();
+	density_ = BodyConst::JointDensity;
 	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
 	phiMin_ = initData->phiMin.clamp(-PI*0.9f, 0);
 	phiMax_ = initData->phiMax.clamp(0, limitAngle(initData->phiMax, PI*0.9f));
@@ -67,6 +68,9 @@ void Joint::commit() {
 	if (committed_) {
 		destroyPhysJoint();
 	}
+
+	// override size_ as a function of child size:
+	size_ = children_[0]->size_ * 0.4f;
 
 	b2RevoluteJointDef def;
 	def.bodyA = parent_->getBody().b2Body_;

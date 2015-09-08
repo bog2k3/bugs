@@ -242,15 +242,6 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 
 	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 
-	/*int age = g.age;
-	if (mapGeneToIterations_[&g]++ > 0) {
-		// this is not the first time we're reading this gene
-		if (!g.rereadAgeOffset)
-			g.rereadAgeOffset = -g.age;
-		// rereadAgeOffset must be carried over into the next generation
-		age += g.rereadAgeOffset;
-	}*/
-
 	float angle = attachmentSegment * 2*PI / BodyPart::MAX_CHILDREN;
 
 	// The child's attachment point relative to the parent's center is computed from the angle of the current segment,
@@ -260,35 +251,6 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	if (partMustGenerateJoint(newBodyPartType)) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
 		Joint* linkJoint = new Joint();
-		/*// now generate the two muscles around the joint
-		// 1. Right
-		Muscle* mRight = nullptr;
-		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mRightAngle = angle - 0.01f;
-			mRight = new Muscle(linkJoint, -1);
-			float origAngle = mRightAngle;
-			mRightAngle = part->add(mRight, mRightAngle);
-			mRightAngle = limitAngle(mRightAngle-origAngle, PI) + origAngle;
-			mRight->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mRightAngle);
-			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(Motor(mRight->getInputSocket(), age));
-			mRight->addMotorLine(motorLineId);
-			activeSet_.push_back(std::make_pair(mRight, crtPosition + g.genomeOffsetMuscle2));
-		}
-		// 2. Left
-		Muscle* mLeft = nullptr;
-		if (part->getChildrenCount() < MAX_CHILDREN) {
-			float mLeftAngle = angle + 0.01f;
-			mLeft = new Muscle(linkJoint, +1);
-			float origAngle = mLeftAngle;
-			mLeftAngle = part->add(mLeft, mLeftAngle);
-			mLeftAngle = limitAngle(mLeftAngle-origAngle, PI) + origAngle;
-			mLeft->getAttribute(GENE_ATTRIB_LOCAL_ROTATION)->reset(angle - mLeftAngle);
-			int motorLineId = bug_->motors_.size();
-			bug_->motors_.push_back(Motor(mLeft->getInputSocket(), age));
-			mLeft->addMotorLine(motorLineId);
-			activeSet_.push_back(std::make_pair(mLeft, crtPosition + g.genomeOffsetMuscle1));
-		}*/
 		parent->add(linkJoint, angle);
 
 		// set part to point to the joint's node, since that's where the actual part will be attached:
