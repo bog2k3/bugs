@@ -27,8 +27,10 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 class Muscle: public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent:
-	Muscle(Joint* joint, int motorDirSign);
+	Muscle();
 	virtual ~Muscle() override;
+
+	void setJoint(Joint* joint, int motorDirSign);
 
 	void draw(RenderContext const& ctx) override;
 	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
@@ -42,10 +44,10 @@ public:
 protected:
 	static constexpr int nAngleSteps = 10;
 
-	InputSocket* inputSocket_;
-	Joint* joint_;
+	InputSocket* inputSocket_ = nullptr;
+	Joint* joint_ = nullptr;
 	float aspectRatio_;
-	float rotationSign_;
+	float rotationSign_ = 1.f;
 	float maxForce_;
 	float maxJointAngularSpeed_;
 	float phiToRSinAlphaHSinBeta_[nAngleSteps];	// r*sin(alpha)+h*sin(beta) = f(phi) table

@@ -22,6 +22,7 @@ class InputSocket;
 class OutputSocket;
 class IMotor;
 class ISensor;
+class Muscle;
 
 struct NeuronInfo {
 	int index;
@@ -42,9 +43,19 @@ struct NeuronInfo {
 	}
 };
 
+struct MuscleInfo {
+	BodyPart* parent;
+	unsigned parentSlice;
+	Muscle* muscle;
+
+	MuscleInfo(Muscle* muscle, BodyPart* parent, unsigned parentSlice)
+		: parent(parent), parentSlice(parentSlice), muscle(muscle) {
+	}
+};
+
 struct GrowthData {
-	int startGenomePos; // initial genome offset for this part (children are relative to this one)
-	int crtGenomePos; // current READ position in genome for this part
+	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
+	unsigned crtGenomePos; // current READ position in genome for this part
 	glm::vec4 hyperPositions[MAX_CHILDREN] {glm::vec4(0)};	// holds hyper-space positions for each segment in a body part
 	CummulativeValue offsets[MAX_CHILDREN]; // holds relative genome offsets for each segment in a body part
 
@@ -76,10 +87,9 @@ public:
 
 private:
 	Bug* bug_;
-//	int nDefaultSensors = 0;
-	std::vector<Gene*> neuralGenes_;
 	std::vector<std::pair<BodyPart*, GrowthData>> activeSet_;
-	// std::map<GeneCommand*, int> mapGeneToIterations_; // maps growth genes to number of iterations (how many times they've been read so far)
+	std::vector<MuscleInfo> muscleInfo_;
+	std::vector<Gene*> neuralGenes_;
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
 	std::map<int64_t, CummulativeValue> mapSynapses_;
@@ -100,9 +110,10 @@ private:
 	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
 	bool partMustGenerateJoint(BodyPartType part_type);
-	void growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 hyperPosition, int genomeOffset);
+	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
+	void resolveMuscleLinkage();
 
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();

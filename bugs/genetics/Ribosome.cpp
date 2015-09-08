@@ -128,6 +128,9 @@ bool Ribosome::step() {
 			return false;
 		}
 
+		// link all muscles to joints:
+		resolveMuscleLinkage();
+
 		// now decode the neural network:
 		initializeNeuralNetwork();
 		decodeDeferredGenes();
@@ -139,8 +142,8 @@ bool Ribosome::step() {
 
 		return false;
 	}
-	int nCrtBranches = activeSet_.size();
-	for (int i=0; i<nCrtBranches; i++) {
+	unsigned nCrtBranches = activeSet_.size();
+	for (unsigned i=0; i<nCrtBranches; i++) {
 		BodyPart* p = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second.crtGenomePos++;
 		bool hasFirst = offset < bug_->genome_.first.genes.size();
@@ -187,7 +190,7 @@ bool Ribosome::step() {
 	return true;
 }
 
-void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 hyperPosition, int genomeOffset) {
+void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {
 	// grow only works on bones and torso
 	if (parent->getType() != BodyPartType::BONE && parent->getType() != BodyPartType::TORSO)
 		return;
@@ -306,7 +309,12 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 		break;
 	}
 	case BodyPartType::MUSCLE: {
-		// todo link muscle to the nearest joint - or one towards which it's oriented if equidistant
+		// muscle must be linked to the nearest joint - or one towards which it's oriented if equidistant
+		// linkage is postponed until before commit when all parts are in place (muscle may be created before joint)
+		Muscle* m = new Muscle();
+		muscleInfo_.push_back(MuscleInfo(m, parent, attachmentSegment));
+		addMotor(m, m);
+		bp = m;
 		break;
 	}
 	case BodyPartType::MOUTH: {
@@ -659,4 +667,11 @@ void Ribosome::resolveNerveLinkage() {
 	// link nerves to motors/sensors:
 	linkMotorNerves(outputNeurons, motorInputs);
 	linkSensorNerves(inputNeurons, sensorOutputs);
+}
+
+void Ribosome::resolveMuscleLinkage() {
+	for (MuscleInfo &m : muscleInfo_) {
+		Joint* jNeg = findNearestJoint(m.parent, m.parentSlice, -1);
+		Joint* jPos = findNearestJoint(m.parent, m.parentSlice, +1);
+	}
 }

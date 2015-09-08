@@ -370,7 +370,6 @@ Chromosome Bug::createBasicChromosome() {
 	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.genes.push_back(gt);
 	// neuron #3 output VMS coord
-	GeneNeuronOutputCoord goc;
 	goc.srcNeuronVirtIndex.set(3);
 	goc.outCoord.set(muscle2_VMScoord);
 	c.genes.push_back(goc);
@@ -389,7 +388,6 @@ Chromosome Bug::createBasicChromosome() {
 	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.genes.push_back(gt);
 	// neuron #5 output VMS coord
-	GeneNeuronOutputCoord goc;
 	goc.srcNeuronVirtIndex.set(5);
 	goc.outCoord.set(gripper_VMScoord);
 	c.genes.push_back(goc);
@@ -400,13 +398,13 @@ Chromosome Bug::createBasicChromosome() {
 	// synapse 0 to 2
 	gs.from.set(0);
 	gs.to.set(1);
-	gs.weight.set(1.f);
+	gs.weight.set(2*PI / musclePeriod);
 	c.genes.push_back(gs);
 
 	// synapse 0 to 3
 	gs.from.set(0);
 	gs.to.set(3);
-	gs.weight.set(1.f);
+	gs.weight.set(2*PI / musclePeriod);
 	c.genes.push_back(gs);
 
 	// synapse 1 to 3

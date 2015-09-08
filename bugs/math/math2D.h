@@ -53,6 +53,19 @@ inline float limitAngle(float a, float bisector) {
 	return a;
 }
 
+// computes the angular difference between two angles a and b.
+// the difference is expressed in terms of where is b relative to a, in the interval (-PI, +PI]
+inline float angleDiff(float a, float b) {
+	float d = b-a;
+	while (d > PI)
+		d -= PI;
+	while (d <= -PI)
+		d += PI;
+	return d;
+}
+
+inline float absAngleDiff
+
 inline glm::vec2 vec3xy(glm::vec3 const &in) {
 	return glm::vec2(in.x, in.y);
 }

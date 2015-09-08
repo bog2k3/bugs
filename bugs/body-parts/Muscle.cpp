@@ -72,12 +72,10 @@ float Muscle::getInputVMSCoord(unsigned index) const {
 		return 0;
 }
 
-Muscle::Muscle(Joint* joint, int motorDirSign)
+Muscle::Muscle()
 	: BodyPart(BodyPartType::MUSCLE, std::make_shared<MuscleInitializationData>())
 	, inputSocket_(new InputSocket(nullptr, 1.f))
-	, joint_(joint)
 	, aspectRatio_(1.f)
-	, rotationSign_(motorDirSign)
 	, maxForce_(0)
 	, maxJointAngularSpeed_(0)
 	, phiToRSinAlphaHSinBeta_{0}
@@ -92,12 +90,18 @@ Muscle::Muscle(Joint* joint, int motorDirSign)
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
 	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, initData->inputVMSCoord);
-
-	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
 }
 
 Muscle::~Muscle() {
 	delete inputSocket_;
+}
+
+void Muscle::setJoint(Joint* joint, int motorDirSign) {
+	assert(!joint_ && "only call this once per instance!");
+	assert(joint && "invalid arg (null)");
+	joint_ = joint;
+	rotationSign_ = motorDirSign;
+	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
 }
 
 void Muscle::die() {
@@ -115,8 +119,6 @@ void Muscle::onJointDied(BodyPart* joint) {
 void Muscle::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-
-	// TODO: should add motor line recursively into parent and self; add this as motor into bug
 }
 
 void Muscle::commit() {
