@@ -169,7 +169,7 @@ bool Ribosome::step() {
 		if (reachedTheEnd || g->type == GENE_TYPE_STOP) {
 			// so much for this development path;
 			// grow body parts from all segments now
-			for (int k=0; k<BodyPart::MAX_CHILDREN; k++)
+			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
 				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
 						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);
 			// and remove this branch:
