@@ -295,24 +295,33 @@ void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
 Chromosome Bug::createBasicChromosome() {
 	Chromosome c;
 
+	const float body_size = 0.1f * 0.1f; // sq meters
+	const float body_init_fat_ratio = 0.5f;
+	const float body_min_fat_ratio = 0.1f;
+	const float body_adult_lean_mass = 4; // kg
+	const float muscle1_VMScoord = 5.f;
+	const float gripper_VMScoord = 10.f;
+	const float muscle2_VMScoord = 15.f;
+	const float musclePeriod = 3.f; // seconds
+
 	// body size (sq meters)
 	GeneAttribute ga;
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(0.1f * 0.1f);
+	ga.value.set(body_size);
 	c.genes.push_back(ga);
 
 	//body attributes
 	GeneBodyAttribute gba;
 	gba.attribute = GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO;
-	gba.value.set(0.5f);
+	gba.value.set(body_init_fat_ratio);
 	c.genes.push_back(gba);
 
 	gba.attribute = GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO;
-	gba.value.set(0.1f);
+	gba.value.set(body_min_fat_ratio);
 	c.genes.push_back(gba);
 
 	gba.attribute = GENE_BODY_ATTRIB_ADULT_LEAN_MASS;
-	gba.value.set(4.f);
+	gba.value.set(body_adult_lean_mass);
 	c.genes.push_back(gba);
 
 	gba.attribute = GENE_BODY_ATTRIB_GROWTH_SPEED;
@@ -332,23 +341,28 @@ Chromosome Bug::createBasicChromosome() {
 	// neuron #0 transfer:
 	GeneTransferFunction gt;
 	gt.targetNeuron.set(0);
-	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.genes.push_back(gt);
-	// neuron #0 constant:
-	GeneNeuralConstant gnc;
-	gnc.targetNeuron.set(0);
-	gnc.value.set(1.7f);
-	c.genes.push_back(gnc);
 
 	// neuron #1 transfer:
 	gt.targetNeuron.set(1);
-	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
 	c.genes.push_back(gt);
+	// neuron #1 constant:
+	GeneNeuralConstant gnc;
+	gnc.targetNeuron.set(1);
+	gnc.value.set(PI);
+	c.genes.push_back(gnc);
 
 	// neuron #2 transfer:
 	gt.targetNeuron.set(2);
 	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.genes.push_back(gt);
+	// neuron #2 output VMS coord
+	GeneNeuronOutputCoord goc;
+	goc.srcNeuronVirtIndex.set(2);
+	goc.outCoord.set(muscle1_VMScoord);
+	c.genes.push_back(goc);
 
 	// neuron #3 transfer:
 	gt.targetNeuron.set(3);
@@ -391,8 +405,6 @@ Chromosome Bug::createBasicChromosome() {
 	gnc.targetNeuron.set(8);
 	gnc.value.set(0);
 	c.genes.push_back(gnc);
-
-	const float musclePeriod = 3.f; // seconds
 
 	GeneSynapse gs;
 

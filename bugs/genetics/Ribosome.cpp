@@ -306,7 +306,7 @@ void Ribosome::growBodyPart(BodyPart* parent, int attachmentSegment, glm::vec4 h
 		break;
 	}
 	case BodyPartType::MUSCLE: {
-		// todo
+		// todo link muscle to the nearest joint - or one towards which it's oriented if equidistant
 		break;
 	}
 	case BodyPartType::MOUTH: {
