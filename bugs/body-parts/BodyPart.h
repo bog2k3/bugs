@@ -14,9 +14,10 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <ostream>
 
 enum class BodyPartType {
-	INVALID,
+	INVALID = 0,
 
 	TORSO,
 	BONE,
@@ -27,11 +28,15 @@ enum class BodyPartType {
 	ZYGOTE_SHELL,
 	SENSOR_PROXIMITY,		// many inputs for multiple types of entities
 	SENSOR_DIRECTION,		// many inputs for multiple types of entities
-	SENSOR_COMPASS,		// 1 input - absolute orientation in world
+	SENSOR_COMPASS,			// 1 input - absolute orientation in world
 	SENSOR_SIGHT,			// array of inputs for pixels (multiple channels maybe?)
 	MOUTH,
 	EGGLAYER,
 };
+
+inline std::ostream& operator << (std::ostream& str, BodyPartType const& type) {
+	return str << (unsigned)type;
+}
 
 static constexpr int MAX_CHILDREN = 16;
 
@@ -108,7 +113,7 @@ public:
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
-	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib, int index=0) {
+	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib, unsigned index=0) {
 		if (mapAttributes_.find(attrib) == mapAttributes_.end())
 			return nullptr;
 		auto &attrVec = mapAttributes_[attrib];
