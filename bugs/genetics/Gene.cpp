@@ -113,7 +113,7 @@ Gene Gene::createRandomProteinGene() {
 	g.maxDepth.set(randi(5));
 	g.minDepth.set(0);
 	g.protein.set((gene_protein_type)randi(GENE_PROT_NONE+1, GENE_PROT_END-1));
-	g.targetSegment.set(randi(MAX_CHILDREN));
+	g.targetSegment.set(randi(BodyPart::MAX_CHILDREN));
 	return g;
 }
 
@@ -121,7 +121,7 @@ Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
 	GeneOffset g;
 	g.maxDepth.set(randi(5));
 	g.minDepth.set(0);
-	g.targetSegment.set(randi(MAX_CHILDREN));
+	g.targetSegment.set(randi(BodyPart::MAX_CHILDREN));
 	g.offset.set(randi(spaceLeftAfter));
 	return g;
 }

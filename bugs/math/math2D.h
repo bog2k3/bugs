@@ -64,7 +64,19 @@ inline float angleDiff(float a, float b) {
 	return d;
 }
 
-inline float absAngleDiff
+// computes the smaller angular difference (that is the smallest value to increment one of them o that the two become equivalent)
+// between the two angles in absolute terms.
+// The returned value lies in the interval [0, PI)
+inline float absAngleDiff(float a, float b) {
+	float d = a - b;
+	while (d >= 2*PI)
+		d -= 2*PI;
+	while (d < 0)
+		d += 2*PI;
+	if (d > PI)
+		d = 2*PI - d;
+	return d;
+}
 
 inline glm::vec2 vec3xy(glm::vec3 const &in) {
 	return glm::vec2(in.x, in.y);

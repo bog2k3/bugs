@@ -169,7 +169,7 @@ bool Ribosome::step() {
 		if (reachedTheEnd || g->type == GENE_TYPE_STOP) {
 			// so much for this development path;
 			// grow body parts from all segments now
-			for (int k=0; k<MAX_CHILDREN; k++)
+			for (int k=0; k<BodyPart::MAX_CHILDREN; k++)
 				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
 						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);
 			// and remove this branch:
@@ -251,7 +251,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		age += g.rereadAgeOffset;
 	}*/
 
-	float angle = attachmentSegment * 2*PI / MAX_CHILDREN;
+	float angle = attachmentSegment * 2*PI / BodyPart::MAX_CHILDREN;
 
 	// The child's attachment point relative to the parent's center is computed from the angle of the current segment,
 	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
@@ -667,11 +667,48 @@ void Ribosome::resolveNerveLinkage() {
 	// link nerves to motors/sensors:
 	linkMotorNerves(outputNeurons, motorInputs);
 	linkSensorNerves(inputNeurons, sensorOutputs);
+
+	motors_.clear();
+	sensors_.clear();
+	inputNeurons_.clear();
+	outputNeurons_.clear();
+}
+
+Joint* Ribosome::findNearestJoint(BodyPart* parent, unsigned startSlice, int dir) {
+	for (unsigned i=0; i<BodyPart::MAX_CHILDREN; i++) {
+		unsigned slice = (int)startSlice + dir * (int)i;
+		if (slice >= BodyPart::MAX_CHILDREN)
+			slice -= BodyPart::MAX_CHILDREN;
+		if (slice < 0)
+			slice += BodyPart::MAX_CHILDREN;
+		if (parent->getChild(slice) && parent->getChild(slice)->getType() == BodyPartType::JOINT)
+			return dynamic_cast<Joint*>(parent->getChild(slice));
+	}
+	return nullptr;
 }
 
 void Ribosome::resolveMuscleLinkage() {
 	for (MuscleInfo &m : muscleInfo_) {
 		Joint* jNeg = findNearestJoint(m.parent, m.parentSlice, -1);
 		Joint* jPos = findNearestJoint(m.parent, m.parentSlice, +1);
+		// default to the joint on the negative side and only select the positive one if more appropriate:
+		Joint* targetJoint = jNeg;
+		int turningSide = +1;
+		if (jNeg != jPos) {
+			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m.muscle->getAttachmentAngle());
+			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m.muscle->getAttachmentAngle());
+			if (posDelta < negDelta) {
+				targetJoint = jPos;
+				turningSide = -1;
+			} else if (posDelta == negDelta) {
+				// angle differences are equal, choose the one towards which the muscle is oriented
+				if (m.muscle->getAngleOffset() > 0) {
+					targetJoint = jPos;
+					turningSide = -1;
+				}
+			}
+		}
+		m.muscle->setJoint(targetJoint, turningSide);
 	}
+	muscleInfo_.clear();
 }

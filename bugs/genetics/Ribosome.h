@@ -23,6 +23,7 @@ class OutputSocket;
 class IMotor;
 class ISensor;
 class Muscle;
+class Joint;
 
 struct NeuronInfo {
 	int index;
@@ -56,8 +57,8 @@ struct MuscleInfo {
 struct GrowthData {
 	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this part
-	glm::vec4 hyperPositions[MAX_CHILDREN] {glm::vec4(0)};	// holds hyper-space positions for each segment in a body part
-	CummulativeValue offsets[MAX_CHILDREN]; // holds relative genome offsets for each segment in a body part
+	glm::vec4 hyperPositions[BodyPart::MAX_CHILDREN] {glm::vec4(0)};	// holds hyper-space positions for each segment in a body part
+	CummulativeValue offsets[BodyPart::MAX_CHILDREN]; // holds relative genome offsets for each segment in a body part
 
 	GrowthData(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
@@ -114,6 +115,7 @@ private:
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
 	void resolveMuscleLinkage();
+	Joint* findNearestJoint(BodyPart* parent, unsigned startSlice, int dir);
 
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();

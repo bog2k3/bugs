@@ -38,43 +38,15 @@ inline std::ostream& operator << (std::ostream& str, BodyPartType const& type) {
 	return str << (unsigned)type;
 }
 
-static constexpr int MAX_CHILDREN = 16;
-
-// inherit this struct and put in it all the CummulativeValues that are changed by the genes.
-// after the genome is completely decoded, this data will be cached into real floats and this struct will be destroyed.
-struct BodyPartInitializationData {
-	virtual ~BodyPartInitializationData() = default;
-	BodyPartInitializationData();
-	/* this is called before commit() in order to sanitize all the initialData members that are set up by genes.
-	 * it's important to do this because some values may be broken (ex zero or negative for size, or other values that
-	 * don't make sense).
-	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
-	 */
-
-	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
-	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
-	CummulativeValue size;							// surface area
-	CummulativeValue density;
-
-	struct angularEntry {
-		// these are angular gaps between children:
-		float gapBefore;
-		float gapAfter;
-		// if gap before or after is 0, then the next/prev sibling is in contact with this one
-
-		void set(float gapBefore, float gapAfter) {
-			this->gapBefore = gapBefore;
-			this->gapAfter = gapAfter;
-		}
-	} circularBuffer[MAX_CHILDREN]; // this is initialization data
-};
-
 class UpdateList;
 class RenderContext;
 class Bug;
+struct BodyPartInitializationData;
 
 class BodyPart {
 public:
+	static constexpr unsigned MAX_CHILDREN = 16;
+
 	BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData> initialData);
 	virtual ~BodyPart();
 
@@ -273,5 +245,33 @@ private:
 };
 
 
+// inherit this struct and put in it all the CummulativeValues that are changed by the genes.
+// after the genome is completely decoded, this data will be cached into real floats and this struct will be destroyed.
+struct BodyPartInitializationData {
+	virtual ~BodyPartInitializationData() = default;
+	BodyPartInitializationData();
+	/* this is called before commit() in order to sanitize all the initialData members that are set up by genes.
+	 * it's important to do this because some values may be broken (ex zero or negative for size, or other values that
+	 * don't make sense).
+	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
+	 */
+
+	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
+	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
+	CummulativeValue size;							// surface area
+	CummulativeValue density;
+
+	struct angularEntry {
+		// these are angular gaps between children:
+		float gapBefore;
+		float gapAfter;
+		// if gap before or after is 0, then the next/prev sibling is in contact with this one
+
+		void set(float gapBefore, float gapAfter) {
+			this->gapBefore = gapBefore;
+			this->gapAfter = gapAfter;
+		}
+	} circularBuffer[BodyPart::MAX_CHILDREN]; // this is initialization data
+};
 
 #endif /* OBJECTS_BODY_PARTS_BODYPART_H_ */
