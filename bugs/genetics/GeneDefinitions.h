@@ -24,7 +24,7 @@ constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 6;	// body part attribute - estab
 constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 7;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 													// such as metabolic parameters
 constexpr gene_type GENE_TYPE_SYNAPSE = 8;			// creates or alters a synapse between neurons (cummulative weight)
-constexpr gene_type GENE_TYPE_TRANSFER = 9;			// controls the transfer function of a neuron (cummulative)
+constexpr gene_type GENE_TYPE_TRANSFER_FUNC = 9;			// controls the transfer function of a neuron (cummulative)
 constexpr gene_type GENE_TYPE_NEURAL_CONST = 10;	// neural constant (cummulative) - used in various computations
 constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 11;		// output coord (in MVMS) from a neuron
 constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 12;		// input coord (in SVMS) to a neuron

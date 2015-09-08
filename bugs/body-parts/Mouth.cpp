@@ -20,7 +20,7 @@
 
 static const glm::vec3 debug_color(0.2f, 0.8f, 1.f);
 
-#define DEBUG_DRAW_MOUTH;
+#define DEBUG_DRAW_MOUTH
 
 MouthInitializationData::MouthInitializationData()
 	: aspectRatio(BodyConst::initialMouthAspectRatio) {

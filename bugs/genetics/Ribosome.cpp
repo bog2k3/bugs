@@ -70,66 +70,18 @@ static bool isCircularGreater(decltype(Gene::RID) x1, decltype(Gene::RID) x2) {
 void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
-//	bug_->neuralNet_->inputs.reserve(bug_->sensors_.size());
-	// todo: how do we link the inputs to neurons?
-//	for (unsigned i=0; i<bug_->sensors_.size(); i++) {
-//		// sort sensors by genetic age
-//		if ((int)i>=nDefaultSensors) // skip the default sensors which must always be at the beginning
-//			for (unsigned j=i+1; j<bug_->sensors_.size(); j++)
-//				if (bug_->sensors_[j]->geneticAge > bug_->sensors_[i]->geneticAge)
-//					xchg(bug_->sensors_[i], bug_->sensors_[j]);
-//		bug_->neuralNet_->inputs.push_back(bug_->sensors_[i]->getOutSocket());
-//	}
-//	bug_->neuralNet_->outputs.reserve(bug_->motors_.size());
-//	std::map<int, int> mapMotorIds, mapReverseMotorIds;
-//	for (unsigned i=0; i<bug_->motors_.size(); i++) {
-//		// sort motors by genetic age (oldest first)
-//		for (unsigned j=i+1; j<bug_->motors_.size(); j++)
-//			if (bug_->motors_[j].geneticAge > bug_->motors_[i].geneticAge) {
-//				xchg(bug_->motors_[i], bug_->motors_[j]);
-//				// update mapping of indices:
-//				auto it1 = mapReverseMotorIds.find(i);
-//				int indexWhereKeyIs_i = i;
-//				if (it1 != mapReverseMotorIds.end())
-//					indexWhereKeyIs_i = it1->second;
-//				auto it2 = mapReverseMotorIds.find(j);
-//				int indexWhereKeyIs_j = j;
-//				if (it2 != mapReverseMotorIds.end())
-//					indexWhereKeyIs_j = it2->second;
-//				mapMotorIds[indexWhereKeyIs_i] = j;
-//				mapMotorIds[indexWhereKeyIs_j] = i;
-//				mapReverseMotorIds[j] = indexWhereKeyIs_i;
-//				mapReverseMotorIds[i] = indexWhereKeyIs_j;
-//			}
-//		// now add all input sockets from all motors:
-//		bug_->neuralNet_->outputs.push_back(bug_->motors_[i].inputSocket);	// create network outputs
-//	}
-//	bug_->body_->updateMotorMappings(mapMotorIds);
-	// create neurons:
-//	int commandNeuronsStart = mapNeurons_.size();
-//	int totalNeurons = commandNeuronsStart + bug_->motors_.size();
 	bug_->neuralNet_->neurons.reserve(mapNeurons_.size());
 	for (unsigned i=0; i<mapNeurons_.size(); i++) {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
 	}
-	// create and initialize the output neurons:
-//	for (int i=commandNeuronsStart; i<totalNeurons; i++) {
-//		bug_->neuralNet_->neurons.push_back(new Neuron());
-//		bug_->neuralNet_->neurons[i]->neuralConstant = 0.f;
-//		bug_->neuralNet_->neurons[i]->transfFunc = mapTransferFunctions[transferFuncNames::FN_ONE];
-//		bug_->neuralNet_->neurons[i]->output.addTarget(bug_->neuralNet_->outputs[i-commandNeuronsStart].get());
-//		// connect back the socket to the output neuron (in order to be able to locate the neuron later):
-//		bug_->neuralNet_->outputs[i-commandNeuronsStart]->pParentNeuron = bug_->neuralNet_->neurons[i];
-//	}
 }
 
 void Ribosome::decodeDeferredGenes() {
-	int commandNeuronsStart = mapNeurons_.size();
 	// create all synapses
 	for (auto s : mapSynapses_) {
 		int32_t from = s.first >> 32;
 		int32_t to = (s.first) & 0xFFFFFFFF;
-		createSynapse(from, to, commandNeuronsStart, s.second);
+		createSynapse(from, to, s.second);
 	}
 	// now decode the deferred neural genes (neuron properties):
 	for (auto &g : neuralGenes_)
@@ -179,7 +131,7 @@ bool Ribosome::step() {
 		// now decode the neural network:
 		initializeNeuralNetwork();
 		decodeDeferredGenes();
-
+		// link nerves to sensors and motors:
 		resolveNerveLinkage();
 
 		// clean up:
@@ -425,7 +377,6 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 }
 
 void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
-#warning: "only from depth 0 (torso) must the neural genes be taken into account (?)"
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
 		break;
@@ -442,31 +393,42 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool 
 		bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
 		break;
 	case GENE_TYPE_SYNAPSE:
-		decodeSynapse(g.data.gene_synapse);
+		// only from depth 0 (torso) must the neural genes be taken into account
+		if (part->getType() == BodyPartType::TORSO) {
+			decodeSynapse(g.data.gene_synapse);
+		}
 		break;
 	case GENE_TYPE_NEURON_OUTPUT_COORD:
-		if (deferNeural)
-			neuralGenes_.push_back(&g);
-		else
-			decodeNeuronOutputCoord(g.data.gene_neuron_output);
+		if (part->getType() == BodyPartType::TORSO) {
+			if (deferNeural)
+				neuralGenes_.push_back(&g);
+			else
+				decodeNeuronOutputCoord(g.data.gene_neuron_output);
+		}
 		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
-		if (deferNeural)
-			neuralGenes_.push_back(&g);
-		else
-			decodeNeuronInputCoord(g.data.gene_neuron_input);
+		if (part->getType() == BodyPartType::TORSO) {
+			if (deferNeural)
+				neuralGenes_.push_back(&g);
+			else
+				decodeNeuronInputCoord(g.data.gene_neuron_input);
+		}
 		break;
-	case GENE_TYPE_TRANSFER:
-		if (deferNeural)
-			neuralGenes_.push_back(&g);
-		else
-			decodeTransferFn(g.data.gene_transfer_function);
+	case GENE_TYPE_TRANSFER_FUNC:
+		if (part->getType() == BodyPartType::TORSO) {
+			if (deferNeural)
+				neuralGenes_.push_back(&g);
+			else
+				decodeTransferFn(g.data.gene_transfer_function);
+		}
 		break;
 	case GENE_TYPE_NEURAL_CONST:
-		if (deferNeural)
-			neuralGenes_.push_back(&g);
-		else
-			decodeNeuralConst(g.data.gene_neural_constant);
+		if (part->getType() == BodyPartType::TORSO) {
+			if (deferNeural)
+				neuralGenes_.push_back(&g);
+			else
+				decodeNeuralConst(g.data.gene_neural_constant);
+		}
 		break;
 	default:
 		ERROR("Unhandled gene type : " << g.type);
@@ -565,7 +527,7 @@ void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 	inputNeurons_.emplace(g.destNeuronVirtIndex);
 }
 
-void Ribosome::createSynapse(int from, int to, int commandNeuronsOfs, float weight) {
+void Ribosome::createSynapse(int from, int to, float weight) {
 	assertDbg(hasNeuron(from));	// should be there, since synapses dictate neurons
 	assertDbg(hasNeuron(to));
 

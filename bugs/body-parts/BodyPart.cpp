@@ -371,7 +371,7 @@ void BodyPart::detach(bool die) {
 		die_tree();
 }
 
-void BodyPart::detachMotorLines(std::vector<int> const& lines) {
+void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
 	if (parent_)
 		parent_->detachMotorLines(lines);
 }
@@ -505,7 +505,7 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue
 	registerAttribute(type, 0, value);
 }
 
-void BodyPart::registerAttribute(gene_part_attribute_type type, int index, CummulativeValue& value) {
+void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value) {
 	auto &attrVec = mapAttributes_[type];
 	while (attrVec.size() < index + 1);
 		attrVec.push_back(nullptr);

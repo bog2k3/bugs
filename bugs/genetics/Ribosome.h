@@ -112,7 +112,7 @@ private:
 	inline bool hasNeuron(int virtualIndex) { return mapNeurons_.find(virtualIndex) != mapNeurons_.end(); }
 	// Compute a synapse key (unique id for from-to pair:
 	inline int64_t synKey(int64_t from, int64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
-	void createSynapse(int from, int to, int commandNeuronsOfs, float weight);
+	void createSynapse(int from, int to, float weight);
 	void resolveNerveLinkage();
 	void linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,
 						 std::vector<InputOutputNerve<InputSocket*>> const& orderedMotorInputs_);

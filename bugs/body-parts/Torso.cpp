@@ -177,13 +177,12 @@ void Torso::replenishEnergyFromMass(float mass) {
 	}
 }
 
-void Torso::detachMotorLines(std::vector<int> const& lines) {
+void Torso::detachMotorLines(std::vector<unsigned> const& lines) {
 	onMotorLinesDetached.trigger(lines);
 }
 
 void Torso::detach(bool die) {
 	motorLines_.clear();
-	sensorLines_.clear();
 	BodyPart::detach(die);
 }
 

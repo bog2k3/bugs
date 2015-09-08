@@ -319,7 +319,7 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered += alterAtom(g.data.gene_synapse.to, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_synapse.weight, mutationChanceFactor);
 		break;
-	case GENE_TYPE_TRANSFER:
+	case GENE_TYPE_TRANSFER_FUNC:
 		altered += alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
 		break;
@@ -386,7 +386,7 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 		ret += g.data.gene_synapse.to.chanceToMutate.value;
 		ret += g.data.gene_synapse.weight.chanceToMutate.value;
 		break;
-	case GENE_TYPE_TRANSFER:
+	case GENE_TYPE_TRANSFER_FUNC:
 		ret += g.data.gene_transfer_function.functionID.chanceToMutate.value;
 		ret += g.data.gene_transfer_function.targetNeuron.chanceToMutate.value;
 		break;

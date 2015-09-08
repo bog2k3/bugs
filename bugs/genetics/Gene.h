@@ -176,7 +176,7 @@ public:
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
 	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(GENE_TYPE_NEURON_OUTPUT_COORD, gnoc) {}
 	Gene(GeneNeuronInputCoord const& gnic) : Gene(GENE_TYPE_NEURON_INPUT_COORD, gnic) {}
-	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER, gt) {}
+	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER_FUNC, gt) {}
 	Gene(GeneNeuralConstant const &gnc) : Gene(GENE_TYPE_NEURAL_CONST, gnc) {}
 	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
 

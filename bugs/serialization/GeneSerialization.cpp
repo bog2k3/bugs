@@ -79,7 +79,7 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_synapse.to;
 		stream << gene.data.gene_synapse.weight;
 		break;
-	case GENE_TYPE_TRANSFER:
+	case GENE_TYPE_TRANSFER_FUNC:
 		stream << gene.data.gene_transfer_function.functionID;
 		stream << gene.data.gene_transfer_function.targetNeuron;
 		break;
@@ -140,7 +140,7 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_synapse.to;
 		stream >> gene.data.gene_synapse.weight;
 		break;
-	case GENE_TYPE_TRANSFER:
+	case GENE_TYPE_TRANSFER_FUNC:
 		stream >> gene.data.gene_transfer_function.functionID;
 		stream >> gene.data.gene_transfer_function.targetNeuron;
 		break;

@@ -45,7 +45,7 @@ public:
 	Bug* getOwner() override { return owner_; }
 
 	Event<void(float mass)> onFoodProcessed;
-	Event<void(std::vector<int> const&)> onMotorLinesDetached;
+	Event<void(std::vector<unsigned> const&)> onMotorLinesDetached;
 	Event<void()> onBodyMassChanged;
 
 protected:
@@ -63,7 +63,7 @@ protected:
 	void commit() override;
 	void die() override;
 	void onAddedToParent() override;
-	void detachMotorLines(std::vector<int> const& lines) override;
+	void detachMotorLines(std::vector<unsigned> const& lines) override;
 	void hierarchyMassChanged() override;
 };
 

@@ -211,8 +211,7 @@ protected:
 	 * This correlates with the Nth CONNECTED output/input nerve in the brain
 	 * (they are connected by VMS coordinates but kept in this order nonetheless)
 	 */
-	std::vector<int> motorLines_;
-	std::vector<int> sensorLines_;
+	std::vector<unsigned> motorLines_;
 
 	/**
 	 * called after genome decoding finished, just before initializationData will be destroyed.
@@ -236,7 +235,7 @@ protected:
 
 
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
-	void registerAttribute(gene_part_attribute_type type, int index, CummulativeValue& value);
+	void registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value);
 	glm::vec2 getUpstreamAttachmentPoint();
 	UpdateList* getUpdateList();
 	// call this if the fixture changed for any reason:
@@ -246,7 +245,7 @@ protected:
 	void addRef(BodyPart* part);
 	friend class Joint;
 
-	virtual void detachMotorLines(std::vector<int> const& lines);
+	virtual void detachMotorLines(std::vector<unsigned> const& lines);
 	virtual void hierarchyMassChanged();
 
 private:

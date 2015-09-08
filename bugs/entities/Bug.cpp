@@ -281,10 +281,10 @@ void Bug::onFoodProcessed(float mass) {
 	body_->replenishEnergyFromMass(mass - eggMass - growthMass);
 }
 
-void Bug::onMotorLinesDetached(std::vector<int> const& lines) {
+void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
 	if (!isAlive_)
 		return;
-	for (int i : lines) {
+	for (unsigned i : lines) {
 		assertDbg(i < motorLines_.size());
 		if (motorLines_[i].second)
 			motorLines_[i].second->removeTarget(motorLines_[i].first);

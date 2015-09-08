@@ -59,7 +59,7 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_neuron_output.outCoord.chanceToMutate);
 		metaGenes.push_back(&data.gene_neuron_output.outCoord.changeAmount);
 		break;
-	case GENE_TYPE_TRANSFER:
+	case GENE_TYPE_TRANSFER_FUNC:
 		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.chanceToMutate);
 		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.changeAmount);
 		metaGenes.push_back(&data.gene_transfer_function.functionID.chanceToMutate);
@@ -201,7 +201,7 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return GeneStop();
 	case GENE_TYPE_SYNAPSE:
 		return createRandomSynapseGene(nNeurons);
-	case GENE_TYPE_TRANSFER:
+	case GENE_TYPE_TRANSFER_FUNC:
 		return createRandomTransferFuncGene(nNeurons);
 	case GENE_TYPE_NO_OP:
 		return GeneNoOp();
