@@ -295,14 +295,15 @@ void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
 Chromosome Bug::createBasicChromosome() {
 	Chromosome c;
 
-	const float body_size = 0.1f * 0.1f; // sq meters
-	const float body_init_fat_ratio = 0.5f;
-	const float body_min_fat_ratio = 0.1f;
-	const float body_adult_lean_mass = 4; // kg
-	const float muscle1_VMScoord = 5.f;
-	const float gripper_VMScoord = 10.f;
-	const float muscle2_VMScoord = 15.f;
-	const float musclePeriod = 3.f; // seconds
+	constexpr float body_size = 0.1f * 0.1f; // sq meters
+	constexpr float body_init_fat_ratio = 0.5f;
+	constexpr float body_min_fat_ratio = 0.1f;
+	constexpr float body_adult_lean_mass = 4; // kg
+	constexpr float muscle1_VMScoord = 5.f;
+	constexpr float gripper_VMScoord = 10.f;
+	constexpr float muscle2_VMScoord = 15.f;
+	constexpr float musclePeriod = 3.f; // seconds
+	constexpr float gripper_signal_threshold = -0.2f;
 
 	// body size (sq meters)
 	GeneAttribute ga;
@@ -368,62 +369,44 @@ Chromosome Bug::createBasicChromosome() {
 	gt.targetNeuron.set(3);
 	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.genes.push_back(gt);
+	// neuron #3 output VMS coord
+	GeneNeuronOutputCoord goc;
+	goc.srcNeuronVirtIndex.set(3);
+	goc.outCoord.set(muscle2_VMScoord);
+	c.genes.push_back(goc);
 
 	// neuron #4 transfer:
 	gt.targetNeuron.set(4);
-	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
 	c.genes.push_back(gt);
+	// neuron #4 constant:
+	gnc.targetNeuron.set(4);
+	gnc.value.set(gripper_signal_threshold);
+	c.genes.push_back(gnc);
 
 	// neuron #5 transfer:
 	gt.targetNeuron.set(5);
-	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
-	c.genes.push_back(gt);
-	// neuron #5 constant:
-	gnc.targetNeuron.set(5);
-	gnc.value.set(0.1f);
-	c.genes.push_back(gnc);
-
-	// neuron #6 transfer:
-	gt.targetNeuron.set(6);
 	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.genes.push_back(gt);
+	// neuron #5 output VMS coord
+	GeneNeuronOutputCoord goc;
+	goc.srcNeuronVirtIndex.set(5);
+	goc.outCoord.set(gripper_VMScoord);
+	c.genes.push_back(goc);
 
-	// neuron #7 transfer:
-	gt.targetNeuron.set(7);
-	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
-	c.genes.push_back(gt);
-	// neuron #7 threshold value:
-	gnc.targetNeuron.set(7);
-	gnc.value.set(0);
-	c.genes.push_back(gnc);
-
-	// neuron #8 transfer:
-	gt.targetNeuron.set(8);
-	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
-	c.genes.push_back(gt);
-	// neuron #8 threshold value:
-	gnc.targetNeuron.set(8);
-	gnc.value.set(0);
-	c.genes.push_back(gnc);
 
 	GeneSynapse gs;
 
-	// synapse 0 to 1
+	// synapse 0 to 2
 	gs.from.set(0);
 	gs.to.set(1);
-	gs.weight.set(2*PI/musclePeriod);
+	gs.weight.set(1.f);
 	c.genes.push_back(gs);
 
-	// synapse i[-1] (time) to 1
-	gs.from.set(-1);
-	gs.to.set(1);
-	gs.weight.set(2*PI/musclePeriod);
-	c.genes.push_back(gs);
-
-	// synapse i[-1] (time) to 2
-	gs.from.set(-1);
-	gs.to.set(2);
-	gs.weight.set(2*PI/musclePeriod);
+	// synapse 0 to 3
+	gs.from.set(0);
+	gs.to.set(3);
+	gs.weight.set(1.f);
 	c.genes.push_back(gs);
 
 	// synapse 1 to 3
@@ -432,51 +415,15 @@ Chromosome Bug::createBasicChromosome() {
 	gs.weight.set(1.f);
 	c.genes.push_back(gs);
 
-	// synapse 2 to 4
-	gs.from.set(2);
-	gs.to.set(4);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 5 to 6
-	gs.from.set(5);
-	gs.to.set(6);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 4 to 7
-	gs.from.set(4);
-	gs.to.set(7);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 4 to 8
-	gs.from.set(4);
-	gs.to.set(8);
-	gs.weight.set(-1.f);
-	c.genes.push_back(gs);
-
-	// synapse 7 to o[-3] (muscle 1)
-	gs.from.set(7);
-	gs.to.set(-3);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 8 to o[-4] (muscle 2)
-	gs.from.set(8);
-	gs.to.set(-4);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 3 to 6
+	// synapse 3 to 5
 	gs.from.set(3);
-	gs.to.set(6);
-	gs.weight.set(-0.7f);
+	gs.to.set(5);
+	gs.weight.set(1.f);
 	c.genes.push_back(gs);
 
-	// synapse 6 to o[-9] (gripper)
-	gs.from.set(6);
-	gs.to.set(-9);
+	// synapse 4 to 5
+	gs.from.set(4);
+	gs.to.set(5);
 	gs.weight.set(1.f);
 	c.genes.push_back(gs);
 
