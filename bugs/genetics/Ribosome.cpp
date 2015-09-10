@@ -473,7 +473,9 @@ void Ribosome::decodeOffset(GeneOffset const& g, BodyPart *part, GrowthData *gro
 }
 
 void Ribosome::decodeJointOffset(GeneJointOffset const& g, BodyPart* part) {
-	// todo: must use growth data for min/max depth
+	int crtDepth = part->getDepth();
+	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
+		return;
 	if (mapJointOffsets_.find(part) != mapJointOffsets_.end())
 		mapJointOffsets_[part].second.changeAbs(g.offset);
 }

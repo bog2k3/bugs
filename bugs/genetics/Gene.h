@@ -142,6 +142,7 @@ public:
 		GeneSkip gene_skip;
 		GeneProtein gene_protein;
 		GeneOffset gene_offset;
+		GeneJointOffset gene_joint_offset;
 		GeneAttribute gene_attribute;
 		GeneSynapse gene_synapse;
 		GeneNeuronOutputCoord gene_neuron_output;
@@ -155,6 +156,7 @@ public:
 		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
 		GeneData(GeneProtein const &gp) : gene_protein(gp) {}
 		GeneData(GeneOffset const &go) : gene_offset(go) {}
+		GeneData(GeneJointOffset const& gjo) : gene_joint_offset(gjo) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
@@ -179,6 +181,7 @@ public:
 	Gene(GeneSkip const &gs) : Gene(GENE_TYPE_SKIP, gs) {}
 	Gene(GeneProtein const &gp) : Gene(GENE_TYPE_PROTEIN, gp) {}
 	Gene(GeneOffset const &go) : Gene(GENE_TYPE_OFFSET, go) {}
+	Gene(GeneJointOffset const& gjo) : Gene(GENE_TYPE_JOINT_OFFSET, gjo) {}
 	Gene(GeneAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
 	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
 	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(GENE_TYPE_NEURON_OUTPUT_COORD, gnoc) {}
@@ -224,6 +227,7 @@ private:
 	static Gene createRandomSkipGene(int spaceLeftAfter);
 	static Gene createRandomProteinGene();
 	static Gene createRandomOffsetGene(int spaceLeftAfter);
+	static Gene createRandomJointOffsetGene(int spaceLeftAfter);
 	static Gene createRandomAttribGene();
 	static Gene createRandomSynapseGene(int nNeurons);
 	static Gene createRandomNeuronInputCoordGene(int nNeurons);

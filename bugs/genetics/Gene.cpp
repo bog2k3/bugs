@@ -31,6 +31,14 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_offset.targetSegment.chanceToMutate);
 		metaGenes.push_back(&data.gene_offset.targetSegment.changeAmount);
 		break;
+	case GENE_TYPE_JOINT_OFFSET:
+		metaGenes.push_back(&data.gene_joint_offset.maxDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_joint_offset.maxDepth.changeAmount);
+		metaGenes.push_back(&data.gene_joint_offset.minDepth.chanceToMutate);
+		metaGenes.push_back(&data.gene_joint_offset.minDepth.changeAmount);
+		metaGenes.push_back(&data.gene_joint_offset.offset.chanceToMutate);
+		metaGenes.push_back(&data.gene_joint_offset.offset.changeAmount);
+		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_attribute.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_attribute.maxDepth.changeAmount);
@@ -126,6 +134,14 @@ Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
 	return g;
 }
 
+Gene Gene::createRandomJointOffsetGene(int spaceLeftAfter) {
+	GeneJointOffset g;
+	g.maxDepth.set(randi(5));
+	g.minDepth.set(0);
+	g.offset.set(randi(spaceLeftAfter));
+	return g;
+}
+
 Gene Gene::createRandomSynapseGene(int nNeurons) {
 	GeneSynapse g;
 	g.from.set(randi(nNeurons-1));
@@ -187,6 +203,8 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return createRandomProteinGene();
 	case GENE_TYPE_OFFSET:
 		return createRandomOffsetGene(spaceLeftAfter);
+	case GENE_TYPE_JOINT_OFFSET:
+		return createRandomJointOffsetGene(spaceLeftAfter);
 	case GENE_TYPE_NEURON_INPUT_COORD:
 		return createRandomNeuronInputCoordGene(nNeurons);
 	case GENE_TYPE_NEURON_OUTPUT_COORD:
