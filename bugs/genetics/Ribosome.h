@@ -89,6 +89,8 @@ public:
 private:
 	Bug* bug_;
 	std::vector<std::pair<BodyPart*, GrowthData>> activeSet_;
+	std::map<BodyPart*, std::pair<Joint*, CummulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
+																	// and relative genome offset of the joint (if joint exists)
 	std::vector<MuscleInfo> muscleInfo_;
 	std::vector<Gene*> neuralGenes_;
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
@@ -101,9 +103,10 @@ private:
 	std::vector<ISensor*> sensors_;
 	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
-	void decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural);
-	void decodeProtein(GeneProtein &g, BodyPart* part, GrowthData *growthData);
-	void decodeOffset(GeneOffset &g, BodyPart* part, GrowthData *growthData);
+	void decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural);
+	void decodeProtein(GeneProtein const& g, BodyPart* part, GrowthData *growthData);
+	void decodeOffset(GeneOffset const& g, BodyPart* part, GrowthData *growthData);
+	void decodeJointOffset(GeneJointOffset const& g, BodyPart* part);
 	void decodePartAttrib(GeneAttribute const& g, BodyPart* part);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);

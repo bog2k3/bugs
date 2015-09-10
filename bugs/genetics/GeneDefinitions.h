@@ -20,16 +20,17 @@ constexpr gene_type GENE_TYPE_STOP = 2;				// signals the ribosome to stop readi
 constexpr gene_type GENE_TYPE_SKIP = 3;				// control gene -> skip next N genes if all conditions are met
 constexpr gene_type GENE_TYPE_PROTEIN = 4;			// protein gene -> produces a specific protein type in a body-part's segment
 constexpr gene_type GENE_TYPE_OFFSET = 5;			// controls the relative genome offset of a child part
-constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 6;	// body part attribute - establishes characteristics of certain body parts
-constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 7;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+constexpr gene_type GENE_TYPE_JOINT_OFFSET = 6;		// controls the relative genome offset of this part's upstream Joint relative to this one
+constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 7;	// body part attribute - establishes characteristics of certain body parts
+constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 8;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 													// such as metabolic parameters
-constexpr gene_type GENE_TYPE_SYNAPSE = 8;			// creates or alters a synapse between neurons (cummulative weight)
-constexpr gene_type GENE_TYPE_TRANSFER_FUNC = 9;			// controls the transfer function of a neuron (cummulative)
-constexpr gene_type GENE_TYPE_NEURAL_CONST = 10;	// neural constant (cummulative) - used in various computations
-constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 11;		// output coord (in MVMS) from a neuron
-constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 12;		// input coord (in SVMS) to a neuron
+constexpr gene_type GENE_TYPE_SYNAPSE = 9;			// creates or alters a synapse between neurons (cummulative weight)
+constexpr gene_type GENE_TYPE_TRANSFER_FUNC = 10;			// controls the transfer function of a neuron (cummulative)
+constexpr gene_type GENE_TYPE_NEURAL_CONST = 11;	// neural constant (cummulative) - used in various computations
+constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 12;		// output coord (in MVMS) from a neuron
+constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 13;		// input coord (in SVMS) to a neuron
 
-constexpr gene_type GENE_TYPE_END = 13;
+constexpr gene_type GENE_TYPE_END = 14;
 
 // ----------------------------------- gene_protein_type -------------------------------//
 

@@ -75,6 +75,13 @@ struct GeneOffset {
 	Atom<int> targetSegment;
 };
 
+// this gene controls the genome offset (relative to the current part's) of the upstream Joint of this part, if it exists
+struct GeneJointOffset {
+	Atom<int> minDepth;
+	Atom<int> maxDepth;
+	Atom<int> offset;
+};
+
 struct GeneProtein {
 	Atom<gene_protein_type> protein;				// the type of protein this gene produces
 	Atom<int> targetSegment;						// target segment of current part which protein affects

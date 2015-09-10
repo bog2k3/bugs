@@ -172,6 +172,13 @@ bool Ribosome::step() {
 			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
 				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
 						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);
+			// decode joint genes if such is the case:
+			auto it = mapJointOffsets_.find(p);
+			if (it != mapJointOffsets_.end()) {
+				Joint* joint = it->second.first;
+				int offset = it->second.second;
+				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + offset));
+			}
 			// and remove this branch:
 			activeSet_.erase(activeSet_.begin()+i);
 			i--, nCrtBranches--;
@@ -248,13 +255,15 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
 	// until it touches an edge of the parent. That point is used as attachment of the new part.
 
-	if (partMustGenerateJoint(newBodyPartType)) {
+	Joint* upstreamJoint = nullptr;
+	bool useUpstreamJoint = partMustGenerateJoint(newBodyPartType);
+	if (useUpstreamJoint) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
-		Joint* linkJoint = new Joint();
-		parent->add(linkJoint, angle);
+		upstreamJoint = new Joint();
+		parent->add(upstreamJoint, angle);
 
 		// set part to point to the joint's node, since that's where the actual part will be attached:
-		parent = linkJoint;
+		parent = upstreamJoint;
 		// recompute coordinates in joint's space:
 		angle = 0;
 	}
@@ -310,6 +319,11 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	if (!bp)
 		return;
 
+	if (useUpstreamJoint) {
+		// add joint mapping to this part:
+		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, 0);
+	}
+
 	parent->add(bp, angle);
 
 	// start a new development path from the new part:
@@ -346,7 +360,7 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 		mapNeurons_[virtualIndex].constant.changeAbs(constant);
 }
 
-void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
+void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
 		break;
@@ -355,6 +369,9 @@ void Ribosome::decodeGene(Gene &g, BodyPart* part, GrowthData *growthData, bool 
 		break;
 	case GENE_TYPE_OFFSET:
 		decodeOffset(g.data.gene_offset, part, growthData);
+		break;
+	case GENE_TYPE_JOINT_OFFSET:
+		decodeJointOffset(g.data.gene_joint_offset, part);
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
 		decodePartAttrib(g.data.gene_attribute, part);
@@ -415,7 +432,7 @@ bool Ribosome::partMustGenerateJoint(BodyPartType part_type) {
 	}
 }
 
-void Ribosome::decodeProtein(GeneProtein &g, BodyPart* part, GrowthData *growthData) {
+void Ribosome::decodeProtein(GeneProtein const& g, BodyPart* part, GrowthData *growthData) {
 	int crtDepth = part->getDepth();
 	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
 		return;
@@ -448,11 +465,17 @@ void Ribosome::decodeProtein(GeneProtein &g, BodyPart* part, GrowthData *growthD
 	}
 }
 
-void Ribosome::decodeOffset(GeneOffset &g, BodyPart *part, GrowthData *growthData) {
+void Ribosome::decodeOffset(GeneOffset const& g, BodyPart *part, GrowthData *growthData) {
 	int crtDepth = part->getDepth();
 	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
 		return;
 	growthData->offsets[g.targetSegment].changeAbs(g.offset);
+}
+
+void Ribosome::decodeJointOffset(GeneJointOffset const& g, BodyPart* part) {
+	// todo: must use growth data for min/max depth
+	if (mapJointOffsets_.find(part) != mapJointOffsets_.end())
+		mapJointOffsets_[part].second.changeAbs(g.offset);
 }
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
