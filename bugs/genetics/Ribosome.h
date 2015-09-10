@@ -92,7 +92,7 @@ private:
 	std::map<BodyPart*, std::pair<Joint*, CummulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 																	// and relative genome offset of the joint (if joint exists)
 	std::vector<MuscleInfo> muscleInfo_;
-	std::vector<Gene*> neuralGenes_;
+	std::vector<const Gene*> neuralGenes_;
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
 	std::map<int64_t, CummulativeValue> mapSynapses_;

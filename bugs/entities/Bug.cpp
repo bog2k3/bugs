@@ -451,7 +451,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow Bone 1:
-	GeneProtein gp;
 	gp.targetSegment.set(8);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -462,7 +461,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(8);
 	go.offset.set(62);
 	c.genes.push_back(go);
@@ -470,7 +468,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow Muscle 1:
-	GeneProtein gp;
 	gp.targetSegment.set(7);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -481,7 +478,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(7);
 	go.offset.set(119);
 	c.genes.push_back(go);
@@ -489,7 +485,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow Muscle 2:
-	GeneProtein gp;
 	gp.targetSegment.set(9);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -500,7 +495,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(9);
 	go.offset.set(119);
 	c.genes.push_back(go);
@@ -508,7 +502,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow Egg Layer:
-	GeneProtein gp;
 	gp.targetSegment.set(5);
 	gp.protein.set(GENE_PROT_B);	// X+
 	c.genes.push_back(gp);
@@ -519,7 +512,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(5);
 	go.offset.set(56);
 	c.genes.push_back(go);
@@ -609,7 +601,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+8
 
 	// grow Bone 2:
-	GeneProtein gp;
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -620,7 +611,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(0);
 	go.offset.set(29);				// (91-62) offset is relative to the current part's
 	c.genes.push_back(go);
@@ -628,7 +618,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow Muscle 3:
-	GeneProtein gp;
 	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -639,7 +628,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(1);
 	go.offset.set(23);
 	c.genes.push_back(go);
@@ -647,7 +635,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow Muscle 4:
-	GeneProtein gp;
 	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -658,7 +645,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(15);
 	go.offset.set(23);
 	c.genes.push_back(go);
@@ -726,7 +712,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+8
 
 	// grow gripper:
-	GeneProtein gp;
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -737,7 +722,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(0);
 	go.offset.set(25);
 	c.genes.push_back(go);
@@ -745,7 +729,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow gripper muscle 1:
-	GeneProtein gp;
 	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -756,7 +739,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(0);
 	go.offset.set(32);
 	c.genes.push_back(go);
@@ -764,7 +746,6 @@ Chromosome Bug::createBasicChromosome() {
 	// G+5
 
 	// grow gripper muscle 2:
-	GeneProtein gp;
 	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -775,7 +756,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	GeneOffset go;
 	go.targetSegment.set(15);
 	go.offset.set(32);
 	c.genes.push_back(go);

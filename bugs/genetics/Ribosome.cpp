@@ -321,7 +321,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 
 	if (useUpstreamJoint) {
 		// add joint mapping to this part:
-		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, 0);
+		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, CummulativeValue(0));
 	}
 
 	parent->add(bp, angle);
