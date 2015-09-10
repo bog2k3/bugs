@@ -49,6 +49,9 @@ struct Atom {
 	Atom() : value(), chanceToMutate(), changeAmount() {}
 };
 
+struct GeneStartMarker {
+};
+
 struct GeneStop {
 };
 
@@ -137,6 +140,7 @@ public:
 	uint32_t RID;	// this is unique to this gene, when the gene is mutated, the RID changes
 	gene_type type;		// the type of gene
 	union GeneData {
+		GeneStartMarker gene_start_marker;
 		GeneStop gene_stop;
 		GeneNoOp gene_no_op;
 		GeneSkip gene_skip;
@@ -151,6 +155,7 @@ public:
 		GeneNeuralConstant gene_neural_constant;
 		GeneBodyAttribute gene_body_attribute;
 
+		GeneData(GeneStartMarker const& gsm) : gene_start_marker(gsm) {}
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
 		GeneData(GeneNoOp const &gnop) : gene_no_op(gnop) {}
 		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
@@ -176,6 +181,7 @@ public:
 		update_meta_genes_vec();
 	}
 
+	Gene(GeneStartMarker const& gsm) : Gene(GENE_TYPE_START_MARKER, gsm) {}
 	Gene(GeneStop const &gs) : Gene(GENE_TYPE_STOP, gs) {}
 	Gene(GeneNoOp const &gnop) : Gene(GENE_TYPE_NO_OP, gnop) {}
 	Gene(GeneSkip const &gs) : Gene(GENE_TYPE_SKIP, gs) {}

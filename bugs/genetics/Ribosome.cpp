@@ -144,6 +144,20 @@ bool Ribosome::step() {
 	}
 	unsigned nCrtBranches = activeSet_.size();
 	for (unsigned i=0; i<nCrtBranches; i++) {
+		if (activeSet_[i].second.crtGenomePos == activeSet_[i].second.startGenomePos) {
+			// move forward until we hit a start marker
+			auto &c1 = bug_->genome_.first.genes;
+			auto &c2 = bug_->genome_.second.genes;
+			auto &offs = activeSet_[i].second.crtGenomePos;
+			while ((c1.size() > offs && c1[offs].type != GENE_TYPE_START_MARKER)
+				|| (c2.size() > offs && c2[offs].type != GENE_TYPE_START_MARKER)) {
+				activeSet_[i].second.crtGenomePos++;
+				// did we hit a marker?
+				if ((c1.size() > offs && c1[offs].type == GENE_TYPE_START_MARKER)
+					|| (c2.size() > offs && c2[offs].type == GENE_TYPE_START_MARKER))
+					break;
+			}
+		}
 		BodyPart* p = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second.crtGenomePos++;
 		bool hasFirst = offset < bug_->genome_.first.genes.size();
@@ -363,6 +377,8 @@ void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
 void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
+		break;
+	case GENE_TYPE_START_MARKER:
 		break;
 	case GENE_TYPE_PROTEIN:
 		decodeProtein(g.data.gene_protein, part, growthData);

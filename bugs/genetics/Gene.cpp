@@ -215,6 +215,8 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return createRandomAttribGene();
 	case GENE_TYPE_SKIP:
 		return createRandomSkipGene(spaceLeftAfter);
+	case GENE_TYPE_START_MARKER:
+		return GeneStartMarker();
 	case GENE_TYPE_STOP:
 		return GeneStop();
 	case GENE_TYPE_SYNAPSE:

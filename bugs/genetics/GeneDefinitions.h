@@ -16,21 +16,22 @@ typedef uint8_t gene_type;
 
 constexpr gene_type GENE_TYPE_INVALID = 0;
 constexpr gene_type GENE_TYPE_NO_OP = 1;			// no operation gene; dummy.
-constexpr gene_type GENE_TYPE_STOP = 2;				// signals the ribosome to stop reading genes after this one
-constexpr gene_type GENE_TYPE_SKIP = 3;				// control gene -> skip next N genes if all conditions are met
-constexpr gene_type GENE_TYPE_PROTEIN = 4;			// protein gene -> produces a specific protein type in a body-part's segment
-constexpr gene_type GENE_TYPE_OFFSET = 5;			// controls the relative genome offset of a child part
-constexpr gene_type GENE_TYPE_JOINT_OFFSET = 6;		// controls the relative genome offset of this part's upstream Joint relative to this one
-constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 7;	// body part attribute - establishes characteristics of certain body parts
-constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 8;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+constexpr gene_type GENE_TYPE_START_MARKER = 2;		// marks the beginning of a separate sequence of genes
+constexpr gene_type GENE_TYPE_STOP = 3;				// signals the ribosome to stop reading genes after this one
+constexpr gene_type GENE_TYPE_SKIP = 4;				// control gene -> skip next N genes if all conditions are met
+constexpr gene_type GENE_TYPE_PROTEIN = 5;			// protein gene -> produces a specific protein type in a body-part's segment
+constexpr gene_type GENE_TYPE_OFFSET = 6;			// controls the relative genome offset of a child part
+constexpr gene_type GENE_TYPE_JOINT_OFFSET = 7;		// controls the relative genome offset of this part's upstream Joint relative to this one
+constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 8;	// body part attribute - establishes characteristics of certain body parts
+constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 9;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 													// such as metabolic parameters
-constexpr gene_type GENE_TYPE_SYNAPSE = 9;			// creates or alters a synapse between neurons (cummulative weight)
-constexpr gene_type GENE_TYPE_TRANSFER_FUNC = 10;			// controls the transfer function of a neuron (cummulative)
-constexpr gene_type GENE_TYPE_NEURAL_CONST = 11;	// neural constant (cummulative) - used in various computations
-constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 12;		// output coord (in MVMS) from a neuron
-constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 13;		// input coord (in SVMS) to a neuron
+constexpr gene_type GENE_TYPE_SYNAPSE = 10;			// creates or alters a synapse between neurons (cummulative weight)
+constexpr gene_type GENE_TYPE_TRANSFER_FUNC = 11;			// controls the transfer function of a neuron (cummulative)
+constexpr gene_type GENE_TYPE_NEURAL_CONST = 12;	// neural constant (cummulative) - used in various computations
+constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 13;		// output coord (in MVMS) from a neuron
+constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 14;		// input coord (in SVMS) to a neuron
 
-constexpr gene_type GENE_TYPE_END = 14;
+constexpr gene_type GENE_TYPE_END = 15;
 
 // ----------------------------------- gene_protein_type -------------------------------//
 
