@@ -479,7 +479,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(7);
-	go.offset.set(119);
+	go.offset.set(136);
 	c.genes.push_back(go);
 
 	// G+5
@@ -496,7 +496,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(9);
-	go.offset.set(119);
+	go.offset.set(136);
 	c.genes.push_back(go);
 
 	// G+5
@@ -566,17 +566,9 @@ Chromosome Bug::createBasicChromosome() {
 	// G+6
 
 	// bone1 offs (G 62):
-	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
-	ga.value.set(BodyConst::initialJointMaxPhi);
-	c.genes.push_back(ga);
-
-	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
-	ga.value.set(BodyConst::initialJointMinPhi);
-	c.genes.push_back(ga);
-
-	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
-	ga.value.set(BodyConst::initialJointResetTorque);
-	c.genes.push_back(ga);
+	GeneJointOffset gjo;
+	gjo.offset.set(23);
+	c.genes.push_back(gjo);
 
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
@@ -598,7 +590,7 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(BodyConst::initialBoneDensity);
 	c.genes.push_back(ga);
 
-	// G+8
+	// G+6
 
 	// grow Bone 2:
 	gp.targetSegment.set(0);
@@ -612,7 +604,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(0);
-	go.offset.set(29);				// (91-62) offset is relative to the current part's
+	go.offset.set(33);				// (95-62) offset is relative to the current part's
 	c.genes.push_back(go);
 
 	// G+5
@@ -629,7 +621,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(1);
-	go.offset.set(23);
+	go.offset.set(27);
 	c.genes.push_back(go);
 
 	// G+5
@@ -646,7 +638,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(15);
-	go.offset.set(23);
+	go.offset.set(27);
 	c.genes.push_back(go);
 
 	c.genes.push_back(GeneStop());
@@ -654,7 +646,30 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// muscle 3 & 4 offs (G 85):
+	// bone 1 joint offs (G 83):
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize * 3);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(BodyConst::initialJointMaxPhi);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(BodyConst::initialJointMinPhi);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
+	ga.value.set(BodyConst::initialJointResetTorque);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+
+	// G+6
+
+	// muscle 3 & 4 offs (G 89):
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
@@ -676,18 +691,9 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+6
 
-	// bone2 offset (G 91):
-	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
-	ga.value.set(BodyConst::initialJointMaxPhi);
-	c.genes.push_back(ga);
-
-	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
-	ga.value.set(BodyConst::initialJointMinPhi);
-	c.genes.push_back(ga);
-
-	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
-	ga.value.set(BodyConst::initialJointResetTorque);
-	c.genes.push_back(ga);
+	// bone2 offset (G 95):
+	gjo.offset.set(23);
+	c.genes.push_back(gjo);
 
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
@@ -709,7 +715,7 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	// G+8
+	// G+6
 
 	// grow gripper:
 	gp.targetSegment.set(0);
@@ -723,7 +729,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(0);
-	go.offset.set(25);
+	go.offset.set(28);
 	c.genes.push_back(go);
 
 	// G+5
@@ -740,7 +746,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(0);
-	go.offset.set(32);
+	go.offset.set(35);
 	c.genes.push_back(go);
 
 	// G+5
@@ -757,7 +763,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(15);
-	go.offset.set(32);
+	go.offset.set(35);
 	c.genes.push_back(go);
 
 	c.genes.push_back(GeneStop());
@@ -765,7 +771,25 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// gripper offs (G 116):
+	// bone 2 joint offs (G 118):
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(BodyConst::initialJointMaxPhi);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(BodyConst::initialJointMinPhi);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
+	ga.value.set(BodyConst::initialJointResetTorque);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	// G+5
+
+	// gripper offs (G 123):
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
 	ga.value.set(BodyConst::initialJointMaxPhi);
 	c.genes.push_back(ga);
@@ -791,7 +815,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// gripper muscle offs (G 123):
+	// gripper muscle offs (G 130):
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
@@ -813,7 +837,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+6
 
-	// bone1 muscles 1&2 offs (G 129):
+	// bone1 muscles 1&2 offs (G 136):
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(1.e-3f);
 	c.genes.push_back(ga);
@@ -831,7 +855,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// G+4
-	// G 133 total
+	// G 140 total
 
 	// finished with adding genes.
 	// now we need to add some redundancy in between genes:
