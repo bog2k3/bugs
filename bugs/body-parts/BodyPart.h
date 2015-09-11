@@ -78,7 +78,7 @@ public:
 	// must return the actual amount deduced from mass argument
 	virtual float addFood(float mass) { if (parent_) return parent_->addFood(mass); else return 0; }
 
-	inline int getDepth() { int d=1; if (parent_) d+=parent_->getDepth(); return d; }
+	virtual int getDepth() { if (parent_) return 1 + parent_->getDepth(); return 0; }
 
 	virtual Bug* getOwner() { if (parent_) return parent_->getOwner(); return nullptr; }
 
