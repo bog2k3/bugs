@@ -1,4 +1,5 @@
-* develop a better embrionic development process 		
+* find a better way to decode the genome rather than offset-based
+		* develop a better embrionic development process (protein system done)
 		* print population & generations in status update
 		* !!! fix autosave (doesn't save any more, wtf?)
 * fix world design to favour movers
@@ -6,14 +7,14 @@
 * !!! add SENSORS
 * prevent fixture overlapping after load from file -> results in box2D hang (maybe do an epsilon update on physWorld after each entity is deserialized)
 * make multiple worlds on different CPU cores which communicate through portals
-* !!! have redundancy in neural system to make muscle command harder to break
+		* [obsolete]  !!! have redundancy in neural system to make muscle command harder to break
 		* prevent attraction between incompatible gamettes
 		* check for double deletion and other memory issues (valgrind)
 * GUI [lowprio] - stuff to interact with world
 * serialization 
 		- save/load to/from bigfile
   - other entity types (gamete, dead bug) - also make bug adults directly
-* !!! INVESTIGATE (fix dev gene reusage neural linking) - may already be fixed
+		* !!! INVESTIGATE (fix dev gene reusage neural linking) - may already be fixed
 		* make gametes fuse into new zygotes
 		* fix basic bug neural routing - now it's fucked up
 		* make egglayer grow instead of torso
@@ -21,7 +22,7 @@
 		* fix joint nan angle
 * do some statistical analysis on mutation rates
 		* add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
-* make split work
+		* [obs] make split work
 * add "duplicate" as a gene spawn method (copy existing gene)
 		* make eggs attract each other
 		* !!! make eggs and zygotes (dead ones as well) as food

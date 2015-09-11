@@ -678,6 +678,7 @@ void Ribosome::resolveNerveLinkage() {
 }
 
 Joint* Ribosome::findNearestJoint(BodyPart* parent, unsigned startSlice, int dir) {
+#error must fix: getChild() return nth created child, not ith slice child -> order children by angle then loop through that
 	for (unsigned i=0; i<BodyPart::MAX_CHILDREN; i++) {
 		unsigned slice = (int)startSlice + dir * (int)i;
 		if (slice >= BodyPart::MAX_CHILDREN)
