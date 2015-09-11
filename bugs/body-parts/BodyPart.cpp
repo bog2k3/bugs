@@ -507,7 +507,7 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue
 
 void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value) {
 	auto &attrVec = mapAttributes_[type];
-	while (attrVec.size() < index + 1);
+	while (attrVec.size() < index + 1)
 		attrVec.push_back(nullptr);
 	attrVec[index] = &value;
 }

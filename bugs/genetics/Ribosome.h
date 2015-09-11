@@ -57,11 +57,13 @@ struct MuscleInfo {
 struct GrowthData {
 	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this part
-	glm::vec4 hyperPositions[BodyPart::MAX_CHILDREN] {glm::vec4(0)};	// holds hyper-space positions for each segment in a body part
+	glm::vec4 hyperPositions[BodyPart::MAX_CHILDREN] { glm::vec4() };	// holds hyper-space positions for each segment in a body part
 	CummulativeValue offsets[BodyPart::MAX_CHILDREN]; // holds relative genome offsets for each segment in a body part
 
 	GrowthData(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
+		for (int i=0; i<BodyPart::MAX_CHILDREN; i++)
+			offsets[i].reset(0);
 	}
 };
 
