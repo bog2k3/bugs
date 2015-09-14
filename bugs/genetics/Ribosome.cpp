@@ -27,6 +27,8 @@
 
 #include <utility>
 
+constexpr bool ENABLE_START_MARKER_GENES = false;
+
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 {
@@ -144,7 +146,7 @@ bool Ribosome::step() {
 	}
 	unsigned nCrtBranches = activeSet_.size();
 	for (unsigned i=0; i<nCrtBranches; i++) {
-		if (activeSet_[i].second.crtGenomePos == activeSet_[i].second.startGenomePos) {
+		if (ENABLE_START_MARKER_GENES && activeSet_[i].second.crtGenomePos == activeSet_[i].second.startGenomePos) {
 			// move forward until we hit a start marker
 			auto &c1 = bug_->genome_.first.genes;
 			auto &c2 = bug_->genome_.second.genes;
