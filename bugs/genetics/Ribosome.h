@@ -44,16 +44,6 @@ struct NeuronInfo {
 	}
 };
 
-struct MuscleInfo {
-	BodyPart* parent;
-	unsigned parentSlice;
-	Muscle* muscle;
-
-	MuscleInfo(Muscle* muscle, BodyPart* parent, unsigned parentSlice)
-		: parent(parent), parentSlice(parentSlice), muscle(muscle) {
-	}
-};
-
 struct GrowthData {
 	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this part
@@ -93,7 +83,7 @@ private:
 	std::vector<std::pair<BodyPart*, GrowthData>> activeSet_;
 	std::map<BodyPart*, std::pair<Joint*, CummulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 																	// and relative genome offset of the joint (if joint exists)
-	std::vector<MuscleInfo> muscleInfo_;
+	std::vector<Muscle*> muscles_;
 	std::vector<const Gene*> neuralGenes_;
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
@@ -120,7 +110,7 @@ private:
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
 	void resolveMuscleLinkage();
-	Joint* findNearestJoint(BodyPart* parent, unsigned startSlice, int dir);
+	Joint* findNearestJoint(Muscle* m, int dir);
 
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();

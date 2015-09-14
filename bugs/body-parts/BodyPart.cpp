@@ -80,16 +80,6 @@ void BodyPart::addMotorLine(int lineId) {
 		parent_->addMotorLine(lineId);
 }
 
-int circularPrev(int index, int n) {
-	if (n == 0)
-		return 0;
-	return (index+n-1) % n;
-}
-int circularNext(int index, int n) {
-	if (n == 0)
-		return 0;
-	return (index+1) % n;
-}
 bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, bool sweepPositive, float &outMargin) {
 	// will set outMargin to negative if overlap, or positive shortest gap around element if no overlap
 	// move angle1 in origin for convenience:

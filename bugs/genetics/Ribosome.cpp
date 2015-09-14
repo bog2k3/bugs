@@ -299,7 +299,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		// muscle must be linked to the nearest joint - or one towards which it's oriented if equidistant
 		// linkage is postponed until before commit when all parts are in place (muscle may be created before joint)
 		Muscle* m = new Muscle();
-		muscleInfo_.push_back(MuscleInfo(m, parent, attachmentSegment));
+		muscles_.push_back(m);
 		addMotor(m, m);
 		bp = m;
 		break;
@@ -679,42 +679,59 @@ void Ribosome::resolveNerveLinkage() {
 	outputNeurons_.clear();
 }
 
-Joint* Ribosome::findNearestJoint(BodyPart* parent, unsigned startSlice, int dir) {
-#error must fix: getChild() return nth created child, not ith slice child -> order children by angle then loop through that
-	for (unsigned i=0; i<BodyPart::MAX_CHILDREN; i++) {
-		unsigned slice = (int)startSlice + dir * (int)i;
-		if (slice >= BodyPart::MAX_CHILDREN)
-			slice -= BodyPart::MAX_CHILDREN;
-		if (slice < 0)
-			slice += BodyPart::MAX_CHILDREN;
-		if (parent->getChild(slice) && parent->getChild(slice)->getType() == BodyPartType::JOINT)
-			return dynamic_cast<Joint*>(parent->getChild(slice));
+Joint* Ribosome::findNearestJoint(Muscle* m, int dir) {
+	assertDbg(m->getParent() && "muscle should have a parent!");
+	int nChildren = m->getParent()->getChildrenCount();
+	std::vector<BodyPart*> bp(nChildren);
+	for (int i=0; i<nChildren; i++)
+		bp.push_back(m->getParent()->getChild(i));
+	std::sort(bp.begin(), bp.end(), [] (BodyPart* left, BodyPart* right) -> bool {
+		return left->getAttachmentAngle() < right->getAttachmentAngle();
+	});
+
+	int mIndex = -1;
+	for (int i=0; i<nChildren; i++) {
+		if (m->getParent()->getChild(i) == m) {
+			mIndex = i;
+			break;
+		}
 	}
+	assertDbg(mIndex >= 0 && "muscle should have been found in parent!");
+	int index = mIndex;
+	do {
+		if (dir > 0)
+			index = circularNext(index, nChildren);
+		else
+			index = circularPrev(index, nChildren);
+
+		if (m->getParent()->getChild(index)->getType() == BodyPartType::JOINT)
+			return dynamic_cast<Joint*>(m->getParent()->getChild(index));
+	} while (index != mIndex);
 	return nullptr;
 }
 
 void Ribosome::resolveMuscleLinkage() {
-	for (MuscleInfo &m : muscleInfo_) {
-		Joint* jNeg = findNearestJoint(m.parent, m.parentSlice, -1);
-		Joint* jPos = findNearestJoint(m.parent, m.parentSlice, +1);
+	for (Muscle* m : muscles_) {
+		Joint* jNeg = findNearestJoint(m, -1);
+		Joint* jPos = findNearestJoint(m, +1);
 		// default to the joint on the negative side and only select the positive one if more appropriate:
 		Joint* targetJoint = jNeg;
 		int turningSide = +1;
 		if (jNeg != jPos) {
-			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m.muscle->getAttachmentAngle());
-			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m.muscle->getAttachmentAngle());
+			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m->getAttachmentAngle());
+			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m->getAttachmentAngle());
 			if (posDelta < negDelta) {
 				targetJoint = jPos;
 				turningSide = -1;
 			} else if (posDelta == negDelta) {
 				// angle differences are equal, choose the one towards which the muscle is oriented
-				if (m.muscle->getAngleOffset() > 0) {
+				if (m->getAngleOffset() > 0) {
 					targetJoint = jPos;
 					turningSide = -1;
 				}
 			}
 		}
-		m.muscle->setJoint(targetJoint, turningSide);
+		m->setJoint(targetJoint, turningSide);
 	}
-	muscleInfo_.clear();
+	muscles_.clear();
 }

@@ -21,6 +21,18 @@ constexpr float cross2D(const glm::vec2 &v1, const glm::vec2 &v2) {
 	return (v1.x*v2.y) - (v1.y*v2.x);
 }
 
+inline int circularPrev(int index, int n) {
+	if (n == 0)
+		return 0;
+	return (index+n-1) % n;
+}
+
+inline int circularNext(int index, int n) {
+	if (n == 0)
+		return 0;
+	return (index+1) % n;
+}
+
 /*
  * computes the angle from (0,0) in direction p. p is assumed to be normalized
  */

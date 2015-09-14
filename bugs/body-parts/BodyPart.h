@@ -56,6 +56,7 @@ public:
 	virtual void draw(RenderContext const& ctx);
 
 	inline BodyPartType getType() const { return type_; }
+	inline BodyPart* getParent() const { return parent_; }
 
 	// detaches this body part along with all its children from the parent part, breaking all neural connections.
 	// this part and its children may die as a result of this operation if the parameter is true
