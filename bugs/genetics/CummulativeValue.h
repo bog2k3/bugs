@@ -16,6 +16,8 @@ struct CummulativeValue {
 	CummulativeValue() {}
 	explicit CummulativeValue(float initial) : value_(initial), cachedValue_(value_), cacheUpdated_(true), n_(1), factor_(1.f) {}
 	inline operator float() {
+		if (!hasValue())
+			return 0;
 		if (!cacheUpdated_)
 			updateCache();
 		assertDbg(!std::isnan(cachedValue_));

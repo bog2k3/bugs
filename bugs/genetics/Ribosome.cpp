@@ -399,12 +399,12 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 		break;
 	case GENE_TYPE_SYNAPSE:
 		// only from depth 0 (torso) must the neural genes be taken into account
-		if (part->getType() == BodyPartType::TORSO) {
+		if (!part || part->getType() == BodyPartType::TORSO) {
 			decodeSynapse(g.data.gene_synapse);
 		}
 		break;
 	case GENE_TYPE_NEURON_OUTPUT_COORD:
-		if (part->getType() == BodyPartType::TORSO) {
+		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
 			else
@@ -412,7 +412,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 		}
 		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
-		if (part->getType() == BodyPartType::TORSO) {
+		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
 			else
@@ -420,7 +420,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 		}
 		break;
 	case GENE_TYPE_TRANSFER_FUNC:
-		if (part->getType() == BodyPartType::TORSO) {
+		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
 			else
@@ -428,7 +428,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 		}
 		break;
 	case GENE_TYPE_NEURAL_CONST:
-		if (part->getType() == BodyPartType::TORSO) {
+		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
 			else
@@ -530,14 +530,14 @@ void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
 	checkAndAddNeuronMapping(g.srcNeuronVirtIndex);
 	mapNeurons_[g.srcNeuronVirtIndex].outputVMSCoord.changeAbs(g.outCoord);
 	// add this neuron into the outputNeurons_ set:
-	outputNeurons_.emplace(g.srcNeuronVirtIndex);
+	outputNeurons_.insert(g.srcNeuronVirtIndex);
 }
 
 void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 	checkAndAddNeuronMapping(g.destNeuronVirtIndex);
 	mapNeurons_[g.destNeuronVirtIndex].inputVMSCoord.changeAbs(g.inCoord);
 	// add this neuron into the inputNeurons_ set:
-	inputNeurons_.emplace(g.destNeuronVirtIndex);
+	inputNeurons_.insert(g.destNeuronVirtIndex);
 }
 
 void Ribosome::createSynapse(int from, int to, float weight) {
@@ -682,7 +682,8 @@ void Ribosome::resolveNerveLinkage() {
 Joint* Ribosome::findNearestJoint(Muscle* m, int dir) {
 	assertDbg(m->getParent() && "muscle should have a parent!");
 	int nChildren = m->getParent()->getChildrenCount();
-	std::vector<BodyPart*> bp(nChildren);
+	std::vector<BodyPart*> bp;
+	bp.reserve(nChildren);
 	for (int i=0; i<nChildren; i++)
 		bp.push_back(m->getParent()->getChild(i));
 	std::sort(bp.begin(), bp.end(), [] (BodyPart* left, BodyPart* right) -> bool {

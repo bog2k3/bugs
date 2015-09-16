@@ -21,7 +21,7 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 	MuscleInitializationData();
 
 	CummulativeValue aspectRatio;	// length/width
-	CummulativeValue inputVMSCoord { 0 }; // input nerve VMS coordinate
+	CummulativeValue inputVMSCoord; // input nerve VMS coordinate
 };
 
 class Muscle: public BodyPart, public IMotor {
