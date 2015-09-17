@@ -271,6 +271,14 @@ void Muscle::draw(RenderContext const& ctx) {
 			vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
 			0,
 			debug_color);
+#ifdef DEBUG_DRAW_MUSCLE
+	if (inputSocket_->value > 0)
+		ctx.shape->drawLine(
+			vec3xy(worldTransform) + glm::rotate(glm::vec2(-l/2, 0), worldTransform.z),
+			vec3xy(worldTransform) + glm::rotate(glm::vec2(+l/2, 0), worldTransform.z),
+			0,
+			debug_color);
+#endif
 }
 
 float Muscle::getCurrentPhiSlice() {

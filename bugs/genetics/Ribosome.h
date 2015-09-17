@@ -29,8 +29,8 @@ struct NeuronInfo {
 	int index;
 	CummulativeValue transfer;
 	CummulativeValue constant;
-	CummulativeValue inputVMSCoord { 0 };
-	CummulativeValue outputVMSCoord { 0 };
+	CummulativeValue inputVMSCoord;
+	CummulativeValue outputVMSCoord;
 	NeuronInfo(int index, float transfer, float constant)
 		: index(index), transfer(transfer), constant(constant) {
 	}
