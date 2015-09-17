@@ -11,6 +11,7 @@
 #include "../entities/WorldConst.h"
 #include "Gene.h"
 #include <vector>
+#include <string>
 #include <utility>
 
 class MetaGene;
@@ -29,6 +30,8 @@ struct Chromosome {
 	Chromosome() : insertions(WorldConst::MaxGenomeLengthDifference, insertion()) {
 		insertions.clear();
 	}
+
+	std::string stringify() const;
 };
 
 typedef std::pair<Chromosome, Chromosome> Genome;

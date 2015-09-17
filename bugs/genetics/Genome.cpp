@@ -11,6 +11,22 @@
 #include "../math/math2D.h"
 #include <set>
 
+std::string Chromosome::stringify() const {
+	char s[genes.size() + (genes.size()/10)*4 + 1];
+	uint p = 0;
+	for (uint i=0; i<genes.size(); i++) {
+		if (i % 10 == 0) {
+			s[p++] = '[';
+			s[p++] = ((i/100) % 10) + '0';
+			s[p++] = ((i/10) % 10) + '0';
+			s[p++] = ']';
+		}
+		s[p++] = genes[i].getSymbol();
+	}
+	s[p] = 0;
+	return s;
+}
+
 Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	Chromosome c;
 	unsigned i=0;
@@ -42,7 +58,7 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
 	assertDbg(amount > 0);
 	for (uint i=0; i<c.insertions.size(); i++) {
-		int from = i + amount;
+		uint from = i + amount;
 		if (from < c.insertions.size())
 			c.insertions[i] = c.insertions[from];
 		else {
@@ -56,7 +72,7 @@ void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
  * this will insert a new gene and return the index in the insertions vector where this change has been recorded
  */
 int GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g) {
-	assertDbg(ins.index <= c.genes.size());
+	assertDbg(ins.index <= (int)c.genes.size());
 	c.genes.insert(c.genes.begin() + ins.index, g);
 	// determine where in insertions we must add this new index
 	uint d=0;
@@ -83,7 +99,7 @@ void GeneticOperations::trimInsertionList(Chromosome &c) {
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
 	LOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
-	assertDbg(abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
+	assertDbg((uint)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
 
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
 	Chromosome &c1 = gen.first;

@@ -11,7 +11,8 @@
 #include "../utils/rand.h"
 #include "../World.h"
 
-static unsigned minPopulation = 10;				// minimum population number that triggers a refill
+#warning "change this back to 10 after debug!!!"
+static unsigned minPopulation = 0;				// minimum population number that triggers a refill
 static unsigned refillPopulationTarget = 20;	// target population after refill
 
 void PopulationManager::update(float dt) {

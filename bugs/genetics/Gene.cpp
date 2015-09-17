@@ -230,3 +230,38 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return GeneStop();
 	}
 }
+
+char Gene::getSymbol() const {
+	switch (type) {
+	case GENE_TYPE_BODY_ATTRIBUTE:
+		return 'B';
+	case GENE_TYPE_JOINT_OFFSET:
+		return 'J';
+	case GENE_TYPE_NEURAL_CONST:
+		return 'C';
+	case GENE_TYPE_NEURON_INPUT_COORD:
+		return 'I';
+	case GENE_TYPE_NEURON_OUTPUT_COORD:
+		return 'O';
+	case GENE_TYPE_NO_OP:
+		return '_';
+	case GENE_TYPE_OFFSET:
+		return '@';
+	case GENE_TYPE_PART_ATTRIBUTE:
+		return 'A';
+	case GENE_TYPE_PROTEIN:
+		return 'P';
+	case GENE_TYPE_SKIP:
+		return '>';
+	case GENE_TYPE_START_MARKER:
+		return ':';
+	case GENE_TYPE_STOP:
+		return '!';
+	case GENE_TYPE_SYNAPSE:
+		return 'S';
+	case GENE_TYPE_TRANSFER_FUNC:
+		return 'T';
+	default:
+		return '?';
+	}
+}

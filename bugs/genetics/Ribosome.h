@@ -52,8 +52,6 @@ struct GrowthData {
 
 	GrowthData(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
-		for (int i=0; i<BodyPart::MAX_CHILDREN; i++)
-			offsets[i].reset(0);
 	}
 };
 

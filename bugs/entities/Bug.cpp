@@ -55,6 +55,10 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, eggMass_(BodyConst::initialEggMass)
 	, generation_(generation)
 {
+	LOGGER("BUG");
+	LOGLN("new embryo; printing chromosomes:");
+	LOGLN("C1: " << genome.first.stringify());
+	LOGLN("C2: " << genome.second.stringify());
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(position, velocity, zygoteMass);
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
@@ -529,6 +533,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialMouthSize);
 	c.genes.push_back(ga);
@@ -554,6 +559,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_EGG_EJECT_SPEED;
 	ga.value.set(BodyConst::initialEggEjectSpeed);
 	c.genes.push_back(ga);
@@ -580,9 +586,11 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 
 	GeneJointOffset gjo;
+	gjo.maxDepth.set(2);
 	gjo.offset.set(25);
 	c.genes.push_back(gjo);
 
+	ga.maxDepth.set(2);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
 	c.genes.push_back(ga);
@@ -606,6 +614,7 @@ Chromosome Bug::createBasicChromosome() {
 	// G+8
 
 	// grow Bone 2:
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -616,6 +625,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
+	go.maxDepth.set(2);
 	go.targetSegment.set(0);
 	go.offset.set(41);				// offset is relative to the current part's
 	c.genes.push_back(go);
@@ -663,6 +673,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialJointSize * 3);
 	c.genes.push_back(ga);
@@ -689,6 +700,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
@@ -714,9 +726,11 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	gjo.maxDepth.set(4);
 	gjo.offset.set(25);
 	c.genes.push_back(gjo);
 
+	ga.maxDepth.set(4);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
 	c.genes.push_back(ga);
@@ -740,6 +754,7 @@ Chromosome Bug::createBasicChromosome() {
 	// G+8
 
 	// grow gripper:
+	gp.maxDepth.set(4);
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -750,6 +765,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
+	go.maxDepth.set(4);
 	go.targetSegment.set(0);
 	go.offset.set(32);
 	c.genes.push_back(go);
@@ -797,6 +813,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
 	ga.value.set(BodyConst::initialJointMaxPhi);
 	c.genes.push_back(ga);
@@ -818,6 +835,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(6);
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
 	ga.value.set(BodyConst::initialJointMaxPhi);
 	c.genes.push_back(ga);
@@ -847,6 +865,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
@@ -872,6 +891,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
+	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(1.e-3f);
 	c.genes.push_back(ga);
@@ -893,15 +913,20 @@ Chromosome Bug::createBasicChromosome() {
 
 	// finished with adding genes.
 	// now we need to add some redundancy in between genes:
-	int padding = 2;
-	for (uint i=0; i<c.genes.size(); i+=padding+1) {
-		for (int k=0; k<padding; k++)
-			c.genes.insert(c.genes.begin()+i+1, GeneNoOp());
-		if (c.genes[i].type == GENE_TYPE_SKIP) {
-			c.genes[i].data.gene_skip.count.set(c.genes[i].data.gene_skip.count * (padding+1));
-		}
-		if (c.genes[i].type == GENE_TYPE_OFFSET) {
-			c.genes[i].data.gene_offset.offset.set(c.genes[i].data.gene_offset.offset * (padding+1));
+	if (false) {
+		int padding = 2;
+		for (uint i=0; i<c.genes.size(); i+=padding+1) {
+			for (int k=0; k<padding; k++)
+				c.genes.insert(c.genes.begin()+i+1, GeneNoOp());
+			if (c.genes[i].type == GENE_TYPE_SKIP) {
+				c.genes[i].data.gene_skip.count.set(c.genes[i].data.gene_skip.count * (padding+1));
+			}
+			if (c.genes[i].type == GENE_TYPE_OFFSET) {
+				c.genes[i].data.gene_offset.offset.set(c.genes[i].data.gene_offset.offset * (padding+1));
+			}
+			if (c.genes[i].type == GENE_TYPE_JOINT_OFFSET) {
+				c.genes[i].data.gene_joint_offset.offset.set(c.genes[i].data.gene_joint_offset.offset * (padding+1));
+			}
 		}
 	}
 

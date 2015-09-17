@@ -218,6 +218,8 @@ public:
 		return *this;
 	}
 
+	char getSymbol() const;
+
 	// @spaceLeftAfter tells how many genes are in the chromosome after the position where this one will be inserted
 	// @nNeurons tells how many neurons the genome creates
 	static Gene createRandom(int spaceLeftAfter, int nNeurons);
