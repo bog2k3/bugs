@@ -354,6 +354,11 @@ Chromosome Bug::createBasicChromosome() {
 	gt.targetNeuron.set(0);
 	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.genes.push_back(gt);
+	// neuron #0 input:
+	GeneNeuronInputCoord gic;
+	gic.destNeuronVirtIndex.set(0);
+	gic.inCoord.set(50);
+	c.genes.push_back(gic);
 
 	// neuron #1 transfer:
 	gt.targetNeuron.set(1);
@@ -409,7 +414,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// synapse 0 to 2
 	gs.from.set(0);
-	gs.to.set(1);
+	gs.to.set(2);
 	gs.weight.set(2*PI / musclePeriod);
 	c.genes.push_back(gs);
 
