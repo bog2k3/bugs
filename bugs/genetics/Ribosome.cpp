@@ -73,8 +73,11 @@ void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
 	bug_->neuralNet_->neurons.reserve(mapNeurons_.size());
-	for (unsigned i=0; i<mapNeurons_.size(); i++) {
+	for (auto &it : mapNeurons_) {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
+#ifdef DEBUG
+		mapNeuronVirtIndex_[bug_->neuralNet_->neurons.back()] = it.first;
+#endif
 	}
 }
 
@@ -599,6 +602,11 @@ void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& ord
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
 			orderedOutputNeurons_[neuronIndex].first->output.addTarget(orderedMotorInputs_[i].first);
+#ifdef DEBUG
+			LOGLN("LinkMotorNerve: neuron[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
+					<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
+					<< mapSockMotorInfo[orderedMotorInputs_[i].first].second);
+#endif
 			// add mapping for this motor line in bug:
 			int nerveLineId = mapInputNerves_[orderedMotorInputs_[i].first];
 			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &orderedOutputNeurons_[neuronIndex].first->output);
@@ -642,6 +650,9 @@ void Ribosome::resolveNerveLinkage() {
 		for (unsigned j=0; j<motors_[i]->getInputCount(); j++) {
 			mapInputNerves_[motors_[i]->getInputSocket(j)] = motorInputs.size();
 			motorInputs.push_back(std::make_pair(motors_[i]->getInputSocket(j), motors_[i]->getInputVMSCoord(j)));
+#ifdef DEBUG
+			mapSockMotorInfo[motors_[i]->getInputSocket(j)] = std::make_pair(motors_[i]->getMotorDebugName(), j);
+#endif
 		}
 	}
 	// build the sensor output nerves vector:

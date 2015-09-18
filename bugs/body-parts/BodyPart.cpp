@@ -17,6 +17,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <cassert>
+#include <sstream>
 
 BodyPartInitializationData::BodyPartInitializationData()
 	: angleOffset(0)
@@ -181,7 +182,7 @@ float BodyPart::add(BodyPart* part, float angle) {
 	checkCircularBuffer(true, true);
 #endif
 	angle = limitAngle(angle, 2*PI);
-	assertDbg(nChildren_ < MAX_CHILDREN && initialData_);
+	assertDbg(nChildren_ < (int)MAX_CHILDREN && initialData_);
 	// determine the position in the circular buffer:
 	int bufferPos = 0;
 	while (bufferPos < nChildren_ && angle >= children_[bufferPos]->attachmentDirectionParent_)
@@ -600,14 +601,70 @@ void BodyPart::cacheInitializationData() {
 	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }
 
-//void BodyPart::updateMotorMappings(std::map<int, int> mapping) {
-//	for (unsigned i=0; i<motorLines_.size(); i++)
-//		motorLines_[i] = mapping[i];
-//	for (int i=0; i<nChildren_; i++)
-//		children_[i]->updateMotorMappings(mapping);
-//}
-
 void BodyPart::hierarchyMassChanged() {
 	if (parent_)
 		parent_->hierarchyMassChanged();
+}
+
+void BodyPart::buildDebugName(std::stringstream &out_stream) const {
+	if (parent_) {
+		parent_->buildDebugName(out_stream);
+		out_stream << "::";
+	}
+	// compute attachment slice:
+	int slice = -1;
+	if (parent_)
+		slice = (int)(getAttachmentAngle() / (2*PI) * MAX_CHILDREN);
+	// compute own name from type & slice:
+	switch (type_) {
+	case BodyPartType::BONE:
+		out_stream << "Bone";
+		break;
+	case BodyPartType::EGGLAYER:
+		out_stream << "EggLayer";
+		break;
+	case BodyPartType::GRIPPER:
+		out_stream << "Gripper";
+		break;
+	case BodyPartType::JOINT:
+		out_stream << "Joint";
+		break;
+	case BodyPartType::MOUTH:
+		out_stream << "Mouth";
+		break;
+	case BodyPartType::MUSCLE:
+		out_stream << "Muscle";
+		break;
+	case BodyPartType::SENSOR_COMPASS:
+		out_stream << "SensorCompass";
+		break;
+	case BodyPartType::SENSOR_DIRECTION:
+		out_stream << "SensorDirection";
+		break;
+	case BodyPartType::SENSOR_PROXIMITY:
+		out_stream << "SensorProximity";
+		break;
+	case BodyPartType::SENSOR_SIGHT:
+		out_stream << "SensorSight";
+		break;
+	case BodyPartType::TORSO:
+		out_stream << "Torso";
+		break;
+	case BodyPartType::ZYGOTE_SHELL:
+		out_stream << "ZygoteShell";
+		break;
+
+	default:
+		out_stream << "UNKNOWN";
+		break;
+	}
+	if (slice >= 0) {
+		out_stream << "(" << slice << ")";
+	}
+}
+
+std::string BodyPart::getDebugName() const {
+	std::stringstream ss;
+	buildDebugName(ss);
+	return ss.str();
 }

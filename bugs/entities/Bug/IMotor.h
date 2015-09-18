@@ -22,6 +22,10 @@ public:
 
 	// returns the Virtual Matching Space coordinate of one of this motor's input nerve
 	virtual float getInputVMSCoord(unsigned index) const = 0;
+
+#ifdef DEBUG
+	virtual std::string getMotorDebugName() const = 0;
+#endif
 };
 
 #endif /* ENTITIES_BUG_IMOTOR_H_ */

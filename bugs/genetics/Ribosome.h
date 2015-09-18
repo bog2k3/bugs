@@ -85,6 +85,10 @@ private:
 	std::vector<const Gene*> neuralGenes_;
 	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 											// to actual indices in the neural network plus cummulative properties
+#ifdef DEBUG
+	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
+	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
+#endif
 	std::map<int64_t, CummulativeValue> mapSynapses_;
 	std::set<int> outputNeurons_;	// virtual indices of output neurons
 	std::set<int> inputNeurons_;	// virtual indices of input neurons

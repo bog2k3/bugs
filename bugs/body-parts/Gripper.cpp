@@ -133,4 +133,3 @@ void Gripper::die() {
 		getUpdateList()->remove(this);
 	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
-

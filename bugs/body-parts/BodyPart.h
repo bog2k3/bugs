@@ -21,7 +21,6 @@ enum class BodyPartType {
 
 	TORSO,
 	BONE,
-	PART_MUSCLE,
 	JOINT,
 	MUSCLE,
 	GRIPPER,
@@ -57,6 +56,7 @@ public:
 
 	inline BodyPartType getType() const { return type_; }
 	inline BodyPart* getParent() const { return parent_; }
+	std::string getDebugName() const;
 
 	// detaches this body part along with all its children from the parent part, breaking all neural connections.
 	// this part and its children may die as a result of this operation if the parameter is true
@@ -121,9 +121,9 @@ public:
 
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
-	inline float getDefaultAngle() { return attachmentDirectionParent_ + angleOffset_; }
-	inline float getAngleOffset() { return angleOffset_; }
-	inline float getAttachmentAngle() { return attachmentDirectionParent_; }
+	inline float getDefaultAngle() const { return attachmentDirectionParent_ + angleOffset_; }
+	inline float getAngleOffset() const { return angleOffset_; }
+	inline float getAttachmentAngle() const { return attachmentDirectionParent_; }
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
 	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
@@ -220,6 +220,8 @@ protected:
 
 	virtual void detachMotorLines(std::vector<unsigned> const& lines);
 	virtual void hierarchyMassChanged();
+
+	void buildDebugName(std::stringstream &out_stream) const;
 
 private:
 	void reverseUpdateCachedProps();

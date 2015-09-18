@@ -40,6 +40,9 @@ public:
 	unsigned getInputCount() const override { return 1; }
 	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : nullptr; }
 	float getInputVMSCoord(unsigned index) const override;
+#ifdef DEBUG
+	std::string getMotorDebugName() const override { return getMotorDebugName(); }
+#endif
 
 protected:
 	static constexpr int nAngleSteps = 10;

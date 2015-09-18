@@ -40,6 +40,9 @@ public:
 	unsigned getInputCount() const override { return 2; }
 	InputSocket* getInputSocket(unsigned index) const override { return index < 2 ? inputs_[index] : nullptr; }
 	float getInputVMSCoord(unsigned index) const override;
+#ifdef DEBUG
+	std::string getMotorDebugName() const override { return getMotorDebugName(); }
+#endif
 
 protected:
 	void commit() override;
