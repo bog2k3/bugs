@@ -41,7 +41,7 @@ public:
 	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : nullptr; }
 	float getInputVMSCoord(unsigned index) const override;
 #ifdef DEBUG
-	std::string getMotorDebugName() const override { return getMotorDebugName(); }
+	std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
 
 protected:
