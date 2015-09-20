@@ -63,11 +63,11 @@ void Ribosome::cleanUp() {
 // This model guarantees that any number has half other numbers greater than it and half smaller than it,
 // which is a needed condition for gene dominance, so that no number is privileged in an absolute manner,
 // only relative to other genes.
-static bool isCircularGreater(decltype(Gene::RID) x1, decltype(Gene::RID) x2) {
-	decltype(Gene::RID) d1 = x1 - x2;
-	decltype(Gene::RID) d2 = x2 - x1;
-	return d1 < d2;
-}
+//static bool isCircularGreater(decltype(Gene::RID) x1, decltype(Gene::RID) x2) {
+//	decltype(Gene::RID) d1 = x1 - x2;
+//	decltype(Gene::RID) d2 = x2 - x1;
+//	return d1 < d2;
+//}
 
 void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
@@ -165,27 +165,15 @@ bool Ribosome::step() {
 		}
 		BodyPart* p = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second.crtGenomePos++;
-		bool hasFirst = offset < bug_->genome_.first.genes.size();
-		bool hasSecond = offset < bug_->genome_.second.genes.size();
-		bool reachedTheEnd = !hasFirst && !hasSecond;
-		if (hasFirst)
-			hasFirst = bug_->genome_.first.genes[offset].type != GENE_TYPE_NO_OP;
-		if (hasSecond)
-			hasSecond = bug_->genome_.second.genes[offset].type != GENE_TYPE_NO_OP;
-		if (!hasFirst && !hasSecond && !reachedTheEnd)
-			continue;
-		Gene* g = nullptr;
-		if (!reachedTheEnd) {
-			// choose the dominant (or the only) gene out of the current pair:
-			if (hasFirst && (!hasSecond || isCircularGreater(
-					bug_->genome_.first.genes[offset].RID,
-					bug_->genome_.second.genes[offset].RID)
-				))
-				g = &bug_->genome_.first.genes[offset];
-			else
-				g = &bug_->genome_.second.genes[offset];
-		}
-		if (reachedTheEnd || g->type == GENE_TYPE_STOP) {
+		Gene *g1 = nullptr, *g2 = nullptr;
+		if (offset < bug_->genome_.first.genes.size())
+			g1 = &bug_->genome_.first.genes[offset];
+		if (offset < bug_->genome_.second.genes.size())
+			g2 = &bug_->genome_.second.genes[offset];
+		bool reachedTheEnd = !g1 && !g2;
+		if (reachedTheEnd
+				|| (g1 && g1->type == GENE_TYPE_STOP)
+				|| (g2 && g2->type == GENE_TYPE_STOP)) {
 			// so much for this development path;
 			// grow body parts from all segments now
 			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
@@ -203,15 +191,25 @@ bool Ribosome::step() {
 			i--, nCrtBranches--;
 			continue;
 		}
-		if (g->type == GENE_TYPE_SKIP) {
+
+		// now decode the genes:
+		if (g1)
+			decodeGene(*g1, p, &activeSet_[i].second, true);
+		if (g2)
+			decodeGene(*g2, p, &activeSet_[i].second, true);
+
+		int skipCount = 0;
+		if (g1 && g1->type == GENE_TYPE_SKIP) {
 			int depth = p->getDepth();
-			if (depth <= g->data.gene_skip.maxDepth && depth >= g->data.gene_skip.minDepth) {
-				activeSet_[i].second.crtGenomePos += g->data.gene_skip.count;
-			}
-			continue;
+			if (depth <= g1->data.gene_skip.maxDepth && depth >= g1->data.gene_skip.minDepth)
+				skipCount += g1->data.gene_skip.count;
 		}
-		// now decode the gene
-		decodeGene(*g, p, &activeSet_[i].second, true);
+		if (g2 && g2->type == GENE_TYPE_SKIP) {
+			int depth = p->getDepth();
+			if (depth <= g2->data.gene_skip.maxDepth && depth >= g2->data.gene_skip.minDepth)
+				skipCount = (skipCount + g2->data.gene_skip.count) / 2;
+		}
+		activeSet_[i].second.crtGenomePos += skipCount;
 	}
 	return true;
 }
@@ -384,6 +382,10 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 	case GENE_TYPE_NO_OP:
 		break;
 	case GENE_TYPE_START_MARKER:
+		break;
+	case GENE_TYPE_SKIP:
+		break;
+	case GENE_TYPE_STOP:
 		break;
 	case GENE_TYPE_PROTEIN:
 		decodeProtein(g.data.gene_protein, part, growthData);

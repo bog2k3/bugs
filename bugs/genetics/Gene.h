@@ -137,7 +137,6 @@ struct GeneBodyAttribute {
 
 class Gene {
 public:
-	uint32_t RID;	// this is unique to this gene, when the gene is mutated, the RID changes
 	gene_type type;		// the type of gene
 	union GeneData {
 		GeneStartMarker gene_start_marker;
@@ -172,8 +171,7 @@ public:
 	} data;
 
 	Gene(gene_type type, GeneData data)
-		: RID(new_RID())
-		, type(type)
+		: type(type)
 		, data(data)
 		, chance_to_delete(constants::initial_gene_delete, constants::change_gene_delete)
 		, chance_to_swap(constants::initial_gene_swap, constants::change_gene_swap)
@@ -199,8 +197,7 @@ public:
 	Gene() : Gene(GeneNoOp()) {}
 
 	Gene(const Gene& original)
-		: RID(original.RID)
-		, type(original.type)
+		: type(original.type)
 		, data(original.data)
 		, chance_to_delete(original.chance_to_delete)
 		, chance_to_swap(original.chance_to_swap)
@@ -209,7 +206,6 @@ public:
 	}
 
 	Gene& operator=(Gene const& right) {
-		RID = right.RID;
 		type = right.type;
 		data = right.data;
 		chance_to_delete = right.chance_to_delete;

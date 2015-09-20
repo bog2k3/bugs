@@ -344,10 +344,6 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		break;
 	}
 
-	// if any part of the gene has changed, then it becomes a new gene:
-	if (altered)
-		g.RID = new_RID();
-
 	for (auto m : g.metaGenes) {
 		alterMetaGene(*m);
 	}

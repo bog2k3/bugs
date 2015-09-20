@@ -33,7 +33,6 @@ BinaryStream& operator >> (BinaryStream &stream, Atom<T> &atom) {
 }
 
 BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
-	stream << gene.RID << gene.type;
 	stream << gene.chance_to_delete;
 	stream << gene.chance_to_swap;
 	switch (gene.type) {
@@ -94,7 +93,6 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 }
 
 BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
-	stream >> gene.RID >> gene.type;
 	stream >> gene.chance_to_delete;
 	stream >> gene.chance_to_swap;
 	switch (gene.type) {
