@@ -274,8 +274,8 @@ void Muscle::draw(RenderContext const& ctx) {
 #ifdef DEBUG_DRAW_MUSCLE
 	if (inputSocket_->value > 0)
 		ctx.shape->drawLine(
-			vec3xy(worldTransform) + glm::rotate(glm::vec2(-l/2, 0), worldTransform.z),
-			vec3xy(worldTransform) + glm::rotate(glm::vec2(+l/2, 0), worldTransform.z),
+			vec3xy(worldTransform) + glm::rotate(glm::vec2(-l/2, 0), worldTransform.z + PI/2),
+			vec3xy(worldTransform) + glm::rotate(glm::vec2(+l/2, 0), worldTransform.z + PI/2),
 			0,
 			debug_color);
 #endif
@@ -302,7 +302,8 @@ void Muscle::update(float dt) {
 	assertDbg(!std::isnan(signal_strength));
 	float RSinAlphaHSinBeta = lerp_lookup(phiToRSinAlphaHSinBeta_, nAngleSteps, getCurrentPhiSlice());
 	float torque = maxForce_ * signal_strength * RSinAlphaHSinBeta;
-	joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);
+	if (joint_)		// joint may have broken
+		joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);
 
 	// compute energy consumption
 	float usedEnergy = maxForce_ * signal_strength * BodyConst::MuscleEnergyConstant * dt;

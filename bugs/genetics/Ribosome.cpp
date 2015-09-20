@@ -32,7 +32,7 @@ constexpr bool ENABLE_START_MARKER_GENES = false;
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 {
-	// there are no more default body parts; they either get created by the genes, or the embryo
+	// there are no default body parts; they either get created by the genes, or the embryo
 	// is discarded at the end of development if it lacks critical parts such as mouth or egg-layer
 
 	// start decoding with root body part at offset 0 in the genome:
@@ -565,7 +565,7 @@ int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> const& ne
 	// binary-search the nearest output neuron:
 	unsigned small = 0, big = nerves.size();
 	while (small != big) {
-		unsigned pivot = (big-small) / 2;
+		unsigned pivot = (big-small) / 2 + small;
 		if (matchCoord > nerves[pivot].second) { // look into the big interval
 			if (pivot < nerves.size()-1) {	// there are greater
 				float crtDelta = matchCoord - nerves[pivot].second;
@@ -600,6 +600,8 @@ void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& ord
 	// motors are matched 1:1 with the nearest output nerves from the neural network, in the direction from motor nerve to output nerve.
 	for (unsigned i = 0; i < orderedMotorInputs_.size(); i++) {
 		float motorCoord = orderedMotorInputs_[i].second;
+		if (motorCoord == 0)
+			continue;
 		int neuronIndex = getVMSNearestNerveIndex(orderedOutputNeurons_, motorCoord);
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
@@ -635,6 +637,8 @@ void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& or
 
 	// stage 2:
 	for (auto &sensor : orderedSensorOutputs_) {
+		if (sensor.second == 0)
+			continue;
 		int nerveIndex = getVMSNearestNerveIndex(orderedInputNeurons_, sensor.second);
 		if (nerveIndex >= 0) {
 			Neuron* neuron = orderedInputNeurons_[nerveIndex].first;
@@ -730,22 +734,19 @@ void Ribosome::resolveMuscleLinkage() {
 		Joint* jPos = findNearestJoint(m, +1);
 		// default to the joint on the negative side and only select the positive one if more appropriate:
 		Joint* targetJoint = jNeg;
-		int turningSide = +1;
 		if (jNeg != jPos) {
 			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m->getAttachmentAngle());
 			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m->getAttachmentAngle());
 			if (posDelta < negDelta) {
 				targetJoint = jPos;
-				turningSide = -1;
 			} else if (posDelta == negDelta) {
 				// angle differences are equal, choose the one towards which the muscle is oriented
 				if (m->getAngleOffset() > 0) {
 					targetJoint = jPos;
-					turningSide = -1;
 				}
 			}
 		}
-		m->setJoint(targetJoint, turningSide);
+		m->setJoint(targetJoint, angleDiff(m->getAttachmentAngle(), targetJoint->getAttachmentAngle()) > 0 ? -1 : +1);
 	}
 	muscles_.clear();
 }

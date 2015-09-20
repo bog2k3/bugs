@@ -289,7 +289,6 @@ void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
 	if (!isAlive_)
 		return;
 	for (unsigned i : lines) {
-		assertDbg(i < motorLines_.size());
 		if (motorLines_[i].second)
 			motorLines_[i].second->removeTarget(motorLines_[i].first);
 		motorLines_[i] = std::make_pair(nullptr, nullptr);
@@ -377,7 +376,7 @@ Chromosome Bug::createBasicChromosome() {
 	// neuron #2 output VMS coord
 	GeneNeuronOutputCoord goc;
 	goc.srcNeuronVirtIndex.set(2);
-	goc.outCoord.set(muscle1_VMScoord);
+	goc.outCoord.set(muscle2_VMScoord);
 	c.genes.push_back(goc);
 
 	// neuron #3 transfer:
@@ -386,7 +385,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gt);
 	// neuron #3 output VMS coord
 	goc.srcNeuronVirtIndex.set(3);
-	goc.outCoord.set(muscle2_VMScoord);
+	goc.outCoord.set(muscle1_VMScoord);
 	c.genes.push_back(goc);
 
 	// neuron #4 transfer:
@@ -407,7 +406,7 @@ Chromosome Bug::createBasicChromosome() {
 	goc.outCoord.set(gripper_VMScoord);
 	c.genes.push_back(goc);
 
-	// G+11
+	// G+12
 
 
 	GeneSynapse gs;
@@ -458,7 +457,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	GeneOffset go;
 	go.targetSegment.set(0);
-	go.offset.set(52);
+	go.offset.set(53);
 	c.genes.push_back(go);
 
 	// G+5
@@ -475,7 +474,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(8);
-	go.offset.set(68);
+	go.offset.set(69);
 	c.genes.push_back(go);
 
 	// G+5
@@ -492,7 +491,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(7);
-	go.offset.set(158);
+	go.offset.set(170);
 	c.genes.push_back(go);
 
 	// G+5
@@ -509,7 +508,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(9);
-	go.offset.set(158);
+	go.offset.set(177);
 	c.genes.push_back(go);
 
 	// G+5
@@ -526,7 +525,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(5);
-	go.offset.set(60);
+	go.offset.set(61);
 	c.genes.push_back(go);
 
 	c.genes.push_back(GeneStop());
@@ -534,7 +533,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// mouth offs (G 52):
+	// mouth offs (G 53):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -560,7 +559,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+8
 
-	// egglayer offs (G 60):
+	// egglayer offs (G 61):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -586,7 +585,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+8
 
-	// bone1 offs (G 68):
+	// bone1 offs (G 69):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -632,7 +631,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.maxDepth.set(2);
 	go.targetSegment.set(0);
-	go.offset.set(41);				// offset is relative to the current part's
+	go.offset.set(51);				// offset is relative to the current part's
 	c.genes.push_back(go);
 
 	// G+5
@@ -666,7 +665,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(15);
-	go.offset.set(33);
+	go.offset.set(42);
 	c.genes.push_back(go);
 
 	c.genes.push_back(GeneStop());
@@ -674,7 +673,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// bone 1 joint offs (G 93):
+	// bone 1 joint offs (G 94):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -701,7 +700,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+8
 
-	// muscle 3 & 4 offs (G 101):
+	// muscle 3 offs (G 102):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -722,12 +721,48 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(muscle1_VMScoord);
+	c.genes.push_back(ga);
+
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
 
-	// G+8
+	// G+9
 
-	// bone2 offset (G 109):
+	// muscle 4 offs (G 111):
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+
+	ga.maxDepth.set(3);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMuscleAspectRatio);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(muscle2_VMScoord);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	// G+9
+
+	// bone2 offset (G 120):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -788,8 +823,8 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(0);
-	go.offset.set(41);
+	go.targetSegment.set(1);
+	go.offset.set(42);
 	c.genes.push_back(go);
 
 	// G+5
@@ -806,7 +841,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(15);
-	go.offset.set(41);
+	go.offset.set(42);
 	c.genes.push_back(go);
 
 	c.genes.push_back(GeneStop());
@@ -814,7 +849,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// bone 2 joint offs (G 134):
+	// bone 2 joint offs (G 145):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -836,7 +871,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// gripper offs (G 141):
+	// gripper offs (G 152):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -861,12 +896,17 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(gripper_VMScoord);
+	c.genes.push_back(ga);
+
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
 
-	// G+9
+	// G+10
 
-	// gripper muscle offs (G 150):
+	// gripper muscle offs (G 162):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -892,7 +932,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+8
 
-	// bone1 muscles 1&2 offs (G 158):
+	// bone1 muscle 1 offs (G 170):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -913,8 +953,42 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	// G+6
-	// G 164 total
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(muscle1_VMScoord);
+	c.genes.push_back(ga);
+
+	// G+7
+
+	// bone1 muscle 2 offs (G 177):
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+
+	ga.maxDepth.set(1);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(1.e-3f);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMuscleAspectRatio);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(muscle2_VMScoord);
+	c.genes.push_back(ga);
+
+	// G+7
+
+	// G 184 total
 
 	// finished with adding genes.
 	// now we need to add some redundancy in between genes:

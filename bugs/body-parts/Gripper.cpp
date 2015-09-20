@@ -23,12 +23,15 @@ const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 #define DEBUG_DRAW_GRIPPER
 
 Gripper::Gripper()
-	: BodyPart(BodyPartType::GRIPPER, std::make_shared<BodyPartInitializationData>())
+	: BodyPart(BodyPartType::GRIPPER, std::make_shared<GripperInitializationData>())
 	, inputSocket_(new InputSocket(nullptr, 1.f))
 	, active_(false)
 	, groundJoint_(nullptr)
 {
 	getInitializationData()->density.reset(BodyConst::GripperDensity);
+
+	auto initData = std::dynamic_pointer_cast<GripperInitializationData>(getInitializationData());
+	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, initData->inputVMSCoord);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_GRIPPER;
 	physBody_.userPointer_ = this;
