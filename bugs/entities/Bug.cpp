@@ -286,13 +286,23 @@ void Bug::onFoodProcessed(float mass) {
 }
 
 void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
-	if (!isAlive_)
+	if (!isAlive_ || !lines.size())
 		return;
+#ifdef DEBUG
+	LOGGER("Bug");
+	LOG("motor lines detached: ");
+#endif
 	for (unsigned i : lines) {
+#ifdef DEBUG
+		LOGNP(i << ", ");
+#endif
 		if (motorLines_[i].second)
 			motorLines_[i].second->removeTarget(motorLines_[i].first);
 		motorLines_[i] = std::make_pair(nullptr, nullptr);
 	}
+#ifdef DEBUG
+	LOGNP("\n");
+#endif
 }
 
 Chromosome Bug::createBasicChromosome() {
