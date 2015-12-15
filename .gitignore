@@ -1,8 +1,10 @@
 .metadata
 .settings
 RemoteSystemsTempFiles/
-#Debug/bugs
-#Release/bugs
+Debug/bugs
+Debug/watchdog
+Release/bugs
+Release/watchdog
 *.o
 *.a
 *.obj
