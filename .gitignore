@@ -1,16 +1,13 @@
 .metadata
 .settings
 RemoteSystemsTempFiles/
-Debug/
-**/Debug/**
-**/.cproject
-**/.project
+#Debug/bugs
+#Release/bugs
+*.o
+*.a
+*.obj
+*.d
+*.bin
 
 eclipse.sh
-/bugs/build/
-/bugs/dist/# This code depends on make tool being used
 
-bugs/.dep.inc
-bugs/nbproject/
-autosave.*
-bugs/.project
