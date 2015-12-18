@@ -1,8 +1,11 @@
 * CRASH after joint break: joint Torso(8)::J breaks but no motor lines are removed
-	- downstream bone has no motor lines !!
-	- CAUSE: addMotor() is called from Ribosome() before part is added to parent
-		BodyPart::addMotorLine() canot propagate up the tree
-	- output push from neurons into non-existent motor inputs cause memory corruption
+	- [FIXED] downstream bone has no motor lines !!
+		- CAUSE: addMotor() is called from Ribosome() before part is added to parent
+			BodyPart::addMotorLine() canot propagate up the tree
+		- output push from neurons into non-existent motor inputs cause memory corruption
+	- side bugs:
+		- all motor lines are removed from torso at detach()
+		- remove_motor_line is called twice for each detachment
 
 * output nerves to motor inputs linkage broken - neuron 4 is linked to 3 motors (gripper & muscles)
 

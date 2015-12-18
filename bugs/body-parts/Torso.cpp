@@ -182,9 +182,8 @@ void Torso::detachMotorLines(std::vector<unsigned> const& lines) {
 }
 
 void Torso::detach(bool die) {
-#error "Is this needed?"
-	motorLines_.clear();
-
+	if (die)
+		motorLines_.clear();
 	BodyPart::detach(die);
 }
 
