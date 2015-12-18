@@ -182,8 +182,7 @@ void Torso::detachMotorLines(std::vector<unsigned> const& lines) {
 }
 
 void Torso::detach(bool die) {
-	if (die)
-		motorLines_.clear();
+	motorLines_.clear(); // because we don't want any line detached. And we don't need to track them either
 	BodyPart::detach(die);
 }
 

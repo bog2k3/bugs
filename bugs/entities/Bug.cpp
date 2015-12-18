@@ -293,11 +293,12 @@ void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
 	LOG("motor lines detached: ");
 #endif
 	for (unsigned i : lines) {
+		if (motorLines_[i].second) {
 #ifdef DEBUG
-		LOGNP(i << ", ");
+			LOGNP(i << ", ");
 #endif
-		if (motorLines_[i].second)
 			motorLines_[i].second->removeTarget(motorLines_[i].first);
+		}
 		motorLines_[i] = std::make_pair(nullptr, nullptr);
 	}
 #ifdef DEBUG
