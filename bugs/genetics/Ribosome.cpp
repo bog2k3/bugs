@@ -287,13 +287,15 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	}
 
 	BodyPart* bp = nullptr;
+	IMotor* pMotor = nullptr;
+	ISensor* pSensor = nullptr;
 	switch (newBodyPartType) {
 	case BodyPartType::BONE:
 		bp = new Bone();
 		break;
 	case BodyPartType::GRIPPER: {
 		Gripper* gr = new Gripper();
-		addMotor(gr, gr);
+		pMotor = gr;
 		bp = gr;
 		break;
 	}
@@ -302,7 +304,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		// linkage is postponed until before commit when all parts are in place (muscle may be created before joint)
 		Muscle* m = new Muscle();
 		muscles_.push_back(m);
-		addMotor(m, m);
+		pMotor = m;
 		bp = m;
 		break;
 	}
@@ -325,9 +327,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		break;
 	case BodyPartType::EGGLAYER: {
 		EggLayer* e = new EggLayer();
-		addMotor(e, e);
-#error "tracked down memory corruption cause:"
-#error "addMotor() must be called after part is added to parent, so it is propagated up the tree"
+		pMotor = e;
 		bug_->eggLayers_.push_back(e);
 		bp = e;
 		break;
@@ -345,6 +345,12 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	}
 
 	parent->add(bp, angle);
+
+	// this must happen AFTER the part is added to its parent:
+	if (pMotor)
+		addMotor(pMotor, bp);
+	if (pSensor)
+		addSensor(pSensor);
 
 	// start a new development path from the new part:
 	activeSet_.push_back(std::make_pair(bp, genomeOffset));
