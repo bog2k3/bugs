@@ -326,6 +326,8 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	case BodyPartType::EGGLAYER: {
 		EggLayer* e = new EggLayer();
 		addMotor(e, e);
+#error "tracked down memory corruption cause:"
+#error "addMotor() must be called after part is added to parent, so it is propagated up the tree"
 		bug_->eggLayers_.push_back(e);
 		bp = e;
 		break;
