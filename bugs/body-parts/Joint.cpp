@@ -174,6 +174,10 @@ void Joint::update(float dt) {
 		|| reactionForce > size_ * BodyConst::JointForceToleranceFactor
 		|| reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
 		// this joint is toast - must break free the downstream body parts
+//		return; // test if this code causes crash
+#ifdef DEBUG
+		LOGLN("JOINT BREAK: " << getDebugName());
+#endif
 		BodyPart* downStream = children_[0];
 		downStream->detach(true); // this will be taken over by bug entity
 		detach(true);

@@ -44,6 +44,7 @@ public:
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
 	static constexpr float JointForceToleranceFactor		= 4.e+3f;		// [N/m^2] how much force a joint can take, relative to its size
+#warning above should be much higher!
 	static constexpr float JointTorqueToleranceFactor		= 7.5e+2f;		// [Nm/m^2] how much torque a joint can take, relative to its size
 	static constexpr float JointDensity						= 9.f;			// [kg/m^2]
 
