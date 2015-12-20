@@ -519,7 +519,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(9);
-	go.offset.set(177);
+	go.offset.set(179);
 	c.genes.push_back(go);
 
 	// G+5
@@ -969,9 +969,12 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(muscle1_VMScoord);
 	c.genes.push_back(ga);
 
-	// G+7
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
 
-	// bone1 muscle 2 offs (G 177):
+	// G+9
+
+	// bone1 muscle 2 offs (G 179):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -997,9 +1000,12 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(muscle2_VMScoord);
 	c.genes.push_back(ga);
 
-	// G+7
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
 
-	// G 184 total
+	// G+9
+
+	// G 188 total
 
 	// finished with adding genes.
 	// now we need to add some redundancy in between genes:
