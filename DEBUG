@@ -8,4 +8,4 @@
 		- remove_motor_line is called twice for each detachment
 
 * output nerves to motor inputs linkage broken - neuron 4 is linked to 3 motors (gripper & muscles)
-
+	- binarySearch in VMS is broken !

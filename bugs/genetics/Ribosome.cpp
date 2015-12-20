@@ -73,13 +73,15 @@ void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
 	bug_->neuralNet_->neurons.reserve(mapNeurons_.size());
-	for (auto &it : mapNeurons_) {
+	for (uint i=0; i<mapNeurons_.size(); i++) {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
-#ifdef DEBUG
-		mapNeuronVirtIndex_[bug_->neuralNet_->neurons.back()] = it.first;
-		LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons.back());
-#endif
 	}
+#ifdef DEBUG
+	for (auto const& it : mapNeurons_) {
+		mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
+		LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons[it.second.index]);
+	}
+#endif
 }
 
 void Ribosome::decodeDeferredGenes() {
