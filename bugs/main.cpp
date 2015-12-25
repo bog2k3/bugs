@@ -44,6 +44,7 @@
 #include <sys/stat.h>
 
 bool skipRendering = true;
+bool updatePaused = false;
 b2World *pPhysWld = nullptr;
 PhysicsDebugDraw *pPhysicsDraw = nullptr;
 
@@ -63,6 +64,9 @@ void onInputEventHandler(InputEvent& ev) {
 			skipRendering ^= true;
 			pPhysWld->SetDebugDraw(skipRendering ? nullptr : pPhysicsDraw);
 		}
+	} else if (ev.key == GLFW_KEY_P) {
+		if (ev.type == InputEvent::EV_KEY_DOWN)
+			updatePaused ^= true;
 	}
 }
 
@@ -152,6 +156,11 @@ int main(int argc, char* argv[]) {
 		LOGLN("WARNING: Autosave is turned off! (use --enable-autosave to turn on)");
 	}
 
+#ifdef DEBUG
+	updatePaused = true;
+	skipRendering = false;
+#endif
+
 	try {
 		// initialize stuff:
 		if (!gltInit(800, 600, "Bugs"))
@@ -232,8 +241,9 @@ int main(int argc, char* argv[]) {
 		drawList.add(&scale);
 		drawList.add(&Gui);
 
+		UpdateList continuousUpdateList;
+		continuousUpdateList.add(&opStack);
 		UpdateList updateList;
-		updateList.add(&opStack);
 		updateList.add(&physWld);
 		updateList.add(&contactListener);
 		updateList.add(&sessionMgr.getPopulationManager());
@@ -269,7 +279,7 @@ int main(int argc, char* argv[]) {
 			}
 
 			// fixed time step for simulation
-			float simDT = 0.02f;
+			float simDT = updatePaused ? 0 : 0.02f;
 
 			simulationTime += simDT;
 			simDTAcc += simDT;
@@ -282,6 +292,7 @@ int main(int argc, char* argv[]) {
 				lastPrintedSimTime = simulationTime;
 			}
 
+			continuousUpdateList.update(realDT);
 			if (simDT > 0) {
 				updateList.update(simDT);
 			}
@@ -295,6 +306,10 @@ int main(int argc, char* argv[]) {
 				std::stringstream ss;
 				ss << "Salut Lume!\n[Powered by Box2D]";
 				renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
+
+				if (updatePaused) {
+					renderContext.text->print("PAUSED", vp1.getWidth() / 2, vp1.getHeight() / 2, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
+				}
 
 				// do the actual openGL render for the previous frame (which is independent of our world)
 				gltBegin();
