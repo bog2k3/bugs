@@ -115,6 +115,7 @@ void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves) {
 }
 
 bool Ribosome::step() {
+	LOGPREFIX("Ribosome");
 	if (activeSet_.empty()) {
 		// finished decoding all body parts.
 
@@ -335,7 +336,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		break;
 	}
 	default:
-		ERROR("unhandled gene part type: "<<newBodyPartType);
+		ERROR("unhandled gene part type: "<<(uint)newBodyPartType);
 		break;
 	}
 	if (!bp)
@@ -452,7 +453,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 		}
 		break;
 	default:
-		ERROR("Unhandled gene type : " << g.type);
+		ERROR("Unhandled gene type : " << (uint)g.type);
 	}
 }
 

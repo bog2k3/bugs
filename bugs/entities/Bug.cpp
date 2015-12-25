@@ -55,7 +55,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, eggMass_(BodyConst::initialEggMass)
 	, generation_(generation)
 {
-	LOGGER("BUG");
+	LOGPREFIX("BUG");
 	LOGLN("new embryo; printing chromosomes:");
 	LOGLN("C1: " << genome.first.stringify());
 	LOGLN("C2: " << genome.second.stringify());
@@ -289,7 +289,7 @@ void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
 	if (!isAlive_ || !lines.size())
 		return;
 #ifdef DEBUG
-	LOGGER("Bug");
+	LOGPREFIX("Bug");
 	LOG("motor lines detached: ");
 #endif
 	for (unsigned i : lines) {

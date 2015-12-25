@@ -28,14 +28,14 @@ SessionManager::SessionManager() {
 }
 
 void SessionManager::startEmptySession() {
-	LOGGER("SessionManager");
+	LOGPREFIX("SessionManager");
 	LOGLN("Starting empty session... removing all existing entities...");
 	World::getInstance()->free();
 	LOGLN("Finished. Session is now clean.");
 }
 
 void SessionManager::startDefaultSession() {
-	LOGGER("SessionManager");
+	LOGPREFIX("SessionManager");
 	LOGLN("Creating default session...");
 	//LOGLN("Removing all entities...");
 	World::getInstance()->free();
@@ -62,8 +62,8 @@ void SessionManager::startDefaultSession() {
 //	for (int i=0; i<25; i++) {
 	for (int i=0; i<1; i++) {
 #warning "crash in fixGenesSynchro on basicMutantBug"
-		//std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
-		std::unique_ptr<Bug> bug(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
+		std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
+		//std::unique_ptr<Bug> bug(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
 		//if (i==8)
 			World::getInstance()->takeOwnershipOf(std::move(bug));
 	}
@@ -71,7 +71,7 @@ void SessionManager::startDefaultSession() {
 }
 
 bool SessionManager::loadSessionFromFile(std::string const &path) {
-	LOGGER("SessionManager");
+	LOGPREFIX("SessionManager");
 	LOGLN("Loading session from file \"" << path << "\"...");
 	// LOGLN("Removing all entities...");
 	World::getInstance()->free();
@@ -82,7 +82,7 @@ bool SessionManager::loadSessionFromFile(std::string const &path) {
 }
 
 bool SessionManager::mergeSessionFromFile(std::string const &path) {
-	LOGGER("SessionManager");
+	LOGPREFIX("SessionManager");
 	LOGLN("Merging session from file \"" << path << "\"...");
 	Serializer serializer;
 	if (!serializer.deserializeFromFile(path)) {
@@ -94,7 +94,7 @@ bool SessionManager::mergeSessionFromFile(std::string const &path) {
 }
 
 bool SessionManager::saveSessionToFile(std::string const& path) {
-	LOGGER("SessionManager");
+	LOGPREFIX("SessionManager");
 	LOGLN("Saving session to file \"" << path << "\"...");
 	Serializer serializer;
 	auto vecSer = World::getInstance()->getEntities(Entity::FF_SERIALIZABLE);

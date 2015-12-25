@@ -105,7 +105,6 @@ void printStatus(float simulationTime, float realTime, float simDTAcc, float rea
 }
 
 int main(int argc, char* argv[]) {
-	LOGGER("app_main");
 	// parse command line parameters:
 	std::string loadFilename;
 	std::string saveFilename;

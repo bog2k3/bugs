@@ -58,7 +58,7 @@ std::string Serializer::getObjectTypeString(SerializationObjectTypes type) {
 }
 
 bool Serializer::serializeToFile(const std::string &path) {
-	LOGGER("Serializer");
+	LOGPREFIX("Serializer");
 	BinaryStream masterStream(serializationQueue_.size() * 50); // estimate about 50 bytes per entry in master
 	std::vector<std::unique_ptr<BinaryStream>> vecStreams;
 	std::vector<std::string> vecFilenames;
@@ -88,7 +88,7 @@ bool Serializer::serializeToFile(const std::string &path) {
 }
 
 bool Serializer::deserializeFromFile(const std::string &path) {
-	LOGGER("Serializer");
+	LOGPREFIX("Serializer");
 	LOGLN("Deserializing file \""<<path<<"\"...");
 	BigFile bigFile;
 	if (!bigFile.loadFromDisk(path)) {

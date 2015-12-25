@@ -7,11 +7,43 @@
 
 #include "log.h"
 
-std::stack<logger*> logger::loggers;
+#ifdef _ENABLE_LOGGING_
 
-void logger::writeprefix(std::ostream &stream) const {
-	stream << "[" << name;
-	for (unsigned i=0, n=prefix.size(); i<n; i++)
-		stream << "." << prefix[i];
-	stream << "] ";
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+
+std::deque<std::string> logger::prefix_;
+logger logger::instance_;
+std::ostream* logger::pLogStream_ = &std::cout;
+std::ostream* logger::pErrStream_ = nullptr;
+
+std::string formatCrtDateTime() {
+	time_t t = time(0);   // get time now
+	struct tm * now = localtime( & t );
+	// output date & time in this format: "yyyy-mm-dd hh:mm:ss"
+	std::stringstream s;
+	s << 1900+now->tm_year << "-";
+	s << std::setw(2) << std::setfill('0') << 1 + now->tm_mon << "-";
+	s << std::setw(2) << std::setfill('0') << now->tm_mday << " ";
+	s << std::setw(2) << std::setfill('0') << now->tm_hour << ":";
+	s << std::setw(2) << std::setfill('0') << now->tm_min << ":";
+	s << std::setw(2) << std::setfill('0') << now->tm_sec;
+
+	return s.str();
 }
+
+void logger::writeprefix(std::ostream &stream) {
+	// 1. write timestamp
+	stream << "{" << formatCrtDateTime() << "} ";
+
+	// 2. write logger name:
+	if (prefix_.size())
+		stream << "[";
+	for (unsigned i=0, n=prefix_.size(); i<n; i++)
+		stream << (i==0 ? "" : "::") << prefix_[i];
+	if (prefix_.size())
+		stream << "] ";
+}
+
+#endif // _ENABLE_LOGGING_
