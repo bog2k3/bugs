@@ -574,7 +574,7 @@ int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> const& ne
 	if (nerves.size() == 0)
 		return -1;
 	// binary-search the nearest output neuron:
-	unsigned small = 0, big = nerves.size();
+	unsigned small = 0, big = nerves.size()-1;
 	while (small != big) {
 		unsigned pivot = (big-small) / 2 + small;
 		if (matchCoord > nerves[pivot].second) { // look into the big interval
@@ -583,7 +583,10 @@ int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> const& ne
 				float nextDelta = matchCoord - nerves[pivot+1].second;
 				if (fabs(crtDelta) > fabs(nextDelta)) {
 					// move to the greater interval:
-					small = pivot;
+					if (small != pivot)
+						small = pivot;
+					else
+						small = pivot+1;
 				} else	// this is the closest we can get
 					return pivot;
 			} else // this is the closest we can get
@@ -591,10 +594,13 @@ int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> const& ne
 		} else if (matchCoord < nerves[pivot].second) { // look into the small interval
 			if (pivot > 0) {	// there are smaller
 				float crtDelta = matchCoord - nerves[pivot].second;
-				float prevDelta = matchCoord - nerves[pivot+1].second;
+				float prevDelta = matchCoord - nerves[pivot-1].second;
 				if (fabs(crtDelta) > fabs(prevDelta)) {
 					// move to the small interval
-					big = pivot;
+					if (big != pivot)
+						big = pivot;
+					else
+						big = pivot-1;
 				} else	// this is the closest we can get
 					return pivot;
 			} else	// this is the closest we can get
