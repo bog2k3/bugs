@@ -166,6 +166,7 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
  * 	4. altering the meta-genes for all genes except new ones
  */
 void GeneticOperations::alterChromosome(Chromosome &c) {
+	LOGPREFIX("GeneticOperations");
 #ifdef DEBUG
 	int stat_mutations = 0;
 	int stat_swaps = 0;
@@ -291,8 +292,8 @@ bool alterAtom(Atom<T> &a, float mutationChanceFactor) {
 int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	int altered = 0;
 	switch (g.type) {
+	case GENE_TYPE_START_MARKER:
 	case GENE_TYPE_STOP:
-		break;
 	case GENE_TYPE_NO_OP:
 		break;
 	case GENE_TYPE_SKIP:
@@ -329,6 +330,8 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
 		altered += alterAtom(g.data.gene_attribute.value, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_attribute.minDepth, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_attribute.maxDepth, mutationChanceFactor);
 		break;
 	case GENE_TYPE_SYNAPSE:
 		altered += alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
@@ -339,8 +342,13 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered += alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
 		break;
+	case GENE_TYPE_JOINT_OFFSET:
+		altered += alterAtom(g.data.gene_joint_offset.offset, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_joint_offset.minDepth, mutationChanceFactor);
+		altered += alterAtom(g.data.gene_joint_offset.maxDepth, mutationChanceFactor);
+		break;
 	default:
-		ERROR("unhandled gene type: "<<g.type);
+		ERROR("unhandled gene type (alterGene): "<<(uint)g.type);
 		break;
 	}
 
@@ -354,8 +362,8 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 float GeneticOperations::getTotalMutationChance(Gene const& g) {
 	float ret = g.chance_to_delete.value + g.chance_to_swap.value;
 	switch (g.type) {
+	case GENE_TYPE_START_MARKER:
 	case GENE_TYPE_STOP:
-		break;
 	case GENE_TYPE_NO_OP:
 		break;
 	case GENE_TYPE_SKIP:
@@ -402,8 +410,13 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 		ret += g.data.gene_transfer_function.functionID.chanceToMutate.value;
 		ret += g.data.gene_transfer_function.targetNeuron.chanceToMutate.value;
 		break;
+	case GENE_TYPE_JOINT_OFFSET:
+		ret += g.data.gene_joint_offset.offset.chanceToMutate.value;
+		ret += g.data.gene_joint_offset.minDepth.chanceToMutate.value;
+		ret += g.data.gene_joint_offset.maxDepth.chanceToMutate.value;
+		break;
 	default:
-		ERROR("unhandled gene type: "<<g.type);
+		ERROR("unhandled gene type (getTotalMutationChance): "<<(uint)g.type);
 		break;
 	}
 	return ret;
