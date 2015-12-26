@@ -14,6 +14,10 @@
 #include "../../PhysicsBody.h"
 #include <Box2D/Box2D.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 OperationSpring::OperationSpring(InputEvent::MOUSE_BUTTON boundButton)
 	: pContext(nullptr), boundButton(boundButton), isActive(false), mouseJoint(nullptr), mouseBody(nullptr)
 	, pressedObj(nullptr)

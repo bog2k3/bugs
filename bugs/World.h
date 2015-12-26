@@ -28,7 +28,7 @@ public:
 	/**
 	 * delete all entities and reset state
 	 */
-	void free();
+	void reset();
 
 	b2Body* getBodyAtPos(glm::vec2 pos) override;
 	void getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies);

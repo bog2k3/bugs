@@ -27,6 +27,10 @@
 
 #include <utility>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 constexpr bool ENABLE_START_MARKER_GENES = false;
 
 Ribosome::Ribosome(Bug* bug)

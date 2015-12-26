@@ -8,6 +8,10 @@
 #include "OperationGui.h"
 #include "../../GUI/GuiSystem.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 OperationGui::OperationGui(GuiSystem &guiSystem)
 	: pGuiSystem(&guiSystem) {
 

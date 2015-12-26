@@ -3,6 +3,10 @@
 #include "BSPTree.h"
 #include "utils/ThreadSlotDispatcher.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 namespace lifeApplication
 {
 	using Render::IRenderable;

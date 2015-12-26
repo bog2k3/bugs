@@ -7,6 +7,10 @@
 
 #include "PhysDestroyListener.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 void PhysDestroyListener::SayGoodbye(b2Joint* joint) {
 	auto &vec = mapCallbacks[joint];
 	for (auto &cb : vec)

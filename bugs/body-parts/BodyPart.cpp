@@ -19,6 +19,10 @@
 #include <cassert>
 #include <sstream>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 BodyPartInitializationData::BodyPartInitializationData()
 	: angleOffset(0)
 	, lateralOffset(0)

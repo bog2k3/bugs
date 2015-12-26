@@ -11,6 +11,10 @@
 #include "../math/math2D.h"
 #include <set>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 std::string Chromosome::stringify() const {
 	char s[genes.size() + (genes.size()/10)*4 + 1];
 	uint p = 0;

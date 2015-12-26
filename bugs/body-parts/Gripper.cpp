@@ -18,6 +18,10 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include "../utils/log.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
 #define DEBUG_DRAW_GRIPPER

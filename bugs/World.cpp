@@ -15,6 +15,10 @@
 #include <Box2D/Box2D.h>
 #include <algorithm>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 static World *instance = nullptr;
 
 World::World() : physWld(nullptr), groundBody(nullptr) {
@@ -35,10 +39,10 @@ World* World::getInstance() {
 }
 
 World::~World() {
-	free();
+	reset();
 }
 
-void World::free() {
+void World::reset() {
 	for (auto &e : entities) {
 		e->markedForDeletion_= true;
 		e.reset();

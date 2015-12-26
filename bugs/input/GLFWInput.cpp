@@ -10,6 +10,10 @@
 #include "../utils/log.h"
 #include <GLFW/glfw3.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 GLFWwindow* GLFWInput::window = nullptr;
 std::vector<InputEvent> GLFWInput::eventQueue;
 glm::vec2 GLFWInput::lastMousePos;

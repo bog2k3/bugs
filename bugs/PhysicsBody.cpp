@@ -11,6 +11,10 @@
 #include <Box2D/Box2D.h>
 #include <cmath>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 PhysicsBody::PhysicsBody(ObjectTypes userObjType, void* userPtr, EventCategoryFlags::type categFlags, EventCategoryFlags::type collisionMask)
 	: b2Body_(nullptr)
 	, userObjectType_(userObjType)

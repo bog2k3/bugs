@@ -4,6 +4,10 @@
 #include "../body-parts/BodyPart.h"
 #include "../neuralnet/functions.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 void Gene::update_meta_genes_vec() {
 	metaGenes.clear();
 	// add meta-genes to this vector to enable their mutation:

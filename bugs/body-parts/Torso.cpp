@@ -17,6 +17,10 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 
 Torso::Torso()

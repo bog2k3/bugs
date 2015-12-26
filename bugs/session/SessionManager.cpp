@@ -18,6 +18,10 @@
 #include "../utils/log.h"
 #include <glm/vec2.hpp>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 SessionManager::SessionManager() {
 	Serializer::setDeserializationObjectMapping(SerializationObjectTypes::BUG, &Bug::deserialize);
 	Serializer::setDeserializationObjectMapping(SerializationObjectTypes::GAMETE, &Gamete::deserialize);
@@ -30,7 +34,7 @@ SessionManager::SessionManager() {
 void SessionManager::startEmptySession() {
 	LOGPREFIX("SessionManager");
 	LOGLN("Starting empty session... removing all existing entities...");
-	World::getInstance()->free();
+	World::getInstance()->reset();
 	LOGLN("Finished. Session is now clean.");
 }
 
@@ -38,7 +42,7 @@ void SessionManager::startDefaultSession() {
 	LOGPREFIX("SessionManager");
 	LOGLN("Creating default session...");
 	//LOGLN("Removing all entities...");
-	World::getInstance()->free();
+	World::getInstance()->reset();
 	//LOGLN("World is now clean.");
 
 	LOGLN("Building entities for default session...");
@@ -73,7 +77,7 @@ bool SessionManager::loadSessionFromFile(std::string const &path) {
 	LOGPREFIX("SessionManager");
 	LOGLN("Loading session from file \"" << path << "\"...");
 	// LOGLN("Removing all entities...");
-	World::getInstance()->free();
+	World::getInstance()->reset();
 	// LOGLN("World is now clean.");
 	return mergeSessionFromFile(path);
 

@@ -3,6 +3,10 @@
 #include "BSPNode.h"
 #include "IPartitionable.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 namespace BSP
 {
 	ObjectPool<BSPNode>* BSPNode::nodePool(NULL);

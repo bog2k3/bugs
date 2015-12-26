@@ -13,6 +13,10 @@
 #include "math/box2glm.h"
 #include "math/math2D.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 PhysicsDebugDraw::PhysicsDebugDraw(RenderContext ctx) : rc(ctx) {
 }
 

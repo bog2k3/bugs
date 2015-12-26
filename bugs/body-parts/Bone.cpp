@@ -15,6 +15,10 @@
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
 #define DEBUG_DRAW_BONE

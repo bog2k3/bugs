@@ -10,6 +10,10 @@
 #include "../utils/assert.h"
 #include "../utils/log.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 Entity::~Entity() {
 	assertDbg((!managed_ || markedForDeletion_) && "You should never call delete on a managed Entity directly! (use destroy() instead)");
 }

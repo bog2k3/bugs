@@ -10,6 +10,10 @@
 #include "utils/log.h"
 #include <Box2D/Box2D.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 PhysContactListener::PhysContactListener() {
 
 }

@@ -12,6 +12,10 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 OperationPan::OperationPan(InputEvent::MOUSE_BUTTON assignedButton)
 	: pContext(nullptr)
 	, isFlyActive(false)

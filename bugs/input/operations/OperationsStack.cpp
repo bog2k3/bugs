@@ -4,6 +4,10 @@
 #include "../GLFWInput.h"
 #include <cassert>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 OperationsStack::OperationsStack(Viewport* pViewport, IOperationSpatialLocator* locator, b2World* physics)
 	: m_context(new OperationContext(pViewport, this, locator, physics))
 	, m_stack()

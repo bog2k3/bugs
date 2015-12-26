@@ -20,6 +20,10 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 static const glm::vec3 debug_color(0.2f, 0.7f, 1.0f);
 static const glm::vec3 debug_color_suppressed(1.0f, 0.7f, 0.2f);
 static const glm::vec3 debug_color_ripe(0.2f, 1.0f, 0.1f);

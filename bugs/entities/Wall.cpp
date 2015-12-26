@@ -11,6 +11,10 @@
 #include "../serialization/BinaryStream.h"
 #include <Box2D/Box2D.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 Wall::Wall(glm::vec2 const &from, glm::vec2 const &to, float width)
 	: body_(ObjectTypes::WALL, this, EventCategoryFlags::STATIC, 0)
 	, from_(from)

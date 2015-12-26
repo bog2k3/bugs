@@ -4,6 +4,10 @@
 #include <cassert>
 #include <cmath>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 using namespace std;
 
 Neuron::Neuron()

@@ -1,6 +1,10 @@
 #include "Network.h"
 #include "Traverser.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 NeuralNet::NeuralNet()
 //	: pTraverser(new Traverser(this))
 {

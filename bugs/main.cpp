@@ -43,6 +43,10 @@
 
 #include <sys/stat.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 bool skipRendering = true;
 bool updatePaused = false;
 b2World *pPhysWld = nullptr;

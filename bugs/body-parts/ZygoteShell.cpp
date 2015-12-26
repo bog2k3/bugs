@@ -17,6 +17,10 @@
 #include <glm/vec3.hpp>
 #include <Box2D/Box2D.h>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
 ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)

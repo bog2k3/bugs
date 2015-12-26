@@ -3,6 +3,10 @@
 #include "InputSocket.h"
 #include <algorithm>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 void OutputSocket::addTarget(InputSocket* pTarget) {
 	if (std::find(target_list.begin(), target_list.end(), pTarget) == target_list.end())
 		target_list.push_back(pTarget);

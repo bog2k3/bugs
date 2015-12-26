@@ -11,6 +11,10 @@
 #include "../utils/rand.h"
 #include "../World.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 #warning "change this back to 10 after debug!!!"
 static unsigned minPopulation = 0;				// minimum population number that triggers a refill
 static unsigned refillPopulationTarget = 20;	// target population after refill

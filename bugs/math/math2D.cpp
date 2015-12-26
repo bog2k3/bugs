@@ -1,6 +1,10 @@
 #include <algorithm>
 #include "math2D.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 glm::vec2 rayIntersectBox(float length, float width, float direction) {
 	float hw = width * 0.5f, hl = length * 0.5f;	// half width and length
 	// bring the angle between [-PI, +PI]

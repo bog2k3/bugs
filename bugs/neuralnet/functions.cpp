@@ -3,6 +3,10 @@
 #include "../math/math2D.h"
 #include "../utils/rand.h"
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 std::map<transferFuncNames, transfer_function> mapTransferFunctions;
 
 int initNeuralFunctionMap() {

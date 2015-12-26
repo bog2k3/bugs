@@ -18,6 +18,10 @@
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
+#ifdef DEBUG_DMALLOC
+#include <dmalloc.h>
+#endif
+
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
 JointInitializationData::JointInitializationData()
