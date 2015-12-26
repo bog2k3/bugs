@@ -77,9 +77,11 @@ void Ribosome::initializeNeuralNetwork() {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
 	}
 #ifdef DEBUG
-	for (auto const& it : mapNeurons_) {
-		mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
-		LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons[it.second.index]);
+	if (false) {
+		for (auto const& it : mapNeurons_) {
+			mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
+			LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons[it.second.index]);
+		}
 	}
 #endif
 }
@@ -629,10 +631,12 @@ void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& ord
 			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &orderedOutputNeurons_[neuronIndex].first->output);
 
 #ifdef DEBUG
-			LOGLN("LinkMotorNerve: neuron[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
-					<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
-					<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
-					<< " {lineId:" << nerveLineId << "}");
+			if (false) {
+				LOGLN("LinkMotorNerve: neuron[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
+						<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
+						<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
+						<< " {lineId:" << nerveLineId << "}");
+			}
 #endif
 		}
 	}

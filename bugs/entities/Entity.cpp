@@ -11,16 +11,18 @@
 #include "../utils/log.h"
 
 Entity::~Entity() {
-	assertDbg(markedForDeletion_ && "You should never call delete on an Entity directly! (use destroy() instead)");
+	assertDbg((!managed_ || markedForDeletion_) && "You should never call delete on a managed Entity directly! (use destroy() instead)");
 }
 
 void Entity::destroy() {
 	if (markedForDeletion_) {
-		// LOGLN("WARNING: destroy called more than once!");
 		return;
 	}
 	markedForDeletion_ = true;
-	World::getInstance()->destroyEntity(this);
+	if (managed_)
+		World::getInstance()->destroyEntity(this);
+	else
+		delete this;
 }
 
 void Entity::serialize(BinaryStream &stream) { assertDbg(false && "forgot to override this?"); }

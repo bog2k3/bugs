@@ -100,6 +100,12 @@ void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
 
 void World::destroyEntity(Entity* e) {
 	entsToDestroy.push_back(e);
+#ifdef DEBUG
+	// check if ent exists in vector
+	assertDbg(std::find_if(entities.begin(), entities.end(), [e] (decltype(entities[0]) &x) {
+		return x.get() == e;
+	}) != entities.end() && "Ent is not managed!!!");
+#endif
 }
 
 void World::destroyPending() {
@@ -142,6 +148,7 @@ void World::takeOverPending() {
 			entsToUpdate.push_back(e.get());
 		}
 		entities.push_back(std::move(e));
+		e->managed_ = true;
 	}
 }
 

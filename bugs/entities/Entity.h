@@ -41,6 +41,7 @@ protected:
 
 private:
 	bool markedForDeletion_ = false;
+	bool managed_ = false;
 	friend class World;
 };
 
