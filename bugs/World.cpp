@@ -147,8 +147,8 @@ void World::takeOverPending() {
 		if (flags & Entity::FF_UPDATABLE) {
 			entsToUpdate.push_back(e.get());
 		}
-		entities.push_back(std::move(e));
 		e->managed_ = true;
+		entities.push_back(std::move(e));
 	}
 }
 
