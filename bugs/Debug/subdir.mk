@@ -9,7 +9,8 @@ CPP_SRCS += \
 ../PhysicsBody.cpp \
 ../PhysicsDebugDraw.cpp \
 ../World.cpp \
-../main.cpp 
+../main.cpp \
+../memdebug.cpp 
 
 OBJS += \
 ./PhysContactListener.o \
@@ -17,7 +18,8 @@ OBJS += \
 ./PhysicsBody.o \
 ./PhysicsDebugDraw.o \
 ./World.o \
-./main.o 
+./main.o \
+./memdebug.o 
 
 CPP_DEPS += \
 ./PhysContactListener.d \
@@ -25,14 +27,15 @@ CPP_DEPS += \
 ./PhysicsBody.d \
 ./PhysicsDebugDraw.d \
 ./World.d \
-./main.d 
+./main.d \
+./memdebug.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	g++ -std=c++0x -DGLM_FORCE_RADIANS -DDMALLOC -DDEBUG_DMALLOC -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -std=c++0x -DGLM_FORCE_RADIANS -DDEBUG -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
