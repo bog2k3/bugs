@@ -9,6 +9,10 @@
 #include <set>
 #include <stdexcept>
 
+//#define ENABLE_MEMDEBUG
+
+#ifdef ENABLE_MEMDEBUG
+
 bool initialized = false;
 bool internalCall = false;
 std::set<void*> initialize() {
@@ -62,3 +66,4 @@ void operator delete[](void* ptr, const std::nothrow_t&) _GLIBCXX_USE_NOEXCEPT {
 	operator delete[](ptr);
 }
 
+#endif

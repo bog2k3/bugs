@@ -477,7 +477,8 @@ void Ribosome::decodeProtein(GeneProtein const& g, BodyPart* part, GrowthData *g
 	int crtDepth = part->getDepth();
 	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
 		return;
-	glm::vec4 &pos = growthData->hyperPositions[g.targetSegment];
+	uint segment = clamp<int>(g.targetSegment, 0, BodyPart::MAX_CHILDREN-1);
+	glm::vec4 &pos = growthData->hyperPositions[segment];
 	switch (g.protein) {
 	case GENE_PROT_A:
 		pos.x--;
@@ -510,7 +511,8 @@ void Ribosome::decodeOffset(GeneOffset const& g, BodyPart *part, GrowthData *gro
 	int crtDepth = part->getDepth();
 	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
 		return;
-	growthData->offsets[g.targetSegment].changeAbs(g.offset);
+	uint segment = clamp<int>(g.targetSegment, 0, BodyPart::MAX_CHILDREN-1);
+	growthData->offsets[segment].changeAbs(g.offset);
 }
 
 void Ribosome::decodeJointOffset(GeneJointOffset const& g, BodyPart* part) {

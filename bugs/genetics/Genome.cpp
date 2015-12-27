@@ -312,13 +312,13 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered += alterAtom(g.data.gene_protein.maxDepth, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_protein.minDepth, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_protein.protein, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_protein.targetSegment, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_protein.targetSegment, mutationChanceFactor);
 		break;
 	case GENE_TYPE_OFFSET:
 		altered += alterAtom(g.data.gene_offset.maxDepth, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_offset.minDepth, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_offset.offset, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_offset.targetSegment, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_offset.targetSegment, mutationChanceFactor);
 		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
 		altered += alterAtom(g.data.gene_neuron_input.destNeuronVirtIndex, mutationChanceFactor);
@@ -382,13 +382,13 @@ float GeneticOperations::getTotalMutationChance(Gene const& g) {
 		ret += g.data.gene_protein.maxDepth.chanceToMutate.value;
 		ret += g.data.gene_protein.minDepth.chanceToMutate.value;
 		ret += g.data.gene_protein.protein.chanceToMutate.value;
-		ret += g.data.gene_protein.targetSegment.chanceToMutate.value;
+//		ret += g.data.gene_protein.targetSegment.chanceToMutate.value;
 		break;
 	case GENE_TYPE_OFFSET:
 		ret += g.data.gene_offset.maxDepth.chanceToMutate.value;
 		ret += g.data.gene_offset.minDepth.chanceToMutate.value;
 		ret += g.data.gene_offset.offset.chanceToMutate.value;
-		ret += g.data.gene_offset.targetSegment.chanceToMutate.value;
+//		ret += g.data.gene_offset.targetSegment.chanceToMutate.value;
 		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
 		ret += g.data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate.value;

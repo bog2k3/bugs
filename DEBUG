@@ -9,6 +9,8 @@
 
 	* [FIXED] output nerves to motor inputs linkage broken - neuron 4 is linked to 3 motors (gripper & muscles)
 		- binarySearch in VMS is broken !
-* MEMORY CORRUPTION on Ribosome::growBodyPart()::vector::push_back() - double free() or memory corruption. Debug with valgrind/custom new/delete
+	* [FIXED] MEMORY CORRUPTION on Ribosome::growBodyPart()::vector::push_back() - double free() or memory corruption. 
+		- Debug with valgrind/custom new/delete
+		- fixed - was caused by writing at offset [targetSegment] of array, which came from genes, unsanitized :-)
 
 
