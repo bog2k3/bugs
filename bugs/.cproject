@@ -41,7 +41,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1212993048" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
 								<option id="gnu.cpp.link.option.libs.932839906" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GLEW"/>
-									<listOptionValue builtIn="false" value="glfw3"/>
+									<listOptionValue builtIn="false" value="glfw"/>
 									<listOptionValue builtIn="false" value="Xcursor"/>
 									<listOptionValue builtIn="false" value="Xinerama"/>
 									<listOptionValue builtIn="false" value="GL"/>
@@ -112,7 +112,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1011816539" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
 								<option id="gnu.cpp.link.option.libs.281698389" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GLEW"/>
-									<listOptionValue builtIn="false" value="glfw3"/>
+									<listOptionValue builtIn="false" value="glfw"/>
 									<listOptionValue builtIn="false" value="Xcursor"/>
 									<listOptionValue builtIn="false" value="Xinerama"/>
 									<listOptionValue builtIn="false" value="GL"/>
