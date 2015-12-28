@@ -37,6 +37,7 @@ const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 unsigned Bug::population = 0;
 unsigned Bug::maxGeneration = 0;
 unsigned Bug::freeZygotes = 0;
+uint64_t Bug::nextId = 1;
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation)
 	: genome_(genome)

@@ -117,6 +117,10 @@ protected:
 	void onMotorLinesDetached(std::vector<unsigned> const& lines);
 	void fixAllGeneValues();
 	static Chromosome createBasicChromosome();
+
+private:
+	static uint64_t nextId;
+	uint64_t id = nextId++;
 };
 
 #endif /* ENTITIES_BUG_H_ */

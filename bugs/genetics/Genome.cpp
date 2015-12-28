@@ -211,9 +211,9 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int nNeurons = mapNeuronsExist.size();
 
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
-	float mutationChanceFactor = numberMutationsPerChromosome / totalChanceToMutate;
-	float swapChanceFactor = numberSwapsPerChromosome / totalChanceToSwap;
-	float deleteChanceFactor = numberDeletionsPerChromosome / totalChanceToDelete;
+	float mutationChanceFactor = std::min(1.f, numberMutationsPerChromosome / totalChanceToMutate);
+	float swapChanceFactor = std::min(1.f, numberSwapsPerChromosome / totalChanceToSwap);
+	float deleteChanceFactor = std::min(1.f, numberDeletionsPerChromosome / totalChanceToDelete);
 
 	// now we go ahead with alterations:
 	for (unsigned i=0; i<c.genes.size(); i++) {

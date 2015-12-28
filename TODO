@@ -1,3 +1,4 @@
+* bugs degenerate too quickly and too often. Make them more stable
 * find a better way to decode the genome rather than offset-based
 		* develop a better embrionic development process (protein system done)
 		* print population & generations in status update

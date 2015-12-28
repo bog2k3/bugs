@@ -89,7 +89,7 @@ private:
 	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
 	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
 #endif
-	std::map<int64_t, CummulativeValue> mapSynapses_;
+	std::map<uint64_t, CummulativeValue> mapSynapses_;
 	std::set<int> outputNeurons_;	// virtual indices of output neurons
 	std::set<int> inputNeurons_;	// virtual indices of input neurons
 	std::vector<IMotor*> motors_;
@@ -119,9 +119,9 @@ private:
 	void checkAndAddNeuronMapping(int virtualIndex);
 	void updateNeuronTransfer(int virtualIndex, float transfer);
 	void updateNeuronConstant(int virtualIndex, float constant);
-	inline bool hasNeuron(int virtualIndex) { return mapNeurons_.find(virtualIndex) != mapNeurons_.end(); }
+	bool hasNeuron(int virtualIndex, bool physical); // checks whether a virtual neuron exists and, if requested, its physical equivalent too
 	// Compute a synapse key (unique id for from-to pair:
-	inline int64_t synKey(int64_t from, int64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
+	inline uint64_t synKey(uint64_t from, uint64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
 	void createSynapse(int from, int to, float weight);
 	void resolveNerveLinkage();
 	void linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,

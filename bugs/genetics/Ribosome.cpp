@@ -81,9 +81,9 @@ void Ribosome::initializeNeuralNetwork() {
 		bug_->neuralNet_->neurons.push_back(new Neuron());
 	}
 #ifdef DEBUG
-	if (false) {
-		for (auto const& it : mapNeurons_) {
-			mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
+	for (auto const& it : mapNeurons_) {
+		mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
+		if (false) {
 			LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons[it.second.index]);
 		}
 	}
@@ -380,22 +380,28 @@ void Ribosome::addSensor(ISensor* sensor) {
 	sensors_.push_back(sensor);
 }
 
+bool Ribosome::hasNeuron(int virtualIndex, bool physical) {
+	 bool hasVirtual = mapNeurons_.find(virtualIndex) != mapNeurons_.end();
+	 if (physical)
+		 return hasVirtual && bug_->neuralNet_ && mapNeurons_[virtualIndex].index < bug_->neuralNet_->neurons.size();
+	 else
+		 return hasVirtual;
+}
+
 void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
-	if (virtualIndex >= 0) {	// does it refer to an actual neuron? (skip <0 input & output sockets)
-		if (!hasNeuron(virtualIndex)) {
-			int realIndex = mapNeurons_.size();
-			mapNeurons_[virtualIndex] = NeuronInfo(realIndex);
-		}
+	if (!hasNeuron(virtualIndex, false)) {
+		int realIndex = mapNeurons_.size();
+		mapNeurons_[virtualIndex] = NeuronInfo(realIndex);
 	}
 }
 
 void Ribosome::updateNeuronTransfer(int virtualIndex, float transfer) {
-	if (hasNeuron(virtualIndex))
+	if (hasNeuron(virtualIndex, false))
 		mapNeurons_[virtualIndex].transfer.changeAbs(transfer);
 }
 
 void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
-	if (hasNeuron(virtualIndex))
+	if (hasNeuron(virtualIndex, false))
 		mapNeurons_[virtualIndex].constant.changeAbs(constant);
 }
 
@@ -541,7 +547,7 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 	// the number of neurons is derived from the synapse values
 	checkAndAddNeuronMapping(g.from);
 	checkAndAddNeuronMapping(g.to);
-	int64_t key = synKey(g.from, g.to);
+	uint64_t key = synKey(g.from, g.to);
 	assert(!std::isnan(g.weight.value));
 	mapSynapses_[key].changeAbs(g.weight);
 }
@@ -570,8 +576,8 @@ void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 }
 
 void Ribosome::createSynapse(int from, int to, float weight) {
-	assertDbg(hasNeuron(from));	// should be there, since synapses dictate neurons
-	assertDbg(hasNeuron(to));
+	assertDbg(hasNeuron(from, true));	// should be there, since synapses dictate neurons
+	assertDbg(hasNeuron(to, true));
 
 	OutputSocket* pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
 	Neuron* pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
@@ -704,12 +710,16 @@ void Ribosome::resolveNerveLinkage() {
 	// build the neuron vectors:
 	std::vector<InputOutputNerve<Neuron*>> inputNeurons;
 	for (int i : inputNeurons_) {
+		if (!hasNeuron(i, true))
+			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses
 		Neuron* neuron = bug_->neuralNet_->neurons[mapNeurons_[i].index];
 		float vmsCoord = mapNeurons_[i].inputVMSCoord;
 		inputNeurons.push_back(std::make_pair(neuron, vmsCoord));
 	}
 	std::vector<InputOutputNerve<Neuron*>> outputNeurons;
 	for (int i : outputNeurons_) {
+		if (!hasNeuron(i, true))
+			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses
 		Neuron* neuron = bug_->neuralNet_->neurons[mapNeurons_[i].index];
 		float vmsCoord = mapNeurons_[i].outputVMSCoord;
 		outputNeurons.push_back(std::make_pair(neuron, vmsCoord));
