@@ -57,7 +57,7 @@ public:
 	static void fixGenesSynchro(Genome& gen);
 
 private:
-	static float getTotalMutationChance(Gene const& g);
+	static void getAlterationChances(Gene const& g, float& mutationCh, float& swapCh, float& deleteCh);
 	// return number of mutated atoms
 	static int alterGene(Gene &g, float mutationChanceFactor);
 	static void alterMetaGene(MetaGene &m);

@@ -180,13 +180,21 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	std::map<int, bool> mapNeuronsExist;
 
-	static constexpr float numberAlterationsPerChromosome = 3;	// how many alterations we desire for a chromosome at most
+	static constexpr float numberMutationsPerChromosome = 3;	// how many mutations we desire for a chromosome at most
+	static constexpr float numberSwapsPerChromosome = 0.5f;
+	static constexpr float numberDeletionsPerChromosome = 0.1f;
 
 	// compute the total chance for mutations in the current chromosome:
-	// also count the number of neurons, motors and sensors since we need these in order to create new random genes
-	float totalChanceToChange = 0.f;
+	// also count the number of neurons, we need these in order to create new random genes
+	float totalChanceToMutate = 0.f;
+	float totalChanceToSwap = 0.f;
+	float totalChanceToDelete = 0.f;
 	for (unsigned i=0; i<c.genes.size(); i++) {
-		totalChanceToChange += getTotalMutationChance(c.genes[i]);
+		float mutateCh, swapCh, deleteCh;
+		getAlterationChances(c.genes[i], mutateCh, swapCh, deleteCh);
+		totalChanceToMutate += mutateCh;
+		totalChanceToSwap += swapCh;
+		totalChanceToDelete += deleteCh;
 
 		// count
 		switch (c.genes[i].type) {
@@ -203,13 +211,13 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int nNeurons = mapNeuronsExist.size();
 
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
-	float mutationChanceFactor = totalChanceToChange;
-	if (mutationChanceFactor * c.genes.size() > numberAlterationsPerChromosome)
-		mutationChanceFactor = numberAlterationsPerChromosome / mutationChanceFactor;
+	float mutationChanceFactor = numberMutationsPerChromosome / totalChanceToMutate;
+	float swapChanceFactor = numberSwapsPerChromosome / totalChanceToSwap;
+	float deleteChanceFactor = numberDeletionsPerChromosome / totalChanceToDelete;
 
-	// now we go ahead with mutations:
+	// now we go ahead with alterations:
 	for (unsigned i=0; i<c.genes.size(); i++) {
-		bool delGene = randf() < c.genes[i].chance_to_delete.value * mutationChanceFactor;
+		bool delGene = randf() < c.genes[i].chance_to_delete.value * deleteChanceFactor;
 		if (delGene) {
 			c.genes[i].type = GENE_TYPE_NO_OP;
 #ifdef DEBUG
@@ -217,7 +225,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 #endif
 			continue;
 		}
-		bool swap = randf() < c.genes[i].chance_to_swap.value * mutationChanceFactor;
+		bool swap = randf() < c.genes[i].chance_to_swap.value * swapChanceFactor;
 		bool swapReverse = false;
 		if (swap) {
 			if (i < c.genes.size()-1) { // swap ahead
@@ -311,7 +319,7 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	case GENE_TYPE_PROTEIN:
 		altered += alterAtom(g.data.gene_protein.maxDepth, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_protein.minDepth, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_protein.protein, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_protein.protein, mutationChanceFactor);
 //		altered += alterAtom(g.data.gene_protein.targetSegment, mutationChanceFactor);
 		break;
 	case GENE_TYPE_OFFSET:
@@ -363,67 +371,68 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	return altered;
 }
 
-float GeneticOperations::getTotalMutationChance(Gene const& g) {
-	float ret = g.chance_to_delete.value + g.chance_to_swap.value;
+void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, float& swapCh, float& deleteCh) {
+	deleteCh = g.chance_to_delete.value;
+	swapCh = g.chance_to_swap.value;
+	mutationCh = 0;
 	switch (g.type) {
 	case GENE_TYPE_START_MARKER:
 	case GENE_TYPE_STOP:
 	case GENE_TYPE_NO_OP:
 		break;
 	case GENE_TYPE_SKIP:
-		ret += g.data.gene_skip.count.chanceToMutate.value;
-		ret += g.data.gene_skip.maxDepth.chanceToMutate.value;
-		ret += g.data.gene_skip.minDepth.chanceToMutate.value;
+		mutationCh += g.data.gene_skip.count.chanceToMutate.value;
+		mutationCh += g.data.gene_skip.maxDepth.chanceToMutate.value;
+		mutationCh += g.data.gene_skip.minDepth.chanceToMutate.value;
 		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
-		ret += g.data.gene_body_attribute.value.chanceToMutate.value;
+		mutationCh += g.data.gene_body_attribute.value.chanceToMutate.value;
 		break;
 	case GENE_TYPE_PROTEIN:
-		ret += g.data.gene_protein.maxDepth.chanceToMutate.value;
-		ret += g.data.gene_protein.minDepth.chanceToMutate.value;
-		ret += g.data.gene_protein.protein.chanceToMutate.value;
-//		ret += g.data.gene_protein.targetSegment.chanceToMutate.value;
+		mutationCh += g.data.gene_protein.maxDepth.chanceToMutate.value;
+		mutationCh += g.data.gene_protein.minDepth.chanceToMutate.value;
+//		mutationCh += g.data.gene_protein.protein.chanceToMutate.value;
+//		mutationCh += g.data.gene_protein.targetSegment.chanceToMutate.value;
 		break;
 	case GENE_TYPE_OFFSET:
-		ret += g.data.gene_offset.maxDepth.chanceToMutate.value;
-		ret += g.data.gene_offset.minDepth.chanceToMutate.value;
-		ret += g.data.gene_offset.offset.chanceToMutate.value;
-//		ret += g.data.gene_offset.targetSegment.chanceToMutate.value;
+		mutationCh += g.data.gene_offset.maxDepth.chanceToMutate.value;
+		mutationCh += g.data.gene_offset.minDepth.chanceToMutate.value;
+		mutationCh += g.data.gene_offset.offset.chanceToMutate.value;
+//		mutationCh += g.data.gene_offset.targetSegment.chanceToMutate.value;
 		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
-		ret += g.data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate.value;
-		ret += g.data.gene_neuron_input.inCoord.chanceToMutate.value;
+		mutationCh += g.data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate.value;
+		mutationCh += g.data.gene_neuron_input.inCoord.chanceToMutate.value;
 		break;
 	case GENE_TYPE_NEURON_OUTPUT_COORD:
-		ret += g.data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate.value;
-		ret += g.data.gene_neuron_output.outCoord.chanceToMutate.value;
+		mutationCh += g.data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate.value;
+		mutationCh += g.data.gene_neuron_output.outCoord.chanceToMutate.value;
 		break;
 	case GENE_TYPE_NEURAL_CONST:
-		ret += g.data.gene_neural_constant.value.chanceToMutate.value;
-		ret += g.data.gene_neural_constant.targetNeuron.chanceToMutate.value;
+		mutationCh += g.data.gene_neural_constant.value.chanceToMutate.value;
+		mutationCh += g.data.gene_neural_constant.targetNeuron.chanceToMutate.value;
 		break;
 	case GENE_TYPE_PART_ATTRIBUTE:
-		ret += g.data.gene_attribute.value.chanceToMutate.value;
+		mutationCh += g.data.gene_attribute.value.chanceToMutate.value;
 		break;
 	case GENE_TYPE_SYNAPSE:
-		ret += g.data.gene_synapse.from.chanceToMutate.value;
-		ret += g.data.gene_synapse.to.chanceToMutate.value;
-		ret += g.data.gene_synapse.weight.chanceToMutate.value;
+		mutationCh += g.data.gene_synapse.from.chanceToMutate.value;
+		mutationCh += g.data.gene_synapse.to.chanceToMutate.value;
+		mutationCh += g.data.gene_synapse.weight.chanceToMutate.value;
 		break;
 	case GENE_TYPE_TRANSFER_FUNC:
-		ret += g.data.gene_transfer_function.functionID.chanceToMutate.value;
-		ret += g.data.gene_transfer_function.targetNeuron.chanceToMutate.value;
+		mutationCh += g.data.gene_transfer_function.functionID.chanceToMutate.value;
+		mutationCh += g.data.gene_transfer_function.targetNeuron.chanceToMutate.value;
 		break;
 	case GENE_TYPE_JOINT_OFFSET:
-		ret += g.data.gene_joint_offset.offset.chanceToMutate.value;
-		ret += g.data.gene_joint_offset.minDepth.chanceToMutate.value;
-		ret += g.data.gene_joint_offset.maxDepth.chanceToMutate.value;
+		mutationCh += g.data.gene_joint_offset.offset.chanceToMutate.value;
+		mutationCh += g.data.gene_joint_offset.minDepth.chanceToMutate.value;
+		mutationCh += g.data.gene_joint_offset.maxDepth.chanceToMutate.value;
 		break;
 	default:
-		ERROR("unhandled gene type (getTotalMutationChance): "<<(uint)g.type);
+		ERROR("unhandled gene type (getAlterationChances): "<<(uint)g.type);
 		break;
 	}
-	return ret;
 }
 
 

@@ -216,8 +216,12 @@ bool Ribosome::step() {
 		}
 		if (g2 && g2->type == GENE_TYPE_SKIP) {
 			int depth = p->getDepth();
-			if (depth <= g2->data.gene_skip.maxDepth && depth >= g2->data.gene_skip.minDepth)
-				skipCount = (skipCount + g2->data.gene_skip.count) / 2;
+			if (depth <= g2->data.gene_skip.maxDepth && depth >= g2->data.gene_skip.minDepth) {
+				if (skipCount)
+					skipCount = (skipCount + g2->data.gene_skip.count) / 2;
+				else
+					skipCount = g2->data.gene_skip.count;
+			}
 		}
 		activeSet_[i].second.crtGenomePos += skipCount;
 	}
