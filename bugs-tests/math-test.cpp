@@ -109,4 +109,17 @@ TEST(math, angleDiff) {
 		}
 }
 
+TEST(math, absAngleDiff) {
+	for (float a=PI/4-2*PI; a<2*PI; a+=PI/2)
+		for (float b=PI/8-2*PI; b<2*PI; b+=PI/4) {
+			float dif = absAngleDiff(a, b);
+			std::stringstream s;
+			s << "a="<<a<<"; b="<<b<<"; dif="<<dif;
+			ASSERT_TRUE_M(dif<PI && dif>=0, s.str().c_str());
+			float al = limitAngle(a, 2*PI);
+			float bl = limitAngle(b, 2*PI);
+			ASSERT_TRUE_M(eqEps(limitAngle(al+dif, 2*PI), bl, flterr) || eqEps(limitAngle(bl+dif, 2*PI), al, flterr), s.str().c_str());
+		}
+}
+
 
