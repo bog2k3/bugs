@@ -181,8 +181,8 @@ void Joint::update(float dt) {
 	bool excessRTorque = abs(reactionTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
 	bool excessMTorque = abs(motorTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
 #ifdef DEBUG
-	if (parent_ && parent_->getType() == BodyPartType::TORSO && reactionForce > 1) {
-		LOGLN("FORCE: " << reactionForce << "\t\tMTORQUE: " << motorTorque << "\t\tRTORQUE: " << reactionTorque);
+	if (getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)") {
+//		LOGLN("FORCE: " << reactionForce << "\t\tMTORQUE: " << motorTorque << "\t\tRTORQUE: " << reactionTorque);
 	}
 #endif
 	if (false)

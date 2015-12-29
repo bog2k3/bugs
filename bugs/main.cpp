@@ -64,12 +64,12 @@ template<> void update(b2World* wld, float dt) {
 void onInputEventHandler(InputEvent& ev) {
 	if (ev.isConsumed())
 		return;
-	if (ev.key == GLFW_KEY_SPACE) {
+	if (ev.key == GLFW_KEY_R) {
 		if (ev.type == InputEvent::EV_KEY_DOWN) {
 			skipRendering ^= true;
 			pPhysWld->SetDebugDraw(skipRendering ? nullptr : pPhysicsDraw);
 		}
-	} else if (ev.key == GLFW_KEY_P) {
+	} else if (ev.key == GLFW_KEY_SPACE) {
 		if (ev.type == InputEvent::EV_KEY_DOWN)
 			updatePaused ^= true;
 	} else if (ev.key == GLFW_KEY_S) {

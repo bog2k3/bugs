@@ -70,9 +70,9 @@ inline float limitAngle(float a, float bisector) {
 inline float angleDiff(float a, float b) {
 	float d = b-a;
 	while (d > PI)
-		d -= PI;
+		d -= 2*PI;
 	while (d <= -PI)
-		d += PI;
+		d += 2*PI;
 	return d;
 }
 
