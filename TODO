@@ -31,5 +31,6 @@
 		* !!! make eggs and zygotes (dead ones as well) as food
 		* make dead body parts as food
 		* fix basic bug muscle sync
+* switch from float to double 
 * clean up all TODOs and WARNINGs from code... (right.... this will be here forever)
 

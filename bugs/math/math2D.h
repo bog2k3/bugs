@@ -37,11 +37,10 @@ inline int circularNext(int index, int n) {
  * computes the angle from (0,0) in direction p. p is assumed to be normalized
  */
 inline float pointDirectionNormalized(glm::vec2 const &p) {
-	float sina = cross2D(glm::vec2(1,0), p);
-	if (p.x < 0)
-		return asinf(sina) + PI*0.5f*sign(sina);
+	if (p.x >= 0)
+		return asinf(p.y);
 	else
-		return asinf(sina);
+		return asinf(-p.y) + PI*sign(p.y);
 }
 
 /*
