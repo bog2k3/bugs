@@ -12,11 +12,19 @@ class Shape2D;
 class Viewport;
 class GLText;
 
+struct RenderLayers {
+	bool physics = true;	// true to draw physics debug data - physics objects/joints, etc
+	bool bodyDebug = true;	// true to draw body debug data - muscles, parts inside zygote, etc
+	bool bugDebug = true;	// true to draw bug debug data - bugID, etc
+};
+
 class RenderContext {
 public:
 	const Viewport* const viewport;
 	Shape2D* const shape;
 	GLText* const text;
+
+	RenderLayers enabledLayers;
 
 	RenderContext()
 		: viewport(nullptr)

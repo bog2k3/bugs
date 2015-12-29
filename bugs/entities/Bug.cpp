@@ -23,9 +23,15 @@
 #include "../World.h"
 #include "../serialization/BinaryStream.h"
 #include "../serialization/GenomeSerialization.h"
+#include "../renderOpenGL/Viewport.h"
+#include "../renderOpenGL/GLText.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
 #include "Gamete.h"
+
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <sstream>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -249,6 +255,15 @@ void Bug::draw(RenderContext const &ctx) {
 	for (auto bp : deadBodyParts_)
 		if (bp)
 			bp->draw(ctx);
+
+	// draw debug data:
+	if (ctx.enabledLayers.bugDebug) {
+		glm::vec3 wldPos = body_->getWorldTransformation();
+		glm::vec2 scrPos = ctx.viewport->project(vec3xy(wldPos));
+		std::stringstream ss;
+		ss << id;
+		ctx.text->print(ss.str(), scrPos.x, scrPos.y, 0, 16, glm::vec3(0.2f, 1.f, 0.1f));
+	}
 }
 
 void Bug::onFoodProcessed(float mass) {
