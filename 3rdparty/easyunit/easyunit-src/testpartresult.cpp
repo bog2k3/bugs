@@ -23,7 +23,7 @@ barthelemy@prologique.com
 #include "testpartresult.h"
 #include "test.h"
 
-using namespace easyunit;
+namespace easyunit {
 
 TestPartResult::TestPartResult (Test *test,
 	const SimpleString&	fileName, 
@@ -64,4 +64,6 @@ const SimpleString& TestPartResult::getFileName() const {
   	
 long TestPartResult::getLineNumber() const {
   return lineNumber_;
+}
+
 }

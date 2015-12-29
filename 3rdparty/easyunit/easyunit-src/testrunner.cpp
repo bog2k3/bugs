@@ -22,7 +22,7 @@ barthelemy@prologique.com
 
 #include "testrunner.h"
 
-using namespace easyunit;
+namespace easyunit {
 
 TestRunner::TestRunner()
 {
@@ -41,5 +41,6 @@ void TestRunner::run(TestCase *testCase, int size)
 	}
 }
 
-
+	
+}
 

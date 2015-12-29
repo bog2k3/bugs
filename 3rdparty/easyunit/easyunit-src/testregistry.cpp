@@ -23,7 +23,7 @@ barthelemy@prologique.com
 #include "testregistry.h"
 #include "defaulttestprinter.h"
 
-using namespace easyunit;
+namespace easyunit {
 
 int TestRegistry::nextName = 0;
 
@@ -137,4 +137,6 @@ void TestRegistry::addTestCase(TestCase *testCase)
 	
 	testCaseCount_++;
 }   
+
+}
 

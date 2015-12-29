@@ -22,7 +22,7 @@ barthelemy@prologique.com
 
 #include "testresult.h"
 
-using namespace easyunit;
+namespace easyunit {
 
 TestResult::TestResult()
 : testCaseCount_(0), testCaseRanCount_(0),testRanCount_(0),
@@ -118,4 +118,4 @@ void TestResult::addResult(TestCase *testCase)
 	}
 }
 
-
+}

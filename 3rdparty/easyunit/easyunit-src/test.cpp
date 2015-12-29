@@ -23,7 +23,7 @@ barthelemy@prologique.com
 #include "test.h"
 #include "testregistry.h"
 
-using namespace easyunit;
+namespace easyunit {
 
 Test::Test(const SimpleString& testCaseName, const SimpleString& testName) 
 : testName_(testName), testCaseName_(testCaseName), failuresCount_(0),
@@ -141,3 +141,4 @@ const SimpleString& Test::getTestCaseName() const
 	return testCaseName_;
 } 
 
+}

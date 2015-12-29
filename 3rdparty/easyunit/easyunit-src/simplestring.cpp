@@ -25,7 +25,7 @@ barthelemy@prologique.com
 #include <stdio.h>
 #include <stdlib.h>
 
-using namespace easyunit;
+namespace easyunit {
 
 static const int DEFAULT_SIZE = 20;
 
@@ -82,29 +82,29 @@ SimpleString::~SimpleString ()
 	delete [] buffer;
 }
 
-bool easyunit::operator== (const SimpleString& left, const SimpleString& right)
+bool operator== (const SimpleString& left, const SimpleString& right)
 {
 	return !strcmp (left.asCharString (), right.asCharString ());
 }
 
-bool easyunit::operator!= (const SimpleString& left, const SimpleString& right)
+bool operator!= (const SimpleString& left, const SimpleString& right)
 {
 	return !(left == right);
 }
 
-SimpleString easyunit::StringFrom (bool value)
+SimpleString StringFrom (bool value)
 {
 	char buffer [sizeof ("false") + 1];
 	sprintf (buffer, "%s", value ? "true" : "false");
 	return SimpleString(buffer);
 }
 
-SimpleString easyunit::StringFrom (const char *value)
+SimpleString StringFrom (const char *value)
 {
 	return SimpleString(value);
 }
 
-SimpleString easyunit::StringFrom (long value)
+SimpleString StringFrom (long value)
 {
 	char buffer [DEFAULT_SIZE];
 	sprintf (buffer, "%ld", value);
@@ -112,7 +112,7 @@ SimpleString easyunit::StringFrom (long value)
 	return SimpleString(buffer);
 }
 
-SimpleString easyunit::StringFrom (int value)
+SimpleString StringFrom (int value)
 {
 	char buffer [DEFAULT_SIZE];
 	sprintf (buffer, "%d", value);
@@ -120,7 +120,7 @@ SimpleString easyunit::StringFrom (int value)
 	return SimpleString(buffer);
 }
 
-SimpleString easyunit::StringFrom (double value)
+SimpleString StringFrom (double value)
 {
 	char buffer [DEFAULT_SIZE];
 	sprintf (buffer, "%lf", value);
@@ -128,10 +128,9 @@ SimpleString easyunit::StringFrom (double value)
 	return SimpleString(buffer);
 }
 
-SimpleString easyunit::StringFrom (const SimpleString& value)
+SimpleString StringFrom (const SimpleString& value)
 {
 	return SimpleString(value);
 }
 
-
-
+}

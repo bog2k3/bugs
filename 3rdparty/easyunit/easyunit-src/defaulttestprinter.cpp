@@ -26,7 +26,7 @@ barthelemy@prologique.com
 
 #include <stdio.h>
 
-using namespace easyunit;
+namespace easyunit {
 
 DefaultTestPrinter::DefaultTestPrinter()
 : testsTotal_(0),failuresTotal_(0),testFailuresTotal_(0),
@@ -212,4 +212,4 @@ void DefaultTestPrinter::printResults(Test *test)
 	}
 }
 
-
+}

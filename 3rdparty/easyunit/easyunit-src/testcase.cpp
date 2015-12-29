@@ -28,7 +28,7 @@ barthelemy@prologique.com
 #include <exception>
 #endif
 
-using namespace easyunit;
+namespace easyunit {
 
 TestCase::TestCase(const SimpleString& name, TestResult *testResult)
 : name_(name), testResult_(testResult), testsCount_(0), failuresCount_(0), 
@@ -169,3 +169,5 @@ void TestCase::runTest(Test *test)
 	}
 }
 #endif
+
+}
