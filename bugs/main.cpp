@@ -291,6 +291,12 @@ int main(int argc, char* argv[]) {
 			if (slowMo) {
 				// use same fixed timestep in order to avoid breaking physics, but
 				// only update once every n frames to slow down
+				static float frameCounter = 0;
+				constexpr float cycleLength = 10; // frames
+				if (++frameCounter == cycleLength) {
+					frameCounter = 0;
+				} else
+					simDT = 0;
 			}
 
 			simulationTime += simDT;

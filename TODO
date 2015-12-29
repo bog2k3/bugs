@@ -1,11 +1,10 @@
-* implement slow motion with fixed timestep
+		* implement slow motion with fixed timestep
 * tune joint resillience
 * bugs degenerate too quickly and too often. Make them more stable
 * find a better way to decode the genome rather than offset-based
 		* develop a better embrionic development process (protein system done)
 		* print population & generations in status update
 		* !!! fix autosave (doesn't save any more, wtf?)
-* tune joint resistance values
 * fix world design to favour movers
 * print mutation statistics after meyosis
 * !!! add SENSORS
