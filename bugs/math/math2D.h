@@ -60,7 +60,7 @@ inline float pointDirection(glm::vec2 const &p) {
 inline float limitAngle(float a, float bisector) {
 	while (a > bisector)
 		a -= 2*PI;
-	while (a < bisector - 2*PI)
+	while (a <= bisector - 2*PI)
 		a += 2*PI;
 	return a;
 }
