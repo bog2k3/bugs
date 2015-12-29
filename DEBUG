@@ -14,4 +14,4 @@
 		- fixed - was caused by writing at offset [targetSegment] of array, which came from genes, unsanitized :-)
 	* [FIXED] neurons which don't appear in synapses (thus they don't exist) are added as input/output nerves 
 		which causes a crash
-*
+* Debug why nerve linkage breaks when mutating; also why most bugs are FUBAR after mutations

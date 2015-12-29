@@ -768,7 +768,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(BodyConst::initialBodyPartSize);
+	ga.value.set(BodyConst::initialBodyPartSize*5);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
@@ -886,7 +886,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
-	ga.value.set(BodyConst::initialJointMaxPhi);
+	ga.value.set(BodyConst::initialJointMaxPhi*0.5f);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;

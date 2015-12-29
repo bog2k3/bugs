@@ -70,8 +70,8 @@ void SessionManager::startDefaultSession() {
 //	for (int i=0; i<1; i++) {
 		std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
 //		std::unique_ptr<Bug> bug(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
-		if (bug->getId() == 2)
-			World::getInstance()->takeOwnershipOf(std::move(bug));
+//		if (bug->getId() == 2)
+//			World::getInstance()->takeOwnershipOf(std::move(bug));
 	}
 	LOGLN("Finished building default session.");
 }

@@ -49,6 +49,7 @@
 
 bool skipRendering = true;
 bool updatePaused = false;
+bool slowMo = false;
 b2World *pPhysWld = nullptr;
 PhysicsDebugDraw *pPhysicsDraw = nullptr;
 
@@ -71,6 +72,9 @@ void onInputEventHandler(InputEvent& ev) {
 	} else if (ev.key == GLFW_KEY_P) {
 		if (ev.type == InputEvent::EV_KEY_DOWN)
 			updatePaused ^= true;
+	} else if (ev.key == GLFW_KEY_S) {
+		if (ev.type == InputEvent::EV_KEY_DOWN)
+			slowMo ^= true;
 	}
 }
 
@@ -282,8 +286,12 @@ int main(int argc, char* argv[]) {
 				}
 			}
 
-			// fixed time step for simulation
+			// fixed time step for simulation (unless slowMo is on)
 			float simDT = updatePaused ? 0 : 0.02f;
+			if (slowMo) {
+				// use same fixed timestep in order to avoid breaking physics, but
+				// only update once every n frames to slow down
+			}
 
 			simulationTime += simDT;
 			simDTAcc += simDT;
@@ -307,12 +315,13 @@ int main(int argc, char* argv[]) {
 				// draw builds the render queue for the current frame
 				drawList.draw(renderContext);
 
-				std::stringstream ss;
-				ss << "Salut Lume!\n[Powered by Box2D]";
-				renderContext.text->print(ss.str().c_str(), 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
+				renderContext.text->print("Salut Lume!\n[Powered by Box2D]", 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
 
 				if (updatePaused) {
 					renderContext.text->print("PAUSED", vp1.getWidth() / 2, vp1.getHeight() / 2, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
+				}
+				if (slowMo) {
+					renderContext.text->print("~~ Slow Motion ON ~~", 10, 45, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
 				}
 
 				// do the actual openGL render for the previous frame (which is independent of our world)

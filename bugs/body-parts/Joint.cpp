@@ -15,8 +15,10 @@
 #include "../utils/assert.h"
 #include "../utils/UpdateList.h"
 #include "../PhysDestroyListener.h"
+
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
+#include <sstream>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -172,15 +174,33 @@ void Joint::update(float dt) {
 		return;
 	float invdt = 1.f / dt;
 	float reactionTorque = physJoint_->GetReactionTorque(invdt);
+	float motorTorque = physJoint_->GetMotorTorque(invdt);
 	float reactionForce = physJoint_->GetReactionForce(invdt).Length();
 	bool jointIsFUBAR = std::isnan(reactionTorque) || std::isnan(reactionForce);
-	if (jointIsFUBAR
-		|| reactionForce > size_ * BodyConst::JointForceToleranceFactor
-		|| reactionTorque > size_ * BodyConst::JointTorqueToleranceFactor) {
-		// this joint is toast - must break free the downstream body parts
-//		return; // test if this code causes crash
+	bool excessForce = reactionForce > size_ * BodyConst::JointForceToleranceFactor;
+	bool excessRTorque = abs(reactionTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
+	bool excessMTorque = abs(motorTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
 #ifdef DEBUG
-		LOGLN("JOINT BREAK: " << getDebugName());
+	if (parent_ && parent_->getType() == BodyPartType::TORSO && reactionForce > 1) {
+		LOGLN("FORCE: " << reactionForce << "\t\tMTORQUE: " << motorTorque << "\t\tRTORQUE: " << reactionTorque);
+	}
+#endif
+	if (false)
+	if (jointIsFUBAR || excessForce || excessMTorque || excessRTorque) {
+		// this joint is toast - must break free the downstream body parts
+#ifdef DEBUG
+		LOG("JOINT BREAK: " << getDebugName() << " (");
+		std::stringstream reason;
+		if (jointIsFUBAR)
+			reason << "FUBAR";
+		else if (excessForce)
+			reason << "EXCESS-FORCE: " << reactionForce << " [max:" << size_ * BodyConst::JointForceToleranceFactor<< "]";
+		else if (excessMTorque)
+			reason << "EXCESS-MTORQUE: " << motorTorque << " [max:" << size_ * BodyConst::JointTorqueToleranceFactor<< "]";
+		else if (excessRTorque)
+			reason << "EXCESS-RTORQUE: " << reactionTorque << " [max:" << size_ * BodyConst::JointTorqueToleranceFactor<< "]";
+		LOGNP(reason.str() << ")\n");
+
 #endif
 		BodyPart* downStream = children_[0];
 		downStream->detach(true); // this will be taken over by bug entity
