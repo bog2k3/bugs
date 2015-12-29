@@ -6,7 +6,6 @@
 #endif
 
 NeuralNet::NeuralNet()
-//	: pTraverser(new Traverser(this))
 {
 }
 
@@ -14,23 +13,17 @@ NeuralNet::~NeuralNet() {
 	for (unsigned i=0,n=neurons.size(); i<n; ++i)
 		delete neurons[i];
 	neurons.clear();
-//	inputs.clear();
-//	outputs.clear();
-//	delete pTraverser;
 }
 
 void NeuralNet::iterate()
 {
-//	pTraverser->reset();
-	// step 1 and above: move from the first layer of neurons up the chain, until all neurons are visited
+	// we split the update and push in two separate steps so that the order of the neurons will have no effect
+	// on the speed at which data travels through synapses
+
+	// step 1: update all neurons values before any data moves around
 	for (Neuron* n : neurons)
-	{
-//		pTraverser->getNextLayer(crtLayer);
-//		for (auto itN=crtLayer.begin(); itN != crtLayer.end(); ++itN) {
-//			Neuron* pNeuron = *itN;
-			n->update_value();
-			n->push_output();
-//		}
-	}
-//	} while (!crtLayer.empty());
+		n->update_value();
+	// step 2: push all neurons output data simultaneously
+	for (Neuron* n : neurons)
+		n->push_output();
 }

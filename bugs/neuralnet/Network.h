@@ -12,23 +12,15 @@
 #include <vector>
 #include <memory>
 
-//class Traverser;
-
 class NeuralNet {
 public:
 	NeuralNet();
 	~NeuralNet();
 
-	// iterates ONCE over all neurons, pushing data through synapses. Output values are pushed through the nerves
+	// performs one data iteration - new values are computed then output values are pushed through synapses.
 	void iterate();
 
 	std::vector<Neuron*> neurons;
-//	std::vector<std::shared_ptr<OutputSocket>> inputs; // list of input sockets that feed data to neurons
-//	std::vector<std::shared_ptr<InputSocket>> outputs; // list of output sockets that output data from the network
-
-//private:
-//	std::vector<Neuron*> crtLayer;
-//	Traverser* pTraverser;
 };
 
 #endif //__network_h__
