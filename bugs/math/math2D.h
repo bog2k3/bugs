@@ -40,7 +40,7 @@ inline float pointDirectionNormalized(glm::vec2 const &p) {
 	if (p.x >= 0)
 		return asinf(p.y);
 	else
-		return asinf(-p.y) + PI*sign(p.y);
+		return -asinf(p.y) + PI*sign(p.y);
 }
 
 /*
@@ -57,6 +57,7 @@ inline float pointDirection(glm::vec2 const &p) {
  * 	[-3*PI/2, PI/2]
  */
 inline float limitAngle(float a, float bisector) {
+	assert(bisector >= 0);
 	while (a > bisector)
 		a -= 2*PI;
 	while (a <= bisector - 2*PI)

@@ -3,7 +3,6 @@
 	<name>bugs-tests</name>
 	<comment></comment>
 	<projects>
-		<project>bugs</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

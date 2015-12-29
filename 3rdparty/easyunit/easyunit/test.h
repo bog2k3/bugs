@@ -210,8 +210,14 @@ class Test
 #define TO_S_E_DELTA_F(expected,actual,delta)\
   StringFrom("Expected : ") + StringFrom(expected) + StringFrom(" but Actual : ") + StringFrom(actual) + StringFrom(" with delta = ") + StringFrom(delta)
 
+#define TO_S_E_DELTAM_F(expected,actual,delta,message)\
+  StringFrom("[") + StringFrom(message) + StringFrom("] Expected : ") + StringFrom(expected) + StringFrom(" but Actual : ") + StringFrom(actual) + StringFrom(" with delta = ") + StringFrom(delta)
+
 #define TO_S_E_DELTA_S(expected,actual,delta)\
   StringFrom(expected) + StringFrom(" == ") + StringFrom(actual) + StringFrom(" with delta = ") + StringFrom(delta)
+
+#define TO_S_T_F(message, condition)\
+	StringFrom("[") + StringFrom(message) + StringFrom("] Condition : ") + StringFrom(condition)
 
 /**
  * Asserts that a condition is true.
@@ -235,7 +241,7 @@ class Test
 	{ if (condition) {\
 	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,#condition,success));\
 	} else {\
-	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__, message,failure)); return;\
+	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__, TO_S_T_F(message, #condition),failure)); return;\
 	}}
 	
 /**
@@ -248,7 +254,7 @@ class Test
 { if (expected == actual) {\
 	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_STRING_EQUALS_S(#expected,#actual),success));\
 	} else {\
-	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_STRING_EQUALS_F(#expected,#actual),failure)); return;\
+	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_STRING_EQUALS_F(expected,actual),failure)); return;\
 	}}
 	
 /**
@@ -264,7 +270,7 @@ class Test
  */		
 #define ASSERT_EQUALS_V(expected,actual)\
 { if (expected == actual) {\
-	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_STRING_EQUALS_S(expected,actual),success));\
+	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_STRING_EQUALS_S(#expected,#actual),success));\
 	} else {\
 	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_STRING_EQUALS_F(expected,actual),failure)); return;\
 	}}
@@ -278,7 +284,7 @@ class Test
  */	
 #define ASSERT_EQUALS_M(expected,actual,message)\
 { if (expected == actual) {\
-	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,#expected,success));\
+	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,expected,success));\
 	} else {\
 	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,message,failure)); return;\
 	}}
@@ -294,7 +300,7 @@ class Test
 { if (EQUALS_DELTA(expected,actual,delta) ) {\
 	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_S_E_DELTA_S(#expected,#actual,#delta),success));\
 	} else {\
-	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_S_E_DELTA_F(#expected,#actual,#delta),failure)); return;\
+	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_S_E_DELTA_F(expected,actual,delta),failure)); return;\
 	}}
 	
 /**
@@ -309,7 +315,7 @@ class Test
 { if (EQUALS_DELTA(expected,actual,delta)) {\
 	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,#expected,success));\
 	} else {\
-	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,message,failure)); return;\
+	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_S_E_DELTAM_F(expected,actual,delta,message),failure)); return;\
 	}}
 
 /**
@@ -326,7 +332,7 @@ class Test
  */
 #define ASSERT_EQUALS_DELTA_V(expected,actual,delta)\
 { if (EQUALS_DELTA(expected,actual,delta)) {\
-	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_S_E_DELTA_S(expected,actual,delta),success));\
+	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_S_E_DELTA_S(#expected,#actual,#delta),success));\
 	} else {\
 	addTestPartResult(new easyunit::TestPartResult(this, __FILE__,__LINE__,TO_S_E_DELTA_F(expected,actual,delta),failure)); return;\
 	}}
