@@ -68,6 +68,7 @@ public:
 	static unsigned getPopulationCount() { return population; }
 	static unsigned getZygotesCount() { return freeZygotes; }
 	static unsigned getMaxGeneration() { return maxGeneration; }
+	uint64_t getId() { return id; }
 
 protected:
 	Bug(Bug const& orig) = delete; // no implementation because no usage

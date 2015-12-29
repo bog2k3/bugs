@@ -257,7 +257,7 @@ void Bug::draw(RenderContext const &ctx) {
 			bp->draw(ctx);
 
 	// draw debug data:
-	if (ctx.enabledLayers.bugDebug) {
+	if (ctx.enabledLayers.bugDebug && body_) {
 		glm::vec3 wldPos = body_->getWorldTransformation();
 		glm::vec2 scrPos = ctx.viewport->project(vec3xy(wldPos));
 		std::stringstream ss;
@@ -754,7 +754,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
 	ga.attribIndex.set(0);
-	ga.value.set(muscle1_VMScoord);
+	ga.value.set(muscle2_VMScoord);
 	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
@@ -785,7 +785,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
 	ga.attribIndex.set(0);
-	ga.value.set(muscle2_VMScoord);
+	ga.value.set(muscle1_VMScoord);
 	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());

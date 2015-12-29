@@ -83,7 +83,7 @@ void Ribosome::initializeNeuralNetwork() {
 #ifdef DEBUG
 	for (auto const& it : mapNeurons_) {
 		mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
-		if (false) {
+		if (true) {
 			LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons[it.second.index]);
 		}
 	}
