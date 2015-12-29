@@ -309,9 +309,9 @@ void Muscle::update(float dt) {
 	if (joint_) {		// joint may have broken
 		joint_->addTorque(torque * rotationSign_, maxJointAngularSpeed_ * rotationSign_);
 #ifdef DEBUG
-		if (joint_->getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)") {
-			LOGLN(getDebugName() << " generate torque " << torque * rotationSign_);
-		}
+//		if (joint_->getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)") {
+//			LOGLN(getDebugName() << " generate torque " << torque * rotationSign_);
+//		}
 #endif
 	}
 

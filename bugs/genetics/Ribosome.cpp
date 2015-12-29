@@ -193,7 +193,7 @@ bool Ribosome::step() {
 			auto it = mapJointOffsets_.find(p);
 			if (it != mapJointOffsets_.end()) {
 				Joint* joint = it->second.first;
-				int offset = it->second.second;
+				int offset = it->second.second.hasValue() ? it->second.second : 0;
 				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + offset));
 			}
 			// and remove this branch:
@@ -354,7 +354,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 
 	if (useUpstreamJoint) {
 		// add joint mapping to this part:
-		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, CummulativeValue(0));
+		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, CummulativeValue());
 	}
 
 	parent->add(bp, angle);
