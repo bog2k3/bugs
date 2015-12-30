@@ -537,6 +537,11 @@ void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	int depth = part->getDepth();
 	if (depth >= g.minDepth && depth <= g.maxDepth)
 	{
+#ifdef DEBUG
+		if (part->getDebugName() == "Torso::Joint(8)") {
+			LOGLN("ha");
+		}
+#endif
 		CummulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
 		if (pAttrib)
 			pAttrib->changeAbs(g.value);

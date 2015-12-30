@@ -714,7 +714,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
-	ga.value.set(0.2f);
+	ga.value.set(PI/8);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;

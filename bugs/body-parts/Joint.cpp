@@ -74,6 +74,12 @@ void Joint::commit() {
 		destroyPhysJoint();
 	}
 
+#ifdef DEBUG
+	if (getDebugName() == "Torso::Joint(8)") {
+		LOGLN("ha");
+	}
+#endif
+
 	b2RevoluteJointDef def;
 	def.bodyA = parent_->getBody().b2Body_;
 	def.bodyB = children_[0]->getBody().b2Body_;
