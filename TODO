@@ -1,5 +1,6 @@
 		* implement slow motion with fixed timestep
 * gripperul sa se desprinda la o anumita forta d.p. cu size
+* spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
 * rewrite default bug genome to use segmentation for leg
 		* tune nerve signals - GRIPPER must disengage sooner
 * tune joint resillience
