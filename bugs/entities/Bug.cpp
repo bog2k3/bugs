@@ -437,8 +437,21 @@ Chromosome Bug::createBasicChromosome() {
 	goc.outCoord.set(gripper_VMScoord);
 	c.genes.push_back(goc);
 
-	// G+12
+	// neuron #6 transfer:
+	gt.targetNeuron.set(6);
+	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
+	c.genes.push_back(gt);
+	// neuron #6 constant
+	gnc.targetNeuron.set(6);
+	gnc.value.set(-PI/8);
+	c.genes.push_back(gnc);
 
+	// neuron #7 transfer:
+	gt.targetNeuron.set(7);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	c.genes.push_back(gt);
+
+	// G+15
 
 	GeneSynapse gs;
 
@@ -460,19 +473,37 @@ Chromosome Bug::createBasicChromosome() {
 	gs.weight.set(1.f);
 	c.genes.push_back(gs);
 
-	// synapse 3 to 5
-	gs.from.set(3);
-	gs.to.set(5);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
 	// synapse 4 to 5
 	gs.from.set(4);
 	gs.to.set(5);
 	gs.weight.set(1.f);
 	c.genes.push_back(gs);
 
-	// G+5
+	// synapse 0 to 7
+	gs.from.set(0);
+	gs.to.set(7);
+	gs.weight.set(2*PI / musclePeriod);
+	c.genes.push_back(gs);
+
+	// synapse 1 to 7
+	gs.from.set(1);
+	gs.to.set(7);
+	gs.weight.set(1.f);
+	c.genes.push_back(gs);
+
+	// synapse 6 to 7
+	gs.from.set(6);
+	gs.to.set(7);
+	gs.weight.set(1.f);
+	c.genes.push_back(gs);
+
+	// synapse 7 to 5
+	gs.from.set(7);
+	gs.to.set(5);
+	gs.weight.set(1.f);
+	c.genes.push_back(gs);
+
+	// G+8
 
 	// grow Mouth:
 	GeneProtein gp;
@@ -488,7 +519,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	GeneOffset go;
 	go.targetSegment.set(0);
-	go.offset.set(53);
+	go.offset.set(59);
 	c.genes.push_back(go);
 
 	// G+5
@@ -505,7 +536,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(8);
-	go.offset.set(69);
+	go.offset.set(75);
 	c.genes.push_back(go);
 
 	// G+5
@@ -556,7 +587,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(5);
-	go.offset.set(61);
+	go.offset.set(67);
 	c.genes.push_back(go);
 
 	c.genes.push_back(GeneStop());
@@ -564,7 +595,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// mouth offs (G 53):
+	// mouth offs (G 59):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -590,7 +621,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+8
 
-	// egglayer offs (G 61):
+	// egglayer offs (G 67):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -616,7 +647,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+8
 
-	// bone1 offs (G 69):
+	// bone1 offs (G 75):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -704,7 +735,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+7
 
-	// bone 1 joint offs (G 94):
+	// bone 1 joint offs (G 100):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -714,7 +745,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
-	ga.value.set(PI/8);
+	ga.value.set(0.1f);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
@@ -731,7 +762,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+8
 
-	// muscle 3 offs (G 102):
+	// muscle 3 offs (G 108):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -762,7 +793,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+9
 
-	// muscle 4 offs (G 111):
+	// muscle 4 offs (G 117):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -793,7 +824,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+9
 
-	// bone2 offset (G 120):
+	// bone2 offset (G 126):
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 
@@ -1025,7 +1056,9 @@ Chromosome Bug::createBasicChromosome() {
 
 	// G+9
 
-	// G 188 total
+	// G 194 total
+	int totalExpectedGenes = 194;
+	assertDbg(c.genes.size() == totalExpectedGenes);	// if this jumps, we didn't count well and offsets may be screwed.
 
 	// finished with adding genes.
 	// now we need to add some redundancy in between genes:

@@ -1,4 +1,5 @@
 		* implement slow motion with fixed timestep
+* rewrite default bug genome to use segmentation ofr leg
 * tune nerve signals - GRIPPER must disengage sooner
 * tune joint resillience
 * bugs degenerate too quickly and too often. Make them more stable

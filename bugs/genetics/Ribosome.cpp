@@ -193,8 +193,8 @@ bool Ribosome::step() {
 			auto it = mapJointOffsets_.find(p);
 			if (it != mapJointOffsets_.end()) {
 				Joint* joint = it->second.first;
-				int offset = it->second.second.hasValue() ? it->second.second : 0;
-				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + offset));
+				int jOffset = it->second.second.hasValue() ? it->second.second : 0;
+				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + jOffset));
 			}
 			// and remove this branch:
 			activeSet_.erase(activeSet_.begin()+i);
@@ -537,11 +537,6 @@ void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	int depth = part->getDepth();
 	if (depth >= g.minDepth && depth <= g.maxDepth)
 	{
-#ifdef DEBUG
-		if (part->getDebugName() == "Torso::Joint(8)") {
-			LOGLN("ha");
-		}
-#endif
 		CummulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
 		if (pAttrib)
 			pAttrib->changeAbs(g.value);
@@ -652,8 +647,8 @@ void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& ord
 			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &orderedOutputNeurons_[neuronIndex].first->output);
 
 #ifdef DEBUG
-			if (false) {
-				LOGLN("LinkMotorNerve: neuron[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
+			if (true) {
+				LOGLN("LinkMotorNerve: virtN[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
 						<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
 						<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
 						<< " {lineId:" << nerveLineId << "}");

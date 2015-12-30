@@ -611,6 +611,9 @@ void BodyPart::hierarchyMassChanged() {
 }
 
 void BodyPart::buildDebugName(std::stringstream &out_stream) const {
+#ifndef DEBUG
+	assert(false); // don't call this on release builds because it's slow
+#endif
 	if (parent_) {
 		parent_->buildDebugName(out_stream);
 		out_stream << "::";

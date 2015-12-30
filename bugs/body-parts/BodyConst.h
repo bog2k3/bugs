@@ -54,7 +54,7 @@ public:
 	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
 	static constexpr float initialJointSize					= 1.9e-4f;		// [m^2]
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
-	static constexpr float initialJointMaxPhi				= PI*0.9f;		// [rad]
+	static constexpr float initialJointMaxPhi				= PI*0.6f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialMouthSize					= 0.5e-3f;		// [m^2]
