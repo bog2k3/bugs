@@ -11,6 +11,7 @@
 #include "../genetics/constants.h"
 #include "../neuralnet/functions.h"
 #include "../body-parts/BodyConst.h"
+#include "../utils/log.h"
 
 #include <map>
 
@@ -42,7 +43,8 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float gripper_VMScoord = 10.f;
 	constexpr float muscle2_VMScoord = 15.f;
 	constexpr float musclePeriod = 3.f; // seconds
-	constexpr float gripper_signal_threshold = -0.2f;
+	constexpr float gripper_signal_threshold = -0.55f;
+	constexpr float gripper_signal_phase_offset = PI/2.2f;
 
 	GeneOffset go;
 	GeneJointOffset gjo;
@@ -151,7 +153,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gt);
 	// neuron #6 constant
 	gnc.targetNeuron.set(6);
-	gnc.value.set(-PI/8);
+	gnc.value.set(gripper_signal_phase_offset);
 	c.genes.push_back(gnc);
 
 	// neuron #7 transfer:
@@ -367,8 +369,6 @@ Chromosome Bug::createBasicChromosome() {
 	ga.attribute = GENE_ATTRIB_DENSITY;
 	ga.value.set(BodyConst::initialBoneDensity);
 	c.genes.push_back(ga);
-
-	PART_MARKER(TORSO_BONE8)
 
 	// grow Bone(0)
 	gp.maxDepth.set(2);
@@ -612,6 +612,8 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 
 	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.minDepth.set(0);
+	ga.maxDepth.set(6);
 	ga.value.set(BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
@@ -718,6 +720,9 @@ Chromosome Bug::createBasicChromosome() {
 	// generate and insert offsets:
 	for (offsetInsertion &i : insertions) {
 		assertDbg(partMarkers.find(i.markerName) != partMarkers.end());	// if this jumps, a marker referred by an offset gene can't be found
+#ifdef DEBUG
+//		LOGLN("Marker offset [" << i.markerName << "] = " << partMarkers[i.markerName]);
+#endif
 		Atom<int> *pVal = &c.genes[i.geneIndex].data.gene_offset.offset;
 		if (i.jointOffs)
 			pVal = &c.genes[i.geneIndex].data.gene_joint_offset.offset;
