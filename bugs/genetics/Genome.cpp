@@ -180,7 +180,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	std::map<int, bool> mapNeuronsExist;
 
-	static constexpr float numberMutationsPerChromosome = 1.f;	// how many mutations we desire for a chromosome at most
+	static constexpr float numberMutationsPerChromosome = 0.5f;	// how many mutations we desire for a chromosome at most, on average
 	static constexpr float numberSwapsPerChromosome = 0.25f;
 	static constexpr float numberDeletionsPerChromosome = 0.1f;
 
@@ -304,7 +304,9 @@ bool alterAtom(Atom<T> &a, float mutationChanceFactor) {
 int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	int altered = 0;
 	switch (g.type) {
+#ifdef ENABLE_START_MARKER_GENES
 	case GENE_TYPE_START_MARKER:
+#endif
 	case GENE_TYPE_STOP:
 	case GENE_TYPE_NO_OP:
 		break;
@@ -376,7 +378,9 @@ void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, f
 	swapCh = g.chance_to_swap.value;
 	mutationCh = 0;
 	switch (g.type) {
+#ifdef ENABLE_START_MARKER_GENES
 	case GENE_TYPE_START_MARKER:
+#endif
 	case GENE_TYPE_STOP:
 	case GENE_TYPE_NO_OP:
 		break;

@@ -64,7 +64,7 @@ void SessionManager::startDefaultSession() {
 	}
 
 	// bug id=1 is a standard for reference:
-	World::getInstance()->takeOwnershipOf(std::unique_ptr<Bug>(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)))));
+//	World::getInstance()->takeOwnershipOf(std::unique_ptr<Bug>(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)))));
 
 	for (int i=0; i<25; i++) {
 		std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));

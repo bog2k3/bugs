@@ -51,9 +51,11 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO)
 
+#ifdef ENABLE_START_MARKER_GENES
 	GeneStartMarker gsm;
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	// body size (sq meters)
 	GeneAttribute ga;
@@ -292,8 +294,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(MOUTH)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
@@ -317,8 +321,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(EGGLAYER)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_EGG_EJECT_SPEED;
@@ -342,8 +348,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	gjo.maxDepth.set(2);
 	INSERT_JOFFSET(TORSO_JOINT8)
@@ -422,8 +430,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_JOINT8)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
@@ -447,8 +457,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8_MUSCLE1)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_SIZE;
@@ -477,8 +489,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8_MUSCLE15)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_SIZE;
@@ -507,8 +521,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8_BONE0)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	gjo.maxDepth.set(4);
 	INSERT_JOFFSET(TORSO_BONE8_JOINT0)
@@ -587,8 +603,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8_JOINT0)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
@@ -608,8 +626,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8_BONE0_GRIPPER0)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.minDepth.set(0);
@@ -632,8 +652,10 @@ Chromosome Bug::createBasicChromosome() {
 	PART_MARKER(TORSO_BONE8_BONE0_MUSCLE1)
 	PART_MARKER(TORSO_BONE8_BONE0_MUSCLE15)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_SIZE;
@@ -657,8 +679,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_MUSCLE7)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
@@ -687,8 +711,10 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_MUSCLE9)
 
+#ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
+#endif
 
 	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;

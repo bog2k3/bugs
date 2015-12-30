@@ -179,7 +179,9 @@ public:
 		update_meta_genes_vec();
 	}
 
+#ifdef ENABLE_START_MARKER_GENES
 	Gene(GeneStartMarker const& gsm) : Gene(GENE_TYPE_START_MARKER, gsm) {}
+#endif
 	Gene(GeneStop const &gs) : Gene(GENE_TYPE_STOP, gs) {}
 	Gene(GeneNoOp const &gnop) : Gene(GENE_TYPE_NO_OP, gnop) {}
 	Gene(GeneSkip const &gs) : Gene(GENE_TYPE_SKIP, gs) {}

@@ -10,13 +10,17 @@
 
 #include <cstdint>
 
+//#define ENABLE_START_MARKER_GENES
+
 // ----------------------------------- gene_type -------------------------------//
 
 typedef uint8_t gene_type;
 
 constexpr gene_type GENE_TYPE_INVALID = 0;
 constexpr gene_type GENE_TYPE_NO_OP = 1;			// no operation gene; dummy.
+#ifdef ENABLE_START_MARKER_GENES
 constexpr gene_type GENE_TYPE_START_MARKER = 2;		// marks the beginning of a separate sequence of genes
+#endif
 constexpr gene_type GENE_TYPE_STOP = 3;				// signals the ribosome to stop reading genes after this one
 constexpr gene_type GENE_TYPE_SKIP = 4;				// control gene -> skip next N genes if all conditions are met
 constexpr gene_type GENE_TYPE_PROTEIN = 5;			// protein gene -> produces a specific protein type in a body-part's segment

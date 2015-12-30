@@ -31,8 +31,6 @@
 #include <dmalloc.h>
 #endif
 
-constexpr bool ENABLE_START_MARKER_GENES = false;
-
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
 {
@@ -159,7 +157,8 @@ bool Ribosome::step() {
 	}
 	unsigned nCrtBranches = activeSet_.size();
 	for (unsigned i=0; i<nCrtBranches; i++) {
-		if (ENABLE_START_MARKER_GENES && activeSet_[i].second.crtGenomePos == activeSet_[i].second.startGenomePos) {
+#ifdef ENABLE_START_MARKER_GENES
+		if (activeSet_[i].second.crtGenomePos == activeSet_[i].second.startGenomePos) {
 			// move forward until we hit a start marker
 			auto &c1 = bug_->genome_.first.genes;
 			auto &c2 = bug_->genome_.second.genes;
@@ -173,6 +172,7 @@ bool Ribosome::step() {
 					break;
 			}
 		}
+#endif
 		BodyPart* p = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second.crtGenomePos++;
 		Gene *g1 = nullptr, *g2 = nullptr;
@@ -409,8 +409,10 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
 		break;
+#ifdef ENABLE_START_MARKER_GENES
 	case GENE_TYPE_START_MARKER:
 		break;
+#endif
 	case GENE_TYPE_SKIP:
 		break;
 	case GENE_TYPE_STOP:

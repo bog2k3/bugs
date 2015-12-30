@@ -3,6 +3,7 @@
 #include "../body-parts/BodyConst.h"
 #include "../body-parts/BodyPart.h"
 #include "../neuralnet/functions.h"
+#include "../math/math2D.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -122,7 +123,7 @@ Gene Gene::createRandomBodyAttribGene() {
 
 Gene Gene::createRandomProteinGene() {
 	GeneProtein g;
-	g.maxDepth.set(randi(5));
+	g.maxDepth.set(randi(8));
 	g.minDepth.set(0);
 	g.protein.set((gene_protein_type)randi(GENE_PROT_NONE+1, GENE_PROT_END-1));
 	g.targetSegment.set(randi(BodyPart::MAX_CHILDREN));
@@ -194,12 +195,47 @@ Gene Gene::createRandomSkipGene(int spaceLeftAfter) {
 	GeneSkip g;
 	g.minDepth.set(randi(10));
 	g.maxDepth.set(g.minDepth + randi(10-g.minDepth));
-	g.count.set(randi(spaceLeftAfter));
+	// use a random distribution that favors small values:
+	g.count.set(sqr(randd()) * spaceLeftAfter);
 	return g;
 }
 
 Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
-	gene_type type = (gene_type)randi(GENE_TYPE_INVALID+1, GENE_TYPE_END-1);
+	// 14 genes, uniform chance would be 1/14 = 0.071428571
+	std::vector<std::pair<gene_type, double>> geneChances {
+		{GENE_TYPE_BODY_ATTRIBUTE, 0.071},
+		{GENE_TYPE_PROTEIN, 0.1},
+		{GENE_TYPE_PART_ATTRIBUTE, 0.15},
+		{GENE_TYPE_OFFSET, 0.02},
+		{GENE_TYPE_JOINT_OFFSET, 0.02},
+		{GENE_TYPE_NEURAL_CONST, 0.071},
+		{GENE_TYPE_TRANSFER_FUNC, 0.03},
+		{GENE_TYPE_SYNAPSE, 0.1},
+		{GENE_TYPE_NEURON_INPUT_COORD, 0.03},
+		{GENE_TYPE_NEURON_OUTPUT_COORD, 0.03},
+		{GENE_TYPE_SKIP, 0.01},
+#ifdef ENABLE_START_MARKER_GENES
+		{GENE_TYPE_START_MARKER, 0.0},
+#endif
+		{GENE_TYPE_STOP, 0.005},
+		{GENE_TYPE_NO_OP, 0.005},
+	};
+	// normalize chances
+	double total = 0;
+	for (auto &x : geneChances)
+		total += x.second;
+	for (auto &x : geneChances)
+		x.second /= total;
+	double dice = randd();
+	double floor = 0;
+	gene_type type = GENE_TYPE_INVALID;
+	for (auto &x : geneChances) {
+		if (dice - floor < x.second) {
+			type = x.first;
+			break;
+		}
+		floor += x.second;
+	}
 	switch (type) {
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		return createRandomBodyAttribGene();
@@ -219,8 +255,10 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return createRandomAttribGene();
 	case GENE_TYPE_SKIP:
 		return createRandomSkipGene(spaceLeftAfter);
+#ifdef ENABLE_START_MARKER_GENES
 	case GENE_TYPE_START_MARKER:
 		return GeneStartMarker();
+#endif
 	case GENE_TYPE_STOP:
 		return GeneStop();
 	case GENE_TYPE_SYNAPSE:
@@ -257,7 +295,9 @@ char Gene::getSymbol() const {
 		return 'P';
 	case GENE_TYPE_SKIP:
 		return '>';
+#ifdef ENABLE_START_MARKER_GENES
 	case GENE_TYPE_START_MARKER:
+#endif
 		return ':';
 	case GENE_TYPE_STOP:
 		return '!';

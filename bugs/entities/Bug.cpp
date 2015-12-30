@@ -67,7 +67,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, generation_(generation)
 {
 	LOGPREFIX("BUG");
-	LOGLN("new embryo; printing chromosomes:");
+	LOGLN("new embryo [id="<<id<<"]; printing chromosomes:");
 	LOGLN("C1: " << genome.first.stringify());
 	LOGLN("C2: " << genome.second.stringify());
 	// create embryo shell:
@@ -333,6 +333,7 @@ Bug* Bug::newBasicBug(glm::vec2 position) {
 }
 
 Bug* Bug::newBasicMutantBug(glm::vec2 position) {
+	LOGPREFIX("newBasicMutantBug");
 	Genome g;
 	g.first = g.second = createBasicChromosome();
 	GeneticOperations::alterChromosome(g.first);
