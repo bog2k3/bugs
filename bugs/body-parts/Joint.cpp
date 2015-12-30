@@ -181,12 +181,13 @@ void Joint::update(float dt) {
 	bool excessRTorque = abs(reactionTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
 	bool excessMTorque = abs(motorTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
 #ifdef DEBUG
-//	if (getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)") {
-//		LOGLN("FORCE: " << reactionForce << "\t\tMTORQUE: " << motorTorque << "\t\tRTORQUE: " << reactionTorque);
-//		LOGLN("joint PHI: " << getJointAngle());
+//	if (getOwner()->getId() == 1) {
+//		if (getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)" ||
+//				getDebugName() == "Torso::Joint(8)") {
+//			LOGLN(getDebugName() << " FORCE: " << reactionForce << "\t\tMTORQUE: " << motorTorque << "\t\tRTORQUE: " << reactionTorque);
+//		}
 //	}
 #endif
-	if (false)
 	if (jointIsFUBAR || excessForce || excessMTorque || excessRTorque) {
 		// this joint is toast - must break free the downstream body parts
 #ifdef DEBUG

@@ -496,7 +496,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(3 * BodyConst::initialBodyPartSize);
+	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
@@ -609,6 +609,11 @@ Chromosome Bug::createBasicChromosome() {
 #endif
 
 	ga.maxDepth.set(3);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize * 2);
+	c.genes.push_back(ga);
+
+	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
 	ga.value.set(BodyConst::initialJointMaxPhi*0.5f);
 	c.genes.push_back(ga);
@@ -634,16 +639,35 @@ Chromosome Bug::createBasicChromosome() {
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.minDepth.set(0);
 	ga.maxDepth.set(6);
-	ga.value.set(BodyConst::initialBodyPartSize);
+	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
+	gjo.maxDepth.set(6);
+	INSERT_JOFFSET(TORSO_BONE8_BONE0_JOINT0)
+	c.genes.push_back(gjo);
+
 	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
 	ga.attribIndex.set(0);
 	ga.value.set(gripper_VMScoord);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(TORSO_BONE8_BONE0_JOINT0)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	ga.maxDepth.set(1);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize * 2);
 	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
@@ -659,7 +683,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(BodyConst::initialBodyPartSize);
+	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
@@ -686,7 +710,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(2.e-3f);
+	ga.value.set(6 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
@@ -718,7 +742,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.maxDepth.set(1);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(1.e-3f);
+	ga.value.set(3 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;

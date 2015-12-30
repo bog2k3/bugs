@@ -58,7 +58,7 @@ template<> void draw(b2World* wld, RenderContext const &ctx) {
 }
 
 template<> void update(b2World* wld, float dt) {
-	wld->Step(dt, 6, 2);
+	wld->Step(dt, 5, 2);
 }
 
 void onInputEventHandler(InputEvent& ev) {

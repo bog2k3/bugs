@@ -171,7 +171,8 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
  */
 void GeneticOperations::alterChromosome(Chromosome &c) {
 	LOGPREFIX("GeneticOperations");
-#ifdef DEBUG
+#define ENABLE_STATS 1
+#if(ENABLE_STATS)
 	int stat_mutations = 0;
 	int stat_swaps = 0;
 	int stat_delete = 0;
@@ -180,8 +181,8 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	std::map<int, bool> mapNeuronsExist;
 
-	static constexpr float numberMutationsPerChromosome = 0.5f;	// how many mutations we desire for a chromosome at most, on average
-	static constexpr float numberSwapsPerChromosome = 0.25f;
+	static constexpr float numberMutationsPerChromosome = 2.0f;	// how many mutations we desire for a chromosome at most, on average
+	static constexpr float numberSwapsPerChromosome = 0.2f;
 	static constexpr float numberDeletionsPerChromosome = 0.1f;
 
 	// compute the total chance for mutations in the current chromosome:
@@ -220,7 +221,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		bool delGene = randf() < c.genes[i].chance_to_delete.value * deleteChanceFactor;
 		if (delGene) {
 			c.genes[i].type = GENE_TYPE_NO_OP;
-#ifdef DEBUG
+#if(ENABLE_STATS)
 			stat_delete++;
 #endif
 			continue;
@@ -230,24 +231,24 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		if (swap) {
 			if (i < c.genes.size()-1) { // swap ahead
 				xchg(c.genes[i], c.genes[i+1]);
-#ifdef DEBUG
+#if(ENABLE_STATS)
 				stat_swaps++;
 #endif
 			} else if (i > 0) { // swap behind
 				xchg(c.genes[i], c.genes[i-1]);
 				swapReverse = true;
-#ifdef DEBUG
+#if(ENABLE_STATS)
 				stat_swaps++;
 #endif
 			}
 		}
 		if (swapReverse) {
-#ifdef DEBUG
+#if(ENABLE_STATS)
 			stat_mutations +=
 #endif
 			alterGene(c.genes[i-1], mutationChanceFactor);
 		} else {
-#ifdef DEBUG
+#if(ENABLE_STATS)
 			stat_mutations +=
 #endif
 			alterGene(c.genes[i], mutationChanceFactor);
@@ -255,7 +256,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 		if (swap && !swapReverse) {
 			// swapped gene has been altered partially (by swapping), so must not go through a complete step again, do the rest here:
-#ifdef DEBUG
+#if(ENABLE_STATS)
 			stat_mutations +=
 #endif
 			alterGene(c.genes[i+1], mutationChanceFactor);
@@ -275,12 +276,12 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 			// when combining two gametes we must insert dummy genes at correspondent positions in the other chromosome, in order to realign the alelles.
 			insertNewGene(c, Chromosome::insertion(position, 0), newGene);
 		}
-#ifdef DEBUG
+#if(ENABLE_STATS)
 		stat_new++;
 #endif
 	}
 
-#ifdef DEBUG
+#if(ENABLE_STATS)
 		LOGLN("alter chromosome: [mutations: "<<stat_mutations<<"] [swaps: "<<stat_swaps<<"] [new: "<<stat_new<<"] [del: "<<stat_delete<<"]");
 #endif
 }

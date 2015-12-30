@@ -81,6 +81,7 @@ void Gripper::update(float dt) {
 		return;
 	float intensity = inputSocket_->value;
 	setActive(intensity > 0);
+	// TODO: if force too big -> release gripper
 }
 
 void Gripper::setActive(bool active) {
