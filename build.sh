@@ -1,4 +1,4 @@
 #!/bin/bash
-make -j3 -C bugs/Debug clean
-make -j3 -C bugs/Debug all
+make -j4 -C bugs/Debug clean
+make -j4 -C bugs/Debug all
 

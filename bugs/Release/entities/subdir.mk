@@ -5,18 +5,21 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../entities/Bug.cpp \
+../entities/BugGenome.cpp \
 ../entities/Entity.cpp \
 ../entities/Gamete.cpp \
 ../entities/Wall.cpp 
 
 OBJS += \
 ./entities/Bug.o \
+./entities/BugGenome.o \
 ./entities/Entity.o \
 ./entities/Gamete.o \
 ./entities/Wall.o 
 
 CPP_DEPS += \
 ./entities/Bug.d \
+./entities/BugGenome.d \
 ./entities/Entity.d \
 ./entities/Gamete.d \
 ./entities/Wall.d 

@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-//#define ENABLE_START_MARKER_GENES
+#define ENABLE_START_MARKER_GENES
 
 // ----------------------------------- gene_type -------------------------------//
 
