@@ -445,7 +445,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
-	ga.value.set(BodyConst::initialJointMinPhi);
+	ga.value.set(4 * BodyConst::initialJointMinPhi);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;

@@ -15,25 +15,35 @@
 #include <dmalloc.h>
 #endif
 
+#ifdef DEBUG
 static unsigned minPopulation = 10;				// minimum population number that triggers a refill
-static unsigned refillPopulationTarget = 25;	// target population after refill
+static unsigned refillPopulationTarget = 30;	// target population after refill
+#else
+static unsigned minPopulation = 30;				// minimum population number that triggers a refill
+static unsigned refillPopulationTarget = 60;	// target population after refill
+#endif
+
+unsigned PopulationManager::getPopulationTarget() {
+	return refillPopulationTarget;
+}
 
 void PopulationManager::update(float dt) {
 	unsigned bugPopulation = Bug::getPopulationCount() + Bug::getZygotesCount();
 	if (bugPopulation != 0 && bugPopulation <= minPopulation) {
 		LOGPREFIX("PopulationManager");
 		LOGLN("Population reached the minimum point ("<<minPopulation<<"). Refilling up to "<<refillPopulationTarget<<"...");
-		auto vec = World::getInstance()->getEntitiesOfType(Bug::entityType);
-		vec.erase(std::remove_if(vec.begin(), vec.end(), [] (Entity* e) {
-			Bug* bug = static_cast<Bug*>(e);
-			return !bug->isAlive();
-		}), vec.end());
+//		auto vec = World::getInstance()->getEntitiesOfType(Bug::entityType);
+//		vec.erase(std::remove_if(vec.begin(), vec.end(), [] (Entity* e) {
+//			Bug* bug = static_cast<Bug*>(e);
+//			return !bug->isAlive();
+//		}), vec.end());
 		unsigned spawnCount = refillPopulationTarget - bugPopulation;
 		for (unsigned i=0; i<spawnCount; i++) {
-			int idx = randi(vec.size()-1);
-			Bug* bug = static_cast<Bug*>(vec[idx]);
+//			int idx = randi(vec.size()-1);
+//			Bug* bug = static_cast<Bug*>(vec[idx]);
 			glm::vec2 pos = glm::vec2(srandf()*worldSize_.x*0.5f, srandf()*worldSize_.y*0.5f);
-			std::unique_ptr<Bug> newBug(new Bug(bug->getGenome(), bug->getMass(), pos, glm::vec2(0), bug->getGeneration()));
+//			std::unique_ptr<Bug> newBug(new Bug(bug->getGenome(), bug->getMass(), pos, glm::vec2(0), bug->getGeneration()));
+			std::unique_ptr<Bug> newBug(Bug::newBasicMutantBug(pos));
 			World::getInstance()->takeOwnershipOf(std::move(newBug));
 		}
 	}

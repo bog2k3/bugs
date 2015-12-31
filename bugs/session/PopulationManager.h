@@ -17,6 +17,7 @@ public:
 
 	unsigned getPopulationCount();
 	unsigned getMaxGeneration();
+	unsigned getPopulationTarget();
 
 private:
 	glm::vec2 worldSize_{0};

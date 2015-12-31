@@ -1,3 +1,6 @@
+* two modes for movement: 1. slow rotation / 2. fast jump forward
+	- ability to toggle between them with just one neuron being fed input or not
+	- will use this to drive by smell
 		* implement slow motion with fixed timestep
 * gripperul sa se desprinda la o anumita forta d.p. cu size
 * spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
