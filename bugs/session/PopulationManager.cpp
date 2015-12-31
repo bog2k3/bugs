@@ -15,9 +15,8 @@
 #include <dmalloc.h>
 #endif
 
-#warning "change this back to 10 after debug!!!"
-static unsigned minPopulation = 0;				// minimum population number that triggers a refill
-static unsigned refillPopulationTarget = 20;	// target population after refill
+static unsigned minPopulation = 10;				// minimum population number that triggers a refill
+static unsigned refillPopulationTarget = 25;	// target population after refill
 
 void PopulationManager::update(float dt) {
 	unsigned bugPopulation = Bug::getPopulationCount() + Bug::getZygotesCount();
@@ -33,7 +32,7 @@ void PopulationManager::update(float dt) {
 		for (unsigned i=0; i<spawnCount; i++) {
 			int idx = randi(vec.size()-1);
 			Bug* bug = static_cast<Bug*>(vec[idx]);
-			glm::vec2 pos = glm::vec2(srandf()*(worldSize_.x-0.5f), srandf()*(worldSize_.y-0.5f));
+			glm::vec2 pos = glm::vec2(srandf()*worldSize_.x*0.5f, srandf()*worldSize_.y*0.5f);
 			std::unique_ptr<Bug> newBug(new Bug(bug->getGenome(), bug->getMass(), pos, glm::vec2(0), bug->getGeneration()));
 			World::getInstance()->takeOwnershipOf(std::move(newBug));
 		}

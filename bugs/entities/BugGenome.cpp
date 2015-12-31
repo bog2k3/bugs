@@ -780,7 +780,7 @@ Chromosome Bug::createBasicChromosome() {
 	}
 
 	// now we need to add some redundancy in between genes:
-	if (false) {
+	if (true) {
 		int padding = 2;
 		for (uint i=0; i<c.genes.size(); i+=padding+1) {
 			for (int k=0; k<padding; k++)
