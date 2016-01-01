@@ -108,6 +108,8 @@ void Ribosome::decodeDeferredGenes() {
 		}
 		if (n.second.constant.hasValue())
 			bug_->neuralNet_->neurons[n.second.index]->neuralConstant = n.second.constant;
+		if (n.second.gateSignalIndex.hasValue())
+			bug_->neuralNet_->neurons[n.second.index]->gateCmdInputIndex = n.second.gateSignalIndex;
 	}
 }
 
@@ -395,16 +397,6 @@ void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
 	}
 }
 
-void Ribosome::updateNeuronTransfer(int virtualIndex, float transfer) {
-	if (hasNeuron(virtualIndex, false))
-		mapNeurons_[virtualIndex].transfer.changeAbs(transfer);
-}
-
-void Ribosome::updateNeuronConstant(int virtualIndex, float constant) {
-	if (hasNeuron(virtualIndex, false))
-		mapNeurons_[virtualIndex].constant.changeAbs(constant);
-}
-
 void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
 	switch (g.type) {
 	case GENE_TYPE_NO_OP:
@@ -468,6 +460,14 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 				neuralGenes_.push_back(&g);
 			else
 				decodeNeuralConst(g.data.gene_neural_constant);
+		}
+		break;
+	case GENE_TYPE_NEURON_GATE_INPUT_ID:
+		if (!part || part->getType() == BodyPartType::TORSO) {
+			if (deferNeural)
+				neuralGenes_.push_back(&g);
+			else
+				decodeNeuralGateInput(g.data.gene_neural_gate_input_id);
 		}
 		break;
 	default:
@@ -555,12 +555,19 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
-	updateNeuronTransfer(g.targetNeuron, g.functionID);
+	if (hasNeuron(g.targetNeuron, false))
+		mapNeurons_[g.targetNeuron].transfer.changeAbs(g.functionID);
 }
 
 void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
 	assert(!std::isnan(g.value.value));
-	updateNeuronConstant(g.targetNeuron, g.value);
+	if (hasNeuron(g.targetNeuron, false))
+		mapNeurons_[g.targetNeuron].constant.changeAbs(g.value);
+}
+
+void Ribosome::decodeNeuralGateInput(GeneNeuralGateInputId const& g) {
+	if (hasNeuron(g.targetNeuron, false))
+		mapNeurons_[g.targetNeuron].gateSignalIndex.changeAbs(g.inputId);
 }
 
 void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {

@@ -31,6 +31,7 @@ struct NeuronInfo {
 	CummulativeValue constant;
 	CummulativeValue inputVMSCoord;
 	CummulativeValue outputVMSCoord;
+	CummulativeValue gateSignalIndex;
 	NeuronInfo(int index, float transfer, float constant)
 		: index(index), transfer(transfer), constant(constant) {
 	}
@@ -107,6 +108,7 @@ private:
 	void decodeNeuralConst(GeneNeuralConstant const& g);
 	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
+	void decodeNeuralGateInput(GeneNeuralGateInputId const& g);
 	bool partMustGenerateJoint(BodyPartType part_type);
 	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);
@@ -117,7 +119,6 @@ private:
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();
 	void checkAndAddNeuronMapping(int virtualIndex);
-	void updateNeuronTransfer(int virtualIndex, float transfer);
 	void updateNeuronConstant(int virtualIndex, float constant);
 	bool hasNeuron(int virtualIndex, bool physical); // checks whether a virtual neuron exists and, if requested, its physical equivalent too
 	// Compute a synapse key (unique id for from-to pair:

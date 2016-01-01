@@ -10,12 +10,7 @@
 
 using namespace std;
 
-Neuron::Neuron()
-	: transfFunc(transfer_fn_one)
-	, value(0)
-	, neuralConstant(0)
-//	, RID(0)
-{
+Neuron::Neuron() {
 }
 
 Neuron::~Neuron() {
@@ -26,13 +21,21 @@ void Neuron::update_value()
 {
 	value = 0;
 	for (unsigned i=0, n=inputs.size(); i<n; ++i) {
+		if (gateCmdInputIndex == i) {	// don't use the gate command input to compute the output value
+			gateCmdSignal = inputs[i]->value * inputs[i]->weight;
+			continue;
+		}
 		value += inputs[i]->value * inputs[i]->weight;
 	}
 }
 
 void Neuron::push_output()
 {
-	float outVal = transfFunc(value, neuralConstant);
+	float outVal;
+	if (gateCmdInputIndex >= 0)
+		outVal = gateCmdSignal > neuralConstant ? value : 0;
+	else
+		outVal = transfFunc(value, neuralConstant);
 	if (std::isnan(outVal))
 		outVal = 0;
 	output.push_value(outVal);

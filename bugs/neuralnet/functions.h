@@ -37,10 +37,10 @@ float transfer_fn_exp(float value, float constant);
 // value^constant
 float transfer_fn_pow(float value, float constant);
 
-// tanh(value*(constant+1))
+// tanh(value*(constant+1)) -- a good const value is 8 -> allows smooth variance between [-0.2, +0.2] and snaps to +-1 outside that range
 float transfer_fn_sigmoid(float value, float constant);
 
-// value > constant ? value : constant
+// value > constant ? 1 : 0
 float transfer_fn_threshold(float value, float constant);
 
 // always constant

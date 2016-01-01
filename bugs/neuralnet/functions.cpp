@@ -30,9 +30,9 @@ float transfer_fn_one(float value, float constant) {
 	return value;
 }
 
-// value > constant ? value : constant
+// value > constant ? 1 : 0
 float transfer_fn_threshold(float value, float constant) {
-	return value > constant ? value : constant;
+	return value > constant ? 1 : 0;
 }
 
 // always constant

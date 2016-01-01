@@ -128,6 +128,11 @@ struct GeneNeuralConstant {
 	Atom<float> value;
 };
 
+struct GeneNeuralGateInputId {
+	Atom<int> targetNeuron;
+	Atom<int> inputId;
+};
+
 struct GeneBodyAttribute {
 	gene_body_attribute_type attribute = GENE_BODY_ATTRIB_INVALID;
 	Atom<float> value;
@@ -152,6 +157,7 @@ public:
 		GeneNeuronInputCoord gene_neuron_input;
 		GeneTransferFunction gene_transfer_function;
 		GeneNeuralConstant gene_neural_constant;
+		GeneNeuralGateInputId gene_neural_gate_input_id;
 		GeneBodyAttribute gene_body_attribute;
 
 		GeneData(GeneStartMarker const& gsm) : gene_start_marker(gsm) {}
@@ -167,6 +173,7 @@ public:
 		GeneData(GeneNeuronInputCoord const& gni) : gene_neuron_input(gni) {}
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
 		GeneData(GeneNeuralConstant const &gnc) : gene_neural_constant(gnc) {}
+		GeneData(GeneNeuralGateInputId const &gngii) : gene_neural_gate_input_id(gngii) {}
 		GeneData(GeneBodyAttribute const &gba) : gene_body_attribute(gba) {}
 	} data;
 
@@ -195,6 +202,7 @@ public:
 	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER_FUNC, gt) {}
 	Gene(GeneNeuralConstant const &gnc) : Gene(GENE_TYPE_NEURAL_CONST, gnc) {}
 	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
+	Gene(GeneNeuralGateInputId const& gngii) : Gene(GENE_TYPE_NEURON_GATE_INPUT_ID, gngii) {}
 
 	Gene() : Gene(GeneNoOp()) {}
 
@@ -240,6 +248,7 @@ private:
 	static Gene createRandomNeuronOutputCoordGene(int nNeurons);
 	static Gene createRandomTransferFuncGene(int nNeurons);
 	static Gene createRandomNeuralConstGene(int nNeurons);
+	static Gene createRandomNeuralGateInputId(int nNeurons);
 	static Gene createRandomBodyAttribGene();
 };
 

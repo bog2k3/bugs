@@ -34,8 +34,9 @@ constexpr gene_type GENE_TYPE_TRANSFER_FUNC = 11;			// controls the transfer fun
 constexpr gene_type GENE_TYPE_NEURAL_CONST = 12;	// neural constant (cummulative) - used in various computations
 constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 13;		// output coord (in MVMS) from a neuron
 constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 14;		// input coord (in SVMS) to a neuron
+constexpr gene_type GENE_TYPE_NEURON_GATE_INPUT_ID = 15;	// designates an input of a neuron as a gate command signal and transforms the neuron into a gate neuron (cmd > 0 ? pass : 0)
 
-constexpr gene_type GENE_TYPE_END = 15;
+constexpr gene_type GENE_TYPE_END = 16;
 
 // ----------------------------------- gene_protein_type -------------------------------//
 
