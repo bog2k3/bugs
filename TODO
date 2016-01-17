@@ -1,9 +1,9 @@
-* two modes for movement: 1. slow rotation / 2. fast jump forward
-	- ability to toggle between them with just one neuron being fed input or not
-	- will use this to drive by smell
+* redesign bug with two simple legs, two nose sensors - drive by smell
+	- simple neural system, just bias towards the stronger sensor		
 		* implement slow motion with fixed timestep
 * gripperul sa se desprinda la o anumita forta d.p. cu size
 * spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
+* implement some sort of neural memory
 		* rewrite default bug genome to use segmentation for leg
 		* tune nerve signals - GRIPPER must disengage sooner
 		* tune joint resillience

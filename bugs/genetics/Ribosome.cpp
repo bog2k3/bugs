@@ -714,7 +714,7 @@ void Ribosome::resolveNerveLinkage() {
 	std::vector<InputOutputNerve<OutputSocket*>> sensorOutputs;
 	for (unsigned i=0; i<sensors_.size(); i++) {
 		for (unsigned j=0; j<sensors_[i]->getOutputCount(); j++)
-			sensorOutputs.push_back(std::make_pair(sensors_[i]->getOutSocket(j), sensors_[i]->getOutputVMSCoord(j)));
+			sensorOutputs.push_back(std::make_pair(sensors_[i]->getOutputSocket(j), sensors_[i]->getOutputVMSCoord(j)));
 	}
 	// build the neuron vectors:
 	std::vector<InputOutputNerve<Neuron*>> inputNeurons;

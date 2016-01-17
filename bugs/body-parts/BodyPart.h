@@ -25,10 +25,10 @@ enum class BodyPartType {
 	MUSCLE,
 	GRIPPER,
 	ZYGOTE_SHELL,
-	SENSOR_PROXIMITY,		// many inputs for multiple types of entities
-	SENSOR_DIRECTION,		// many inputs for multiple types of entities
-	SENSOR_COMPASS,			// 1 input - absolute orientation in world
-	SENSOR_SIGHT,			// array of inputs for pixels (multiple channels maybe?)
+	SENSOR_PROXIMITY,		// many outputs for multiple types of entities
+	SENSOR_DIRECTION,		// many outputs for multiple types of entities
+	SENSOR_COMPASS,			// 1 output - absolute orientation in world
+	SENSOR_SIGHT,			// array of outputs for pixels (multiple channels maybe?)
 	MOUTH,
 	EGGLAYER,
 };

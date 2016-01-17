@@ -20,6 +20,7 @@ RM := rm -rf
 -include entities/food/subdir.mk
 -include entities/Bug/subdir.mk
 -include entities/subdir.mk
+-include body-parts/sensors/subdir.mk
 -include body-parts/subdir.mk
 -include OSD/subdir.mk
 -include GUI/controls/subdir.mk

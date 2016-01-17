@@ -19,7 +19,7 @@ public:
 
 	// ISensor::
 	unsigned getOutputCount() const override { return 1; }
-	OutputSocket* getOutSocket(unsigned index) const override { return index==0 ? socket_ : nullptr; }
+	OutputSocket* getOutputSocket(unsigned index) const override { return index==0 ? socket_ : nullptr; }
 	float getOutputVMSCoord(unsigned index) const override { return index==0 ? defaultVMSCoord_ : 0; }
 protected:
 	float time_;
