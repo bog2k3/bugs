@@ -157,7 +157,7 @@ Gene Gene::createRandomSynapseGene(int nNeurons) {
 	GeneSynapse g;
 	g.from.set(randi(nNeurons-1));
 	g.to.set(randi(nNeurons-1));
-	g.weight.set(randf());
+	g.weight.set(randf()*0.2f);
 	return g;
 }
 
