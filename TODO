@@ -5,10 +5,11 @@
 	- new neuralParam to use in special function neurons which now use neuralConst
 	- new abs() neural function
 	- figure out how to multiply 2 signals - perhaps a new neural func?
+	- memory neuron with a special input (#0) to signal when to write
+	- gate neuron with a special input (#0) to signal when to pass through (use neuralConst as thresh)
 		* implement slow motion with fixed timestep
 * gripperul sa se desprinda la o anumita forta d.p. cu size
 * spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
-* implement some sort of neural memory
 		* rewrite default bug genome to use segmentation for leg
 		* tune nerve signals - GRIPPER must disengage sooner
 		* tune joint resillience
