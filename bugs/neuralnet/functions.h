@@ -10,7 +10,6 @@ enum class transferFuncNames {
 	FN_ONE,
 	FN_LN,
 	FN_SIGM,
-	FN_THRESHOLD,
 	FN_SIN,
 	FN_RAND,
 	FN_EXP,
@@ -39,9 +38,6 @@ float transfer_fn_pow(float value, float constant);
 
 // tanh(value*(constant+1)) -- a good const value is 8 -> allows smooth variance between [-0.2, +0.2] and snaps to +-1 outside that range
 float transfer_fn_sigmoid(float value, float constant);
-
-// value > constant ? 1 : 0
-float transfer_fn_threshold(float value, float constant);
 
 // always constant
 float transfer_fn_constant(float value, float constant);

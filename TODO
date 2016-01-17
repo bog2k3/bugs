@@ -1,5 +1,10 @@
 * redesign bug with two simple legs, two nose sensors - drive by smell
-	- simple neural system, just bias towards the stronger sensor		
+	- simple neural system, just bias towards the stronger sensor
+* changes in neurons:
+	- neuralConst as offset to sum in all neuron types
+	- new neuralParam to use in special function neurons which now use neuralConst
+	- new abs() neural function
+	- figure out how to multiply 2 signals - perhaps a new neural func?
 		* implement slow motion with fixed timestep
 * gripperul sa se desprinda la o anumita forta d.p. cu size
 * spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
