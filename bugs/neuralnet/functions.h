@@ -4,17 +4,19 @@
 #include <map>
 #include <string>
 // standard model for all neural transfer functions:
-typedef float (*transfer_function)(float value, float constant);
+typedef float (*transfer_function)(float value, float param);
 
 enum class transferFuncNames {
 	FN_ONE,
 	FN_LN,
 	FN_SIGM,
+	FN_THRESHOLD,
 	FN_SIN,
 	FN_RAND,
 	FN_EXP,
 	FN_POW,
-	FN_CONSTANT,
+	FN_GATE,
+	FN_MODULATE,
 
 	FN_MAXCOUNT			// this is the total number of functions
 };
@@ -22,27 +24,28 @@ enum class transferFuncNames {
 extern std::map<transferFuncNames, transfer_function> mapTransferFunctions;
 
 // sin(value)
-float transfer_fn_sin(float value, float constant);
+float transfer_fn_sin(float value, float param);
 
 // value
-float transfer_fn_one(float value, float constant);
+float transfer_fn_one(float value, float param);
 
 // ln(value)
-float transfer_fn_ln(float value, float constant);
+float transfer_fn_ln(float value, float param);
 
-// constant^value
-float transfer_fn_exp(float value, float constant);
+// param^value
+float transfer_fn_exp(float value, float param);
 
-// value^constant
-float transfer_fn_pow(float value, float constant);
+// value^param
+float transfer_fn_pow(float value, float param);
 
-// tanh(value*(constant+1)) -- a good const value is 8 -> allows smooth variance between [-0.2, +0.2] and snaps to +-1 outside that range
-float transfer_fn_sigmoid(float value, float constant);
+// tanh(value*param) -- a good param value is 10 -> allows smooth variance between [-0.1, +0.1] and snaps to +-1 outside [-0.2, +0.2]
+float transfer_fn_sigmoid(float value, float param);
 
-// always constant
-float transfer_fn_constant(float value, float constant);
+// value > 0 ? value : 0
+// continuous: value * sigmoid(sum, 10);
+float transfer_fn_threshold(float value, float param);
 
-// rand(value+constant)
-float transfer_fn_rand(float value, float constant);
+// rand(value)
+float transfer_fn_rand(float value, float param);
 
 #endif // #ifndef __functions_h__

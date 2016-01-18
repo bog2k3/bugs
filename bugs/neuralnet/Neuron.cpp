@@ -21,24 +21,17 @@ void Neuron::update_value()
 {
 	value = 0;
 	for (unsigned i=0, n=inputs.size(); i<n; ++i) {
-		if (gateCmdInputIndex == i) {	// don't use the gate command input to compute the output value
-			gateCmdSignal = inputs[i]->value * inputs[i]->weight;
+		if (isZeroCmdSignal && !i) {	// don't use the special command input to compute the output value
 			continue;
 		}
 		value += inputs[i]->value * inputs[i]->weight;
 	}
-}
-
-void Neuron::push_output()
-{
-	float outVal;
-	if (gateCmdInputIndex >= 0)
-		outVal = gateCmdSignal > neuralConstant ? value : 0;
-	else
-		outVal = transfFunc(value, neuralConstant);
+	float cmdSignal = inputs[0]->value * inputs[0]->weight;
+	if (!isZeroCmdSignal)	// for special neurons, such as gate or modulator we don't add the bias to the sum of inputs
+		value += inputBias;
+	value = transfFunc(cmdSignal, value, param);
 	if (std::isnan(outVal))
 		outVal = 0;
-	output.push_value(outVal);
 }
 
 //void Neuron::retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets)

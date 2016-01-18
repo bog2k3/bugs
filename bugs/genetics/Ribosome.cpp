@@ -107,7 +107,7 @@ void Ribosome::decodeDeferredGenes() {
 			bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)funcIndex];
 		}
 		if (n.second.constant.hasValue())
-			bug_->neuralNet_->neurons[n.second.index]->neuralConstant = n.second.constant;
+			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.constant;
 		if (n.second.gateSignalIndex.hasValue())
 			bug_->neuralNet_->neurons[n.second.index]->gateCmdInputIndex = n.second.gateSignalIndex;
 	}

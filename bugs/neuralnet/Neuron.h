@@ -16,21 +16,17 @@ class InputSocket;
 class Neuron {
 public:
 	std::vector<std::unique_ptr<InputSocket>> inputs;
-	transfer_function transfFunc = transfer_fn_one;
-	float neuralConstant = 0;
-	int gateCmdInputIndex = -1;
+	float inputBias = 0;
 
 	Neuron();
 
 	~Neuron();
 
-	//unsigned long timestamp;
-//	unsigned long RID;
+	void setTranferFunction(transferFuncNames fn);
 
 	void update_value(); // recomputes the value of the neuron after input has been updated
 
-	// pushes the output to the targets
-	void push_output();
+	void push_output() { output.push_value(value); }
 
 	// retrieves the list of targets
 //	void retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets);
@@ -39,7 +35,8 @@ public:
 
 private:
 	float value = 0;
-	float gateCmdSignal = 0;
+	bool isZeroCmdSignal = false;
+	transfer_function transfFunc = transfer_fn_one;
 };
 
 #endif // __neuron_h__

@@ -13,6 +13,7 @@ int initNeuralFunctionMap() {
 	mapTransferFunctions[transferFuncNames::FN_ONE] = &transfer_fn_one;
 	mapTransferFunctions[transferFuncNames::FN_LN] = &transfer_fn_ln;
 	mapTransferFunctions[transferFuncNames::FN_SIGM] = &transfer_fn_sigmoid;
+	mapTransferFunctions[transferFuncNames::FN_THRESHOLD] = &transfer_fn_threshold;
 	mapTransferFunctions[transferFuncNames::FN_SIN] = &transfer_fn_sin;
 	mapTransferFunctions[transferFuncNames::FN_RAND] = &transfer_fn_rand;
 	mapTransferFunctions[transferFuncNames::FN_EXP] = &transfer_fn_exp;
@@ -27,6 +28,11 @@ int dummyToInitMap = initNeuralFunctionMap();
 // value
 float transfer_fn_one(float value, float constant) {
 	return value;
+}
+
+// value > constant ? 1 : 0
+float transfer_fn_threshold(float value, float constant) {
+	return value > constant ? 1 : 0;
 }
 
 // always constant
