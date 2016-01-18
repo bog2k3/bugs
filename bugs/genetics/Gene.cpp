@@ -84,12 +84,6 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_neural_constant.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_neural_constant.value.changeAmount);
 		break;
-	case GENE_TYPE_NEURON_GATE_INPUT_ID:
-		metaGenes.push_back(&data.gene_neural_gate_input_id.targetNeuron.chanceToMutate);
-		metaGenes.push_back(&data.gene_neural_gate_input_id.targetNeuron.changeAmount);
-		metaGenes.push_back(&data.gene_neural_gate_input_id.inputId.chanceToMutate);
-		metaGenes.push_back(&data.gene_neural_gate_input_id.inputId.changeAmount);
-		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_body_attribute.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_body_attribute.value.changeAmount);
@@ -189,13 +183,6 @@ Gene Gene::createRandomTransferFuncGene(int nNeurons) {
 	return g;
 }
 
-Gene Gene::createRandomNeuralGateInputId(int nNeurons) {
-	GeneNeuralGateInputId g;
-	g.targetNeuron.set(randi(nNeurons-1));
-	g.inputId.set(randi(5));
-	return g;
-}
-
 Gene Gene::createRandomAttribGene() {
 	GeneAttribute g;
 	g.attribute = (gene_part_attribute_type)randi(GENE_ATTRIB_INVALID+1, GENE_ATTRIB_END-1);
@@ -226,7 +213,6 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		{GENE_TYPE_SYNAPSE, 0.1},
 		{GENE_TYPE_NEURON_INPUT_COORD, 0.03},
 		{GENE_TYPE_NEURON_OUTPUT_COORD, 0.03},
-		{GENE_TYPE_NEURON_GATE_INPUT_ID, 0.005},
 		{GENE_TYPE_SKIP, 0.01},
 #ifdef ENABLE_START_MARKER_GENES
 		{GENE_TYPE_START_MARKER, 0.0},
@@ -265,8 +251,6 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return createRandomNeuronOutputCoordGene(nNeurons);
 	case GENE_TYPE_NEURAL_CONST:
 		return createRandomNeuralConstGene(nNeurons);
-	case GENE_TYPE_NEURON_GATE_INPUT_ID:
-		return createRandomNeuralGateInputId(nNeurons);
 	case GENE_TYPE_PART_ATTRIBUTE:
 		return createRandomAttribGene();
 	case GENE_TYPE_SKIP:
@@ -301,8 +285,6 @@ char Gene::getSymbol() const {
 		return 'I';
 	case GENE_TYPE_NEURON_OUTPUT_COORD:
 		return 'O';
-	case GENE_TYPE_NEURON_GATE_INPUT_ID:
-		return 'K';
 	case GENE_TYPE_NO_OP:
 		return '_';
 	case GENE_TYPE_OFFSET:

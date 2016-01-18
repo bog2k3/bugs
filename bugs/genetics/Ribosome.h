@@ -31,7 +31,6 @@ struct NeuronInfo {
 	CummulativeValue constant;
 	CummulativeValue inputVMSCoord;
 	CummulativeValue outputVMSCoord;
-	CummulativeValue gateSignalIndex;
 	NeuronInfo(int index, float transfer, float constant)
 		: index(index), transfer(transfer), constant(constant) {
 	}
@@ -108,7 +107,6 @@ private:
 	void decodeNeuralConst(GeneNeuralConstant const& g);
 	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
-	void decodeNeuralGateInput(GeneNeuralGateInputId const& g);
 	bool partMustGenerateJoint(BodyPartType part_type);
 	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);

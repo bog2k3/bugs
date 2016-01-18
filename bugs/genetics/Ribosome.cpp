@@ -104,12 +104,10 @@ void Ribosome::decodeDeferredGenes() {
 			int funcIndex = clamp((int)n.second.transfer.get(),
 					(int)transferFuncNames::FN_ONE,
 					(int)transferFuncNames::FN_MAXCOUNT-1);
-			bug_->neuralNet_->neurons[n.second.index]->transfFunc = mapTransferFunctions[(transferFuncNames)funcIndex];
+			bug_->neuralNet_->neurons[n.second.index]->setTranferFunction((transferFuncNames)funcIndex);
 		}
 		if (n.second.constant.hasValue())
 			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.constant;
-		if (n.second.gateSignalIndex.hasValue())
-			bug_->neuralNet_->neurons[n.second.index]->gateCmdInputIndex = n.second.gateSignalIndex;
 	}
 }
 
@@ -462,14 +460,6 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 				decodeNeuralConst(g.data.gene_neural_constant);
 		}
 		break;
-	case GENE_TYPE_NEURON_GATE_INPUT_ID:
-		if (!part || part->getType() == BodyPartType::TORSO) {
-			if (deferNeural)
-				neuralGenes_.push_back(&g);
-			else
-				decodeNeuralGateInput(g.data.gene_neural_gate_input_id);
-		}
-		break;
 	default:
 		ERROR("Unhandled gene type : " << (uint)g.type);
 	}
@@ -563,11 +553,6 @@ void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
 	assert(!std::isnan(g.value.value));
 	if (hasNeuron(g.targetNeuron, false))
 		mapNeurons_[g.targetNeuron].constant.changeAbs(g.value);
-}
-
-void Ribosome::decodeNeuralGateInput(GeneNeuralGateInputId const& g) {
-	if (hasNeuron(g.targetNeuron, false))
-		mapNeurons_[g.targetNeuron].gateSignalIndex.changeAbs(g.inputId);
 }
 
 void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {

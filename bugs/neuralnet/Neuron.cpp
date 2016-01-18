@@ -17,6 +17,17 @@ Neuron::~Neuron() {
 	inputs.clear();
 }
 
+void Neuron::setTranferFunction(transferFuncNames fn) {
+	transfFunc = mapTransferFunctions[fn];
+
+	// check for special functions:
+	if (   fn == transferFuncNames::FN_GATE
+		|| fn == transferFuncNames::FN_MODULATE
+		) {
+		isZeroCmdSignal = true;
+	}
+}
+
 void Neuron::update_value()
 {
 	value = 0;
@@ -27,21 +38,8 @@ void Neuron::update_value()
 		value += inputs[i]->value * inputs[i]->weight;
 	}
 	float cmdSignal = inputs[0]->value * inputs[0]->weight;
-	if (!isZeroCmdSignal)	// for special neurons, such as gate or modulator we don't add the bias to the sum of inputs
-		value += inputBias;
-	value = transfFunc(cmdSignal, value, param);
-	if (std::isnan(outVal))
-		outVal = 0;
+	value += inputBias;
+	value = transfFunc(value, neuralParam, cmdSignal, inputBias);
+	if (std::isnan(value))
+		value = 0;
 }
-
-//void Neuron::retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets)
-//{
-//	vector<InputSocket*>& list_targets = output.getTargets();
-//	for (auto it=list_targets.begin(); it != list_targets.end(); ++it) {
-//		InputSocket* pOtherInput = *it;
-//		if (pOtherInput->pParentNeuron != NULL && pOtherInput->pParentNeuron->RID != opRID) {
-//			pOtherInput->pParentNeuron->RID = opRID;
-//			out_targets.push_back(pOtherInput->pParentNeuron);
-//		}
-//	}
-//}

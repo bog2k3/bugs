@@ -17,6 +17,7 @@ class Neuron {
 public:
 	std::vector<std::unique_ptr<InputSocket>> inputs;
 	float inputBias = 0;
+	float neuralParam = 2;
 
 	Neuron();
 
@@ -26,7 +27,7 @@ public:
 
 	void update_value(); // recomputes the value of the neuron after input has been updated
 
-	void push_output() { output.push_value(value); }
+	inline void push_output() { output.push_value(value); }
 
 	// retrieves the list of targets
 //	void retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets);
