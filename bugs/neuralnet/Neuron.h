@@ -29,9 +29,6 @@ public:
 
 	inline void push_output() { output.push_value(value); }
 
-	// retrieves the list of targets
-//	void retrieve_targets(unsigned long opRID, std::vector<Neuron*> &out_targets);
-
 	OutputSocket output; // this socket is connected to other inputs or to the network's main outputs
 
 private:
