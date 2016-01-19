@@ -1,5 +1,8 @@
 * redesign bug with two simple legs, two nose sensors - drive by smell
 	- simple neural system, just bias towards the stronger sensor
+* add priority to synapses [0.0~1.0] - inputs will be ordered by highest priority first (low number = high prio)
+	- this will stabilize input #0 for special neurons (gate/modulator)
+	- default 0.8 priority to input nerves so they shouldn't affect the order;
 * changes in neurons:
 	- neuralConst as offset to sum in all neuron types (rename to "bias")
 	- new neuralParam to use in special function neurons which now use neuralConst
