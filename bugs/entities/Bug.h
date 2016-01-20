@@ -31,6 +31,11 @@ class BodyPart;
 
 class Bug : public Entity {
 public:
+
+	struct defaultConstants {
+		static constexpr float lifetimeSensor_vmsCoord = 50;
+	};
+
 	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation);
 	virtual ~Bug();
 	FunctionalityFlags getFunctionalityFlags() override {
@@ -81,7 +86,7 @@ protected:
 	std::map<int, std::pair<InputSocket*, OutputSocket*>> motorLines_;
 
 	// default sensors (arguments represent VMS coordinates):
-	LifetimeSensor lifeTimeSensor_ { 50.f };
+	LifetimeSensor lifeTimeSensor_ { defaultConstants::lifetimeSensor_vmsCoord };
 
 	Ribosome* ribosome_;
 	bool isAlive_;

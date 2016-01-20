@@ -104,7 +104,7 @@ private:
 	void decodePartAttrib(GeneAttribute const& g, BodyPart* part);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);
-	void decodeNeuralConst(GeneNeuralConstant const& g);
+	void decodeNeuralConst(GeneNeuralBias const& g);
 	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
 	bool partMustGenerateJoint(BodyPartType part_type);

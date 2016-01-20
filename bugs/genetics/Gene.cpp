@@ -78,11 +78,17 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_transfer_function.functionID.chanceToMutate);
 		metaGenes.push_back(&data.gene_transfer_function.functionID.changeAmount);
 		break;
-	case GENE_TYPE_NEURAL_CONST:
+	case GENE_TYPE_NEURAL_BIAS:
 		metaGenes.push_back(&data.gene_neural_constant.targetNeuron.chanceToMutate);
 		metaGenes.push_back(&data.gene_neural_constant.targetNeuron.changeAmount);
 		metaGenes.push_back(&data.gene_neural_constant.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_neural_constant.value.changeAmount);
+		break;
+	case GENE_TYPE_NEURAL_PARAM:
+		metaGenes.push_back(&data.gene_neural_param.targetNeuron.chanceToMutate);
+		metaGenes.push_back(&data.gene_neural_param.targetNeuron.changeAmount);
+		metaGenes.push_back(&data.gene_neural_param.value.chanceToMutate);
+		metaGenes.push_back(&data.gene_neural_param.value.changeAmount);
 		break;
 	case GENE_TYPE_BODY_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_body_attribute.value.chanceToMutate);
@@ -169,8 +175,15 @@ Gene Gene::createRandomNeuronOutputCoordGene(int nNeurons) {
 	return g;
 }
 
-Gene Gene::createRandomNeuralConstGene(int nNeurons) {
-	GeneNeuralConstant g;
+Gene Gene::createRandomNeuralBiasGene(int nNeurons) {
+	GeneNeuralBias g;
+	g.targetNeuron.set(randi(nNeurons-1));
+	g.value.set(srandf());
+	return g;
+}
+
+Gene Gene::createRandomNeuralParamGene(int nNeurons) {
+	GeneNeuralParam g;
 	g.targetNeuron.set(randi(nNeurons-1));
 	g.value.set(srandf());
 	return g;
@@ -201,26 +214,27 @@ Gene Gene::createRandomSkipGene(int spaceLeftAfter) {
 }
 
 Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
-	// 15 genes, uniform chance would be 1/15 = 0.0666
 	std::vector<std::pair<gene_type, double>> geneChances {
-		{GENE_TYPE_BODY_ATTRIBUTE, 0.066},
-		{GENE_TYPE_PROTEIN, 0.1},
-		{GENE_TYPE_PART_ATTRIBUTE, 0.15},
-		{GENE_TYPE_OFFSET, 0.02},
-		{GENE_TYPE_JOINT_OFFSET, 0.02},
-		{GENE_TYPE_NEURAL_CONST, 0.066},
-		{GENE_TYPE_TRANSFER_FUNC, 0.03},
-		{GENE_TYPE_SYNAPSE, 0.1},
-		{GENE_TYPE_NEURON_INPUT_COORD, 0.03},
-		{GENE_TYPE_NEURON_OUTPUT_COORD, 0.03},
-		{GENE_TYPE_SKIP, 0.01},
+		// these are relative chances:
+		{GENE_TYPE_BODY_ATTRIBUTE, 1.0},
+		{GENE_TYPE_PROTEIN, 1.5},
+		{GENE_TYPE_PART_ATTRIBUTE, 2.1},
+		{GENE_TYPE_OFFSET, 0.3},
+		{GENE_TYPE_JOINT_OFFSET, 0.3},
+		{GENE_TYPE_NEURAL_BIAS, 1.0},
+		{GENE_TYPE_NEURAL_PARAM, 0.8},
+		{GENE_TYPE_TRANSFER_FUNC, 0.5},
+		{GENE_TYPE_SYNAPSE, 1.5},
+		{GENE_TYPE_NEURON_INPUT_COORD, 0.5},
+		{GENE_TYPE_NEURON_OUTPUT_COORD, 0.5},
+		{GENE_TYPE_SKIP, 0.12},
 #ifdef ENABLE_START_MARKER_GENES
-		{GENE_TYPE_START_MARKER, 0.0},
+		{GENE_TYPE_START_MARKER, 0.1},
 #endif
-		{GENE_TYPE_STOP, 0.005},
-		{GENE_TYPE_NO_OP, 0.005},
+		{GENE_TYPE_STOP, 0.09},
+		{GENE_TYPE_NO_OP, 0.09},
 	};
-	// normalize chances
+	// normalize chances to make them sum up to 1.0
 	double total = 0;
 	for (auto &x : geneChances)
 		total += x.second;
@@ -249,8 +263,8 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return createRandomNeuronInputCoordGene(nNeurons);
 	case GENE_TYPE_NEURON_OUTPUT_COORD:
 		return createRandomNeuronOutputCoordGene(nNeurons);
-	case GENE_TYPE_NEURAL_CONST:
-		return createRandomNeuralConstGene(nNeurons);
+	case GENE_TYPE_NEURAL_BIAS:
+		return createRandomNeuralBiasGene(nNeurons);
 	case GENE_TYPE_PART_ATTRIBUTE:
 		return createRandomAttribGene();
 	case GENE_TYPE_SKIP:
@@ -279,7 +293,7 @@ char Gene::getSymbol() const {
 		return 'B';
 	case GENE_TYPE_JOINT_OFFSET:
 		return 'J';
-	case GENE_TYPE_NEURAL_CONST:
+	case GENE_TYPE_NEURAL_BIAS:
 		return 'C';
 	case GENE_TYPE_NEURON_INPUT_COORD:
 		return 'I';

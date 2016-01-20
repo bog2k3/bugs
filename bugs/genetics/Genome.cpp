@@ -339,7 +339,7 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered += alterAtom(g.data.gene_neuron_output.srcNeuronVirtIndex, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_neuron_output.outCoord, mutationChanceFactor);
 		break;
-	case GENE_TYPE_NEURAL_CONST:
+	case GENE_TYPE_NEURAL_BIAS:
 		altered += alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
 		break;
@@ -413,7 +413,7 @@ void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, f
 		mutationCh += g.data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate.value;
 		mutationCh += g.data.gene_neuron_output.outCoord.chanceToMutate.value;
 		break;
-	case GENE_TYPE_NEURAL_CONST:
+	case GENE_TYPE_NEURAL_BIAS:
 		mutationCh += g.data.gene_neural_constant.value.chanceToMutate.value;
 		mutationCh += g.data.gene_neural_constant.targetNeuron.chanceToMutate.value;
 		break;

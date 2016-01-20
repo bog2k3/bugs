@@ -60,7 +60,7 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_neuron_output.srcNeuronVirtIndex;
 		stream << gene.data.gene_neuron_output.outCoord;
 		break;
-	case GENE_TYPE_NEURAL_CONST:
+	case GENE_TYPE_NEURAL_BIAS:
 		stream << gene.data.gene_neural_constant.targetNeuron;
 		stream << gene.data.gene_neural_constant.value;
 		break;
@@ -120,7 +120,7 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_neuron_output.srcNeuronVirtIndex;
 		stream >> gene.data.gene_neuron_output.outCoord;
 		break;
-	case GENE_TYPE_NEURAL_CONST:
+	case GENE_TYPE_NEURAL_BIAS:
 		stream >> gene.data.gene_neural_constant.targetNeuron;
 		stream >> gene.data.gene_neural_constant.value;
 		break;

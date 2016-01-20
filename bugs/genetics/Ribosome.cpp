@@ -452,7 +452,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 				decodeTransferFn(g.data.gene_transfer_function);
 		}
 		break;
-	case GENE_TYPE_NEURAL_CONST:
+	case GENE_TYPE_NEURAL_BIAS:
 		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
@@ -549,7 +549,7 @@ void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
 		mapNeurons_[g.targetNeuron].transfer.changeAbs(g.functionID);
 }
 
-void Ribosome::decodeNeuralConst(GeneNeuralConstant const& g) {
+void Ribosome::decodeNeuralConst(GeneNeuralBias const& g) {
 	assert(!std::isnan(g.value.value));
 	if (hasNeuron(g.targetNeuron, false))
 		mapNeurons_[g.targetNeuron].constant.changeAbs(g.value);

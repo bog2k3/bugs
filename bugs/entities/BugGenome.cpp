@@ -39,12 +39,18 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float body_init_fat_ratio = 0.5f;
 	constexpr float body_min_fat_ratio = 0.1f;
 	constexpr float body_adult_lean_mass = 4; // kg
-	constexpr float muscle1_VMScoord = 5.f;
-	constexpr float gripper_VMScoord = 10.f;
-	constexpr float muscle2_VMScoord = 15.f;
+	constexpr float leftNose_VMScoord = 10;
+	constexpr float rightNose_VMScoord = 20;
+	constexpr float time_VMScoord = Bug::defaultConstants::lifetimeSensor_vmsCoord;
+	constexpr float leftLeg_pull_VMScoord = 5;
+	constexpr float leftLeg_push_VMScoord = 10;
+	constexpr float rightLeg_pull_VMScoord = 15;
+	constexpr float rightLeg_push_VMScoord = 20;
+	constexpr float leftGripper_VMScoord = 25;
+	constexpr float rightGripper_VMScoord = 30;
 	constexpr float musclePeriod = 3.f; // seconds
 	constexpr float gripper_signal_threshold = -0.55f;
-	constexpr float gripper_signal_phase_offset = PI/2.2f;
+	constexpr float gripper_signal_phase_offset = 0.9f * PI;
 
 	GeneOffset go;
 	GeneJointOffset gjo;
@@ -90,80 +96,179 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gba);
 
 	// neural system
+	GeneTransferFunction gt;
+	GeneNeuronInputCoord gic;
+	GeneNeuronOutputCoord goc;
+	GeneNeuralBias gnb;
+	GeneNeuralParam gnp;
+	GeneSynapse gs;
 
 	// neuron #0 transfer:
-	GeneTransferFunction gt;
 	gt.targetNeuron.set(0);
 	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.genes.push_back(gt);
 	// neuron #0 input:
-	GeneNeuronInputCoord gic;
 	gic.destNeuronVirtIndex.set(0);
-	gic.inCoord.set(50);
+	gic.inCoord.set(leftNose_VMScoord);
 	c.genes.push_back(gic);
 
 	// neuron #1 transfer:
 	gt.targetNeuron.set(1);
-	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.genes.push_back(gt);
-	// neuron #1 constant:
-	GeneNeuralConstant gnc;
-	gnc.targetNeuron.set(1);
-	gnc.value.set(PI);
-	c.genes.push_back(gnc);
+	// neuron #1 input:
+	gic.destNeuronVirtIndex.set(1);
+	gic.inCoord.set(rightNose_VMScoord);
+	c.genes.push_back(gic);
 
 	// neuron #2 transfer:
 	gt.targetNeuron.set(2);
-	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
 	c.genes.push_back(gt);
-	// neuron #2 output VMS coord
-	GeneNeuronOutputCoord goc;
-	goc.srcNeuronVirtIndex.set(2);
-	goc.outCoord.set(muscle2_VMScoord);
-	c.genes.push_back(goc);
 
 	// neuron #3 transfer:
 	gt.targetNeuron.set(3);
-	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
 	c.genes.push_back(gt);
-	// neuron #3 output VMS coord
-	goc.srcNeuronVirtIndex.set(3);
-	goc.outCoord.set(muscle1_VMScoord);
-	c.genes.push_back(goc);
 
 	// neuron #4 transfer:
 	gt.targetNeuron.set(4);
-	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
+	gt.functionID.set((int)transferFuncNames::FN_POW);
 	c.genes.push_back(gt);
-	// neuron #4 constant:
-	gnc.targetNeuron.set(4);
-	gnc.value.set(gripper_signal_threshold);
-	c.genes.push_back(gnc);
+	// neuron #4 param:
+	gnp.targetNeuron.set(4);
+	gnp.value.set(-1);
+	c.genes.push_back(gnp);
 
 	// neuron #5 transfer:
 	gt.targetNeuron.set(5);
-	gt.functionID.set((int)transferFuncNames::FN_ONE);
+	gt.functionID.set((int)transferFuncNames::FN_MODULATE);
 	c.genes.push_back(gt);
-	// neuron #5 output VMS coord
-	goc.srcNeuronVirtIndex.set(5);
-	goc.outCoord.set(gripper_VMScoord);
-	c.genes.push_back(goc);
 
 	// neuron #6 transfer:
 	gt.targetNeuron.set(6);
-	gt.functionID.set((int)transferFuncNames::FN_CONSTANT);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
 	c.genes.push_back(gt);
-	// neuron #6 constant
-	gnc.targetNeuron.set(6);
-	gnc.value.set(gripper_signal_phase_offset);
-	c.genes.push_back(gnc);
+	// neuron #6 input:
+	gic.destNeuronVirtIndex.set(6);
+	gic.inCoord.set(time_VMScoord);
+	c.genes.push_back(gic);
 
 	// neuron #7 transfer:
 	gt.targetNeuron.set(7);
 	gt.functionID.set((int)transferFuncNames::FN_SIN);
 	c.genes.push_back(gt);
+	// neuron #7 bias:
+	gnb.targetNeuron.set(7);
+	gnb.value.set(gripper_signal_phase_offset);
+	c.genes.push_back(gnb);
 
-	GeneSynapse gs;
+	// neuron #8 transfer:
+	gt.targetNeuron.set(8);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
+	c.genes.push_back(gt);
+	// neuron #8 bias:
+	gnb.targetNeuron.set(8);
+	gnb.value.set(gripper_signal_threshold);
+	c.genes.push_back(gnb);
+	// neuron #8 output:
+	goc.srcNeuronVirtIndex.set(8);
+	goc.outCoord.set(leftGripper_VMScoord);
+	c.genes.push_back(goc);
+
+	// neuron #9 transfer:
+	gt.targetNeuron.set(9);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	c.genes.push_back(gt);
+	// neuron #9 bias:
+	gnb.targetNeuron.set(9);
+	gnb.value.set(gripper_signal_phase_offset);
+	c.genes.push_back(gnb);
+
+	// neuron #10 transfer:
+	gt.targetNeuron.set(10);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
+	c.genes.push_back(gt);
+	// neuron #10 bias:
+	gnb.targetNeuron.set(10);
+	gnb.value.set(gripper_signal_threshold);
+	c.genes.push_back(gnb);
+	// neuron #10 output:
+	goc.srcNeuronVirtIndex.set(10);
+	goc.outCoord.set(rightGripper_VMScoord);
+	c.genes.push_back(goc);
+
+	// neuron #11 transfer:
+	gt.targetNeuron.set(11);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	c.genes.push_back(gt);
+	// neuron #11 bias:
+	gnb.targetNeuron.set(11);
+	gnb.value.set(PI);
+	c.genes.push_back(gnb);
+
+	// neuron #12 transfer:
+	gt.targetNeuron.set(12);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	c.genes.push_back(gt);
+	// neuron #12 output:
+	goc.srcNeuronVirtIndex.set(12);
+	goc.outCoord.set(leftLeg_pull_VMScoord);
+	c.genes.push_back(goc);
+
+	// neuron #13 transfer:
+	gt.targetNeuron.set(13);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
+	c.genes.push_back(gt);
+	// neuron #13 bias:
+	gnb.targetNeuron.set(13);
+	gnb.value.set(0.5f);
+	c.genes.push_back(gnb);
+
+	// neuron #14 transfer:
+	gt.targetNeuron.set(14);
+	gt.functionID.set((int)transferFuncNames::FN_MODULATE);
+	c.genes.push_back(gt);
+	// neuron #14 output:
+	goc.srcNeuronVirtIndex.set(14);
+	goc.outCoord.set(leftLeg_push_VMScoord);
+	c.genes.push_back(goc);
+
+	// neuron #15 transfer:
+	gt.targetNeuron.set(15);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	c.genes.push_back(gt);
+	// neuron #15 bias:
+	gnb.targetNeuron.set(15);
+	gnb.value.set(PI);
+	c.genes.push_back(gnb);
+
+	// neuron #16 transfer:
+	gt.targetNeuron.set(16);
+	gt.functionID.set((int)transferFuncNames::FN_SIN);
+	c.genes.push_back(gt);
+	// neuron #16 output:
+	goc.srcNeuronVirtIndex.set(16);
+	goc.outCoord.set(rightLeg_pull_VMScoord);
+	c.genes.push_back(goc);
+
+	// neuron #17 transfer:
+	gt.targetNeuron.set(17);
+	gt.functionID.set((int)transferFuncNames::FN_ONE);
+	c.genes.push_back(gt);
+	// neuron #17 bias:
+	gnb.targetNeuron.set(17);
+	gnb.value.set(0.5f);
+	c.genes.push_back(gnb);
+
+	// neuron #18 transfer:
+	gt.targetNeuron.set(18);
+	gt.functionID.set((int)transferFuncNames::FN_MODULATE);
+	c.genes.push_back(gt);
+	// neuron #18 output:
+	goc.srcNeuronVirtIndex.set(18);
+	goc.outCoord.set(rightLeg_push_VMScoord);
+	c.genes.push_back(goc);
 
 	// synapse 0 to 2
 	gs.from.set(0);
@@ -171,47 +276,7 @@ Chromosome Bug::createBasicChromosome() {
 	gs.weight.set(2*PI / musclePeriod);
 	c.genes.push_back(gs);
 
-	// synapse 0 to 3
-	gs.from.set(0);
-	gs.to.set(3);
-	gs.weight.set(2*PI / musclePeriod);
-	c.genes.push_back(gs);
 
-	// synapse 1 to 3
-	gs.from.set(1);
-	gs.to.set(3);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 4 to 5
-	gs.from.set(4);
-	gs.to.set(5);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 0 to 7
-	gs.from.set(0);
-	gs.to.set(7);
-	gs.weight.set(2*PI / musclePeriod);
-	c.genes.push_back(gs);
-
-	// synapse 1 to 7
-	gs.from.set(1);
-	gs.to.set(7);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 6 to 7
-	gs.from.set(6);
-	gs.to.set(7);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
-
-	// synapse 7 to 5
-	gs.from.set(7);
-	gs.to.set(5);
-	gs.weight.set(1.f);
-	c.genes.push_back(gs);
 
 	// grow Mouth:
 	GeneProtein gp;

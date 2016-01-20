@@ -123,7 +123,12 @@ struct GeneTransferFunction {
 	Atom<int> functionID;
 };
 
-struct GeneNeuralConstant {
+struct GeneNeuralBias {
+	Atom<int> targetNeuron;
+	Atom<float> value;
+};
+
+struct GeneNeuralParam {
 	Atom<int> targetNeuron;
 	Atom<float> value;
 };
@@ -151,7 +156,8 @@ public:
 		GeneNeuronOutputCoord gene_neuron_output;
 		GeneNeuronInputCoord gene_neuron_input;
 		GeneTransferFunction gene_transfer_function;
-		GeneNeuralConstant gene_neural_constant;
+		GeneNeuralBias gene_neural_constant;
+		GeneNeuralParam gene_neural_param;
 		GeneBodyAttribute gene_body_attribute;
 
 		GeneData(GeneStartMarker const& gsm) : gene_start_marker(gsm) {}
@@ -166,7 +172,8 @@ public:
 		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
 		GeneData(GeneNeuronInputCoord const& gni) : gene_neuron_input(gni) {}
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
-		GeneData(GeneNeuralConstant const &gnc) : gene_neural_constant(gnc) {}
+		GeneData(GeneNeuralBias const &gnc) : gene_neural_constant(gnc) {}
+		GeneData(GeneNeuralParam const& gnp) : gene_neural_param(gnp) {}
 		GeneData(GeneBodyAttribute const &gba) : gene_body_attribute(gba) {}
 	} data;
 
@@ -193,7 +200,8 @@ public:
 	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(GENE_TYPE_NEURON_OUTPUT_COORD, gnoc) {}
 	Gene(GeneNeuronInputCoord const& gnic) : Gene(GENE_TYPE_NEURON_INPUT_COORD, gnic) {}
 	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER_FUNC, gt) {}
-	Gene(GeneNeuralConstant const &gnc) : Gene(GENE_TYPE_NEURAL_CONST, gnc) {}
+	Gene(GeneNeuralBias const &gnc) : Gene(GENE_TYPE_NEURAL_BIAS, gnc) {}
+	Gene(GeneNeuralParam const& gnp) : Gene(GENE_TYPE_NEURAL_PARAM, gnp) {}
 	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
 
 	Gene() : Gene(GeneNoOp()) {}
@@ -239,7 +247,8 @@ private:
 	static Gene createRandomNeuronInputCoordGene(int nNeurons);
 	static Gene createRandomNeuronOutputCoordGene(int nNeurons);
 	static Gene createRandomTransferFuncGene(int nNeurons);
-	static Gene createRandomNeuralConstGene(int nNeurons);
+	static Gene createRandomNeuralBiasGene(int nNeurons);
+	static Gene createRandomNeuralParamGene(int nNeurons);
 	static Gene createRandomBodyAttribGene();
 };
 
