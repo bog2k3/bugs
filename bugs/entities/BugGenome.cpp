@@ -273,7 +273,162 @@ Chromosome Bug::createBasicChromosome() {
 	// synapse 0 to 2
 	gs.from.set(0);
 	gs.to.set(2);
-	gs.weight.set(2*PI / musclePeriod);
+	gs.weight.set(-1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 0 to 3
+	gs.from.set(0);
+	gs.to.set(3);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 0 to 5
+	gs.from.set(0);
+	gs.to.set(5);
+	gs.weight.set(-1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 1 to 2
+	gs.from.set(1);
+	gs.to.set(2);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 1 to 3
+	gs.from.set(1);
+	gs.to.set(3);
+	gs.weight.set(-1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 1 to 5
+	gs.from.set(1);
+	gs.to.set(5);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 2 to 4
+	gs.from.set(2);
+	gs.to.set(4);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 3 to 4
+	gs.from.set(3);
+	gs.to.set(4);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 4 to 5
+	gs.from.set(4);
+	gs.to.set(5);
+	gs.weight.set(1);
+	gs.priority.set(100);	// this is #0 for MUL
+	c.genes.push_back(gs);
+
+	// synapse 5 to 13
+	gs.from.set(5);
+	gs.to.set(13);
+	gs.weight.set(-0.5f);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 5 to 17
+	gs.from.set(5);
+	gs.to.set(17);
+	gs.weight.set(0.5f);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 6 to 7
+	gs.from.set(6);
+	gs.to.set(7);
+	gs.weight.set(2*PI/musclePeriod);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 6 to 9
+	gs.from.set(6);
+	gs.to.set(9);
+	gs.weight.set(2*PI/musclePeriod);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 6 to 11
+	gs.from.set(6);
+	gs.to.set(11);
+	gs.weight.set(2*PI/musclePeriod);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 6 to 12
+	gs.from.set(6);
+	gs.to.set(12);
+	gs.weight.set(2*PI/musclePeriod);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 6 to 15
+	gs.from.set(6);
+	gs.to.set(15);
+	gs.weight.set(2*PI/musclePeriod);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 6 to 16
+	gs.from.set(6);
+	gs.to.set(16);
+	gs.weight.set(2*PI/musclePeriod);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 7 to 8
+	gs.from.set(7);
+	gs.to.set(8);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 9 to 10
+	gs.from.set(9);
+	gs.to.set(10);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 11 to 14
+	gs.from.set(11);
+	gs.to.set(14);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 13 to 14
+	gs.from.set(13);
+	gs.to.set(14);
+	gs.weight.set(1);
+	gs.priority.set(100);	// this is #0 for MUL
+	c.genes.push_back(gs);
+
+	// synapse 15 to 18
+	gs.from.set(15);
+	gs.to.set(18);
+	gs.weight.set(1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 17 to 18
+	gs.from.set(17);
+	gs.to.set(18);
+	gs.weight.set(1);
+	gs.priority.set(100);	// this is #0 for MUL
 	c.genes.push_back(gs);
 
 

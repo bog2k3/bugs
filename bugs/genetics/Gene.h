@@ -106,6 +106,7 @@ struct GeneSynapse {
 	Atom<int> from;		// virtual neuron index
 	Atom<int> to;		// virtual neuron index
 	Atom<float> weight;	// absolute weight of the synapse (cummulative)
+	Atom<float> priority; // synapse priority - inputs synapses in a neuron are ordered by highest priority first
 };
 
 struct GeneNeuronOutputCoord {

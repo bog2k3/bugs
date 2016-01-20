@@ -59,6 +59,8 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_synapse.to.changeAmount);
 		metaGenes.push_back(&data.gene_synapse.weight.chanceToMutate);
 		metaGenes.push_back(&data.gene_synapse.weight.changeAmount);
+		metaGenes.push_back(&data.gene_synapse.priority.chanceToMutate);
+		metaGenes.push_back(&data.gene_synapse.priority.changeAmount);
 		break;
 	case GENE_TYPE_NEURON_INPUT_COORD:
 		metaGenes.push_back(&data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate);
@@ -158,6 +160,7 @@ Gene Gene::createRandomSynapseGene(int nNeurons) {
 	g.from.set(randi(nNeurons-1));
 	g.to.set(randi(nNeurons-1));
 	g.weight.set(randf()*0.2f);
+	g.priority.set(randf()*10);
 	return g;
 }
 
