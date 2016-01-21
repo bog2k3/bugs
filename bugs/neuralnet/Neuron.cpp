@@ -37,7 +37,7 @@ void Neuron::update_value()
 		}
 		value += inputs[i]->value * inputs[i]->weight;
 	}
-	float cmdSignal = inputs[0]->value * inputs[0]->weight;
+	float cmdSignal = inputs.size() ? inputs[0]->value * inputs[0]->weight : 0;
 	value += inputBias;
 	value = transfFunc(value, neuralParam, cmdSignal, inputBias);
 	if (std::isnan(value))

@@ -432,7 +432,6 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gs);
 
 
-
 	// grow Mouth:
 	GeneProtein gp;
 	gp.targetSegment.set(0);
@@ -525,6 +524,11 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8)
 
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
 	gjo.minDepth.set(2);
 	gjo.maxDepth.set(2);
 	INSERT_JOFFSET(TORSO_JOINT8)
@@ -541,6 +545,8 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// grow Egg Layer:
+	gp.minDepth.set(2);
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_B);	// X+
 	c.genes.push_back(gp);

@@ -106,8 +106,10 @@ void Ribosome::decodeDeferredGenes() {
 					(int)transferFuncNames::FN_MAXCOUNT-1);
 			bug_->neuralNet_->neurons[n.second.index]->setTranferFunction((transferFuncNames)funcIndex);
 		}
-		if (n.second.constant.hasValue())
-			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.constant;
+		if (n.second.bias.hasValue())
+			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.bias;
+		if (n.second.param.hasValue())
+			bug_->neuralNet_->neurons[n.second.index]->neuralParam = n.second.param;
 	}
 }
 
@@ -457,7 +459,15 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
 			else
-				decodeNeuralConst(g.data.gene_neural_constant);
+				decodeNeuralBias(g.data.gene_neural_constant);
+		}
+		break;
+	case GENE_TYPE_NEURAL_PARAM:
+		if (!part || part->getType() == BodyPartType::TORSO) {
+			if (deferNeural)
+				neuralGenes_.push_back(&g);
+			else
+				decodeNeuralParam(g.data.gene_neural_param);
 		}
 		break;
 	default:
@@ -549,10 +559,16 @@ void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
 		mapNeurons_[g.targetNeuron].transfer.changeAbs(g.functionID);
 }
 
-void Ribosome::decodeNeuralConst(GeneNeuralBias const& g) {
+void Ribosome::decodeNeuralBias(GeneNeuralBias const& g) {
 	assert(!std::isnan(g.value.value));
 	if (hasNeuron(g.targetNeuron, false))
-		mapNeurons_[g.targetNeuron].constant.changeAbs(g.value);
+		mapNeurons_[g.targetNeuron].bias.changeAbs(g.value);
+}
+
+void Ribosome::decodeNeuralParam(GeneNeuralParam const& g) {
+	assert(!std::isnan(g.value.value));
+	if (hasNeuron(g.targetNeuron, false))
+		mapNeurons_[g.targetNeuron].param.changeAbs(g.value);
 }
 
 void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {

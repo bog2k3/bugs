@@ -28,17 +28,18 @@ class Joint;
 struct NeuronInfo {
 	int index;
 	CummulativeValue transfer;
-	CummulativeValue constant;
+	CummulativeValue bias;
+	CummulativeValue param;
 	CummulativeValue inputVMSCoord;
 	CummulativeValue outputVMSCoord;
 	NeuronInfo(int index, float transfer, float constant)
-		: index(index), transfer(transfer), constant(constant) {
+		: index(index), transfer(transfer), bias(constant) {
 	}
 	explicit NeuronInfo(int index)
 		: index(index) {
 	}
 	NeuronInfo(NeuronInfo const& other)
-		: index(other.index), transfer(other.transfer), constant(other.constant) {
+		: index(other.index), transfer(other.transfer), bias(other.bias) {
 	}
 	NeuronInfo() : index(-1) {
 	}
@@ -104,7 +105,8 @@ private:
 	void decodePartAttrib(GeneAttribute const& g, BodyPart* part);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);
-	void decodeNeuralConst(GeneNeuralBias const& g);
+	void decodeNeuralBias(GeneNeuralBias const& g);
+	void decodeNeuralParam(GeneNeuralParam const& g);
 	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
 	bool partMustGenerateJoint(BodyPartType part_type);
