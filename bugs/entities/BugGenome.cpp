@@ -464,51 +464,6 @@ Chromosome Bug::createBasicChromosome() {
 	INSERT_OFFSET(TORSO_BONE8)
 	c.genes.push_back(go);
 
-	// grow Muscle(7):
-	gp.targetSegment.set(7);
-	gp.protein.set(GENE_PROT_A);	// X-
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_D);	// Y+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_F);	// Z+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_G);	// W-
-	c.genes.push_back(gp);
-
-	go.targetSegment.set(7);
-	INSERT_OFFSET(TORSO_MUSCLE_LEFT)
-	c.genes.push_back(go);
-
-	// grow Muscle(9):
-	gp.targetSegment.set(9);
-	gp.protein.set(GENE_PROT_A);	// X-
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_D);	// Y+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_F);	// Z+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_G);	// W-
-	c.genes.push_back(gp);
-
-	go.targetSegment.set(9);
-	INSERT_OFFSET(TORSO_MUSCLE_RIGHT)
-	c.genes.push_back(go);
-
-	// grow Egg Layer:
-	gp.targetSegment.set(5);
-	gp.protein.set(GENE_PROT_B);	// X+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_D);	// Y+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_F);	// Z+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_G);	// W-
-	c.genes.push_back(gp);
-
-	go.targetSegment.set(5);
-	INSERT_OFFSET(EGGLAYER)
-	c.genes.push_back(go);
-
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
 
@@ -570,12 +525,6 @@ Chromosome Bug::createBasicChromosome() {
 
 	PART_MARKER(TORSO_BONE8)
 
-#ifdef ENABLE_START_MARKER_GENES
-	c.genes.push_back(gsm);
-	c.genes.push_back(gsm);
-#endif
-
-	// attribs for first bone:
 	gjo.minDepth.set(2);
 	gjo.maxDepth.set(2);
 	INSERT_JOFFSET(TORSO_JOINT8)
@@ -587,18 +536,146 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0.08f * 0.01f);
 	c.genes.push_back(ga);
 
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(0.4f);
+	c.genes.push_back(ga);
+
+	// grow Egg Layer:
+	gp.targetSegment.set(0);
+	gp.protein.set(GENE_PROT_B);	// X+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(5);
+	INSERT_OFFSET(EGGLAYER)
+	c.genes.push_back(go);
+
+	// grow right leg (2):
+	gp.targetSegment.set(2);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_C);	// Y-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_E);	// Z-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(2);
+	INSERT_OFFSET(RIGHT_LEG)
+	c.genes.push_back(go);
+
+	// grow right leg pull Muscle(3):
+	gp.targetSegment.set(3);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(3);
+	INSERT_OFFSET(RIGHT_MUSCLE_PULL)
+	c.genes.push_back(go);
+
+	// grow right leg push Muscle (1):
+	gp.targetSegment.set(1);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(1);
+	INSERT_OFFSET(RIGHT_MUSCLE_PUSH)
+	c.genes.push_back(go);
+
+	// grow left leg (14):
+	gp.targetSegment.set(14);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_C);	// Y-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_E);	// Z-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(14);
+	INSERT_OFFSET(LEFT_LEG)
+	c.genes.push_back(go);
+
+	// grow left leg pull Muscle(13):
+	gp.targetSegment.set(13);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(13);
+	INSERT_OFFSET(LEFT_MUSCLE_PULL)
+	c.genes.push_back(go);
+
+	// grow left leg push Muscle (15):
+	gp.targetSegment.set(15);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(15);
+	INSERT_OFFSET(LEFT_MUSCLE_PUSH)
+	c.genes.push_back(go);
+
+	PART_MARKER(LEFT_LEG)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	// attribs for first bone:
+	gjo.minDepth.set(4);
+	gjo.maxDepth.set(4);
+	INSERT_JOFFSET(LEFT_LEG_JOINTS)
+	c.genes.push_back(gjo);
+
+	ga.minDepth.set(4);
+	ga.maxDepth.set(4);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(0.08f * 0.01f);
+	c.genes.push_back(ga);
+
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	ga.value.set(PI/8);
 	c.genes.push_back(ga);
 
 	// attribs for second bone:
-	gjo.minDepth.set(4);
-	gjo.maxDepth.set(4);
-	INSERT_JOFFSET(TORSO_JOINT8)
+	gjo.minDepth.set(6);
+	gjo.maxDepth.set(6);
+	INSERT_JOFFSET(LEFT_LEG_JOINTS)
 	c.genes.push_back(gjo);
 
-	ga.maxDepth.set(4);
-	ga.minDepth.set(4);
+	ga.maxDepth.set(6);
+	ga.minDepth.set(6);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.08f * 0.01f);
 	c.genes.push_back(ga);
@@ -608,8 +685,8 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// common attribs for 1st bone, 2nd bone
-	ga.minDepth.set(2);
-	ga.maxDepth.set(4);
+	ga.minDepth.set(4);
+	ga.maxDepth.set(6);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(4);
@@ -624,8 +701,8 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// (on 2nd bone) grow Gripper(0):
-	gp.minDepth.set(4);
-	gp.maxDepth.set(4);
+	gp.minDepth.set(6);
+	gp.maxDepth.set(6);
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -636,15 +713,15 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.minDepth.set(4);
-	go.maxDepth.set(4);
+	go.minDepth.set(6);
+	go.maxDepth.set(6);
 	go.targetSegment.set(0);
-	INSERT_OFFSET(TORSO_BONE8_BONE0_GRIPPER0)
+	INSERT_OFFSET(LEFT_GRIPPER)
 	c.genes.push_back(go);
 
 	// (on 1st bone) grow 2nd Bone(0);
-	gp.minDepth.set(2);
-	gp.maxDepth.set(2);
+	gp.minDepth.set(4);
+	gp.maxDepth.set(4);
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -655,13 +732,15 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.minDepth.set(2);
-	go.maxDepth.set(2);
+	go.minDepth.set(4);
+	go.maxDepth.set(4);
 	go.targetSegment.set(0);
-	INSERT_OFFSET(TORSO_BONE8)	// loop
+	INSERT_OFFSET(LEFT_LEG)	// loop
 	c.genes.push_back(go);
 
-	// (on both bones) grow Muscle(1):
+	// (on both bones) grow push Muscles (1):
+	gp.minDepth.set(4);
+	gp.maxDepth.set(6);
 	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -672,13 +751,13 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.minDepth.set(2);
-	go.maxDepth.set(4);
+	go.minDepth.set(4);
+	go.maxDepth.set(6);
 	go.targetSegment.set(1);
-	INSERT_OFFSET(TORSO_MUSCLE_RIGHT)
+	INSERT_OFFSET(LEFT_MUSCLE_PUSH)
 	c.genes.push_back(go);
 
-	// (on both bones) grow Muscle(15):
+	// (on both bones) grow pull Muscles (15):
 	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -689,10 +768,142 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.minDepth.set(2);
-	go.maxDepth.set(4);
+	go.minDepth.set(4);
+	go.maxDepth.set(6);
 	go.targetSegment.set(15);
-	INSERT_OFFSET(TORSO_MUSCLE_LEFT)
+	INSERT_OFFSET(LEFT_MUSCLE_PULL)
+	c.genes.push_back(go);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(RIGHT_LEG)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	// attribs for first bone:
+	gjo.minDepth.set(4);
+	gjo.maxDepth.set(4);
+	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
+	c.genes.push_back(gjo);
+
+	ga.minDepth.set(4);
+	ga.maxDepth.set(4);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(0.08f * 0.01f);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(PI/8);
+	c.genes.push_back(ga);
+
+	// attribs for second bone:
+	gjo.minDepth.set(6);
+	gjo.maxDepth.set(6);
+	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
+	c.genes.push_back(gjo);
+
+	ga.maxDepth.set(6);
+	ga.minDepth.set(6);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(0.08f * 0.01f);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	// common attribs for 1st bone, 2nd bone
+	ga.minDepth.set(4);
+	ga.maxDepth.set(6);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(4);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_DENSITY;
+	ga.value.set(BodyConst::initialBoneDensity);
+	c.genes.push_back(ga);
+
+	// (on 2nd bone) grow Gripper(0):
+	gp.minDepth.set(6);
+	gp.maxDepth.set(6);
+	gp.targetSegment.set(0);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_E);	// Z-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.minDepth.set(6);
+	go.maxDepth.set(6);
+	go.targetSegment.set(0);
+	INSERT_OFFSET(RIGHT_GRIPPER)
+	c.genes.push_back(go);
+
+	// (on 1st bone) grow 2nd Bone(0);
+	gp.minDepth.set(4);
+	gp.maxDepth.set(4);
+	gp.targetSegment.set(0);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_C);	// Y-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_E);	// Z-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.minDepth.set(4);
+	go.maxDepth.set(4);
+	go.targetSegment.set(0);
+	INSERT_OFFSET(RIGHT_LEG)	// loop
+	c.genes.push_back(go);
+
+	// (on both bones) grow push Muscles (1):
+	gp.minDepth.set(4);
+	gp.maxDepth.set(6);
+	gp.targetSegment.set(1);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.minDepth.set(4);
+	go.maxDepth.set(6);
+	go.targetSegment.set(1);
+	INSERT_OFFSET(RIGHT_MUSCLE_PUSH)
+	c.genes.push_back(go);
+
+	// (on both bones) grow pull Muscles (15):
+	gp.targetSegment.set(15);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.minDepth.set(4);
+	go.maxDepth.set(6);
+	go.targetSegment.set(15);
+	INSERT_OFFSET(RIGHT_MUSCLE_PULL)
 	c.genes.push_back(go);
 
 	c.genes.push_back(GeneStop());
@@ -705,9 +916,33 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 #endif
 
-	// attribs for 1st joint:
 	ga.minDepth.set(1);
 	ga.maxDepth.set(1);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize * 3);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(0.f);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(0.f);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(LEFT_LEG_JOINTS)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	// attribs for 1st joint:
+	ga.minDepth.set(3);
+	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialJointSize * 3);
 	c.genes.push_back(ga);
@@ -721,13 +956,12 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// attribs for 2nd joint:
-	ga.minDepth.set(3);
-	ga.maxDepth.set(3);
+	ga.minDepth.set(5);
+	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialJointSize * 2);
 	c.genes.push_back(ga);
 
-	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
 	ga.value.set(BodyConst::initialJointMaxPhi*0.5f);
 	c.genes.push_back(ga);
@@ -737,15 +971,15 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// attribs for 3rd joint
-	ga.minDepth.set(5);
-	ga.maxDepth.set(5);
+	ga.minDepth.set(7);
+	ga.maxDepth.set(7);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialJointSize * 2);
 	c.genes.push_back(ga);
 
 	// common attribs for all joints:
-	ga.minDepth.set(1);
-	ga.maxDepth.set(5);
+	ga.minDepth.set(3);
+	ga.maxDepth.set(7);
 	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
 	ga.value.set(BodyConst::initialJointResetTorque);
 	c.genes.push_back(ga);
@@ -753,15 +987,69 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
 
-	PART_MARKER(TORSO_BONE8_BONE0_GRIPPER0)
+	PART_MARKER(RIGHT_LEG_JOINTS)
 
 #ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 #endif
 
-	ga.minDepth.set(6);
-	ga.maxDepth.set(6);
+	// attribs for 1st joint:
+	ga.minDepth.set(3);
+	ga.maxDepth.set(3);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize * 3);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(0.1f);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(4 * BodyConst::initialJointMinPhi);
+	c.genes.push_back(ga);
+
+	// attribs for 2nd joint:
+	ga.minDepth.set(5);
+	ga.maxDepth.set(5);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize * 2);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
+	ga.value.set(BodyConst::initialJointMaxPhi*0.5f);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
+	ga.value.set(BodyConst::initialJointMinPhi);
+	c.genes.push_back(ga);
+
+	// attribs for 3rd joint
+	ga.minDepth.set(7);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialJointSize * 2);
+	c.genes.push_back(ga);
+
+	// common attribs for all joints:
+	ga.minDepth.set(3);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_JOINT_RESET_TORQUE;
+	ga.value.set(BodyConst::initialJointResetTorque);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(LEFT_GRIPPER)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	ga.minDepth.set(8);
+	ga.maxDepth.set(8);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
@@ -770,60 +1058,88 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	gjo.minDepth.set(6);
-	gjo.maxDepth.set(6);
-	INSERT_JOFFSET(TORSO_JOINT8)
+	gjo.minDepth.set(8);
+	gjo.maxDepth.set(8);
+	INSERT_JOFFSET(LEFT_LEG_JOINTS)
 	c.genes.push_back(gjo);
 
 	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
 	ga.attribIndex.set(0);
-	ga.value.set(gripper_VMScoord);
+	ga.value.set(leftGripper_VMScoord);
 	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
 
-	PART_MARKER(TORSO_MUSCLE_LEFT)
+	PART_MARKER(RIGHT_GRIPPER)
 
 #ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 #endif
 
-	// attribs for 1st left muscle
-	ga.minDepth.set(1);
-	ga.maxDepth.set(1);
-	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(6 * BodyConst::initialBodyPartSize);
-	c.genes.push_back(ga);
-
-	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
-	ga.attribIndex.set(0);
-	ga.value.set(muscle1_VMScoord);
-	c.genes.push_back(ga);
-
-	// attribs for 2nd left muscle
-	ga.minDepth.set(3);
-	ga.maxDepth.set(3);
+	ga.minDepth.set(8);
+	ga.maxDepth.set(8);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
-	ga.attribIndex.set(0);
-	ga.value.set(muscle1_VMScoord);
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	// attribs for 3rd left muscle:
+	gjo.minDepth.set(8);
+	gjo.maxDepth.set(8);
+	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
+	c.genes.push_back(gjo);
+
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(rightGripper_VMScoord);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(LEFT_MUSCLE_PULL)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	// attribs for 1st left pull muscle
+	ga.minDepth.set(3);
+	ga.maxDepth.set(3);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(6 * BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for 2nd left pull muscle
 	ga.minDepth.set(5);
 	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
-	// attribs for all left muscles:
-	ga.minDepth.set(1);
+	// attribs for 1st & 2nd left pull muscle:
+	ga.minDepth.set(3);
 	ga.maxDepth.set(5);
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(leftLeg_pull_VMScoord);
+	c.genes.push_back(ga);
+
+	// attribs for 3rd left pull muscle:
+	ga.minDepth.set(7);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(2 * BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for all left pull muscles:
+	ga.minDepth.set(3);
+	ga.maxDepth.set(7);
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(BodyConst::initialMuscleAspectRatio);
 	c.genes.push_back(ga);
@@ -839,46 +1155,153 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
 
-	PART_MARKER(TORSO_MUSCLE_RIGHT)
+	PART_MARKER(LEFT_MUSCLE_PUSH)
 
 #ifdef ENABLE_START_MARKER_GENES
 	c.genes.push_back(gsm);
 	c.genes.push_back(gsm);
 #endif
 
-	ga.minDepth.set(1);
-	ga.maxDepth.set(1);
+	// attribs for 1st left push muscle
+	ga.minDepth.set(3);
+	ga.maxDepth.set(3);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(3 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
-	ga.attribIndex.set(0);
-	ga.value.set(muscle2_VMScoord);
-	c.genes.push_back(ga);
-
-	// attribs for 2nd right muscle
-	ga.minDepth.set(3);
-	ga.maxDepth.set(3);
+	// attribs for 2nd left push muscle
+	ga.minDepth.set(5);
+	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
+	// attribs for 1st & 2nd left push muscles
+	ga.minDepth.set(3);
+	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
 	ga.attribIndex.set(0);
-	ga.value.set(muscle2_VMScoord);
+	ga.value.set(leftLeg_push_VMScoord);
 	c.genes.push_back(ga);
 
-	// attribs for 3rd right muscle:
+	// attribs for 3rd left push muscle:
+	ga.minDepth.set(7);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(2 * BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for all left push muscles:
+	ga.minDepth.set(3);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMuscleAspectRatio);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(RIGHT_MUSCLE_PULL)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	// attribs for 1st right pull muscle
+	ga.minDepth.set(3);
+	ga.maxDepth.set(3);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(6 * BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for 2nd right pull muscle
 	ga.minDepth.set(5);
 	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
-	// attribs for all right muscles:
-	ga.minDepth.set(1);
+	// attribs for 1st & 2nd right pull muscle:
+	ga.minDepth.set(3);
 	ga.maxDepth.set(5);
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(rightLeg_pull_VMScoord);
+	c.genes.push_back(ga);
+
+	// attribs for 3rd right pull muscle:
+	ga.minDepth.set(7);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(2 * BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for all right pull muscles:
+	ga.minDepth.set(3);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMuscleAspectRatio);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(RIGHT_MUSCLE_PUSH)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	// attribs for 1st right push muscle
+	ga.minDepth.set(3);
+	ga.maxDepth.set(3);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(3 * BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for 2nd right push muscle
+	ga.minDepth.set(5);
+	ga.maxDepth.set(5);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for 1st & 2nd right push muscles
+	ga.minDepth.set(3);
+	ga.maxDepth.set(5);
+	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(rightLeg_push_VMScoord);
+	c.genes.push_back(ga);
+
+	// attribs for 3rd right push muscle:
+	ga.minDepth.set(7);
+	ga.maxDepth.set(7);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(2 * BodyConst::initialBodyPartSize);
+	c.genes.push_back(ga);
+
+	// attribs for all right push muscles:
+	ga.minDepth.set(3);
+	ga.maxDepth.set(7);
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(BodyConst::initialMuscleAspectRatio);
 	c.genes.push_back(ga);

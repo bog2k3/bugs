@@ -43,6 +43,11 @@ float transfer_fn_sin(float biasedValue, float neuralParam, float input0, float 
 	return sin(biasedValue);
 }
 
+// abs - absolute (positive)
+float transfer_fn_abs(float biasedValue, float neuralParam, float input0, float bias) {
+	return abs(biasedValue);
+}
+
 // ln(biasedValue)
 float transfer_fn_ln(float biasedValue, float neuralParam, float input0, float bias) {
 	if (biasedValue <= 0)

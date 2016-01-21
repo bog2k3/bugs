@@ -258,7 +258,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 					/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
 				},
 				/* Y+ */ {
-					/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::SENSOR_DIRECTION
+					/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::INVALID
 				},
 			},
 			/* Z+ */ {
@@ -329,9 +329,9 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	case BodyPartType::SENSOR_COMPASS:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
-	case BodyPartType::SENSOR_DIRECTION:
+//	case BodyPartType::SENSOR_DIRECTION:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
-		break;
+//		break;
 	case BodyPartType::SENSOR_PROXIMITY:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;

@@ -645,9 +645,9 @@ void BodyPart::buildDebugName(std::stringstream &out_stream) const {
 	case BodyPartType::SENSOR_COMPASS:
 		out_stream << "SensorCompass";
 		break;
-	case BodyPartType::SENSOR_DIRECTION:
-		out_stream << "SensorDirection";
-		break;
+//	case BodyPartType::SENSOR_DIRECTION:
+//		out_stream << "SensorDirection";
+//		break;
 	case BodyPartType::SENSOR_PROXIMITY:
 		out_stream << "SensorProximity";
 		break;
