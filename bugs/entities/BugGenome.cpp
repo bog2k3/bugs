@@ -557,6 +557,8 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
 	go.targetSegment.set(5);
 	INSERT_OFFSET(EGGLAYER)
 	c.genes.push_back(go);
@@ -651,6 +653,9 @@ Chromosome Bug::createBasicChromosome() {
 	INSERT_OFFSET(LEFT_MUSCLE_PUSH)
 	c.genes.push_back(go);
 
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
 	PART_MARKER(LEFT_LEG)
 
 #ifdef ENABLE_START_MARKER_GENES
@@ -671,7 +676,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	ga.value.set(PI/8);
+	ga.value.set(0);
 	c.genes.push_back(ga);
 
 	// attribs for second bone:
@@ -803,7 +808,7 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	ga.value.set(PI/8);
+	ga.value.set(0);
 	c.genes.push_back(ga);
 
 	// attribs for second bone:
@@ -929,11 +934,11 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_HIGH_LIMIT;
-	ga.value.set(0.f);
+	ga.value.set(-BodyConst::initialJointMaxPhi);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_JOINT_LOW_LIMIT;
-	ga.value.set(0.f);
+	ga.value.set(-BodyConst::initialJointMinPhi);
 	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
