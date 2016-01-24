@@ -272,12 +272,15 @@ int main(int argc, char* argv[]) {
 		constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
 		float lastAutosaveTime = 0;
 
-		sigViewer.addSignal("frameTime", &realDTAcc, 30, 0.1f, 5, glm::vec3(1.f, 0.2f, 0.2f));
+		float frameTime = 0;
+
+		sigViewer.addSignal("frameTime", &frameTime, 50, 0.1f, glm::vec3(1.f, 0.2f, 0.2f));
 
 		float t = glfwGetTime();
 		while (GLFWInput::checkInput()) {
 			float newTime = glfwGetTime();
 			float realDT = newTime - t;
+			frameTime = realDT;
 			realDTAcc += realDT;
 			t = newTime;
 			realTime += realDT;

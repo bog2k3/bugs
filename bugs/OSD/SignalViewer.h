@@ -22,20 +22,21 @@ public:
 	struct DataInfo {
 		std::unique_ptr<SignalDataSource> source_;
 		std::string name_;
-		float xAxisZoom_ = 1;
 		glm::vec3 color_;
+		float lastMinValue_=0;
+		float lastMaxValue_=0;
 
 		DataInfo() = default;
 		DataInfo(DataInfo &&x) = default;
-		DataInfo(std::unique_ptr<SignalDataSource> && source, std::string const& name, float xAxisZoom, glm::vec3 const& color)
-			: source_(std::move(source)), name_(name), xAxisZoom_(xAxisZoom), color_(color) {
+		DataInfo(std::unique_ptr<SignalDataSource> && source, std::string const& name, glm::vec3 const& color)
+			: source_(std::move(source)), name_(name), color_(color) {
 		}
 	};
 
 	SignalViewer(glm::vec3 const& uniformPos, glm::vec2 const& uniformSize);
 	virtual ~SignalViewer();
 
-	void addSignal(std::string const& name, float* pValue, int maxSamples, float sampleInterval, float xAxisZoom, glm::vec3 const& rgb);
+	void addSignal(std::string const& name, float* pValue, int maxSamples, float sampleInterval, glm::vec3 const& rgb);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);
@@ -53,6 +54,7 @@ public:
 	void update(float dt);
 	inline float getSample(uint i) { return samples_[(i+zero_)%n_]; }
 	inline uint getNumSamples() { return n_; }
+	inline uint getCapacity() { return capacity_; }
 private:
 	float* pValue_ = nullptr;
 	float* samples_ = nullptr;	// circular buffer
