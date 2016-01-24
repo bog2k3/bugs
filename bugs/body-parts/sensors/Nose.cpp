@@ -11,10 +11,11 @@
 #include "../../math/math2D.h"
 #include "../../utils/UpdateList.h"
 #include <glm/gtx/rotate_vector.hpp>
+#include <Box2D/Box2D.h>
 
 const glm::vec3 debug_color(1.f, 0.8f, 0.f);
 
-#define DEBUG_DRAW_GRIPPER
+#define DEBUG_DRAW_NOSE
 
 Nose::Nose()
 	: BodyPart(BodyPartType::SENSOR_PROXIMITY, std::make_shared<NoseInitializationData>())
@@ -29,6 +30,8 @@ Nose::~Nose() {
 }
 
 void Nose::draw(RenderContext const& ctx) {
+#ifdef DEBUG_DRAW_NOSE
+#endif
 }
 
 
@@ -67,6 +70,41 @@ float Nose::getOutputVMSCoord(unsigned index) const {
 
 
 void Nose::commit() {
+	if (committed_) {
+		physBody_.b2Body_->DestroyFixture(
+				&physBody_.b2Body_->GetFixtureList()[0]);
+		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
+		pJoint = nullptr;
+	}
+
+	// create fixture:
+	b2PolygonShape shape;
+	// nose is oriented towards OX axis
+	float sqA3 = sqrt(size_/3);
+	float base = 2 * sqA3;
+	float height = 3 * sqA3;
+	b2Vec2 points[] {
+			{0, -base/2},
+			{height, 0},
+			{0, +base/2}
+	};
+	shape.Set(points, sizeof(points)/sizeof(points[0]));
+	b2FixtureDef fixDef;
+	fixDef.density = BodyConst::NoseDensity;
+	fixDef.friction = 0.2f;
+	fixDef.restitution = 0.3f;
+	fixDef.shape = &shape;
+
+	physBody_.b2Body_->CreateFixture(&fixDef);
+
+	b2WeldJointDef jdef;
+	jdef.bodyA = parent_->getBody().b2Body_;
+	jdef.bodyB = physBody_.b2Body_;
+	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
+	jdef.localAnchorA = g2b(parentAnchor);
+	glm::vec2 childAnchor = getChildAttachmentPoint(angleOffset_);
+	jdef.localAnchorB = g2b(childAnchor);
+	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
 }
 
 

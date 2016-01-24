@@ -22,6 +22,7 @@
 #include "../body-parts/Muscle.h"
 #include "../body-parts/Mouth.h"
 #include "../body-parts/EggLayer.h"
+#include "../body-parts/sensors/Nose.h"
 #include "../utils/log.h"
 #include "../neuralnet/InputSocket.h"
 
@@ -336,9 +337,12 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 //	case BodyPartType::SENSOR_DIRECTION:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 //		break;
-	case BodyPartType::SENSOR_PROXIMITY:
-		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
+	case BodyPartType::SENSOR_PROXIMITY: {
+		Nose* n = new Nose();
+		pSensor = n;
+		bp = n;
 		break;
+	}
 	case BodyPartType::SENSOR_SIGHT:
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;

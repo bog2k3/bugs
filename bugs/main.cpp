@@ -284,10 +284,11 @@ int main(int argc, char* argv[]) {
 
 #ifdef DEBUG
 		Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntitiesOfType(ENTITY_BUG)[0]);
+		static constexpr float neuronUpdateTime = 0.05f;
 		float n14_out = 0;
 		float n14_i0=0, n14_i1=0;
-		sigViewer.addSignal("N14#0", &n14_i0, 50, 0.01f, glm::vec3(0.2f, 1.f, 0.2f));
-		sigViewer.addSignal("N14#1", &n14_i1, 50, 0.01f, glm::vec3(0.2f, 1.f, 0.2f));
+		sigViewer.addSignal("N14#0", &n14_i0, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
+		sigViewer.addSignal("N14#1", &n14_i1, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
 
 		std::function<void(float)> debugNeurons_update = [&] (float dt) {
 			n14_out = pB->getNeuronData(17);

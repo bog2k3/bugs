@@ -41,6 +41,7 @@ public:
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
 	static constexpr float MuscleEnergyConstant				= 1.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
+	static constexpr float NoseDensity						= 3.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
 	static constexpr float JointForceToleranceFactor		= 4.e+5f;		// [N/m^2] how much force a joint can take, relative to its size

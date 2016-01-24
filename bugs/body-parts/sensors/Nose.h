@@ -26,6 +26,7 @@ struct NoseInitializationData : public BodyPartInitializationData {
 	CummulativeValue outputVMSCoord[NoseDetectableFlavoursCount]; // output nerve VMS coordinate
 };
 
+class b2WeldJoint;
 
 class Nose : public BodyPart, public ISensor {
 public:
@@ -44,6 +45,7 @@ public:
 
 protected:
 	OutputSocket* outputSocket_[NoseDetectableFlavoursCount];
+	b2WeldJoint* pJoint = nullptr;
 
 	void commit() override;
 	void die() override;
