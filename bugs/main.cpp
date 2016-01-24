@@ -275,6 +275,7 @@ int main(int argc, char* argv[]) {
 		float frameTime = 0;
 
 		sigViewer.addSignal("frameTime", &frameTime, 50, 0.1f, glm::vec3(1.f, 0.2f, 0.2f));
+		sigViewer.addSignal("realDTAcc", &realDTAcc, 50, 0.1f, glm::vec3(0.2f, 1.0f, 0.2f));
 
 		float t = glfwGetTime();
 		while (GLFWInput::checkInput()) {

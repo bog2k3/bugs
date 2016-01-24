@@ -12,6 +12,9 @@
 #include "../renderOpenGL/Viewport.h"
 #include "../math/math2D.h"
 
+#include <sstream>
+#include <iomanip>
+
 SignalDataSource::SignalDataSource(float* pValue, int maxSamples, float sampleInterval)
 	: pValue_(pValue), capacity_(maxSamples), sampleInterval_(sampleInterval) {
 	samples_ = new float[maxSamples];
@@ -53,8 +56,13 @@ void SignalViewer::update(float dt) {
 }
 
 void SignalViewer::draw(RenderContext const& ctx) {
-	constexpr float yDivisionSize = 30; // pixels
-	const glm::vec3 frameColor(0.3f, 0.3f, 0.3f);
+	constexpr float yDivisionSize = 20; // pixels
+	constexpr int maxYDivisions = 5;
+	constexpr float textSize = 14;
+	constexpr float spacePerChar = textSize/2; // pixels
+	const glm::vec4 frameColor(1.f, 1.f, 1.f, 0.3f);
+	const glm::vec4 divisionColor(1.f, 1.f, 1.f, 0.2f);
+	const glm::vec4 divisionLabelColor(1.f, 1.f, 1.f, 0.6f);
 
 	glm::vec2 pos = vec3xy(uPos_);
 	pos.x *= ctx.viewport->getWidth();
@@ -65,7 +73,7 @@ void SignalViewer::draw(RenderContext const& ctx) {
 	for (auto &s : sourceInfo_) {
 		ctx.shape->setViewportSpaceDraw(true);
 		ctx.shape->drawRectangle(pos, uPos_.z, size, frameColor);
-		ctx.text->print(s.name_, pos.x, pos.y, uPos_.z, 14, s.color_);
+		ctx.text->print(s.name_, pos.x, pos.y, uPos_.z, textSize, s.color_);
 		float sMin = 1.e20f, sMax = -1.e20f;
 		// scan all samples and seek min/max values:
 		for (uint i=0; i<s.source_->getNumSamples(); i++) {
@@ -92,7 +100,20 @@ void SignalViewer::draw(RenderContext const& ctx) {
 			prev = crt;
 		}
 		// draw value axis division lines & labels
-		int nYDivs = size.y / yDivisionSize;
+		if (sMin * sMax < 0) {
+			// zero line is visible
+			float zeroY = pos.y+size.y + sMin*yScale;
+			ctx.shape->drawLine(glm::vec2(pos.x, zeroY), glm::vec2(pos.x+size.x, zeroY), uPos_.z, frameColor);
+		}
+		int nYDivs = min(maxYDivisions, (int)(size.y / yDivisionSize));
+		int nDecimals = s.source_->getNumSamples() ? -log10(sMax - sMin) : 0;
+		for (int i=1; i<nYDivs; i++) {
+			float lineY = pos.y + size.y - i * yDivisionSize;
+			ctx.shape->drawLine(glm::vec2(pos.x, lineY), glm::vec2(pos.x+size.x, lineY), uPos_.z, divisionColor);
+			std::stringstream ss;
+			ss << std::setprecision(nDecimals) << sMin + (sMax-sMin) * i / nYDivs;
+			ctx.text->print(ss.str(), pos.x - (ss.str().size()+1) * spacePerChar, lineY+5, uPos_.z, textSize, divisionLabelColor);
+		}
 
 		pos.y += size.y + 15;
 	}
