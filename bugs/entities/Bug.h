@@ -58,6 +58,7 @@ public:
 	float getMass();
 	unsigned getGeneration() { return generation_; }
 	bool isAlive() { return isAlive_; }
+	float getNeuronData(int neuronIndex);
 
 	void kill();
 

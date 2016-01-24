@@ -93,6 +93,8 @@ void SignalViewer::draw(RenderContext const& ctx) {
 		// draw samples:
 		float xAxisZoom = size.x / s.source_->getCapacity();
 		float yScale = size.y / (sMax - sMin);
+		if (sMin == sMax)
+			yScale = 0;
 		glm::vec2 prev(pos.x, pos.y + size.y * 0.5f);
 		for (uint i=0; i<s.source_->getNumSamples(); i++) {
 			glm::vec2 crt(prev.x + xAxisZoom, pos.y + size.y - (s.source_->getSample(i)-sMin) * yScale);

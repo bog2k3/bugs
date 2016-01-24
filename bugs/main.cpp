@@ -11,8 +11,6 @@
 #include "input/operations/OperationPan.h"
 #include "input/operations/OperationSpring.h"
 #include "input/operations/OperationGui.h"
-#include "body-parts/Bone.h"
-#include "body-parts/Joint.h"
 #include "World.h"
 #include "PhysContactListener.h"
 #include "PhysDestroyListener.h"
@@ -32,6 +30,10 @@
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
 #include "utils/rand.h"
+
+#ifdef DEBUG
+#include "entities/Bug.h"
+#endif
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
@@ -60,6 +62,10 @@ template<> void draw(b2World* wld, RenderContext const &ctx) {
 
 template<> void update(b2World* wld, float dt) {
 	wld->Step(dt, 5, 2);
+}
+
+template<> void update(std::function<void(float)> *fn, float dt) {
+	(*fn)(dt);
 }
 
 void onInputEventHandler(InputEvent& ev) {
@@ -275,7 +281,21 @@ int main(int argc, char* argv[]) {
 		float frameTime = 0;
 
 		sigViewer.addSignal("frameTime", &frameTime, 50, 0.1f, glm::vec3(1.f, 0.2f, 0.2f));
-		sigViewer.addSignal("realDTAcc", &realDTAcc, 50, 0.1f, glm::vec3(0.2f, 1.0f, 0.2f));
+
+#ifdef DEBUG
+		Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntitiesOfType(ENTITY_BUG)[0]);
+		float n14_out = 0;
+		float n14_i0=0, n14_i1=0;
+		sigViewer.addSignal("N14#0", &n14_i0, 50, 0.01f, glm::vec3(0.2f, 1.f, 0.2f));
+		sigViewer.addSignal("N14#1", &n14_i1, 50, 0.01f, glm::vec3(0.2f, 1.f, 0.2f));
+
+		std::function<void(float)> debugNeurons_update = [&] (float dt) {
+			n14_out = pB->getNeuronData(17);
+			n14_i0 = pB->getNeuronData(6);
+			n14_i1 = pB->getNeuronData(11);
+		};
+		updateList.add(&debugNeurons_update);
+#endif
 
 		float t = glfwGetTime();
 		while (GLFWInput::checkInput()) {

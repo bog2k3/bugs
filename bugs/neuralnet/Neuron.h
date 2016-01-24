@@ -27,17 +27,18 @@ public:
 	void commitInputs();	// sorts all inputs by priority in their final positions and deletes priority data
 
 	void update_value(); // recomputes the value of the neuron after input has been updated
-	inline void push_output() { output.push_value(value); }
+	float getValue() { return value_; }
+	inline void push_output() { output.push_value(value_); }
 
 	OutputSocket output; // this socket is connected to other inputs or to the network's main outputs
 
 private:
-	float value = 0;
-	bool isZeroCmdSignal = false;
-	transfer_function transfFunc = transfer_fn_one;
+	float value_ = 0;
+	bool isZeroCmdSignal_ = false;
+	transfer_function transfFunc_ = transfer_fn_one;
 
-	std::vector<std::unique_ptr<InputSocket>> inputs;
-	std::vector<float> *pInputPriorities = new std::vector<float>();
+	std::vector<std::unique_ptr<InputSocket>> inputs_;
+	std::vector<float> *pInputPriorities_ = new std::vector<float>();
 };
 
 #endif // __neuron_h__

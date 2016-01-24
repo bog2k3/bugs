@@ -388,3 +388,9 @@ void Bug::deserialize(BinaryStream &stream) {
 	std::unique_ptr<Bug> ptr(new Bug(genome, mass, glm::vec2(posx, posy), glm::vec2(velx, vely), generation));
 	World::getInstance()->takeOwnershipOf(std::move(ptr));
 }
+
+float Bug::getNeuronData(int neuronIndex) {
+	if (neuronIndex < 0 || neuronIndex >= neuralNet_->neurons.size())
+		return 0;
+	return neuralNet_->neurons[neuronIndex]->getValue();
+}
