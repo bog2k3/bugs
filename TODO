@@ -1,19 +1,27 @@
 * redesign bug with two simple legs, two nose sensors - drive by smell
 	- simple neural system, just bias towards the stronger sensor
-* add priority to synapses (float) - inputs will be ordered by highest priority first
-	- this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
-	- default 0 priority to input nerves so they shouldn't affect the order;
-	- default [0.0~10.0] priority for random synapses
+		* add priority to synapses (float) - inputs will be ordered by highest priority first
+			- this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
+			- default 0 priority to input nerves so they shouldn't affect the order;
+			- default [0.0~10.0] priority for random synapses
 * changes in neurons:
-	- neuralConst as offset to sum in all neuron types (rename to "bias")
-	- new neuralParam to use in special function neurons which now use neuralConst
-	- new abs() neural function
-	- figure out how to multiply 2 signals - perhaps a new neural func?
+		- neuralConst as offset to sum in all neuron types (rename to "bias")
+		- new neuralParam to use in special function neurons which now use neuralConst
+		- new abs() neural function
+		- figure out how to multiply 2 signals - perhaps a new neural func?
 	- memory neuron with a special input (#0) to signal when to write
-	- gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
+		- gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
 		* implement slow motion with fixed timestep
 * gripperul sa se desprinda la o anumita forta d.p. cu size
 * spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
+	- variable food chunk size
+* heterogenous environment
+	- hazards/dangers
+	- different types of food spawners
+	- add complexity - more objects and stuff
+* mouth can only eat stuff smaller than its size
+* bugs should be able to eat smaller bugs alive
+* fix repopulation (zygot mass)
 		* rewrite default bug genome to use segmentation for leg
 		* tune nerve signals - GRIPPER must disengage sooner
 		* tune joint resillience

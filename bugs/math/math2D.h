@@ -7,6 +7,7 @@
 
 template<typename T> constexpr T sqr(T const &x) { return x*x; }
 template<typename T> inline void xchg(T &x1, T &x2) { T aux(x1); x1 = x2; x2 = aux; }
+template<typename T> inline void xchg(T &&x1, T &&x2) { T aux(std::move(x1)); x1 = std::move(x2); x2 = std::move(aux); }
 template<typename T> constexpr T min(T const &x, T const &y) { return x < y ? x : y; }
 template<typename T> constexpr T max(T const &x, T const &y) { return x > y ? x : y; }
 template<typename T> constexpr T sign(T const& x) { return x > 0 ? T(+1) : (x < 0 ? T(-1) : T(0)); }

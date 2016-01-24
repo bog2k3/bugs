@@ -15,7 +15,7 @@
 struct CummulativeValue {
 	CummulativeValue() {}
 	explicit CummulativeValue(float initial) : value_(initial), cachedValue_(value_), cacheUpdated_(true), n_(1), factor_(1.f) {}
-	inline operator float() {
+	inline operator float() const {
 		if (!hasValue())
 			return 0;
 		if (!cacheUpdated_)
@@ -23,7 +23,7 @@ struct CummulativeValue {
 		assertDbg(!std::isnan(cachedValue_));
 		return cachedValue_;
 	}
-	inline float get() {
+	inline float get() const {
 		return *this;
 	}
 	inline void changeAbs(float change) {
@@ -47,15 +47,15 @@ struct CummulativeValue {
 		return get();
 	}
 private:
-	inline void updateCache() {
+	inline void updateCache() const {
 		assertDbg(n_ > 0 && "trying to read empty (uninitialized) CummulativeValue !!!");
 		cachedValue_ = value_ * factor_ / n_;
 		cacheUpdated_ = true;
 	}
 
 	float value_ = 0;
-	float cachedValue_ = 0;
-	bool cacheUpdated_ = false;
+	mutable float cachedValue_ = 0;
+	mutable bool cacheUpdated_ = false;
 	int n_ = 0;
 	float factor_ = 1;
 };

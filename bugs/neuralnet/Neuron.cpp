@@ -1,6 +1,8 @@
 #include "Neuron.h"
-#include "../utils/rand.h"
 #include "InputSocket.h"
+#include "../utils/rand.h"
+#include "../utils/assert.h"
+#include "../math/math2D.h"
 #include <cassert>
 #include <cmath>
 
@@ -26,6 +28,27 @@ void Neuron::setTranferFunction(transferFuncNames fn) {
 		) {
 		isZeroCmdSignal = true;
 	}
+}
+
+void Neuron::addInput(std::unique_ptr<InputSocket> &&input, float priority) {
+	assertDbg(pInputPriorities && "Attempting to add input after commit!!!");
+	inputs.push_back(std::move(input));
+	pInputPriorities->push_back(priority);
+}
+void Neuron::commitInputs() {
+	assertDbg(pInputPriorities && "Only call this once at the end!!!");
+	// sort inputs
+	for (int i=0; i<inputs.size()-1; i++) {
+		for (int j=i+1; j<inputs.size(); j++) {
+			if (pInputPriorities[i] < pInputPriorities[j]) {
+				xchg(pInputPriorities[i], pInputPriorities[j]);
+				xchg(std::move(inputs[i]), std::move(inputs[j]));
+			}
+		}
+	}
+	// delete priority data:
+	delete pInputPriorities;
+	pInputPriorities = nullptr;
 }
 
 void Neuron::update_value()

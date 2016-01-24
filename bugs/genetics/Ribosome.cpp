@@ -151,6 +151,8 @@ bool Ribosome::step() {
 		decodeDeferredGenes();
 		// link nerves to sensors and motors:
 		resolveNerveLinkage();
+		// commit neuron properties:
+		commitNeurons();
 
 		// clean up:
 		cleanUp();
@@ -551,7 +553,8 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 	checkAndAddNeuronMapping(g.to);
 	uint64_t key = synKey(g.from, g.to);
 	assert(!std::isnan(g.weight.value));
-	mapSynapses_[key].changeAbs(g.weight);
+	mapSynapses_[key].weight.changeAbs(g.weight);
+	mapSynapses_[key].priority.changeAbs(g.priority);
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
@@ -585,15 +588,15 @@ void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 	inputNeurons_.insert(g.destNeuronVirtIndex);
 }
 
-void Ribosome::createSynapse(int from, int to, float weight) {
+void Ribosome::createSynapse(int from, int to, SynapseInfo const& info) {
 	assertDbg(hasNeuron(from, true));	// should be there, since synapses dictate neurons
 	assertDbg(hasNeuron(to, true));
 
 	OutputSocket* pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
 	Neuron* pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
 
-	InputSocket* i = new InputSocket(pTo, weight);
-	pTo->inputs.push_back(std::unique_ptr<InputSocket>(i));
+	InputSocket* i = new InputSocket(pTo, info.weight);
+	pTo->addInput(std::unique_ptr<InputSocket>(i), info.priority);
 	pFrom->addTarget(i);
 }
 
@@ -680,7 +683,7 @@ void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& or
 		if (sensorSocketIndex >= 0) {
 			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(inerve.first, 1.f));
 			orderedSensorOutputs_[sensorSocketIndex].first->addTarget(sock.get());
-			inerve.first->inputs.push_back(std::move(sock));
+			inerve.first->addInput(std::move(sock), 0);
 			orderedSensorOutputs_.erase(orderedSensorOutputs_.begin() + sensorSocketIndex);
 		}
 	}
@@ -694,7 +697,7 @@ void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& or
 			Neuron* neuron = orderedInputNeurons_[nerveIndex].first;
 			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(neuron, 1.f));
 			sensor.first->addTarget(sock.get());
-			neuron->inputs.push_back(std::move(sock));
+			neuron->addInput(std::move(sock), 0);
 		}
 	}
 }
@@ -748,6 +751,11 @@ void Ribosome::resolveNerveLinkage() {
 	sensors_.clear();
 	inputNeurons_.clear();
 	outputNeurons_.clear();
+}
+
+void Ribosome::commitNeurons() {
+	for (auto &n : bug_->neuralNet_->neurons)
+		n->commitInputs();
 }
 
 Joint* Ribosome::findNearestJoint(Muscle* m, int dir) {

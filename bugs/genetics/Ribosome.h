@@ -45,6 +45,11 @@ struct NeuronInfo {
 	}
 };
 
+struct SynapseInfo {
+	CummulativeValue weight;
+	CummulativeValue priority;
+};
+
 struct GrowthData {
 	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this part
@@ -90,7 +95,7 @@ private:
 	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
 	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
 #endif
-	std::map<uint64_t, CummulativeValue> mapSynapses_;
+	std::map<uint64_t, SynapseInfo> mapSynapses_;
 	std::set<int> outputNeurons_;	// virtual indices of output neurons
 	std::set<int> inputNeurons_;	// virtual indices of input neurons
 	std::vector<IMotor*> motors_;
@@ -123,8 +128,9 @@ private:
 	bool hasNeuron(int virtualIndex, bool physical); // checks whether a virtual neuron exists and, if requested, its physical equivalent too
 	// Compute a synapse key (unique id for from-to pair:
 	inline uint64_t synKey(uint64_t from, uint64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
-	void createSynapse(int from, int to, float weight);
+	void createSynapse(int from, int to, SynapseInfo const& info);
 	void resolveNerveLinkage();
+	void commitNeurons();
 	void linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,
 						 std::vector<InputOutputNerve<InputSocket*>> const& orderedMotorInputs_);
 	void linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedInputNeurons_,
