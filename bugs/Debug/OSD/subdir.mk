@@ -5,15 +5,18 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../OSD/Label.cpp \
-../OSD/ScaleDisplay.cpp 
+../OSD/ScaleDisplay.cpp \
+../OSD/SignalViewer.cpp 
 
 OBJS += \
 ./OSD/Label.o \
-./OSD/ScaleDisplay.o 
+./OSD/ScaleDisplay.o \
+./OSD/SignalViewer.o 
 
 CPP_DEPS += \
 ./OSD/Label.d \
-./OSD/ScaleDisplay.d 
+./OSD/ScaleDisplay.d \
+./OSD/SignalViewer.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

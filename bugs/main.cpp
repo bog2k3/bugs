@@ -19,6 +19,7 @@
 #include "PhysicsDebugDraw.h"
 #include "math/math2D.h"
 #include "OSD/ScaleDisplay.h"
+#include "OSD/SignalViewer.h"
 #include "GUI/GuiSystem.h"
 #include "GUI/Window.h"
 #include "GUI/controls/Button.h"
@@ -242,11 +243,14 @@ int main(int argc, char* argv[]) {
 				ERROR("Could not save session to file \"" << saveFilename << "\"");
 		}
 
+		ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
+		SignalViewer sigViewer(glm::vec3(0.75f, 0.1f, 1.f), glm::vec2(0.2f, 0.1f));
+
 		DrawList drawList;
 		drawList.add(World::getInstance());
 		drawList.add(&physWld);
-		ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
 		drawList.add(&scale);
+		drawList.add(&sigViewer);
 		drawList.add(&Gui);
 
 		UpdateList continuousUpdateList;
@@ -256,6 +260,7 @@ int main(int argc, char* argv[]) {
 		updateList.add(&contactListener);
 		updateList.add(&sessionMgr.getPopulationManager());
 		updateList.add(World::getInstance());
+		updateList.add(&sigViewer);
 
 		float realTime = 0;							// [s]
 		float simulationTime = 0;					// [s]
@@ -266,6 +271,8 @@ int main(int argc, char* argv[]) {
 
 		constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
 		float lastAutosaveTime = 0;
+
+		sigViewer.addSignal("frameTime", &realDTAcc, 30, 0.1f, 5, glm::vec3(1.f, 0.2f, 0.2f));
 
 		float t = glfwGetTime();
 		while (GLFWInput::checkInput()) {
