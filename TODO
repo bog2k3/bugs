@@ -1,3 +1,6 @@
+* multiple outputs from nose (sense different types of entities)
+* outputVMS coord genes for sensors (indexed)
+* extend VMS to 0..1000 (0..100 is to small compared to mutation values)
 * redesign bug with two simple legs, two nose sensors - drive by smell
 	- simple neural system, just bias towards the stronger sensor
 		* add priority to synapses (float) - inputs will be ordered by highest priority first
@@ -5,12 +8,12 @@
 			- default 0 priority to input nerves so they shouldn't affect the order;
 			- default [0.0~10.0] priority for random synapses
 * changes in neurons:
-		- neuralConst as offset to sum in all neuron types (rename to "bias")
-		- new neuralParam to use in special function neurons which now use neuralConst
-		- new abs() neural function
-		- figure out how to multiply 2 signals - perhaps a new neural func?
+			- neuralConst as offset to sum in all neuron types (rename to "bias")
+			- new neuralParam to use in special function neurons which now use neuralConst
+			- new abs() neural function
+			- figure out how to multiply 2 signals - perhaps a new neural func?
 	- memory neuron with a special input (#0) to signal when to write
-		- gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
+			- gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
 		* implement slow motion with fixed timestep
 * gripperul sa se desprinda la o anumita forta d.p. cu size
 * spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
@@ -55,6 +58,7 @@
 		* add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
 		* [obs] make split work
 * add "duplicate" as a gene spawn method (copy existing gene)
+	- 50%-50% chance to duplicate or new
 		* make eggs attract each other
 		* !!! make eggs and zygotes (dead ones as well) as food
 		* make dead body parts as food

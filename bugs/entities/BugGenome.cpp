@@ -881,26 +881,9 @@ Chromosome Bug::createBasicChromosome() {
 	INSERT_OFFSET(RIGHT_LEG)	// loop
 	c.genes.push_back(go);
 
-	// (on both bones) grow push Muscles (1):
+	// (on both bones) grow push Muscles (15):
 	gp.minDepth.set(4);
 	gp.maxDepth.set(6);
-	gp.targetSegment.set(1);
-	gp.protein.set(GENE_PROT_A);	// X-
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_D);	// Y+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_F);	// Z+
-	c.genes.push_back(gp);
-	gp.protein.set(GENE_PROT_G);	// W-
-	c.genes.push_back(gp);
-
-	go.minDepth.set(4);
-	go.maxDepth.set(6);
-	go.targetSegment.set(1);
-	INSERT_OFFSET(RIGHT_MUSCLE_PUSH)
-	c.genes.push_back(go);
-
-	// (on both bones) grow pull Muscles (15):
 	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -914,6 +897,23 @@ Chromosome Bug::createBasicChromosome() {
 	go.minDepth.set(4);
 	go.maxDepth.set(6);
 	go.targetSegment.set(15);
+	INSERT_OFFSET(RIGHT_MUSCLE_PUSH)
+	c.genes.push_back(go);
+
+	// (on both bones) grow pull Muscles (1):
+	gp.targetSegment.set(1);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_F);	// Z+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.minDepth.set(4);
+	go.maxDepth.set(6);
+	go.targetSegment.set(1);
 	INSERT_OFFSET(RIGHT_MUSCLE_PULL)
 	c.genes.push_back(go);
 
@@ -1343,7 +1343,7 @@ Chromosome Bug::createBasicChromosome() {
 	}
 
 	// now we need to add some redundancy in between genes:
-	if (true) {
+	if (false) {
 		int padding = 2;
 		for (uint i=0; i<c.genes.size(); i+=padding+1) {
 			for (int k=0; k<padding; k++)
