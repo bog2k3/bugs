@@ -10,13 +10,20 @@
 
 #include "../BodyPart.h"
 #include "../../entities/Bug/ISensor.h"
+#include "../../entities/enttypes.h"
 #include <memory>
+
+static constexpr EntityType NoseDetectableFlavours[] {
+	ENTITY_FOOD_CHUNK,
+	ENTITY_BUG,
+};
+static constexpr size_t NoseDetectableFlavoursCount = sizeof(NoseDetectableFlavours)/sizeof(NoseDetectableFlavours[0]);
 
 struct NoseInitializationData : public BodyPartInitializationData {
 	virtual ~NoseInitializationData() noexcept = default;
 	NoseInitializationData() = default;
 
-	CummulativeValue outputVMSCoord; // output nerve VMS coordinate
+	CummulativeValue outputVMSCoord[NoseDetectableFlavoursCount]; // output nerve VMS coordinate
 };
 
 
@@ -31,12 +38,12 @@ public:
 	void update(float dt);
 
 	// ISensor::
-	unsigned getOutputCount() const override { return 1; }
-	OutputSocket* getOutputSocket(unsigned index) const override { return index==0 ? outputSocket_ : 0; }
+	unsigned getOutputCount() const override { return NoseDetectableFlavoursCount; }
+	OutputSocket* getOutputSocket(unsigned index) const override { return index<NoseDetectableFlavoursCount ? outputSocket_[index] : nullptr; }
 	float getOutputVMSCoord(unsigned index) const override;
 
 protected:
-	OutputSocket* outputSocket_;
+	OutputSocket* outputSocket_[NoseDetectableFlavoursCount];
 
 	void commit() override;
 	void die() override;

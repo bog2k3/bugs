@@ -448,6 +448,36 @@ Chromosome Bug::createBasicChromosome() {
 	INSERT_OFFSET(MOUTH)
 	c.genes.push_back(go);
 
+	// grow left nose:
+	gp.targetSegment.set(1);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_E);	// Z-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_H);	// W+
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(1);
+	INSERT_OFFSET(LEFT_NOSE)
+	c.genes.push_back(go);
+
+	// grow right nose:
+	gp.targetSegment.set(15);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_D);	// Y+
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_E);	// Z-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_H);	// W+
+	c.genes.push_back(gp);
+
+	go.targetSegment.set(15);
+	INSERT_OFFSET(RIGHT_NOSE)
+	c.genes.push_back(go);
+
 	// grow Bone(8):
 	gp.targetSegment.set(8);
 	gp.protein.set(GENE_PROT_A);	// X-
@@ -489,6 +519,48 @@ Chromosome Bug::createBasicChromosome() {
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	ga.value.set(0);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(LEFT_NOSE)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	ga.minDepth.set(1);
+	ga.maxDepth.set(1);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialNoseSize);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_SENSOR_OUTPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(leftNose_VMScoord);
+	c.genes.push_back(ga);
+
+	c.genes.push_back(GeneStop());
+	c.genes.push_back(GeneStop());
+
+	PART_MARKER(RIGHT_NOSE)
+
+#ifdef ENABLE_START_MARKER_GENES
+	c.genes.push_back(gsm);
+	c.genes.push_back(gsm);
+#endif
+
+	ga.minDepth.set(1);
+	ga.maxDepth.set(1);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(BodyConst::initialNoseSize);
+	c.genes.push_back(ga);
+
+	ga.attribute = GENE_ATTRIB_SENSOR_OUTPUT_COORD;
+	ga.attribIndex.set(0);
+	ga.value.set(rightNose_VMScoord);
 	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());

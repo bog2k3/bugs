@@ -59,6 +59,7 @@ public:
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialMouthSize					= 0.5e-3f;		// [m^2]
 	static constexpr float initialMouthAspectRatio			= 0.15f;		// [*] length/width
+	static constexpr float initialNoseSize					= 0.5e-4f;		// [m^2]
 
 	// default values for whole-body attributes:
 	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat
@@ -69,7 +70,7 @@ public:
 	static constexpr float initialEggEjectSpeed				= 0.6f;			// [m/s]
 	static constexpr float initialReproductiveMassRatio		= 0.8f;			// [*] fraction of growth mass that is invested in creating eggs
 
-	static constexpr float MaxVMSCoordinateValue			= 100.f;		// Virtual Matching Space span
+	static constexpr float MaxVMSCoordinateValue			= 1000.f;		// Virtual Matching Space span
 };
 
 

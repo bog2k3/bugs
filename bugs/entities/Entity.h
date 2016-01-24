@@ -8,11 +8,11 @@
 #ifndef ENTITIES_ENTITY_H_
 #define ENTITIES_ENTITY_H_
 
+#include "enttypes.h"
+
 class RenderContext;
 class BinaryStream;
 enum class SerializationObjectTypes;
-
-typedef unsigned EntityType;
 
 class Entity {
 public:
