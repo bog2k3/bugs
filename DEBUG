@@ -1,3 +1,4 @@
+* nose & egglayer positions after commit are broken
 	* [FIXED] CRASH after joint break: joint Torso(8)::J breaks but no motor lines are removed
 	  - [FIXED] downstream bone has no motor lines !!
 		- CAUSE: addMotor() is called from Ribosome() before part is added to parent

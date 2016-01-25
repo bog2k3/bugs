@@ -68,11 +68,6 @@ public:
 	 */
 	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
 
-	/**
-	 * returns the attachment point for the current part in its parent's coordinate space.
-	 */
-	//glm::vec2 getUpstreamAttachmentPoint();
-
 	virtual glm::vec3 getWorldTransformation();
 
 	// must return the actual amount deduced from mass argument
@@ -208,6 +203,7 @@ protected:
 
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
 	void registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value);
+	// returns the attachment point for the current part in its parent's coordinate space.
 	glm::vec2 getUpstreamAttachmentPoint();
 	UpdateList* getUpdateList();
 	// call this if the fixture changed for any reason:

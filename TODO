@@ -1,4 +1,5 @@
 * multiple outputs from nose (sense different types of entities)
+* need FAST method to get nearest body of certain type (for nose)
 * outputVMS coord genes for sensors (indexed)
 * extend VMS to 0..1000 (0..100 is to small compared to mutation values)
 * redesign bug with two simple legs, two nose sensors - drive by smell
