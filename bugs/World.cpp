@@ -198,3 +198,7 @@ std::vector<Entity*> World::getEntitiesOfType(EntityType type) {
 	}
 	return vec;
 }
+
+std::vector<Entity*> getEntitiesOfTypeInBox(EntityType type, b2AABB const& aabb) {
+	// TODO impl
+}

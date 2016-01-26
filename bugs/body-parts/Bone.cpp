@@ -47,7 +47,6 @@ Bone::Bone()
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_BONE;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
 Bone::~Bone() {
@@ -57,7 +56,6 @@ Bone::~Bone() {
 }
 
 void Bone::die() {
-	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 void Bone::commit() {

@@ -55,6 +55,9 @@ BodyPart::BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData
 	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->angleOffset);
 	registerAttribute(GENE_ATTRIB_ATTACHMENT_OFFSET, initialData_->lateralOffset);
 	registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
+
+	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+	physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
 }
 
 BodyPart::~BodyPart() {
@@ -566,6 +569,7 @@ void BodyPart::die_tree() {
 	if (!dead_) {
 		die();
 		dead_ = true;
+		physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 		foodValueLeft_ = size_ * density_;
 	}
 	for (int i=0; i<nChildren_; i++)
@@ -674,4 +678,12 @@ std::string BodyPart::getDebugName() const {
 	std::stringstream ss;
 	buildDebugName(ss);
 	return ss.str();
+}
+
+Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
+	BodyPart* pPart = dynamic_cast<BodyPart*>(body.userPointer_);
+	assertDbg(pPart);
+	if (!pPart)
+		return nullptr;
+	return pPart->getOwner();
 }

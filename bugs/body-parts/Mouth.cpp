@@ -50,7 +50,6 @@ Mouth::Mouth()
 	onCollisionEventHandle = physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
 	physBody_.userObjectType_ = ObjectTypes::BPART_MOUTH;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 	physBody_.collisionEventMask_ = EventCategoryFlags::FOOD;
 }
 
@@ -62,7 +61,6 @@ void Mouth::die() {
 		getUpdateList()->remove(this);
 	physBody_.onCollision.remove(onCollisionEventHandle);
 	physBody_.collisionEventMask_ = 0;
-	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 void Mouth::onAddedToParent() {

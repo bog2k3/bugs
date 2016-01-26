@@ -40,6 +40,7 @@ class UpdateList;
 class RenderContext;
 class Bug;
 struct BodyPartInitializationData;
+class Entity;
 
 class BodyPart {
 public:
@@ -144,6 +145,8 @@ public:
 	void consumeFoodValue(float amount);
 
 	Event<void(BodyPart* part)> onDied;
+
+	static Entity* getEntityFromBodyPartPhysBody(PhysicsBody const& body);
 
 protected:
 	// these are used when initializing the body and whenever a new commit is called.

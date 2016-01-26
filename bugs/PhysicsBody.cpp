@@ -26,6 +26,8 @@ PhysicsBody::PhysicsBody(ObjectTypes userObjType, void* userPtr, EventCategoryFl
 
 void PhysicsBody::create(const PhysicsProperties& props) {
 	assertDbg(b2Body_==nullptr);
+	assertDbg(userPointer_ != nullptr);
+	assertDbg(userObjectType_ != ObjectTypes::UNDEFINED);
 	assertDbg(!std::isnan(props.angle));
 	assertDbg(!std::isnan(props.angularVelocity));
 	assertDbg(!std::isnan(props.position.x));

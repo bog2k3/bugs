@@ -34,7 +34,6 @@ ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
 	cacheInitializationData();
 	computeBodyPhysProps();

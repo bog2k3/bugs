@@ -37,7 +37,6 @@ Torso::Torso()
 {
 	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
 Torso::~Torso() {
@@ -161,7 +160,6 @@ void Torso::die() {
 		commit();
 	if (getUpdateList())
 		getUpdateList()->remove(this);
-	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 float Torso::addFood(float mass) {

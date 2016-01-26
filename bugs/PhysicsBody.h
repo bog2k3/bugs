@@ -12,8 +12,10 @@
 #include "math/box2glm.h"
 #include "ObjectTypesAndFlags.h"
 #include <glm/vec2.hpp>
+#include <functional>
 
 class b2Body;
+class Entity;
 
 struct PhysicsProperties {
 	glm::vec2 position;
@@ -43,6 +45,7 @@ public:
 
 	void create(PhysicsProperties const &props);
 	inline glm::vec2 getPosition() { return b2g(b2Body_->GetPosition()); }
+	inline Entity* getAssociatedEntity() { return getEntityFunc_(*this); }
 
 	Event<void(PhysicsBody *other, float impulseMagnitude)> onCollision;
 	Event<void(PhysicsBody* caller)> onDestroy;
@@ -51,8 +54,10 @@ public:
 	b2Body* b2Body_;
 	// the type of object that owns this body
 	ObjectTypes userObjectType_;
-	// the pointer to the object that owns this body (type of object depends on userObjectType_)
+	// the pointer MUST be set to the object that owns this body (type of object depends on userObjectType_)
 	void* userPointer_;
+	// this callback MUST be set to a valid function that will return the associated entity of this body
+	std::function<Entity*(PhysicsBody const& body)> getEntityFunc_;
 
 	// bit field for the categories that this object belongs to:
 	EventCategoryFlags::type categoryFlags_;

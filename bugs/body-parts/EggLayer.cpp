@@ -65,7 +65,6 @@ EggLayer::EggLayer()
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_EGGLAYER;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
 EggLayer::~EggLayer() {
@@ -77,7 +76,6 @@ EggLayer::~EggLayer() {
 void EggLayer::die() {
 	if (getUpdateList())
 		getUpdateList()->remove(this);
-	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 float EggLayer::getMass_tree() {

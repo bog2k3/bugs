@@ -27,7 +27,6 @@ Nose::Nose()
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_NOSE;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 
 //	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, 0, data->inputVMSCoord[0]);
 //	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, 1, data->inputVMSCoord[1]);
@@ -138,7 +137,6 @@ void Nose::commit() {
 void Nose::die() {
 	if (getUpdateList())
 		getUpdateList()->remove(this);
-	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
 
 

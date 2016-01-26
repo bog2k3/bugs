@@ -39,7 +39,6 @@ Gripper::Gripper()
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_GRIPPER;
 	physBody_.userPointer_ = this;
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 }
 
 float Gripper::getInputVMSCoord(unsigned index) const {
@@ -139,5 +138,4 @@ void Gripper::die() {
 	setActive(false);
 	if (getUpdateList())
 		getUpdateList()->remove(this);
-	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 }
