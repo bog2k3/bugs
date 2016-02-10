@@ -186,7 +186,7 @@ std::vector<Entity*> World::getEntities(Entity::FunctionalityFlags filterFlags) 
 	return vec;
 }
 
-std::vector<Entity*> World::getEntitiesOfType(EntityType type) {
+std::vector<Entity*> World::getEntities(EntityType type) {
 	std::vector<Entity*> vec;
 	for (auto &e : entities) {
 		if (e->getEntityType() == type && !e->isZombie())

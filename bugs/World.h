@@ -17,6 +17,7 @@
 
 class b2World;
 class b2Body;
+struct b2AABB;
 class PhysDestroyListener;
 
 class World : public IOperationSpatialLocator, public b2QueryCallback {
@@ -50,7 +51,7 @@ public:
 	// returns a vector of all entities that match ALL of the requested features
 	std::vector<Entity*> getEntities(Entity::FunctionalityFlags filterFlags);
 	// returns a vector of all entities of a given type
-	std::vector<Entity*> getEntitiesOfType(EntityType type);
+	std::vector<Entity*> getEntities(EntityType type);
 
 	// we have physBody->getEntity(), so:
 	std::vector<Entity*> getEntitiesOfTypeInBox(EntityType type, b2AABB const& aabb);
