@@ -22,8 +22,8 @@ public:
 	FunctionalityFlags getFunctionalityFlags() override {
 		return FF_UPDATABLE | FF_DRAWABLE;
 	}
-	static constexpr EntityType entityType = ENTITY_FOOD_CHUNK;
-	virtual EntityType getEntityType() override { return entityType; }
+	static constexpr EntityType::Values entityType = EntityType::FOOD_CHUNK;
+	virtual EntityType::Values getEntityType() override { return entityType; }
 
 	void update(float dt) override;
 

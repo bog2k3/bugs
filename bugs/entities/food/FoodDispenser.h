@@ -18,8 +18,8 @@ public:
 	FoodDispenser(glm::vec2 const &position, float direction);
 	virtual ~FoodDispenser();
 
-	static constexpr EntityType entityType = ENTITY_FOOD_DISPENSER;
-	virtual EntityType getEntityType() override { return entityType; }
+	static constexpr EntityType::Values entityType = EntityType::FOOD_DISPENSER;
+	virtual EntityType::Values getEntityType() override { return entityType; }
 
 	FunctionalityFlags getFunctionalityFlags() override { return FF_UPDATABLE | FF_SERIALIZABLE; }
 

@@ -17,7 +17,7 @@ class IOperationSpatialLocator {
 public:
 	virtual ~IOperationSpatialLocator() {}
 
-	virtual b2Body* getBodyAtPos(glm::vec2 pos) = 0;
+	virtual b2Body* getBodyAtPos(glm::vec2 const& pos) = 0;
 };
 
 #endif /* INPUT_IOPERATIONSPATIALLOCATOR_H_ */

@@ -41,8 +41,8 @@ public:
 	FunctionalityFlags getFunctionalityFlags() override {
 		return FF_UPDATABLE | FF_DRAWABLE | FF_SERIALIZABLE;
 	}
-	static constexpr EntityType entityType = ENTITY_BUG;
-	virtual EntityType getEntityType() override { return entityType; }
+	static constexpr EntityType::Values entityType = EntityType::BUG;
+	virtual EntityType::Values getEntityType() override { return entityType; }
 
 	// deserialize a Bug from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);

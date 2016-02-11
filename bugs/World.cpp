@@ -63,7 +63,7 @@ bool World::ReportFixture(b2Fixture* fixture) {
 	return true;
 }
 
-b2Body* World::getBodyAtPos(glm::vec2 pos) {
+b2Body* World::getBodyAtPos(glm::vec2 const& pos) {
 	assertDbg(b2QueryResult.empty());
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(0.005f, 0.005f);
@@ -82,7 +82,7 @@ b2Body* World::getBodyAtPos(glm::vec2 pos) {
 	return ret;
 }
 
-void World::getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies) {
+void World::getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies) {
 	assertDbg(b2QueryResult.empty());
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(radius, radius);
@@ -186,7 +186,7 @@ std::vector<Entity*> World::getEntities(Entity::FunctionalityFlags filterFlags) 
 	return vec;
 }
 
-std::vector<Entity*> World::getEntities(EntityType type) {
+std::vector<Entity*> World::getEntities(EntityType::Values type) {
 	std::vector<Entity*> vec;
 	for (auto &e : entities) {
 		if (e->getEntityType() == type && !e->isZombie())
@@ -199,6 +199,17 @@ std::vector<Entity*> World::getEntities(EntityType type) {
 	return vec;
 }
 
-std::vector<Entity*> getEntitiesOfTypeInBox(EntityType type, b2AABB const& aabb) {
-	// TODO impl
+std::vector<Entity*> World::getEntitiesInArea(EntityType::Values type, glm::vec2 const& pos, float radius, bool clipToCircle) {
+	std::vector<b2Body*> bodies;
+	getBodiesInArea(pos, radius, clipToCircle, bodies);
+	std::vector<Entity*> ret;
+	for (auto b : bodies) {
+		PhysicsBody* pBody = dynamic_cast<PhysicsBody*>(b->GetUserData());
+		assertDbg(pBody && "All b2Bodies should have a PhysicsBody associated!");
+		Entity* pEnt = pBody->getAssociatedEntity();
+		assertDbg(pEnt && "All PhysicsBodies must belong to an entity!");
+		if (type && pEnt->getEntityType())
+			ret.push_back(pEnt);
+	}
+	return ret;
 }

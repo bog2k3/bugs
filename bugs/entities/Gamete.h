@@ -21,8 +21,8 @@ public:
 	Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass);
 	virtual ~Gamete();
 
-	static constexpr EntityType entityType = ENTITY_GAMETE;
-	virtual EntityType getEntityType() override { return entityType; }
+	static constexpr EntityType::Values entityType = EntityType::GAMETE;
+	virtual EntityType::Values getEntityType() override { return entityType; }
 
 	// deserialize a Gamete from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);

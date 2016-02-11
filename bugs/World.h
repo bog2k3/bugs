@@ -31,8 +31,8 @@ public:
 	 */
 	void reset();
 
-	b2Body* getBodyAtPos(glm::vec2 pos) override;
-	void getBodiesInArea(glm::vec2 pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies);
+	b2Body* getBodyAtPos(glm::vec2 const& pos) override;
+	void getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies);
 
 	/// b2QueryCallback::
 	/// Called for each fixture found in the query AABB.
@@ -51,10 +51,10 @@ public:
 	// returns a vector of all entities that match ALL of the requested features
 	std::vector<Entity*> getEntities(Entity::FunctionalityFlags filterFlags);
 	// returns a vector of all entities of a given type
-	std::vector<Entity*> getEntities(EntityType type);
+	std::vector<Entity*> getEntities(EntityType::Values type);
 
 	// we have physBody->getEntity(), so:
-	std::vector<Entity*> getEntitiesOfTypeInBox(EntityType type, b2AABB const& aabb);
+	std::vector<Entity*> getEntitiesInArea(EntityType::Values type, glm::vec2 const& pos, float radius, bool clipToCircle);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);

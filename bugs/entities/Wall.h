@@ -23,8 +23,8 @@ public:
 		return FF_SERIALIZABLE;
 	}
 
-	static constexpr EntityType entityType = ENTITY_WALL;
-	virtual EntityType getEntityType() override { return entityType; }
+	static constexpr EntityType::Values entityType = EntityType::WALL;
+	virtual EntityType::Values getEntityType() override { return entityType; }
 
 	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::WALL; }
 	// deserialize a Wall from the stream and add it to the world

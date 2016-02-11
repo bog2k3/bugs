@@ -31,7 +31,7 @@ public:
 	virtual void draw(RenderContext const& ctx) {}
 	virtual void serialize(BinaryStream &stream);
 	virtual SerializationObjectTypes getSerializationType();
-	virtual EntityType getEntityType() = 0;
+	virtual EntityType::Values getEntityType() = 0;
 
 	void destroy();
 	bool isZombie() { return markedForDeletion_; }
