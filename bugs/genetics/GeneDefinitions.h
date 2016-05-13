@@ -2,7 +2,7 @@
  *
  * GeneDefinitions.h
  *  Created on: Dec 3, 2014
- *      Author: bog
+ *	  Author: bog
  */
 
 #ifndef GENETICS_GENEDEFINITIONS_H_
@@ -14,29 +14,30 @@
 
 // ----------------------------------- gene_type -------------------------------//
 
-typedef uint8_t gene_type;
+enum class gene_type : uint8_t {
 
-constexpr gene_type GENE_TYPE_INVALID = 0;
-constexpr gene_type GENE_TYPE_NO_OP = 1;			// no operation gene; dummy.
+	INVALID = 0,
+	NO_OP = 1,					// no operation gene; dummy.
 #ifdef ENABLE_START_MARKER_GENES
-constexpr gene_type GENE_TYPE_START_MARKER = 2;		// marks the beginning of a separate sequence of genes
+	START_MARKER = 2,			// marks the beginning of a separate sequence of genes
 #endif
-constexpr gene_type GENE_TYPE_STOP = 3;				// signals the ribosome to stop reading genes after this one
-constexpr gene_type GENE_TYPE_SKIP = 4;				// control gene -> skip next N genes if all conditions are met
-constexpr gene_type GENE_TYPE_PROTEIN = 5;			// protein gene -> produces a specific protein type in a body-part's segment
-constexpr gene_type GENE_TYPE_OFFSET = 6;			// controls the relative genome offset of a child part
-constexpr gene_type GENE_TYPE_JOINT_OFFSET = 7;		// controls the relative genome offset of this part's upstream Joint relative to this one
-constexpr gene_type GENE_TYPE_PART_ATTRIBUTE = 8;	// body part attribute - establishes characteristics of certain body parts
-constexpr gene_type GENE_TYPE_BODY_ATTRIBUTE = 9;	// body attribute - controls specific whole-body attributes that do not belong to a specific part,
-													// such as metabolic parameters
-constexpr gene_type GENE_TYPE_SYNAPSE = 10;			// creates or alters a synapse between neurons (cummulative weight)
-constexpr gene_type GENE_TYPE_TRANSFER_FUNC = 11;			// controls the transfer function of a neuron (cummulative)
-constexpr gene_type GENE_TYPE_NEURAL_BIAS = 12;		// neural bias (cummulative) - is added to the weighted sum of the inputs
-constexpr gene_type GENE_TYPE_NEURON_OUTPUT_COORD = 13;		// output coord (in MVMS) from a neuron
-constexpr gene_type GENE_TYPE_NEURON_INPUT_COORD = 14;		// input coord (in SVMS) to a neuron
-constexpr gene_type GENE_TYPE_NEURAL_PARAM = 15;	// neural parameter - used by some types of neurons for specific purposes
+	STOP = 3,					// signals the ribosome to stop reading genes after this one
+	SKIP = 4,					// control gene -> skip next N genes if all conditions are met
+	PROTEIN = 5,				// protein gene -> produces a specific protein type in a body-part's segment
+	OFFSET = 6,					// controls the relative genome offset of a child part
+	JOINT_OFFSET = 7,			// controls the relative genome offset of this part's upstream Joint relative to this one
+	PART_ATTRIBUTE = 8,			// body part attribute - establishes characteristics of certain body parts
+	BODY_ATTRIBUTE = 9,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+									// such as metabolic parameters
+	SYNAPSE = 10,				// creates or alters a synapse between neurons (cummulative weight)
+	TRANSFER_FUNC = 11,			// controls the transfer function of a neuron (cummulative)
+	NEURAL_BIAS = 12,			// neural bias (cummulative) - is added to the weighted sum of the inputs
+	NEURON_OUTPUT_COORD = 13,	// output coord (in MVMS) from a neuron
+	NEURON_INPUT_COORD = 14,	// input coord (in SVMS) to a neuron
+	NEURAL_PARAM = 15,			// neural parameter - used by some types of neurons for specific purposes
 
-constexpr gene_type GENE_TYPE_END = 15;
+	END = 15
+};
 
 // ----------------------------------- gene_protein_type -------------------------------//
 

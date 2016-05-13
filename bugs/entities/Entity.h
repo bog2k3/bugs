@@ -18,14 +18,15 @@ class Entity {
 public:
 	virtual ~Entity();
 
-	typedef unsigned FunctionalityFlags;
-	static constexpr FunctionalityFlags FF_NONE			= 0;
-	static constexpr FunctionalityFlags FF_DRAWABLE		= 1;
-	static constexpr FunctionalityFlags FF_UPDATABLE	= 2;
-	static constexpr FunctionalityFlags FF_SERIALIZABLE	= 4;
+	enum class FunctionalityFlags {
+		NONE			= 0,
+		DRAWABLE		= 1,
+		UPDATABLE		= 2,
+		SERIALIZABLE	= 4,
+	};
 
 	// these flags MUST NOT change during the life time of the object, or else UNDEFINED BEHAVIOUR
-	virtual FunctionalityFlags getFunctionalityFlags() { return FF_NONE; }
+	virtual FunctionalityFlags getFunctionalityFlags() { return FunctionalityFlags::NONE; }
 
 	virtual void update(float dt) {}
 	virtual void draw(RenderContext const& ctx) {}

@@ -13,6 +13,7 @@
 #include "../genetics/Genome.h"
 #include "../PhysicsBody.h"
 #include "../serialization/objectTypes.h"
+#include "../utils/bitFlags.h"
 
 #define DEBUG_DRAW_GAMETE
 
@@ -21,14 +22,17 @@ public:
 	Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass);
 	virtual ~Gamete();
 
-	static constexpr EntityType entityType = ENTITY_GAMETE;
+	static constexpr EntityType entityType = EntityType::GAMETE;
 	virtual EntityType getEntityType() override { return entityType; }
 
 	// deserialize a Gamete from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
 
 #ifdef DEBUG_DRAW_GAMETE
-	FunctionalityFlags getFunctionalityFlags() override { return FF_DRAWABLE | FF_UPDATABLE; }
+	FunctionalityFlags getFunctionalityFlags() override { return
+			FunctionalityFlags::DRAWABLE |
+			FunctionalityFlags::UPDATABLE;
+	}
 #endif
 
 	void update(float dt) override;

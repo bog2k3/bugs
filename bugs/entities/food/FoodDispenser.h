@@ -12,16 +12,20 @@
 #include "../enttypes.h"
 #include "../../PhysicsBody.h"
 #include "../../serialization/objectTypes.h"
+#include "../../utils/bitFlags.h"
 
 class FoodDispenser: public Entity {
 public:
 	FoodDispenser(glm::vec2 const &position, float direction);
 	virtual ~FoodDispenser();
 
-	static constexpr EntityType entityType = ENTITY_FOOD_DISPENSER;
+	static constexpr EntityType entityType = EntityType::FOOD_DISPENSER;
 	virtual EntityType getEntityType() override { return entityType; }
 
-	FunctionalityFlags getFunctionalityFlags() override { return FF_UPDATABLE | FF_SERIALIZABLE; }
+	FunctionalityFlags getFunctionalityFlags() override { return
+			FunctionalityFlags::UPDATABLE |
+			FunctionalityFlags::SERIALIZABLE;
+	}
 
 	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::FOOD_DISPENSER; }
 	// deserialize a dispenser from the stream and add it to the world

@@ -14,8 +14,8 @@
 #include <memory>
 
 static constexpr EntityType NoseDetectableFlavours[] {
-	ENTITY_FOOD_CHUNK,
-	ENTITY_BUG,
+	EntityType::	FOOD_CHUNK,
+	EntityType::	BUG,
 };
 static constexpr size_t NoseDetectableFlavoursCount = sizeof(NoseDetectableFlavours)/sizeof(NoseDetectableFlavours[0]);
 

@@ -16,7 +16,7 @@ void Gene::update_meta_genes_vec() {
 	metaGenes.push_back(&chance_to_swap);
 
 	switch (type) {
-	case GENE_TYPE_PROTEIN:
+	case gene_type::PROTEIN:
 		metaGenes.push_back(&data.gene_protein.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_protein.maxDepth.changeAmount);
 		metaGenes.push_back(&data.gene_protein.minDepth.chanceToMutate);
@@ -26,7 +26,7 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_protein.targetSegment.chanceToMutate);
 		metaGenes.push_back(&data.gene_protein.targetSegment.changeAmount);
 		break;
-	case GENE_TYPE_OFFSET:
+	case gene_type::OFFSET:
 		metaGenes.push_back(&data.gene_offset.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_offset.maxDepth.changeAmount);
 		metaGenes.push_back(&data.gene_offset.minDepth.chanceToMutate);
@@ -36,7 +36,7 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_offset.targetSegment.chanceToMutate);
 		metaGenes.push_back(&data.gene_offset.targetSegment.changeAmount);
 		break;
-	case GENE_TYPE_JOINT_OFFSET:
+	case gene_type::JOINT_OFFSET:
 		metaGenes.push_back(&data.gene_joint_offset.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_joint_offset.maxDepth.changeAmount);
 		metaGenes.push_back(&data.gene_joint_offset.minDepth.chanceToMutate);
@@ -44,7 +44,7 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_joint_offset.offset.chanceToMutate);
 		metaGenes.push_back(&data.gene_joint_offset.offset.changeAmount);
 		break;
-	case GENE_TYPE_PART_ATTRIBUTE:
+	case gene_type::PART_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_attribute.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_attribute.maxDepth.changeAmount);
 		metaGenes.push_back(&data.gene_attribute.minDepth.chanceToMutate);
@@ -52,7 +52,7 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_attribute.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_attribute.value.changeAmount);
 		break;
-	case GENE_TYPE_SYNAPSE:
+	case gene_type::SYNAPSE:
 		metaGenes.push_back(&data.gene_synapse.from.chanceToMutate);
 		metaGenes.push_back(&data.gene_synapse.from.changeAmount);
 		metaGenes.push_back(&data.gene_synapse.to.chanceToMutate);
@@ -62,37 +62,37 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_synapse.priority.chanceToMutate);
 		metaGenes.push_back(&data.gene_synapse.priority.changeAmount);
 		break;
-	case GENE_TYPE_NEURON_INPUT_COORD:
+	case gene_type::NEURON_INPUT_COORD:
 		metaGenes.push_back(&data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate);
 		metaGenes.push_back(&data.gene_neuron_input.destNeuronVirtIndex.changeAmount);
 		metaGenes.push_back(&data.gene_neuron_input.inCoord.chanceToMutate);
 		metaGenes.push_back(&data.gene_neuron_input.inCoord.changeAmount);
 		break;
-	case GENE_TYPE_NEURON_OUTPUT_COORD:
+	case gene_type::NEURON_OUTPUT_COORD:
 		metaGenes.push_back(&data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate);
 		metaGenes.push_back(&data.gene_neuron_output.srcNeuronVirtIndex.changeAmount);
 		metaGenes.push_back(&data.gene_neuron_output.outCoord.chanceToMutate);
 		metaGenes.push_back(&data.gene_neuron_output.outCoord.changeAmount);
 		break;
-	case GENE_TYPE_TRANSFER_FUNC:
+	case gene_type::TRANSFER_FUNC:
 		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.chanceToMutate);
 		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.changeAmount);
 		metaGenes.push_back(&data.gene_transfer_function.functionID.chanceToMutate);
 		metaGenes.push_back(&data.gene_transfer_function.functionID.changeAmount);
 		break;
-	case GENE_TYPE_NEURAL_BIAS:
+	case gene_type::NEURAL_BIAS:
 		metaGenes.push_back(&data.gene_neural_constant.targetNeuron.chanceToMutate);
 		metaGenes.push_back(&data.gene_neural_constant.targetNeuron.changeAmount);
 		metaGenes.push_back(&data.gene_neural_constant.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_neural_constant.value.changeAmount);
 		break;
-	case GENE_TYPE_NEURAL_PARAM:
+	case gene_type::NEURAL_PARAM:
 		metaGenes.push_back(&data.gene_neural_param.targetNeuron.chanceToMutate);
 		metaGenes.push_back(&data.gene_neural_param.targetNeuron.changeAmount);
 		metaGenes.push_back(&data.gene_neural_param.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_neural_param.value.changeAmount);
 		break;
-	case GENE_TYPE_BODY_ATTRIBUTE:
+	case gene_type::BODY_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_body_attribute.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_body_attribute.value.changeAmount);
 		break;
@@ -219,23 +219,23 @@ Gene Gene::createRandomSkipGene(int spaceLeftAfter) {
 Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 	std::vector<std::pair<gene_type, double>> geneChances {
 		// these are relative chances:
-		{GENE_TYPE_BODY_ATTRIBUTE, 1.0},
-		{GENE_TYPE_PROTEIN, 1.5},
-		{GENE_TYPE_PART_ATTRIBUTE, 2.1},
-		{GENE_TYPE_OFFSET, 0.3},
-		{GENE_TYPE_JOINT_OFFSET, 0.3},
-		{GENE_TYPE_NEURAL_BIAS, 1.0},
-		{GENE_TYPE_NEURAL_PARAM, 0.8},
-		{GENE_TYPE_TRANSFER_FUNC, 0.5},
-		{GENE_TYPE_SYNAPSE, 1.5},
-		{GENE_TYPE_NEURON_INPUT_COORD, 0.5},
-		{GENE_TYPE_NEURON_OUTPUT_COORD, 0.5},
-		{GENE_TYPE_SKIP, 0.12},
+		{gene_type::BODY_ATTRIBUTE, 1.0},
+		{gene_type::PROTEIN, 1.5},
+		{gene_type::PART_ATTRIBUTE, 2.1},
+		{gene_type::OFFSET, 0.3},
+		{gene_type::JOINT_OFFSET, 0.3},
+		{gene_type::NEURAL_BIAS, 1.0},
+		{gene_type::NEURAL_PARAM, 0.8},
+		{gene_type::TRANSFER_FUNC, 0.5},
+		{gene_type::SYNAPSE, 1.5},
+		{gene_type::NEURON_INPUT_COORD, 0.5},
+		{gene_type::NEURON_OUTPUT_COORD, 0.5},
+		{gene_type::SKIP, 0.12},
 #ifdef ENABLE_START_MARKER_GENES
-		{GENE_TYPE_START_MARKER, 0.1},
+		{gene_type::START_MARKER, 0.1},
 #endif
-		{GENE_TYPE_STOP, 0.09},
-		{GENE_TYPE_NO_OP, 0.09},
+		{gene_type::STOP, 0.09},
+		{gene_type::NO_OP, 0.09},
 	};
 	// normalize chances to make them sum up to 1.0
 	double total = 0;
@@ -245,7 +245,7 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		x.second /= total;
 	double dice = randd();
 	double floor = 0;
-	gene_type type = GENE_TYPE_INVALID;
+	gene_type type = gene_type::INVALID;
 	for (auto &x : geneChances) {
 		if (dice - floor < x.second) {
 			type = x.first;
@@ -254,73 +254,73 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		floor += x.second;
 	}
 	switch (type) {
-	case GENE_TYPE_BODY_ATTRIBUTE:
+	case gene_type::BODY_ATTRIBUTE:
 		return createRandomBodyAttribGene();
-	case GENE_TYPE_PROTEIN:
+	case gene_type::PROTEIN:
 		return createRandomProteinGene();
-	case GENE_TYPE_OFFSET:
+	case gene_type::OFFSET:
 		return createRandomOffsetGene(spaceLeftAfter);
-	case GENE_TYPE_JOINT_OFFSET:
+	case gene_type::JOINT_OFFSET:
 		return createRandomJointOffsetGene(spaceLeftAfter);
-	case GENE_TYPE_NEURON_INPUT_COORD:
+	case gene_type::NEURON_INPUT_COORD:
 		return createRandomNeuronInputCoordGene(nNeurons);
-	case GENE_TYPE_NEURON_OUTPUT_COORD:
+	case gene_type::NEURON_OUTPUT_COORD:
 		return createRandomNeuronOutputCoordGene(nNeurons);
-	case GENE_TYPE_NEURAL_BIAS:
+	case gene_type::NEURAL_BIAS:
 		return createRandomNeuralBiasGene(nNeurons);
-	case GENE_TYPE_PART_ATTRIBUTE:
+	case gene_type::PART_ATTRIBUTE:
 		return createRandomAttribGene();
-	case GENE_TYPE_SKIP:
+	case gene_type::SKIP:
 		return createRandomSkipGene(spaceLeftAfter);
 #ifdef ENABLE_START_MARKER_GENES
-	case GENE_TYPE_START_MARKER:
+	case gene_type::START_MARKER:
 		return GeneStartMarker();
 #endif
-	case GENE_TYPE_STOP:
+	case gene_type::STOP:
 		return GeneStop();
-	case GENE_TYPE_SYNAPSE:
+	case gene_type::SYNAPSE:
 		return createRandomSynapseGene(nNeurons);
-	case GENE_TYPE_TRANSFER_FUNC:
+	case gene_type::TRANSFER_FUNC:
 		return createRandomTransferFuncGene(nNeurons);
-	case GENE_TYPE_NO_OP:
+	case gene_type::NO_OP:
 		return GeneNoOp();
 	default:
-		ERROR("unhandled gene random type: " << type);
+		ERROR("unhandled gene random type: " << (uint)type);
 		return GeneStop();
 	}
 }
 
 char Gene::getSymbol() const {
 	switch (type) {
-	case GENE_TYPE_BODY_ATTRIBUTE:
+	case gene_type::BODY_ATTRIBUTE:
 		return 'B';
-	case GENE_TYPE_JOINT_OFFSET:
+	case gene_type::JOINT_OFFSET:
 		return 'J';
-	case GENE_TYPE_NEURAL_BIAS:
+	case gene_type::NEURAL_BIAS:
 		return 'C';
-	case GENE_TYPE_NEURON_INPUT_COORD:
+	case gene_type::NEURON_INPUT_COORD:
 		return 'I';
-	case GENE_TYPE_NEURON_OUTPUT_COORD:
+	case gene_type::NEURON_OUTPUT_COORD:
 		return 'O';
-	case GENE_TYPE_NO_OP:
+	case gene_type::NO_OP:
 		return '_';
-	case GENE_TYPE_OFFSET:
+	case gene_type::OFFSET:
 		return '@';
-	case GENE_TYPE_PART_ATTRIBUTE:
+	case gene_type::PART_ATTRIBUTE:
 		return 'A';
-	case GENE_TYPE_PROTEIN:
+	case gene_type::PROTEIN:
 		return 'P';
-	case GENE_TYPE_SKIP:
+	case gene_type::SKIP:
 		return '>';
 #ifdef ENABLE_START_MARKER_GENES
-	case GENE_TYPE_START_MARKER:
+	case gene_type::START_MARKER:
 #endif
 		return ':';
-	case GENE_TYPE_STOP:
+	case gene_type::STOP:
 		return '!';
-	case GENE_TYPE_SYNAPSE:
+	case gene_type::SYNAPSE:
 		return 'S';
-	case GENE_TYPE_TRANSFER_FUNC:
+	case gene_type::TRANSFER_FUNC:
 		return 'T';
 	default:
 		return '?';

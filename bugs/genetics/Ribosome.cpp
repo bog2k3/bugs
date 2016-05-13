@@ -168,12 +168,12 @@ bool Ribosome::step() {
 			auto &c1 = bug_->genome_.first.genes;
 			auto &c2 = bug_->genome_.second.genes;
 			auto &offs = activeSet_[i].second.crtGenomePos;
-			while ((c1.size() > offs && c1[offs].type != GENE_TYPE_START_MARKER)
-				|| (c2.size() > offs && c2[offs].type != GENE_TYPE_START_MARKER)) {
+			while ((c1.size() > offs && c1[offs].type != gene_type::START_MARKER)
+				|| (c2.size() > offs && c2[offs].type != gene_type::START_MARKER)) {
 				activeSet_[i].second.crtGenomePos++;
 				// did we hit a marker?
-				if ((c1.size() > offs && c1[offs].type == GENE_TYPE_START_MARKER)
-					|| (c2.size() > offs && c2[offs].type == GENE_TYPE_START_MARKER))
+				if ((c1.size() > offs && c1[offs].type == gene_type::START_MARKER)
+					|| (c2.size() > offs && c2[offs].type == gene_type::START_MARKER))
 					break;
 			}
 		}
@@ -187,8 +187,8 @@ bool Ribosome::step() {
 			g2 = &bug_->genome_.second.genes[offset];
 		bool reachedTheEnd = !g1 && !g2;
 		if (reachedTheEnd
-				|| (g1 && g1->type == GENE_TYPE_STOP)
-				|| (g2 && g2->type == GENE_TYPE_STOP)) {
+				|| (g1 && g1->type == gene_type::STOP)
+				|| (g2 && g2->type == gene_type::STOP)) {
 			// so much for this development path;
 			// grow body parts from all segments now
 			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
@@ -214,12 +214,12 @@ bool Ribosome::step() {
 			decodeGene(*g2, p, &activeSet_[i].second, true);
 
 		int skipCount = 0;
-		if (g1 && g1->type == GENE_TYPE_SKIP) {
+		if (g1 && g1->type == gene_type::SKIP) {
 			int depth = p->getDepth();
 			if (depth <= g1->data.gene_skip.maxDepth && depth >= g1->data.gene_skip.minDepth)
 				skipCount += g1->data.gene_skip.count;
 		}
-		if (g2 && g2->type == GENE_TYPE_SKIP) {
+		if (g2 && g2->type == gene_type::SKIP) {
 			int depth = p->getDepth();
 			if (depth <= g2->data.gene_skip.maxDepth && depth >= g2->data.gene_skip.minDepth) {
 				if (skipCount)
@@ -405,38 +405,38 @@ void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
 
 void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
 	switch (g.type) {
-	case GENE_TYPE_NO_OP:
+	case gene_type::NO_OP:
 		break;
 #ifdef ENABLE_START_MARKER_GENES
-	case GENE_TYPE_START_MARKER:
+	case gene_type::START_MARKER:
 		break;
 #endif
-	case GENE_TYPE_SKIP:
+	case gene_type::SKIP:
 		break;
-	case GENE_TYPE_STOP:
+	case gene_type::STOP:
 		break;
-	case GENE_TYPE_PROTEIN:
+	case gene_type::PROTEIN:
 		decodeProtein(g.data.gene_protein, part, growthData);
 		break;
-	case GENE_TYPE_OFFSET:
+	case gene_type::OFFSET:
 		decodeOffset(g.data.gene_offset, part, growthData);
 		break;
-	case GENE_TYPE_JOINT_OFFSET:
+	case gene_type::JOINT_OFFSET:
 		decodeJointOffset(g.data.gene_joint_offset, part);
 		break;
-	case GENE_TYPE_PART_ATTRIBUTE:
+	case gene_type::PART_ATTRIBUTE:
 		decodePartAttrib(g.data.gene_attribute, part);
 		break;
-	case GENE_TYPE_BODY_ATTRIBUTE:
+	case gene_type::BODY_ATTRIBUTE:
 		bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
 		break;
-	case GENE_TYPE_SYNAPSE:
+	case gene_type::SYNAPSE:
 		// only from depth 0 (torso) must the neural genes be taken into account
 		if (!part || part->getType() == BodyPartType::TORSO) {
 			decodeSynapse(g.data.gene_synapse);
 		}
 		break;
-	case GENE_TYPE_NEURON_OUTPUT_COORD:
+	case gene_type::NEURON_OUTPUT_COORD:
 		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
@@ -444,7 +444,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 				decodeNeuronOutputCoord(g.data.gene_neuron_output);
 		}
 		break;
-	case GENE_TYPE_NEURON_INPUT_COORD:
+	case gene_type::NEURON_INPUT_COORD:
 		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
@@ -452,7 +452,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 				decodeNeuronInputCoord(g.data.gene_neuron_input);
 		}
 		break;
-	case GENE_TYPE_TRANSFER_FUNC:
+	case gene_type::TRANSFER_FUNC:
 		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
@@ -460,7 +460,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 				decodeTransferFn(g.data.gene_transfer_function);
 		}
 		break;
-	case GENE_TYPE_NEURAL_BIAS:
+	case gene_type::NEURAL_BIAS:
 		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);
@@ -468,7 +468,7 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 				decodeNeuralBias(g.data.gene_neural_constant);
 		}
 		break;
-	case GENE_TYPE_NEURAL_PARAM:
+	case gene_type::NEURAL_PARAM:
 		if (!part || part->getType() == BodyPartType::TORSO) {
 			if (deferNeural)
 				neuralGenes_.push_back(&g);

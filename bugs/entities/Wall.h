@@ -20,10 +20,10 @@ public:
 	virtual ~Wall();
 
 	FunctionalityFlags getFunctionalityFlags() override {
-		return FF_SERIALIZABLE;
+		return FunctionalityFlags::SERIALIZABLE;
 	}
 
-	static constexpr EntityType entityType = ENTITY_WALL;
+	static constexpr EntityType entityType = EntityType::WALL;
 	virtual EntityType getEntityType() override { return entityType; }
 
 	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::WALL; }

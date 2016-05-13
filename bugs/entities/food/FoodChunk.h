@@ -10,8 +10,9 @@
 
 #include "../Entity.h"
 #include "../enttypes.h"
-#include "../../utils/Event.h"
 #include "../../PhysicsBody.h"
+#include "../../utils/Event.h"
+#include "../../utils/bitFlags.h"
 
 #define DEBUG_DRAW_FOOD_CHUNK
 
@@ -19,10 +20,11 @@ class FoodChunk: public Entity {
 public:
 	FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass);
 	virtual ~FoodChunk() override;
-	FunctionalityFlags getFunctionalityFlags() override {
-		return FF_UPDATABLE | FF_DRAWABLE;
+	FunctionalityFlags getFunctionalityFlags() override { return
+			FunctionalityFlags::UPDATABLE |
+			FunctionalityFlags::DRAWABLE;
 	}
-	static constexpr EntityType entityType = ENTITY_FOOD_CHUNK;
+	static constexpr EntityType entityType = EntityType::FOOD_CHUNK;
 	virtual EntityType getEntityType() override { return entityType; }
 
 	void update(float dt) override;

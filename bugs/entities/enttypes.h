@@ -8,12 +8,12 @@
 #ifndef ENTITIES_ENTTYPES_H_
 #define ENTITIES_ENTTYPES_H_
 
-typedef unsigned EntityType;	// bitfield
-
-static constexpr EntityType ENTITY_BUG					= 1;
-static constexpr EntityType ENTITY_GAMETE				= 2;
-static constexpr EntityType ENTITY_WALL					= 4;
-static constexpr EntityType ENTITY_FOOD_DISPENSER		= 8;
-static constexpr EntityType ENTITY_FOOD_CHUNK			= 16;
+enum class EntityType {	// bitfield
+	BUG					= 1,
+	GAMETE				= 2,
+	WALL				= 4,
+	FOOD_DISPENSER		= 8,
+	FOOD_CHUNK			= 16,
+};
 
 #endif /* ENTITIES_ENTTYPES_H_ */

@@ -16,6 +16,7 @@
 #include "../genetics/CummulativeValue.h"
 #include "../serialization/objectTypes.h"
 #include "../utils/UpdateList.h"
+#include "../utils/bitFlags.h"
 #include <glm/fwd.hpp>
 #include <vector>
 #include <map>
@@ -38,10 +39,12 @@ public:
 
 	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation);
 	virtual ~Bug();
-	FunctionalityFlags getFunctionalityFlags() override {
-		return FF_UPDATABLE | FF_DRAWABLE | FF_SERIALIZABLE;
+	FunctionalityFlags getFunctionalityFlags() override { return
+			FunctionalityFlags::UPDATABLE |
+			FunctionalityFlags::DRAWABLE |
+			FunctionalityFlags::SERIALIZABLE;
 	}
-	static constexpr EntityType entityType = ENTITY_BUG;
+	static constexpr EntityType entityType = EntityType::BUG;
 	virtual EntityType getEntityType() override { return entityType; }
 
 	// deserialize a Bug from the stream and add it to the world

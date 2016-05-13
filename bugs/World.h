@@ -72,6 +72,8 @@ protected:
 
 	void destroyPending();
 	void takeOverPending();
+
+	std::vector<Entity*> getEntities(std::function<bool(Entity const&)> predicate);
 };
 
 #endif /* WORLD_H_ */
