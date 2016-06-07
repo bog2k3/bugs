@@ -54,7 +54,7 @@ public:
 	std::vector<Entity*> getEntities(EntityType type);
 
 	// we have physBody->getEntity(), so:
-	std::vector<Entity*> getEntitiesOfTypeInBox(EntityType type, b2AABB const& aabb);
+	std::vector<Entity*> getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, b2AABB const& aabb);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);

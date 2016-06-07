@@ -7,6 +7,7 @@
 
 #include "BodyPart.h"
 #include "BodyConst.h"
+#include "../entities/Bug.h"
 #include "../math/box2glm.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
@@ -681,7 +682,7 @@ std::string BodyPart::getDebugName() const {
 }
 
 Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
-	BodyPart* pPart = dynamic_cast<BodyPart*>(body.userPointer_);
+	BodyPart* pPart = static_cast<BodyPart*>(body.userPointer_);
 	assertDbg(pPart);
 	if (!pPart)
 		return nullptr;

@@ -11,6 +11,7 @@
 #include "math/box2glm.h"
 #include "utils/log.h"
 #include "utils/assert.h"
+#include "utils/bitFlags.h"
 #include <glm/glm.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
@@ -121,12 +122,12 @@ void World::destroyPending() {
 		});
 		if (it != entities.end()) {
 			Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
-			if (flags & Entity::FF_UPDATABLE) {
+			if ((flags & Entity::FunctionalityFlags::UPDATABLE) != 0) {
 				auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
 				assertDbg(it != entsToUpdate.end());
 				entsToUpdate.erase(it);
 			}
-			if (flags & Entity::FF_DRAWABLE) {
+			if ((flags & Entity::FunctionalityFlags::DRAWABLE) != 0) {
 				auto it = std::find(entsToDraw.begin(), entsToDraw.end(), e);
 				assertDbg(it != entsToDraw.end());
 				entsToDraw.erase(it);
@@ -145,10 +146,10 @@ void World::takeOverPending() {
 	for (auto &e : takeOverNow) {
 		// add to update and draw lists if appropriate
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
-		if (flags & Entity::FF_DRAWABLE) {
+		if ((flags & Entity::FunctionalityFlags::DRAWABLE) != 0) {
 			entsToDraw.push_back(e.get());
 		}
-		if (flags & Entity::FF_UPDATABLE) {
+		if ((flags & Entity::FunctionalityFlags::UPDATABLE) != 0) {
 			entsToUpdate.push_back(e.get());
 		}
 		e->managed_ = true;
@@ -199,6 +200,6 @@ std::vector<Entity*> World::getEntities(EntityType type) {
 	return vec;
 }
 
-std::vector<Entity*> getEntitiesOfTypeInBox(EntityType type, b2AABB const& aabb) {
+std::vector<Entity*> getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, b2AABB const& aabb) {
 	// TODO impl
 }

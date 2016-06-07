@@ -29,7 +29,7 @@ bool spawn(int &ret) {
 }
 
 int main(int argc, char* argv[]) {
-	LOGGER("watchdog");
+	LOGPREFIX("watchdog");
 
 	if (argc < 2) {
 		ERROR("Need argument (program to spawn)");

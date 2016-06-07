@@ -283,7 +283,7 @@ int main(int argc, char* argv[]) {
 		sigViewer.addSignal("frameTime", &frameTime, 50, 0.1f, glm::vec3(1.f, 0.2f, 0.2f));
 
 #ifdef DEBUG
-		Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntitiesOfType(ENTITY_BUG)[0]);
+		Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
 		static constexpr float neuronUpdateTime = 0.05f;
 		float n14_out = 0;
 		float n14_i0=0, n14_i1=0;
