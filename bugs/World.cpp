@@ -7,6 +7,7 @@
 
 #include "World.h"
 #include "entities/Entity.h"
+#include "PhysicsBody.h"
 #include "math/math2D.h"
 #include "math/box2glm.h"
 #include "utils/log.h"
@@ -200,6 +201,15 @@ std::vector<Entity*> World::getEntities(EntityType type) {
 	return vec;
 }
 
-std::vector<Entity*> getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, b2AABB const& aabb) {
-	// TODO impl
+std::vector<Entity*> World::getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 pos, float radius, bool clipToCircle) {
+	std::vector<b2Body*> bodies;
+	getBodiesInArea(pos, radius, clipToCircle, bodies);
+	std::vector<Entity*> out;
+	for (b2Body* b : bodies) {
+		PhysicsBody* pb = PhysicsBody::getForB2Body(b);
+		if (pb == nullptr)
+			continue;
+		out.push_back(pb->getAssociatedEntity());
+	}
+	return out;
 }

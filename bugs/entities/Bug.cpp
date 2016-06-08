@@ -394,3 +394,7 @@ float Bug::getNeuronData(int neuronIndex) {
 		return 0;
 	return neuralNet_->neurons[neuronIndex]->getValue();
 }
+
+glm::vec3 Bug::getWorldTransform() {
+	return body_ ? body_->getWorldTransformation() : glm::vec3(0);
+}

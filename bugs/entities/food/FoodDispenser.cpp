@@ -70,3 +70,11 @@ void FoodDispenser::deserialize(BinaryStream &stream) {
 	stream >> pos.x >> pos.y >> dir;
 	World::getInstance()->takeOwnershipOf(std::unique_ptr<FoodDispenser>(new FoodDispenser(pos, dir)));
 }
+
+glm::vec3 FoodDispenser::getWorldTransform() {
+	if (physBody_.b2Body_) {
+		auto pos = physBody_.b2Body_->GetPosition();
+		return glm::vec3(b2g(pos), physBody_.b2Body_->GetAngle());
+	} else
+		return glm::vec3(0);
+}

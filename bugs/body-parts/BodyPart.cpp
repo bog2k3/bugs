@@ -479,7 +479,7 @@ void BodyPart::computeBodyPhysProps() {
 }
 
 glm::vec3 BodyPart::getWorldTransformation() {
-	if (physBody_.b2Body_) {
+	if (physBody_.b2Body_ && !noFixtures_) {
 		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
 	} else {
 		// if not committed yet, must compute these values on the fly

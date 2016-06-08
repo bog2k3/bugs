@@ -54,7 +54,7 @@ public:
 	std::vector<Entity*> getEntities(EntityType type);
 
 	// we have physBody->getEntity(), so:
-	std::vector<Entity*> getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, b2AABB const& aabb);
+	std::vector<Entity*> getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 pos, float radius, bool clipToCircle);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);

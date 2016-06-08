@@ -52,3 +52,8 @@ PhysicsBody::~PhysicsBody() {
 	if (b2Body_)
 		b2Body_->GetWorld()->DestroyBody(b2Body_);
 }
+
+PhysicsBody* PhysicsBody::getForB2Body(b2Body* body) {
+	assert(body->GetUserData() != nullptr);
+	return (PhysicsBody*)body->GetUserData();
+}

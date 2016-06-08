@@ -26,6 +26,7 @@ public:
 	}
 	static constexpr EntityType entityType = EntityType::FOOD_CHUNK;
 	virtual EntityType getEntityType() override { return entityType; }
+	glm::vec3 getWorldTransform() override;
 
 	void update(float dt) override;
 
