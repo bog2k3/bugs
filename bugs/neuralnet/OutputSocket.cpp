@@ -25,4 +25,7 @@ void OutputSocket::push_value(float value) {
 	for (auto it : target_list) {
 		it->push(value);
 	}
+#ifdef DEBUG
+	cachedValue_ = value;
+#endif
 }

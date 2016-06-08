@@ -46,6 +46,9 @@ protected:
 	float timer_;
 	float spawnVelocity_;
 	float spawnMass_;
+
+private:
+	static Entity* getEntityFromFoodDispenserPhysBody(PhysicsBody const& body);
 };
 
 #endif /* OBJECTS_FOOD_FOODDISPENSER_H_ */

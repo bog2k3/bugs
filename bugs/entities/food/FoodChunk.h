@@ -45,6 +45,9 @@ protected:
 	float size_;
 	float initialMass_;
 	float amountLeft_;
+
+private:
+	static Entity* getEntityFromFoodChunkPhysBody(PhysicsBody const& body);
 };
 
 #endif /* OBJECTS_FOOD_FOODCHUNK_H_ */

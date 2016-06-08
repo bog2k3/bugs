@@ -45,7 +45,7 @@ public:
 
 	void create(PhysicsProperties const &props);
 	inline glm::vec2 getPosition() { return b2g(b2Body_->GetPosition()); }
-	inline Entity* getAssociatedEntity() { return getEntityFunc_(*this); }
+	inline Entity* getAssociatedEntity() { assertDbg(getEntityFunc_ != nullptr); return getEntityFunc_(*this); }
 
 	static PhysicsBody* getForB2Body(b2Body* body);
 
