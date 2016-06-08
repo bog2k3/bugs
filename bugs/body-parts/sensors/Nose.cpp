@@ -38,7 +38,7 @@ Nose::~Nose() {
 }
 
 void Nose::draw(RenderContext const& ctx) {
-	if (committed_) {
+	if (committed_ && !noFixtures_) {
 		// nothing to draw, physics will draw for us
 	} else {
 #ifdef DEBUG_DRAW_NOSE
@@ -96,7 +96,7 @@ float Nose::getOutputVMSCoord(unsigned index) const {
 
 
 void Nose::commit() {
-	if (committed_) {
+	if (committed_ && !noFixtures_) {
 		physBody_.b2Body_->DestroyFixture(
 				&physBody_.b2Body_->GetFixtureList()[0]);
 		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
@@ -109,6 +109,12 @@ void Nose::commit() {
 	float sqA3 = sqrt(size_/3);
 	float base = 2 * sqA3;
 	float height = 3 * sqA3;
+
+	if (base*height < b2_linearSlop) {
+		noFixtures_ = true;
+		return;
+	}
+
 	b2Vec2 points[] {
 			{-height/2, -base/2},
 			{height/2, 0},

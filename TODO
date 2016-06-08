@@ -1,4 +1,5 @@
-* !!! fix problem with nose triangle being too small -> causes Box2D to crash
+* parts with no fixtures (noses) are not drawn correctly after commit
+		* !!! fix problem with nose triangle being too small -> causes Box2D to crash
 * !!! prevent b2d crashing from too small polygons which may be caused by degenerated body parts
 	- maybe don't create fixtures for them?
 * multiple outputs from nose (sense different types of entities)

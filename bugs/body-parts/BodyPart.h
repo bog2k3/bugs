@@ -160,6 +160,7 @@ protected:
 	int nChildren_;
 
 	bool committed_;
+	bool noFixtures_ = false;
 	// bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
 	bool dontCreateBody_;			// set to true to prevent creating an actual physics body
 	/* this indicates if the values that come from genes (such as angleOffset_, size_ etc) have been cached
