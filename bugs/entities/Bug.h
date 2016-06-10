@@ -63,6 +63,7 @@ public:
 	unsigned getGeneration() { return generation_; }
 	bool isAlive() { return isAlive_; }
 	float getNeuronData(int neuronIndex);
+	Torso* getBody() { return body_; }
 
 	void kill();
 

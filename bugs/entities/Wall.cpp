@@ -26,6 +26,7 @@ Wall::Wall(glm::vec2 const &from, glm::vec2 const &to, float width)
 	float angle = pointDirectionNormalized(delta / length);
 	PhysicsProperties props((from + to)*0.5f, angle, false, glm::vec2(0), 0);
 	body_.create(props);
+	body_.getEntityFunc_ = &getEntityFromWallPhysBody;
 
 	b2PolygonShape shp;
 	shp.SetAsBox(length * 0.5f, width*0.5f);
@@ -58,4 +59,10 @@ glm::vec3 Wall::getWorldTransform() {
 		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
 	} else
 		return glm::vec3(0);
+}
+
+Entity* Wall::getEntityFromWallPhysBody(PhysicsBody const& body) {
+	Wall* pWall = static_cast<Wall*>(body.userPointer_);
+	assertDbg(pWall);
+	return pWall;
 }

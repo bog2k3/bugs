@@ -20,6 +20,7 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 {
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
 	physBody_.create(props);
+	physBody_.getEntityFunc_ = &getEntityFromFoodChunkPhysBody;
 
 	// now create the sensor fixture
 	b2CircleShape shp;
@@ -69,4 +70,10 @@ glm::vec3 FoodChunk::getWorldTransform() {
 		return glm::vec3(b2g(pos), physBody_.b2Body_->GetAngle());
 	} else
 		return glm::vec3(0);
+}
+
+Entity* FoodChunk::getEntityFromFoodChunkPhysBody(PhysicsBody const& body) {
+	FoodChunk* pChunk = static_cast<FoodChunk*>(body.userPointer_);
+	assertDbg(pChunk);
+	return pChunk;
 }

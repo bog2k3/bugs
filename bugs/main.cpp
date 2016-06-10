@@ -33,6 +33,9 @@
 
 #ifdef DEBUG
 #include "entities/Bug.h"
+#include "body-parts/Torso.h"
+#include "body-parts/sensors/Nose.h"
+#include "neuralnet/OutputSocket.h"
 #endif
 
 #include <GLFW/glfw3.h>
@@ -284,18 +287,20 @@ int main(int argc, char* argv[]) {
 #ifdef DEBUG
 	Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
 	static constexpr float neuronUpdateTime = 0.05f;
-	float n14_out = 0;
-	float n14_i0=0, n14_i1=0;
-	sigViewer.addSignal("N14#0", &n14_i0, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
-	sigViewer.addSignal("N14#1", &n14_i1, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
+	float nl_out = 0;
+	float nr_out = 0;
+	sigViewer.addSignal("NoseL", &nl_out, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
+	sigViewer.addSignal("NoseR", &nr_out, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
 
-	std::function<void(float)> debugNeurons_update = [&] (float dt) {
-		n14_out = pB->getNeuronData(17);
-		n14_i0 = pB->getNeuronData(6);
-		n14_i1 = pB->getNeuronData(11);
+	std::function<void(float)> debugNoseValues_update = [&] (float dt) {
+		Torso* t = pB->getBody();
+		if (!t)
+			return;
+		//nl_out = ((Nose*)t->getChild(1))->getOutputSocket(0)->debugGetCachedValue();
+		//nr_out = ((Nose*)t->getChild(15))->getOutputSocket(0)->debugGetCachedValue();
+		//n14_i1 = pB->getNeuronData(11);
 	};
-	updateList.add(&debugNeurons_update);
-#endif
+	updateList.add(&debugNoseValues_update);
 
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {

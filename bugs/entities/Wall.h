@@ -37,6 +37,9 @@ protected:
 	glm::vec2 from_;
 	glm::vec2 to_;
 	float width_;
+
+private:
+	static Entity* getEntityFromWallPhysBody(PhysicsBody const& body);
 };
 
 #endif /* ENTITIES_WALL_H_ */
