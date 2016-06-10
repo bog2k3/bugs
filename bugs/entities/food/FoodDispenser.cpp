@@ -26,6 +26,7 @@ FoodDispenser::FoodDispenser(glm::vec2 const &position, float direction)
 	physBody_.userObjectType_ = ObjectTypes::FOOD_DISPENSER;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::STATIC;
+	physBody_.getEntityFunc_ = &getEntityFromFoodDispenserPhysBody;
 
 	PhysicsProperties props(position, direction, false, glm::vec2(0), 0);
 	physBody_.create(props);
@@ -77,4 +78,10 @@ glm::vec3 FoodDispenser::getWorldTransform() {
 		return glm::vec3(b2g(pos), physBody_.b2Body_->GetAngle());
 	} else
 		return glm::vec3(0);
+}
+
+Entity* FoodDispenser::getEntityFromFoodDispenserPhysBody(PhysicsBody const& body) {
+	FoodDispenser* pDisp = static_cast<FoodDispenser*>(body.userPointer_);
+	assertDbg(pDisp);
+	return pDisp;
 }

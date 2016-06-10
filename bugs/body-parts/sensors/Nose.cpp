@@ -32,7 +32,7 @@ Nose::Nose()
 	physBody_.userPointer_ = this;
 
 	auto data = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
-	for (int i=0; i<NoseDetectableFlavoursCount; i++)
+	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
 		registerAttribute(GENE_ATTRIB_SENSOR_OUTPUT_COORD, i, data->outputVMSCoord[i]);
 }
 
