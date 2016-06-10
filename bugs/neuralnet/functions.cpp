@@ -35,7 +35,7 @@ float transfer_fn_one(float biasedValue, float neuralParam, float input0, float 
 
 // biasedValue > 0 ? biasedValue : 0
 float transfer_fn_threshold(float biasedValue, float neuralParam, float input0, float bias) {
-	return 0.5f + 0.5f*tanh(biasedValue*neuralParam);
+	return tanh(biasedValue*neuralParam);
 }
 
 // sin(biasedValue)
@@ -92,7 +92,7 @@ float transfer_fn_sigmoid(float biasedValue, float neuralParam, float input0, fl
 float transfer_fn_gate(float biasedValue, float neuralParam, float input0, float bias) {
 	float biasedCmdSignal = input0 - bias;
 	float unbiasedValue = biasedValue - bias;
-	return (0.5f + 0.5f * tanh(biasedCmdSignal*neuralParam)) * unbiasedValue;
+	return tanh(biasedCmdSignal*neuralParam) * unbiasedValue;
 }
 
 // input0: command signal (input #0)
