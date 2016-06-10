@@ -76,6 +76,7 @@ void Gripper::commit() {
 }
 
 void Gripper::update(float dt) {
+	return;
 	if (isDead())
 		return;
 	float intensity = inputSocket_->value;

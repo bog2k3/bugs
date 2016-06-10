@@ -54,6 +54,7 @@ PhysicsBody::~PhysicsBody() {
 }
 
 PhysicsBody* PhysicsBody::getForB2Body(b2Body* body) {
-	assert(body->GetUserData() != nullptr);
+	if (!body->GetUserData())
+		return nullptr;
 	return (PhysicsBody*)body->GetUserData();
 }
