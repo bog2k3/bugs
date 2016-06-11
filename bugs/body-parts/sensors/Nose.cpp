@@ -102,7 +102,7 @@ void Nose::update(float dt) {
 	float kt = BodyConst::SensorNoiseThreshConstant;
 	float maxDist = sqrtf((ks*kt*size_*size_ - 1) / (ks*size_ + 1));
 
-	for (int i=0; i<NoseDetectableFlavoursCount; i++) {
+	for (uint i=0; i<NoseDetectableFlavoursCount; i++) {
 		glm::vec3 posRot = getWorldTransformation();
 		glm::vec2 pos = vec3xy(posRot);
 		auto ents = World::getInstance()->getEntitiesInBox(NoseDetectableFlavours[i], Entity::FunctionalityFlags::ALL, pos, maxDist * 1.1f, true);

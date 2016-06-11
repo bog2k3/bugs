@@ -289,18 +289,25 @@ int main(int argc, char* argv[]) {
 	static constexpr float neuronUpdateTime = 0.05f;
 	float nl_out = 0;
 	float nr_out = 0;
+	float N2_out = 0;
+	float N3_out = 0;
 	sigViewer.addSignal("NoseL", &nl_out, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
 	sigViewer.addSignal("NoseR", &nr_out, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
+	sigViewer.addSignal("N#2(R)-out", &N2_out, 50, neuronUpdateTime, glm::vec3(0.7f, 1.f, 0.f));
+	sigViewer.addSignal("N#3(L)-out", &N3_out, 50, neuronUpdateTime, glm::vec3(0.7f, 1.f, 0.f));
 
-	std::function<void(float)> debugNoseValues_update = [&] (float dt) {
+	std::function<void(float)> debugValues_update = [&] (float dt) {
+		// neuron values:
+		N2_out = pB->getNeuronData(1);
+		N3_out = pB->getNeuronData(2);
+		// nose values:
 		Torso* t = pB->getBody();
-		if (!t)
-			return;
-		//nl_out = ((Nose*)t->getChild(1))->getOutputSocket(0)->debugGetCachedValue();
-		//nr_out = ((Nose*)t->getChild(15))->getOutputSocket(0)->debugGetCachedValue();
-		//n14_i1 = pB->getNeuronData(11);
+		if (t && t->getChildrenCount() >= 3) {
+			nl_out = ((Nose*)t->getChild(1))->getOutputSocket(0)->debugGetCachedValue();
+			nr_out = ((Nose*)t->getChild(3))->getOutputSocket(0)->debugGetCachedValue();
+		}
 	};
-	updateList.add(&debugNoseValues_update);
+	updateList.add(&debugValues_update);
 #endif
 
 	float t = glfwGetTime();

@@ -300,6 +300,7 @@ float Muscle::getCurrentPhiSlice() {
 }
 
 void Muscle::update(float dt) {
+	return;
 	if (isDead())
 		return;
 	float signal_strength = clamp(inputSocket_->value, 0.f, 1.f);

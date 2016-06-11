@@ -688,6 +688,16 @@ void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& or
 			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(inerve.first, 1.f));
 			orderedSensorOutputs_[sensorSocketIndex].first->addTarget(sock.get());
 			inerve.first->addInput(std::move(sock), 0);
+
+#ifdef DEBUG
+//			if (true) {
+//				LOGLN("LinkSensorNerve: virtN[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
+//						<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
+//						<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
+//						<< " {lineId:" << nerveLineId << "}");
+//			}
+#endif
+
 			orderedSensorOutputs_.erase(orderedSensorOutputs_.begin() + sensorSocketIndex);
 		}
 	}

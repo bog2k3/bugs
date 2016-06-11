@@ -209,7 +209,9 @@ std::vector<Entity*> World::getEntitiesInBox(EntityType filterTypes, Entity::Fun
 		PhysicsBody* pb = PhysicsBody::getForB2Body(b);
 		if (pb == nullptr)
 			continue;
-		out.push_back(pb->getAssociatedEntity());
+		Entity* ent = pb->getAssociatedEntity();
+		if (ent)
+			out.push_back(ent);
 	}
 	return out;
 }
