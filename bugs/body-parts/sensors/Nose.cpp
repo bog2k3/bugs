@@ -107,26 +107,26 @@ void Nose::update(float dt) {
 		glm::vec2 pos = vec3xy(posRot);
 		auto ents = World::getInstance()->getEntitiesInBox(NoseDetectableFlavours[i], Entity::FunctionalityFlags::ALL, pos, maxDist * 1.1f, true);
 
-		// sort by closest first
-		std::sort(ents.begin(), ents.end(), [&pos](Entity* e1, Entity* e2) {
-			float d1sq = vec2lenSq(vec3xy(e1->getWorldTransform()) - pos);
-			float d2sq = vec2lenSq(vec3xy(e2->getWorldTransform()) - pos);
-			return d1sq < d2sq;
-		});
+		// use all entities in the visibility cone (where cos(phi)>0)
+		float cummulatedSignal = 0.f;
+		for (auto ent : ents) {
+			glm::vec3 otherPosRot = ent->getWorldTransform();
 
-		glm::vec3 otherPosRot = ents[0]->getWorldTransform();
+			float cosphi = cosf(angleDiff(posRot.z, pointDirection(glm::vec2(otherPosRot))));	// direction factor
+			if (cosphi <= 0)
+				continue;
+			float minDistSq = vec2lenSq(vec3xy(otherPosRot) - pos);
+			float s0 = 1.f / (minDistSq + 1) * max(0.f, cosphi);	// raw signal
+			float sizeScaling = 1 - 1.f / (1 + size_ * ks);
+			float s1 = s0 * sizeScaling;		// modulated signal
+			float nt = 1.f / (1 + kt * size_);	// noise threshold
+			float ia = srandf() * 0.15f * s1;	// +/-15% inaccuracy
+			float noise = randf() * nt;
 
-		float minDistSq = vec2lenSq(vec3xy(otherPosRot) - pos);
-		float cosphi = cosf(angleDiff(posRot.z, pointDirection(glm::vec2(otherPosRot))));	// direction factor
-		float s0 = 1.f / (minDistSq + 1) * max(0.f, cosphi);	// raw signal
-		float sizeScaling = 1 - 1.f / (1 + size_ * ks);
-		float s1 = s0 * sizeScaling;		// modulated signal
-		float nt = 1.f / (1 + kt * size_);	// noise threshold
-		float ia = srandf() * 0.15f * s1;	// +/-15% inaccuracy
-		float noise = randf() * nt;
-
-		float signal = noise + ia + s1;
-		outputSocket_[i]->push_value(signal);
+			float signal = noise + ia + s1;
+			cummulatedSignal += signal;
+		}
+		outputSocket_[i]->push_value(cummulatedSignal);
 	}
 }
 

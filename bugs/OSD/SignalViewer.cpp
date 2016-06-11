@@ -46,8 +46,8 @@ SignalViewer::SignalViewer(glm::vec3 const& uniformPos, glm::vec2 const& uniform
 SignalViewer::~SignalViewer() {
 }
 
-void SignalViewer::addSignal(std::string const& name, float* pValue, int maxSamples, float sampleInterval, glm::vec3 const& rgb) {
-	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(pValue, maxSamples, sampleInterval)), name, rgb));
+void SignalViewer::addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minYScale) {
+	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(pValue, maxSamples, sampleInterval)), name, rgb, minYScale));
 }
 
 void SignalViewer::update(float dt) {
@@ -95,6 +95,8 @@ void SignalViewer::draw(RenderContext const& ctx) {
 		float yScale = size.y / (sMax - sMin);
 		if (sMin == sMax)
 			yScale = 0;
+		if (yScale < s.minYScale_)
+			yScale = s.minYScale_;
 		glm::vec2 prev(pos.x, pos.y + size.y * 0.5f);
 		for (uint i=0; i<s.source_->getNumSamples(); i++) {
 			glm::vec2 crt(prev.x + xAxisZoom, pos.y + size.y - (s.source_->getSample(i)-sMin) * yScale);

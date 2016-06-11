@@ -282,7 +282,7 @@ int main(int argc, char* argv[]) {
 
 	float frameTime = 0;
 
-	sigViewer.addSignal("frameTime", &frameTime, 50, 0.1f, glm::vec3(1.f, 0.2f, 0.2f));
+	sigViewer.addSignal("frameTime", &frameTime, glm::vec3(1.f, 0.2f, 0.2f), 0.1f);
 
 #ifdef DEBUG
 	Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
@@ -291,10 +291,10 @@ int main(int argc, char* argv[]) {
 	float nr_out = 0;
 	float N2_out = 0;
 	float N3_out = 0;
-	sigViewer.addSignal("NoseL", &nl_out, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
-	sigViewer.addSignal("NoseR", &nr_out, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
-	sigViewer.addSignal("N#2(R)-out", &N2_out, 50, neuronUpdateTime, glm::vec3(0.7f, 1.f, 0.f));
-	sigViewer.addSignal("N#3(L)-out", &N3_out, 50, neuronUpdateTime, glm::vec3(0.7f, 1.f, 0.f));
+	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime);
+	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime);
+	sigViewer.addSignal("N#2(R)-out", &N2_out, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime);
+	sigViewer.addSignal("N#3(L)-out", &N3_out, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime);
 
 	std::function<void(float)> debugValues_update = [&] (float dt) {
 		// neuron values:
