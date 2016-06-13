@@ -7,7 +7,7 @@
 
 #include "World.h"
 #include "entities/Entity.h"
-#include "PhysicsBody.h"
+#include "physics/PhysicsBody.h"
 #include "math/math2D.h"
 #include "math/box2glm.h"
 #include "utils/log.h"

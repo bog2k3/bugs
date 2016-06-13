@@ -14,7 +14,7 @@
 #include "../utils/log.h"
 #include "../utils/assert.h"
 #include "../utils/UpdateList.h"
-#include "../PhysDestroyListener.h"
+#include "../physics/PhysDestroyListener.h"
 
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>

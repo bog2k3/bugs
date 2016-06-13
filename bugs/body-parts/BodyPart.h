@@ -10,7 +10,7 @@
 
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
-#include "../PhysicsBody.h"
+#include "../physics/PhysicsBody.h"
 #include <vector>
 #include <map>
 #include <memory>

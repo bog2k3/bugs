@@ -7,7 +7,7 @@
 
 #include "PhysContactListener.h"
 #include "PhysicsBody.h"
-#include "utils/log.h"
+#include "../utils/log.h"
 #include <Box2D/Box2D.h>
 
 #ifdef DEBUG_DMALLOC

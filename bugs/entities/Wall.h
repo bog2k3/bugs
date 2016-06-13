@@ -10,7 +10,7 @@
 
 #include "Entity.h"
 #include "enttypes.h"
-#include "../PhysicsBody.h"
+#include "../physics/PhysicsBody.h"
 #include "../serialization/objectTypes.h"
 #include <glm/vec2.hpp>
 

@@ -11,7 +11,7 @@
 #include "../InputEvent.h"
 #include "IOperationSpatialLocator.h"
 #include "../../math/box2glm.h"
-#include "../../PhysicsBody.h"
+#include "../../physics/PhysicsBody.h"
 #include <Box2D/Box2D.h>
 
 #ifdef DEBUG_DMALLOC

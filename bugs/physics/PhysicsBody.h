@@ -8,9 +8,9 @@
 #ifndef OBJECTS_PHYSICSBODY_H_
 #define OBJECTS_PHYSICSBODY_H_
 
-#include "utils/Event.h"
-#include "math/box2glm.h"
-#include "ObjectTypesAndFlags.h"
+#include "../utils/Event.h"
+#include "../math/box2glm.h"
+#include "../ObjectTypesAndFlags.h"
 #include <glm/vec2.hpp>
 #include <functional>
 
