@@ -8,6 +8,7 @@
 #include "PhysicsBody.h"
 #include "../World.h"
 #include "../math/box2glm.h"
+#include "../math/aabb.h"
 #include <Box2D/Box2D.h>
 #include <cmath>
 
@@ -57,4 +58,14 @@ PhysicsBody* PhysicsBody::getForB2Body(b2Body* body) {
 	if (!body->GetUserData())
 		return nullptr;
 	return (PhysicsBody*)body->GetUserData();
+}
+
+aabb PhysicsBody::getAABB() {
+	aabb x;
+	if (b2Body_) {
+		for (b2Fixture* pFix = b2Body_->GetFixtureList(); pFix; pFix = pFix->GetNext()) {
+			x = x.reunion(pFix->GetAABB(0));
+		}
+	}
+	return x;
 }

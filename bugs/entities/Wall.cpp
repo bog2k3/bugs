@@ -7,6 +7,7 @@
 
 #include "Wall.h"
 #include "../math/math2D.h"
+#include "../math/aabb.h"
 #include "../World.h"
 #include "../serialization/BinaryStream.h"
 #include <Box2D/Box2D.h>
@@ -65,4 +66,8 @@ Entity* Wall::getEntityFromWallPhysBody(PhysicsBody const& body) {
 	Wall* pWall = static_cast<Wall*>(body.userPointer_);
 	assertDbg(pWall);
 	return pWall;
+}
+
+aabb Wall::getAABB() {
+	return body_.getAABB();
 }

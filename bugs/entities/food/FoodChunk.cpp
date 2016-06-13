@@ -8,6 +8,7 @@
 #include "FoodChunk.h"
 #include "../WorldConst.h"
 #include "../../math/math2D.h"
+#include "../../math/aabb.h"
 #include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include <Box2D/Box2D.h>
@@ -76,4 +77,8 @@ Entity* FoodChunk::getEntityFromFoodChunkPhysBody(PhysicsBody const& body) {
 	FoodChunk* pChunk = static_cast<FoodChunk*>(body.userPointer_);
 	assertDbg(pChunk);
 	return pChunk;
+}
+
+aabb FoodChunk::getAABB() {
+	return physBody_.getAABB();
 }

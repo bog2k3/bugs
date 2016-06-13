@@ -71,6 +71,8 @@ public:
 
 	virtual glm::vec3 getWorldTransformation();
 
+	aabb getAABBRecursive();
+
 	// must return the actual amount deduced from mass argument
 	virtual float addFood(float mass) { if (parent_) return parent_->addFood(mass); else return 0; }
 

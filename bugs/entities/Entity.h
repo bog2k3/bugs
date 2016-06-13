@@ -14,6 +14,7 @@
 class RenderContext;
 class BinaryStream;
 enum class SerializationObjectTypes;
+struct aabb;
 
 class Entity {
 public:
@@ -37,6 +38,7 @@ public:
 	virtual void serialize(BinaryStream &stream);
 	virtual SerializationObjectTypes getSerializationType();
 	virtual EntityType getEntityType() = 0;
+	virtual aabb getAABB() = 0;
 
 	void destroy();
 	bool isZombie() { return markedForDeletion_; }

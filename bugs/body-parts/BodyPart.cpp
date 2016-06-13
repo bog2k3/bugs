@@ -9,9 +9,10 @@
 #include "BodyConst.h"
 #include "../entities/Bug.h"
 #include "../math/box2glm.h"
+#include "../math/aabb.h"
+#include "../math/math2D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
-#include "../math/math2D.h"
 #include "../utils/log.h"
 #include "../utils/assert.h"
 #include "../genetics/GeneDefinitions.h"
@@ -687,4 +688,11 @@ Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
 	if (!pPart)
 		return nullptr;
 	return pPart->getOwner();
+}
+
+aabb BodyPart::getAABBRecursive() {
+	aabb X = physBody_.getAABB();
+	for (int i=0; i<nChildren_; i++)
+		X = X.reunion(children_[i]->getAABBRecursive());
+	return X;
 }

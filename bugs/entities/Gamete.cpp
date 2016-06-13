@@ -9,6 +9,7 @@
 #include "WorldConst.h"
 #include "../genetics/Gene.h"
 #include "../math/math2D.h"
+#include "../math/aabb.h"
 #include "../body-parts/BodyConst.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
@@ -145,4 +146,8 @@ glm::vec3 Gamete::getWorldTransform() {
 		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
 	} else
 		return glm::vec3(0);
+}
+
+aabb Gamete::getAABB() {
+	return body_.getAABB();
 }

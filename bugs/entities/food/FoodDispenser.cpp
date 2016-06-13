@@ -11,6 +11,7 @@
 #include "../../utils/rand.h"
 #include "../../World.h"
 #include "../../serialization/BinaryStream.h"
+#include "../../math/aabb.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -84,4 +85,8 @@ Entity* FoodDispenser::getEntityFromFoodDispenserPhysBody(PhysicsBody const& bod
 	FoodDispenser* pDisp = static_cast<FoodDispenser*>(body.userPointer_);
 	assertDbg(pDisp);
 	return pDisp;
+}
+
+aabb FoodDispenser::getAABB() {
+	return physBody_.getAABB();
 }
