@@ -4,28 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../PhysContactListener.cpp \
-../PhysDestroyListener.cpp \
-../PhysicsBody.cpp \
-../PhysicsDebugDraw.cpp \
 ../World.cpp \
 ../main.cpp \
 ../memdebug.cpp 
 
 OBJS += \
-./PhysContactListener.o \
-./PhysDestroyListener.o \
-./PhysicsBody.o \
-./PhysicsDebugDraw.o \
 ./World.o \
 ./main.o \
 ./memdebug.o 
 
 CPP_DEPS += \
-./PhysContactListener.d \
-./PhysDestroyListener.d \
-./PhysicsBody.d \
-./PhysicsDebugDraw.d \
 ./World.d \
 ./main.d \
 ./memdebug.d 
