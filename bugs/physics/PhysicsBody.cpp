@@ -60,7 +60,7 @@ PhysicsBody* PhysicsBody::getForB2Body(b2Body* body) {
 	return (PhysicsBody*)body->GetUserData();
 }
 
-aabb PhysicsBody::getAABB() {
+aabb PhysicsBody::getAABB() const {
 	aabb x;
 	if (b2Body_) {
 		for (b2Fixture* pFix = b2Body_->GetFixtureList(); pFix; pFix = pFix->GetNext()) {

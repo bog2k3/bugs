@@ -18,6 +18,7 @@
 #include "math/math2D.h"
 #include "OSD/ScaleDisplay.h"
 #include "OSD/SignalViewer.h"
+#include "OSD/EntityLabeler.h"
 #include "GUI/GuiSystem.h"
 #include "GUI/Window.h"
 #include "GUI/controls/Button.h"
@@ -260,6 +261,7 @@ int main(int argc, char* argv[]) {
 	drawList.add(&scale);
 	drawList.add(&sigViewer);
 	drawList.add(&Gui);
+	drawList.add(&EntityLabeler::getInstance());
 
 	UpdateList continuousUpdateList;
 	continuousUpdateList.add(&opStack);

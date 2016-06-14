@@ -165,3 +165,9 @@ void Viewport::renderOSD(RenderContext* pRenderContext)
 	LeaveCriticalSection(&cs_OSDElements);
 }
 */
+
+bool Viewport::containsPoint(glm::vec2 const&p) const {
+	return p.x >= viewportArea.x && p.y >= viewportArea.y &&
+			p.x <= viewportArea.x + viewportArea.z &&
+			p.y <= viewportArea.y + viewportArea.w;
+}

@@ -61,11 +61,38 @@ GLText::~GLText() {
 	glDeleteProgram(shaderID);
 }
 
-void GLText::print(const std::string text, int x, int y, int z, int size, glm::vec3 const& color) {
+glm::vec2 GLText::getTextRect(const std::string& text, int fontSize) {
+	unsigned int length = text.length();
+	float xSize = fontSize*cellRatio;
+	int x = 0;
+	int y = 0;
+	int lineX = 0;
+	int lineH = fontSize * 0.75f;
+	for ( unsigned int i=0 ; i<length ; i++ ) {
+		char character = text[i];
+		if (character == '\t') {
+			lineX += 4 * xSize;
+			continue;
+		}
+		if (character == '\n') {
+			y += lineH;
+			if (lineX > x)
+				x = lineX;
+			lineX = 0;
+			continue;
+		}
+		lineX += xSize;
+	}
+	if (lineX > x)
+		x = lineX;
+	return glm::vec2(x, y+lineH);
+}
+
+void GLText::print(const std::string &text, int x, int y, int z, int size, glm::vec3 const& color) {
 	print(text, x, y, z, size, glm::vec4(color, 1));
 }
 
-void GLText::print(const std::string text, int x, int y, int z, int size, glm::vec4 const& color) {
+void GLText::print(const std::string &text, int x, int y, int z, int size, glm::vec4 const& color) {
 	unsigned int length = text.length();
 	float xSize = size*cellRatio;
 	glm::vec4 altColor = color;

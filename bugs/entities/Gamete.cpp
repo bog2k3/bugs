@@ -148,6 +148,6 @@ glm::vec3 Gamete::getWorldTransform() {
 		return glm::vec3(0);
 }
 
-aabb Gamete::getAABB() {
+aabb Gamete::getAABB() const {
 	return body_.getAABB();
 }

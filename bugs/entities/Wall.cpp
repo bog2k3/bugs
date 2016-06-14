@@ -68,6 +68,6 @@ Entity* Wall::getEntityFromWallPhysBody(PhysicsBody const& body) {
 	return pWall;
 }
 
-aabb Wall::getAABB() {
+aabb Wall::getAABB() const {
 	return body_.getAABB();
 }

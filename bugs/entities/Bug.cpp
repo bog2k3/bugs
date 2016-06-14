@@ -400,6 +400,9 @@ glm::vec3 Bug::getWorldTransform() {
 	return body_ ? body_->getWorldTransformation() : glm::vec3(0);
 }
 
-aabb Bug::getAABB() {
-	return body_ ? body_->getAABBRecursive() : aabb();
+aabb Bug::getAABB() const {
+	if (zygoteShell_)
+		return zygoteShell_->getAABBRecursive();
+	else
+		return body_ ? body_->getAABBRecursive() : aabb();
 }

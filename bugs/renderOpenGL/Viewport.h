@@ -11,12 +11,14 @@ public:
 	Viewport(int x, int y, int w, int h);
 	virtual ~Viewport();
 
+	// how many meters per pixel?
 	double getScale() const { return fScale; }
 	glm::vec4 getBkColor() const { return glm::vec4(0); }
 	Camera* getCamera() const { return pCamera; }
 	int getWidth() const { return viewportArea.z; }
 	int getHeight() const { return viewportArea.w; }
 	bool isEnabled() const { return mEnabled; }
+	bool containsPoint(glm::vec2 const&p) const;
 	/**
 	 * returned vector: x-X, y-Y, z-Width, w-Height
 	 */

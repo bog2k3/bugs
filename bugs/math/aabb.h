@@ -9,6 +9,7 @@
 #define MATH_AABB_H_
 
 #include "box2glm.h"
+#include <Box2D/Collision/b2Collision.h>
 #include <glm/vec2.hpp>
 #include <limits>
 
@@ -18,7 +19,7 @@ struct aabb {
 
 	aabb()
 		: vMin(std::numeric_limits<float>::max(), std::numeric_limits<float>::max())
-		, vMax(std::numeric_limits<float>::min(), std::numeric_limits<float>::min()){
+		, vMax(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()){
 		// default creates empty
 	}
 

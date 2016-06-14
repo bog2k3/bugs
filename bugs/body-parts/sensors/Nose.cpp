@@ -14,9 +14,13 @@
 #include "../../utils/rand.h"
 #include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
+#include "../../OSD/EntityLabeler.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
+#ifdef DEBUG
+#include <sstream>
+#endif
 
 const glm::vec3 debug_color(1.f, 0.8f, 0.f);
 
@@ -102,6 +106,9 @@ void Nose::update(float dt) {
 	float kt = BodyConst::SensorNoiseThreshConstant;
 	float maxDist = sqrtf((ks*kt*size_*size_ - 1) / (ks*size_ + 1));
 
+	static int whichNose = 0;
+	whichNose = 1 - whichNose;
+
 	for (uint i=0; i<NoseDetectableFlavoursCount; i++) {
 		glm::vec3 posRot = getWorldTransformation();
 		glm::vec2 pos = vec3xy(posRot);
@@ -124,6 +131,14 @@ void Nose::update(float dt) {
 			float noise = randf() * nt;
 
 			float signal = noise + ia + s1;
+
+#ifdef DEBUG
+			// attach a debug label to the entity
+			std::stringstream ss;
+			ss << signal;
+			EntityLabeler::getInstance().setEntityLabel(ent, whichNose ? "noseValue1" : "noseValue2", ss.str(), glm::vec3(0.9f, 0.7f, 0.f));
+#endif
+
 			cummulatedSignal += signal;
 		}
 		outputSocket_[i]->push_value(cummulatedSignal);

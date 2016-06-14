@@ -1,74 +1,29 @@
-#if (0)
 #include "Label.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../renderOpenGL/Viewport.h"
+#include "../renderOpenGL/GLText.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../math/math2D.h"
 
-Label::Label(wstring text, D3DCOLOR color)
-	: m_text(text)
-	, m_textColor(color)
-	, m_textX(0)
-	, m_textY(0)
-	, m_anchorX(0)
-	, m_anchorY(0)
-{
+Label::Label(std::string const& value, glm::vec3 const& pos, float textSize, glm::vec3 const& color)
+	: pos_(pos)
+	, color_(color)
+	, textSize_(textSize)
+	, value_(value) {
 }
 
-Label::~Label()
-{
+glm::vec2 Label::getBoxSize(RenderContext const& ctx) {
+	return ctx.text->getTextRect(value_, textSize_);
 }
 
-void Label::preRender(RenderContext* pCtxt)
-{
+void Label::draw(RenderContext const& ctx) {
+	glm::vec3 renderPos = pos_;
+	if (renderMode_ == RenderMode::WorldSpace)
+		vec3xy(renderPos) = ctx.viewport->project(vec3xy(renderPos));
+	if (ctx.viewport->containsPoint(vec3xy(renderPos)))
+		ctx.text->print(value_, renderPos.x, renderPos.y, renderPos.z, textSize_, color_);
+	if (drawFrame_) {
+		glm::vec2 rectSize = ctx.text->getTextRect(value_, textSize_);
+		ctx.shape->drawRectangle(vec3xy(renderPos) - glm::vec2(5, 5), renderPos.z, rectSize + glm::vec2(5, 5), color_);
+	}
 }
-
-void Label::render(RenderContext* pCtxt)
-{
-}
-
-void Label::postRender(RenderContext* pCtxt)
-{
-}
-
-void Label::initializeResources(IDirect3DDevice9* pDevice)
-{
-}
-
-void Label::releaseResources()
-{
-}
-
-void Label::releaseHWResourcesPreReset()
-{
-}
-
-void Label::recreateHWResourcePostReset(IDirect3DDevice9* pDevice)
-{
-}
-
-bool Label::isInsideViewport(int vWidth, int vHeight)
-{
-	return m_textX >= 0 && m_textX < vWidth
-		&& m_textY >= 0 && m_textY < vHeight;
-}
-
-void Label::renderOSD(RenderContext* pRenderContext)
-{
-	pRenderContext->getFont()->DrawTextW(pRenderContext->getSprite(), m_text.c_str(), -1,
-		&m_rect, DT_LEFT|DT_TOP|DT_NOCLIP, m_textColor);
-}
-
-void Label::setPosition(int x, int y, LayoutAnchorEnum anchor)
-{
-	m_anchorX = x; m_anchorY = y;
-	m_textX = m_anchorX; m_textY = m_anchorY;
-	SetRect(&m_rect, m_textX, m_textY, 0, 0);
-}
-
-void Label::getRect(RECT* rc)
-{
-	//TODO implement
-}
-
-void Label::setText( wstring text )
-{
-	m_text = text;
-}
-#endif

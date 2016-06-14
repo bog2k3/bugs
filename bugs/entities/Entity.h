@@ -38,10 +38,10 @@ public:
 	virtual void serialize(BinaryStream &stream);
 	virtual SerializationObjectTypes getSerializationType();
 	virtual EntityType getEntityType() = 0;
-	virtual aabb getAABB() = 0;
+	virtual aabb getAABB() const = 0;
 
 	void destroy();
-	bool isZombie() { return markedForDeletion_; }
+	bool isZombie() const { return markedForDeletion_; }
 
 protected:
 	Entity() = default;

@@ -79,6 +79,6 @@ Entity* FoodChunk::getEntityFromFoodChunkPhysBody(PhysicsBody const& body) {
 	return pChunk;
 }
 
-aabb FoodChunk::getAABB() {
+aabb FoodChunk::getAABB() const {
 	return physBody_.getAABB();
 }
