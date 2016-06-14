@@ -291,17 +291,14 @@ int main(int argc, char* argv[]) {
 	static constexpr float neuronUpdateTime = 0.05f;
 	float nl_out = 0;
 	float nr_out = 0;
-	float N2_out = 0;
-	float N3_out = 0;
-	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime);
-	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime);
-	sigViewer.addSignal("N#2(R)-out", &N2_out, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime);
-	sigViewer.addSignal("N#3(L)-out", &N3_out, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime);
+	float sigma = 0;
+	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
+	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
+	sigViewer.addSignal("sigma", &sigma, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime, 50, 1.f, -1.f);
 
 	std::function<void(float)> debugValues_update = [&] (float dt) {
 		// neuron values:
-		N2_out = pB->getNeuronData(1);
-		N3_out = pB->getNeuronData(2);
+		sigma = pB->getNeuronData(3);
 		// nose values:
 		Torso* t = pB->getBody();
 		if (t && t->getChildrenCount() >= 3) {

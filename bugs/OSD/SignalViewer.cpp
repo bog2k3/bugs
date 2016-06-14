@@ -46,8 +46,8 @@ SignalViewer::SignalViewer(glm::vec3 const& uniformPos, glm::vec2 const& uniform
 SignalViewer::~SignalViewer() {
 }
 
-void SignalViewer::addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minYScale) {
-	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(pValue, maxSamples, sampleInterval)), name, rgb, minYScale));
+void SignalViewer::addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minUpperY, float maxLowerY) {
+	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(pValue, maxSamples, sampleInterval)), name, rgb, minUpperY, maxLowerY));
 }
 
 void SignalViewer::update(float dt) {
@@ -73,7 +73,13 @@ void SignalViewer::draw(RenderContext const& ctx) {
 	for (auto &s : sourceInfo_) {
 		ctx.shape->setViewportSpaceDraw(true);
 		ctx.shape->drawRectangle(pos, uPos_.z, size, frameColor);
-		ctx.text->print(s.name_, pos.x, pos.y, uPos_.z, textSize, s.color_);
+		std::stringstream stitle;
+		stitle << s.name_;
+		if (s.source_->getNumSamples())
+			stitle << " : " << s.source_->getSample(s.source_->getNumSamples()-1);
+		else
+			stitle << " (no values)";
+		ctx.text->print(stitle.str(), pos.x, pos.y, uPos_.z, textSize, s.color_);
 		float sMin = 1.e20f, sMax = -1.e20f;
 		// scan all samples and seek min/max values:
 		for (uint i=0; i<s.source_->getNumSamples(); i++) {
@@ -90,13 +96,15 @@ void SignalViewer::draw(RenderContext const& ctx) {
 			sMax = sMax*0.1f + s.lastMaxValue_*0.9f;
 		s.lastMinValue_ = sMin;
 		s.lastMaxValue_ = sMax;
+		if (sMin > s.maxLowerY_)
+			sMin = s.maxLowerY_;
+		if (sMax < s.minUpperY_)
+			sMax = s.minUpperY_;
 		// draw samples:
 		float xAxisZoom = size.x / s.source_->getCapacity();
 		float yScale = size.y / (sMax - sMin);
 		if (sMin == sMax)
 			yScale = 0;
-		if (yScale < s.minYScale_)
-			yScale = s.minYScale_;
 		glm::vec2 prev(pos.x, pos.y + size.y * 0.5f);
 		for (uint i=0; i<s.source_->getNumSamples(); i++) {
 			glm::vec2 crt(prev.x + xAxisZoom, pos.y + size.y - (s.source_->getSample(i)-sMin) * yScale);
