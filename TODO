@@ -1,4 +1,6 @@
-* !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
+* fix MAX neural structure processing nose outputs - replace thresh neurons with gates
+		* !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
+			- EntityLabeler created
 		* parts with no fixtures (noses) are not drawn correctly after commit
 		* !!! fix problem with nose triangle being too small -> causes Box2D to crash
 * !!! prevent b2d crashing from too small polygons which may be caused by degenerated body parts
