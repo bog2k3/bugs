@@ -92,6 +92,10 @@ inline float absAngleDiff(float a, float b) {
 	return d;
 }
 
+inline glm::vec2 operator * (glm::vec2 const& x, float f) {
+	return glm::vec2(x.x*f, x.y*f);
+}
+
 inline glm::vec2 vec3xy(glm::vec3 const &in) {
 	return glm::vec2(in.x, in.y);
 }

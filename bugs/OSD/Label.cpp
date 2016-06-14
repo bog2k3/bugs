@@ -24,6 +24,10 @@ void Label::draw(RenderContext const& ctx) {
 		ctx.text->print(value_, renderPos.x, renderPos.y, renderPos.z, textSize_, color_);
 	if (drawFrame_) {
 		glm::vec2 rectSize = ctx.text->getTextRect(value_, textSize_);
-		ctx.shape->drawRectangle(vec3xy(renderPos) - glm::vec2(5, 5), renderPos.z, rectSize + glm::vec2(5, 5), color_);
+		ctx.shape->drawRectangle(
+				vec3xy(renderPos) - glm::vec2(5, 5) * ctx.viewport->getScale(),
+				renderPos.z,
+				(rectSize + glm::vec2(5, 5)) * ctx.viewport->getScale(),
+				color_);
 	}
 }

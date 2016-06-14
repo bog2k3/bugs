@@ -48,7 +48,7 @@ public:
 	static constexpr float JointTorqueToleranceFactor		= 3.5e+2f;		// [Nm/m^2] how much torque a joint can take, relative to its size
 	static constexpr float JointDensity						= 9.f;			// [kg/m^2]
 	static constexpr float SensorSizeScalingConstant		= 0.5e+4f;		// [*]
-	static constexpr float SensorNoiseThreshConstant		= 4.5e+4f;		// [*]
+	static constexpr float SensorNoiseThreshConstant		= 6.5e+4f;		// [*]	bigger makes lower noise threshold
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]

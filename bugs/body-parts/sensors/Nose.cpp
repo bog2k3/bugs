@@ -7,6 +7,7 @@
 
 #include "Nose.h"
 #include "../BodyConst.h"
+#include "../../entities/Bug.h"
 #include "../../World.h"
 #include "../../neuralnet/OutputSocket.h"
 #include "../../math/math2D.h"
@@ -97,7 +98,7 @@ void Nose::update(float dt) {
 	 * ntk = 4.5 * 10^4		> noise threshold constant
 	 * nt = 1 / (1 + ntk * size)	> noise threshold (0.1 at size=2*10^-4) -> bigger nose, lower noise threshold, improved sensing
 	 * ia = +/-15% * s1		> inaccuracy proportional to the strength of the signal, in such a way as to always prevent perfect accuracy
-	 * n0 = ntk * rand		> this is noise
+	 * n0 = nt * rand		> this is noise
 	 * s = n0 + s1 + ia;	> the output signal with noise threshold, size-modulated amplitude and proportional inaccuracy
 	 */
 
@@ -106,8 +107,15 @@ void Nose::update(float dt) {
 	float kt = BodyConst::SensorNoiseThreshConstant;
 	float maxDist = sqrtf((ks*kt*size_*size_ - 1) / (ks*size_ + 1));
 
+#ifdef DEBUG
 	static int whichNose = 0;
 	whichNose = 1 - whichNose;
+	static std::vector<Entity*> entLabels[2];
+	std::string labelName = whichNose ? "noseValue1" : "noseValue2";
+	for (auto e : entLabels[whichNose])
+		EntityLabeler::getInstance().removeEntityLabel(e, labelName);
+	entLabels[whichNose].clear();
+#endif
 
 	for (uint i=0; i<NoseDetectableFlavoursCount; i++) {
 		glm::vec3 posRot = getWorldTransformation();
@@ -117,9 +125,13 @@ void Nose::update(float dt) {
 		// use all entities in the visibility cone (where cos(phi)>0)
 		float cummulatedSignal = 0.f;
 		for (auto ent : ents) {
+			if (ent == dynamic_cast<Entity*>(getOwner()))
+				continue;	// don't count ourselves as food :-)
+
 			glm::vec3 otherPosRot = ent->getWorldTransform();
 
-			float cosphi = cosf(angleDiff(posRot.z, pointDirection(glm::vec2(otherPosRot))));	// direction factor
+			float relativeDirection = pointDirection(glm::vec2(otherPosRot) - pos);
+			float cosphi = cosf(angleDiff(posRot.z, relativeDirection));	// direction factor
 			if (cosphi <= 0)
 				continue;
 			float minDistSq = vec2lenSq(vec3xy(otherPosRot) - pos);
@@ -134,9 +146,10 @@ void Nose::update(float dt) {
 
 #ifdef DEBUG
 			// attach a debug label to the entity
+			entLabels[whichNose].push_back(ent);
 			std::stringstream ss;
 			ss << signal;
-			EntityLabeler::getInstance().setEntityLabel(ent, whichNose ? "noseValue1" : "noseValue2", ss.str(), glm::vec3(0.9f, 0.7f, 0.f));
+			EntityLabeler::getInstance().setEntityLabel(ent, labelName, ss.str(), glm::vec3(0.9f, 0.7f, 0.f));
 #endif
 
 			cummulatedSignal += signal;
