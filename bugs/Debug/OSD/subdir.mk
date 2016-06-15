@@ -4,16 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../OSD/EntityLabeler.cpp \
 ../OSD/Label.cpp \
 ../OSD/ScaleDisplay.cpp \
 ../OSD/SignalViewer.cpp 
 
 OBJS += \
+./OSD/EntityLabeler.o \
 ./OSD/Label.o \
 ./OSD/ScaleDisplay.o \
 ./OSD/SignalViewer.o 
 
 CPP_DEPS += \
+./OSD/EntityLabeler.d \
 ./OSD/Label.d \
 ./OSD/ScaleDisplay.d \
 ./OSD/SignalViewer.d 

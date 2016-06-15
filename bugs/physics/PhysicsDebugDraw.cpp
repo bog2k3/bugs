@@ -6,12 +6,12 @@
  */
 
 #include "PhysicsDebugDraw.h"
-#include "renderOpenGL/Shape2D.h"
-#include "renderOpenGL/RenderContext.h"
+#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/RenderContext.h"
+#include "../math/box2glm.h"
+#include "../math/math2D.h"
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include "math/box2glm.h"
-#include "math/math2D.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>

@@ -8,14 +8,15 @@
 #ifndef OBJECTS_PHYSICSBODY_H_
 #define OBJECTS_PHYSICSBODY_H_
 
-#include "utils/Event.h"
-#include "math/box2glm.h"
-#include "ObjectTypesAndFlags.h"
+#include "../utils/Event.h"
+#include "../math/box2glm.h"
+#include "../ObjectTypesAndFlags.h"
 #include <glm/vec2.hpp>
 #include <functional>
 
 class b2Body;
 class Entity;
+struct aabb;
 
 struct PhysicsProperties {
 	glm::vec2 position;
@@ -45,7 +46,10 @@ public:
 
 	void create(PhysicsProperties const &props);
 	inline glm::vec2 getPosition() { return b2g(b2Body_->GetPosition()); }
-	inline Entity* getAssociatedEntity() { return getEntityFunc_(*this); }
+	inline Entity* getAssociatedEntity() { assertDbg(getEntityFunc_ != nullptr); return getEntityFunc_(*this); }
+	aabb getAABB() const;
+
+	static PhysicsBody* getForB2Body(b2Body* body);
 
 	Event<void(PhysicsBody *other, float impulseMagnitude)> onCollision;
 	Event<void(PhysicsBody* caller)> onDestroy;

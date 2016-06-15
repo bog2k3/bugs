@@ -8,7 +8,7 @@ namespace BSP
 	class BSPNode;
 	class IPartitionable;
 
-	typedef void (*positionChangedDelegate)(IPartitionable* pObj, void* pEventContext);
+	using positionChangedDelegate = void(*)(IPartitionable* pObj, void* pEventContext);
 
 	class IPartitionable abstract
 	{

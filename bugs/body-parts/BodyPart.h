@@ -10,7 +10,7 @@
 
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
-#include "../PhysicsBody.h"
+#include "../physics/PhysicsBody.h"
 #include <vector>
 #include <map>
 #include <memory>
@@ -70,6 +70,8 @@ public:
 	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
 
 	virtual glm::vec3 getWorldTransformation();
+
+	aabb getAABBRecursive();
 
 	// must return the actual amount deduced from mass argument
 	virtual float addFood(float mass) { if (parent_) return parent_->addFood(mass); else return 0; }
@@ -160,6 +162,7 @@ protected:
 	int nChildren_;
 
 	bool committed_;
+	bool noFixtures_ = false;
 	// bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
 	bool dontCreateBody_;			// set to true to prevent creating an actual physics body
 	/* this indicates if the values that come from genes (such as angleOffset_, size_ etc) have been cached

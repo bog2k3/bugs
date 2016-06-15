@@ -10,7 +10,7 @@
 
 #include "Entity.h"
 #include "enttypes.h"
-#include "../PhysicsBody.h"
+#include "../physics/PhysicsBody.h"
 #include "../serialization/objectTypes.h"
 #include <glm/vec2.hpp>
 
@@ -20,11 +20,13 @@ public:
 	virtual ~Wall();
 
 	FunctionalityFlags getFunctionalityFlags() override {
-		return FF_SERIALIZABLE;
+		return FunctionalityFlags::SERIALIZABLE;
 	}
 
-	static constexpr EntityType::Values entityType = EntityType::WALL;
-	virtual EntityType::Values getEntityType() override { return entityType; }
+	static constexpr EntityType entityType = EntityType::WALL;
+	virtual EntityType getEntityType() override { return entityType; }
+	glm::vec3 getWorldTransform() override;
+	aabb getAABB() const override;
 
 	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::WALL; }
 	// deserialize a Wall from the stream and add it to the world
@@ -36,6 +38,9 @@ protected:
 	glm::vec2 from_;
 	glm::vec2 to_;
 	float width_;
+
+private:
+	static Entity* getEntityFromWallPhysBody(PhysicsBody const& body);
 };
 
 #endif /* ENTITIES_WALL_H_ */

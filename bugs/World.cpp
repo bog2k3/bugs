@@ -7,10 +7,12 @@
 
 #include "World.h"
 #include "entities/Entity.h"
+#include "physics/PhysicsBody.h"
 #include "math/math2D.h"
 #include "math/box2glm.h"
 #include "utils/log.h"
 #include "utils/assert.h"
+#include "utils/bitFlags.h"
 #include <glm/glm.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
@@ -121,12 +123,12 @@ void World::destroyPending() {
 		});
 		if (it != entities.end()) {
 			Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
-			if (flags & Entity::FF_UPDATABLE) {
+			if ((flags & Entity::FunctionalityFlags::UPDATABLE) != 0) {
 				auto it = std::find(entsToUpdate.begin(), entsToUpdate.end(), e);
 				assertDbg(it != entsToUpdate.end());
 				entsToUpdate.erase(it);
 			}
-			if (flags & Entity::FF_DRAWABLE) {
+			if ((flags & Entity::FunctionalityFlags::DRAWABLE) != 0) {
 				auto it = std::find(entsToDraw.begin(), entsToDraw.end(), e);
 				assertDbg(it != entsToDraw.end());
 				entsToDraw.erase(it);
@@ -145,10 +147,10 @@ void World::takeOverPending() {
 	for (auto &e : takeOverNow) {
 		// add to update and draw lists if appropriate
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
-		if (flags & Entity::FF_DRAWABLE) {
+		if ((flags & Entity::FunctionalityFlags::DRAWABLE) != 0) {
 			entsToDraw.push_back(e.get());
 		}
-		if (flags & Entity::FF_UPDATABLE) {
+		if ((flags & Entity::FunctionalityFlags::UPDATABLE) != 0) {
 			entsToUpdate.push_back(e.get());
 		}
 		e->managed_ = true;
@@ -199,17 +201,18 @@ std::vector<Entity*> World::getEntities(EntityType::Values type) {
 	return vec;
 }
 
-std::vector<Entity*> World::getEntitiesInArea(EntityType::Values type, glm::vec2 const& pos, float radius, bool clipToCircle) {
+std::vector<Entity*> World::getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 pos, float radius, bool clipToCircle) {
 	std::vector<b2Body*> bodies;
 	getBodiesInArea(pos, radius, clipToCircle, bodies);
-	std::vector<Entity*> ret;
-	for (auto b : bodies) {
-		PhysicsBody* pBody = dynamic_cast<PhysicsBody*>(b->GetUserData());
-		assertDbg(pBody && "All b2Bodies should have a PhysicsBody associated!");
-		Entity* pEnt = pBody->getAssociatedEntity();
-		assertDbg(pEnt && "All PhysicsBodies must belong to an entity!");
-		if (type && pEnt->getEntityType())
-			ret.push_back(pEnt);
+	std::vector<Entity*> out;
+	for (b2Body* b : bodies) {
+		PhysicsBody* pb = PhysicsBody::getForB2Body(b);
+		if (pb == nullptr)
+			continue;
+		Entity* ent = pb->getAssociatedEntity();
+		if (ent)
+			out.push_back(ent);
 	}
-	return ret;
+	return out;
 }
+

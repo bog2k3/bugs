@@ -23,20 +23,23 @@ public:
 		std::unique_ptr<SignalDataSource> source_;
 		std::string name_;
 		glm::vec3 color_;
-		float lastMinValue_=0;
-		float lastMaxValue_=0;
+		float lastMinValue_ = 0.f;
+		float lastMaxValue_ = 0.f;
+		float minUpperY_ = -1e20f;
+		float maxLowerY_ = 1e20f;
 
 		DataInfo() = default;
 		DataInfo(DataInfo &&x) = default;
-		DataInfo(std::unique_ptr<SignalDataSource> && source, std::string const& name, glm::vec3 const& color)
-			: source_(std::move(source)), name_(name), color_(color) {
+		DataInfo(std::unique_ptr<SignalDataSource> && source, std::string const& name, glm::vec3 const& color, float minUpperY, float maxLowerY)
+			: source_(std::move(source)), name_(name), color_(color),
+			  minUpperY_(minUpperY), maxLowerY_(maxLowerY) {
 		}
 	};
 
 	SignalViewer(glm::vec3 const& uniformPos, glm::vec2 const& uniformSize);
 	virtual ~SignalViewer();
 
-	void addSignal(std::string const& name, float* pValue, int maxSamples, float sampleInterval, glm::vec3 const& rgb);
+	void addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples = 50, float minUpperY = -1e20f, float maxLowerY = 1e20f);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);

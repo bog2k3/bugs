@@ -9,6 +9,7 @@
 #include "WorldConst.h"
 #include "../genetics/Gene.h"
 #include "../math/math2D.h"
+#include "../math/aabb.h"
 #include "../body-parts/BodyConst.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
@@ -137,4 +138,16 @@ void Gamete::serialize(BinaryStream &stream) {
 
 void Gamete::deserialize(BinaryStream &stream) {
 	//TODO...
+}
+
+glm::vec3 Gamete::getWorldTransform() {
+	if (body_.b2Body_) {
+		auto pos = body_.b2Body_->GetPosition();
+		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
+	} else
+		return glm::vec3(0);
+}
+
+aabb Gamete::getAABB() const {
+	return body_.getAABB();
 }

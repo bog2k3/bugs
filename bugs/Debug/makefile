@@ -12,6 +12,7 @@ RM := rm -rf
 -include session/subdir.mk
 -include serialization/subdir.mk
 -include renderOpenGL/subdir.mk
+-include physics/subdir.mk
 -include neuralnet/subdir.mk
 -include math/subdir.mk
 -include input/operations/subdir.mk

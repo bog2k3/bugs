@@ -20,6 +20,7 @@ public:
 
 	const glm::mat4& getMatViewProj() const { return matViewProj; }
 
+	// how many pixels per meter?
 	float getZoomLevel() { return zoomLevel; }
 	void setZoomLevel(float zoom);
 	void move(glm::vec2 delta);

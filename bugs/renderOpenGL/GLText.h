@@ -10,6 +10,7 @@
 
 #include "IRenderable.h"
 #include <string>
+#include <vector>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
@@ -21,9 +22,11 @@ public:
 	~GLText() override;
 
 	// z is between [0..100] (bottom to top)
-	void print(const std::string text, int x, int y, int z, int size, glm::vec3 const& color);
+	void print(const std::string &text, int x, int y, int z, int size, glm::vec3 const& color);
 	// z is between [0..100] (bottom to top)
-	void print(const std::string text, int x, int y, int z, int size, glm::vec4 const& color);
+	void print(const std::string &text, int x, int y, int z, int size, glm::vec4 const& color);
+
+	glm::vec2 getTextRect(std::string const& text, int fontSize);
 
 	void render(Viewport* pCrtViewport) override;
 	void purgeRenderQueue() override;

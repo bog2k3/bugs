@@ -8,7 +8,7 @@
 #ifndef PHYSICSDEBUGDRAW_H_
 #define PHYSICSDEBUGDRAW_H_
 
-#include "renderOpenGL/RenderContext.h"
+#include "../renderOpenGL/RenderContext.h"
 #include <Box2D/Common/b2Draw.h>
 
 class PhysicsDebugDraw : public b2Draw {

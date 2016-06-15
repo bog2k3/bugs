@@ -11,6 +11,7 @@
 #include "../../utils/rand.h"
 #include "../../World.h"
 #include "../../serialization/BinaryStream.h"
+#include "../../math/aabb.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -26,6 +27,7 @@ FoodDispenser::FoodDispenser(glm::vec2 const &position, float direction)
 	physBody_.userObjectType_ = ObjectTypes::FOOD_DISPENSER;
 	physBody_.userPointer_ = this;
 	physBody_.categoryFlags_ = EventCategoryFlags::STATIC;
+	physBody_.getEntityFunc_ = &getEntityFromFoodDispenserPhysBody;
 
 	PhysicsProperties props(position, direction, false, glm::vec2(0), 0);
 	physBody_.create(props);
@@ -69,4 +71,22 @@ void FoodDispenser::deserialize(BinaryStream &stream) {
 	float dir;
 	stream >> pos.x >> pos.y >> dir;
 	World::getInstance()->takeOwnershipOf(std::unique_ptr<FoodDispenser>(new FoodDispenser(pos, dir)));
+}
+
+glm::vec3 FoodDispenser::getWorldTransform() {
+	if (physBody_.b2Body_) {
+		auto pos = physBody_.b2Body_->GetPosition();
+		return glm::vec3(b2g(pos), physBody_.b2Body_->GetAngle());
+	} else
+		return glm::vec3(0);
+}
+
+Entity* FoodDispenser::getEntityFromFoodDispenserPhysBody(PhysicsBody const& body) {
+	FoodDispenser* pDisp = static_cast<FoodDispenser*>(body.userPointer_);
+	assertDbg(pDisp);
+	return pDisp;
+}
+
+aabb FoodDispenser::getAABB() const {
+	return physBody_.getAABB();
 }

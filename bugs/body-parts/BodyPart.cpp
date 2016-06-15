@@ -7,10 +7,12 @@
 
 #include "BodyPart.h"
 #include "BodyConst.h"
+#include "../entities/Bug.h"
 #include "../math/box2glm.h"
+#include "../math/aabb.h"
+#include "../math/math2D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
-#include "../math/math2D.h"
 #include "../utils/log.h"
 #include "../utils/assert.h"
 #include "../genetics/GeneDefinitions.h"
@@ -478,7 +480,7 @@ void BodyPart::computeBodyPhysProps() {
 }
 
 glm::vec3 BodyPart::getWorldTransformation() {
-	if (physBody_.b2Body_) {
+	if (physBody_.b2Body_ && !noFixtures_) {
 		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
 	} else {
 		// if not committed yet, must compute these values on the fly
@@ -681,9 +683,16 @@ std::string BodyPart::getDebugName() const {
 }
 
 Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
-	BodyPart* pPart = dynamic_cast<BodyPart*>(body.userPointer_);
+	BodyPart* pPart = static_cast<BodyPart*>(body.userPointer_);
 	assertDbg(pPart);
 	if (!pPart)
 		return nullptr;
 	return pPart->getOwner();
+}
+
+aabb BodyPart::getAABBRecursive() {
+	aabb X = physBody_.getAABB();
+	for (int i=0; i<nChildren_; i++)
+		X = X.reunion(children_[i]->getAABBRecursive());
+	return X;
 }

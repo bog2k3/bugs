@@ -8,6 +8,7 @@
 #include "FoodChunk.h"
 #include "../WorldConst.h"
 #include "../../math/math2D.h"
+#include "../../math/aabb.h"
 #include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include <Box2D/Box2D.h>
@@ -20,6 +21,7 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 {
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
 	physBody_.create(props);
+	physBody_.getEntityFunc_ = &getEntityFromFoodChunkPhysBody;
 
 	// now create the sensor fixture
 	b2CircleShape shp;
@@ -61,4 +63,22 @@ void FoodChunk::consume(float massAmount) {
 	amountLeft_ -= massAmount;
 	if (amountLeft_ <= 0)
 		destroy();
+}
+
+glm::vec3 FoodChunk::getWorldTransform() {
+	if (physBody_.b2Body_) {
+		auto pos = physBody_.b2Body_->GetPosition();
+		return glm::vec3(b2g(pos), physBody_.b2Body_->GetAngle());
+	} else
+		return glm::vec3(0);
+}
+
+Entity* FoodChunk::getEntityFromFoodChunkPhysBody(PhysicsBody const& body) {
+	FoodChunk* pChunk = static_cast<FoodChunk*>(body.userPointer_);
+	assertDbg(pChunk);
+	return pChunk;
+}
+
+aabb FoodChunk::getAABB() const {
+	return physBody_.getAABB();
 }

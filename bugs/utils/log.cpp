@@ -12,6 +12,8 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
+#include <deque>
 
 std::deque<std::string> logger::prefix_;
 logger logger::instance_;

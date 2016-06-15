@@ -54,7 +54,7 @@ public:
 	std::vector<Entity*> getEntities(EntityType::Values type);
 
 	// we have physBody->getEntity(), so:
-	std::vector<Entity*> getEntitiesInArea(EntityType::Values type, glm::vec2 const& pos, float radius, bool clipToCircle);
+	std::vector<Entity*> getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 pos, float radius, bool clipToCircle);
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);
@@ -72,6 +72,9 @@ protected:
 
 	void destroyPending();
 	void takeOverPending();
+
+	std::vector<Entity*> getEntities(std::function<bool(Entity const&)> predicate);
 };
 
 #endif /* WORLD_H_ */
+

@@ -18,8 +18,17 @@ public:
 	OutputSocket()
 		: target_list()
 	{ }
+
+#ifdef DEBUG
+	float debugGetCachedValue() { return cachedValue_; }
+#endif
+
 private:
 	std::vector<InputSocket*> target_list; // the list of targets to which the Input is sent to
+
+#ifdef DEBUG
+	float cachedValue_ = 0;
+#endif
 };
 
 #endif //__OutputSocket_h__

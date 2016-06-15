@@ -188,22 +188,22 @@ public:
 	}
 
 #ifdef ENABLE_START_MARKER_GENES
-	Gene(GeneStartMarker const& gsm) : Gene(GENE_TYPE_START_MARKER, gsm) {}
+	Gene(GeneStartMarker const& gsm) : Gene(gene_type::START_MARKER, gsm) {}
 #endif
-	Gene(GeneStop const &gs) : Gene(GENE_TYPE_STOP, gs) {}
-	Gene(GeneNoOp const &gnop) : Gene(GENE_TYPE_NO_OP, gnop) {}
-	Gene(GeneSkip const &gs) : Gene(GENE_TYPE_SKIP, gs) {}
-	Gene(GeneProtein const &gp) : Gene(GENE_TYPE_PROTEIN, gp) {}
-	Gene(GeneOffset const &go) : Gene(GENE_TYPE_OFFSET, go) {}
-	Gene(GeneJointOffset const& gjo) : Gene(GENE_TYPE_JOINT_OFFSET, gjo) {}
-	Gene(GeneAttribute const &gla) : Gene(GENE_TYPE_PART_ATTRIBUTE, gla) {}
-	Gene(GeneSynapse const &gs) : Gene(GENE_TYPE_SYNAPSE, gs) {}
-	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(GENE_TYPE_NEURON_OUTPUT_COORD, gnoc) {}
-	Gene(GeneNeuronInputCoord const& gnic) : Gene(GENE_TYPE_NEURON_INPUT_COORD, gnic) {}
-	Gene(GeneTransferFunction const &gt) : Gene(GENE_TYPE_TRANSFER_FUNC, gt) {}
-	Gene(GeneNeuralBias const &gnc) : Gene(GENE_TYPE_NEURAL_BIAS, gnc) {}
-	Gene(GeneNeuralParam const& gnp) : Gene(GENE_TYPE_NEURAL_PARAM, gnp) {}
-	Gene(GeneBodyAttribute const &gba) : Gene(GENE_TYPE_BODY_ATTRIBUTE, gba) {}
+	Gene(GeneStop const &gs) : Gene(gene_type::STOP, gs) {}
+	Gene(GeneNoOp const &gnop) : Gene(gene_type::NO_OP, gnop) {}
+	Gene(GeneSkip const &gs) : Gene(gene_type::SKIP, gs) {}
+	Gene(GeneProtein const &gp) : Gene(gene_type::PROTEIN, gp) {}
+	Gene(GeneOffset const &go) : Gene(gene_type::OFFSET, go) {}
+	Gene(GeneJointOffset const& gjo) : Gene(gene_type::JOINT_OFFSET, gjo) {}
+	Gene(GeneAttribute const &gla) : Gene(gene_type::PART_ATTRIBUTE, gla) {}
+	Gene(GeneSynapse const &gs) : Gene(gene_type::SYNAPSE, gs) {}
+	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(gene_type::NEURON_OUTPUT_COORD, gnoc) {}
+	Gene(GeneNeuronInputCoord const& gnic) : Gene(gene_type::NEURON_INPUT_COORD, gnic) {}
+	Gene(GeneTransferFunction const &gt) : Gene(gene_type::TRANSFER_FUNC, gt) {}
+	Gene(GeneNeuralBias const &gnc) : Gene(gene_type::NEURAL_BIAS, gnc) {}
+	Gene(GeneNeuralParam const& gnp) : Gene(gene_type::NEURAL_PARAM, gnp) {}
+	Gene(GeneBodyAttribute const &gba) : Gene(gene_type::BODY_ATTRIBUTE, gba) {}
 
 	Gene() : Gene(GeneNoOp()) {}
 

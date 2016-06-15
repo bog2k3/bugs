@@ -7,6 +7,7 @@
 
 #include "Wall.h"
 #include "../math/math2D.h"
+#include "../math/aabb.h"
 #include "../World.h"
 #include "../serialization/BinaryStream.h"
 #include <Box2D/Box2D.h>
@@ -26,6 +27,7 @@ Wall::Wall(glm::vec2 const &from, glm::vec2 const &to, float width)
 	float angle = pointDirectionNormalized(delta / length);
 	PhysicsProperties props((from + to)*0.5f, angle, false, glm::vec2(0), 0);
 	body_.create(props);
+	body_.getEntityFunc_ = &getEntityFromWallPhysBody;
 
 	b2PolygonShape shp;
 	shp.SetAsBox(length * 0.5f, width*0.5f);
@@ -50,4 +52,22 @@ void Wall::serialize(BinaryStream &stream) {
 	stream << from_.x << from_.y;
 	stream << to_.x << to_.y;
 	stream << width_;
+}
+
+glm::vec3 Wall::getWorldTransform() {
+	if (body_.b2Body_) {
+		auto pos = body_.b2Body_->GetPosition();
+		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
+	} else
+		return glm::vec3(0);
+}
+
+Entity* Wall::getEntityFromWallPhysBody(PhysicsBody const& body) {
+	Wall* pWall = static_cast<Wall*>(body.userPointer_);
+	assertDbg(pWall);
+	return pWall;
+}
+
+aabb Wall::getAABB() const {
+	return body_.getAABB();
 }

@@ -12,12 +12,13 @@
 #include "input/operations/OperationSpring.h"
 #include "input/operations/OperationGui.h"
 #include "World.h"
-#include "PhysContactListener.h"
-#include "PhysDestroyListener.h"
-#include "PhysicsDebugDraw.h"
+#include "physics/PhysContactListener.h"
+#include "physics/PhysDestroyListener.h"
+#include "physics/PhysicsDebugDraw.h"
 #include "math/math2D.h"
 #include "OSD/ScaleDisplay.h"
 #include "OSD/SignalViewer.h"
+#include "OSD/EntityLabeler.h"
 #include "GUI/GuiSystem.h"
 #include "GUI/Window.h"
 #include "GUI/controls/Button.h"
@@ -33,6 +34,9 @@
 
 #ifdef DEBUG
 #include "entities/Bug.h"
+#include "body-parts/Torso.h"
+#include "body-parts/sensors/Nose.h"
+#include "neuralnet/OutputSocket.h"
 #endif
 
 #include <GLFW/glfw3.h>
@@ -176,207 +180,207 @@ int main(int argc, char* argv[]) {
 	skipRendering = false;
 #endif
 
-	try {
-		// initialize stuff:
-		if (!gltInit(800, 600, "Bugs"))
+	// initialize stuff:
+	if (!gltInit(800, 600, "Bugs"))
+		return -1;
+
+	Renderer renderer;
+	Viewport vp1(0, 0, 800, 600);
+	renderer.addViewport(&vp1);
+	auto shape2d = new Shape2D(&renderer);
+	auto gltext = new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
+	RenderContext renderContext( &vp1, shape2d, gltext);
+
+	b2World physWld(b2Vec2_zero);
+	pPhysWld = &physWld;
+	PhysicsDebugDraw physicsDraw(renderContext);
+	pPhysicsDraw = &physicsDraw;
+	physicsDraw.SetFlags(
+				  b2Draw::e_shapeBit
+				//| b2Draw::e_centerOfMassBit
+				//| b2Draw::e_jointBit
+				//| b2Draw::e_aabbBit
+			);
+	physWld.SetDebugDraw(&physicsDraw);
+
+	PhysContactListener contactListener;
+	physWld.SetContactListener(&contactListener);
+
+	PhysDestroyListener destroyListener;
+	physWld.SetDestructionListener(&destroyListener);
+
+	World world;
+
+	world.setPhysics(&physWld);
+	world.setDestroyListener(&destroyListener);
+
+	GuiSystem Gui;
+	/*std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
+	std::shared_ptr<Window> win2 = std::make_shared<Window>(glm::vec2(300, 130), glm::vec2(350, 200));
+	Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
+	Gui.addElement(std::static_pointer_cast<IGuiElement>(win2));
+	win1->addElement(std::make_shared<Button>(glm::vec2(100, 100), glm::vec2(60, 35), "buton1"));
+	win1->addElement(std::make_shared<TextField>(glm::vec2(50, 170), glm::vec2(200, 40), "text"));*/
+
+	OperationsStack opStack(&vp1, World::getInstance(), &physWld);
+	GLFWInput::initialize(gltGetWindow());
+	GLFWInput::onInputEvent.add(onInputEventHandler);
+	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationPan(InputEvent::MB_RIGHT)));
+	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
+	opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
+
+	randSeed(1424118659);
+	//randSeed(time(NULL));
+	LOGLN("RAND seed: "<<rand_seed);
+
+	SessionManager sessionMgr;
+
+	if (defaultSession)
+		sessionMgr.startDefaultSession();
+	else if (loadSession) {
+		if (!sessionMgr.loadSessionFromFile(loadFilename)) {
+			ERROR("Could not load session from file \""<<loadFilename<<"\"");
 			return -1;
-
-		Renderer renderer;
-		Viewport vp1(0, 0, 800, 600);
-		renderer.addViewport(&vp1);
-		auto shape2d = new Shape2D(&renderer);
-		auto gltext = new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
-		RenderContext renderContext( &vp1, shape2d, gltext);
-
-		b2World physWld(b2Vec2_zero);
-		pPhysWld = &physWld;
-		PhysicsDebugDraw physicsDraw(renderContext);
-		pPhysicsDraw = &physicsDraw;
-		physicsDraw.SetFlags(
-					  b2Draw::e_shapeBit
-					//| b2Draw::e_centerOfMassBit
-					//| b2Draw::e_jointBit
-					//| b2Draw::e_aabbBit
-				);
-		physWld.SetDebugDraw(&physicsDraw);
-
-		PhysContactListener contactListener;
-		physWld.SetContactListener(&contactListener);
-
-		PhysDestroyListener destroyListener;
-		physWld.SetDestructionListener(&destroyListener);
-
-		World world;
-
-		world.setPhysics(&physWld);
-		world.setDestroyListener(&destroyListener);
-
-		GuiSystem Gui;
-		/*std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
-		std::shared_ptr<Window> win2 = std::make_shared<Window>(glm::vec2(300, 130), glm::vec2(350, 200));
-		Gui.addElement(std::static_pointer_cast<IGuiElement>(win1));
-		Gui.addElement(std::static_pointer_cast<IGuiElement>(win2));
-		win1->addElement(std::make_shared<Button>(glm::vec2(100, 100), glm::vec2(60, 35), "buton1"));
-		win1->addElement(std::make_shared<TextField>(glm::vec2(50, 170), glm::vec2(200, 40), "text"));*/
-
-		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
-		GLFWInput::initialize(gltGetWindow());
-		GLFWInput::onInputEvent.add(onInputEventHandler);
-		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationPan(InputEvent::MB_RIGHT)));
-		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
-		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
-
-		randSeed(1424118659);
-		//randSeed(time(NULL));
-		LOGLN("RAND seed: "<<rand_seed);
-
-		SessionManager sessionMgr;
-
-		if (defaultSession)
-			sessionMgr.startDefaultSession();
-		else if (loadSession) {
-			if (!sessionMgr.loadSessionFromFile(loadFilename)) {
-				ERROR("Could not load session from file \""<<loadFilename<<"\"");
-				return -1;
-			}
 		}
-		else {
-			LOGLN("No parameters specified. Starting with empty session.");
-		}
+	}
+	else {
+		LOGLN("No parameters specified. Starting with empty session.");
+	}
 
-		if (saveSession) {
-			if (!sessionMgr.saveSessionToFile(saveFilename))
-				ERROR("Could not save session to file \"" << saveFilename << "\"");
-		}
+	if (saveSession) {
+		if (!sessionMgr.saveSessionToFile(saveFilename))
+			ERROR("Could not save session to file \"" << saveFilename << "\"");
+	}
 
-		ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
-		SignalViewer sigViewer(glm::vec3(0.75f, 0.1f, 1.f), glm::vec2(0.2f, 0.1f));
+	ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
+	SignalViewer sigViewer(glm::vec3(0.75f, 0.1f, 1.f), glm::vec2(0.2f, 0.1f));
 
-		DrawList drawList;
-		drawList.add(World::getInstance());
-		drawList.add(&physWld);
-		drawList.add(&scale);
-		drawList.add(&sigViewer);
-		drawList.add(&Gui);
+	DrawList drawList;
+	drawList.add(World::getInstance());
+	drawList.add(&physWld);
+	drawList.add(&scale);
+	drawList.add(&sigViewer);
+	drawList.add(&Gui);
+	drawList.add(&EntityLabeler::getInstance());
 
-		UpdateList continuousUpdateList;
-		continuousUpdateList.add(&opStack);
-		UpdateList updateList;
-		updateList.add(&physWld);
-		updateList.add(&contactListener);
-		updateList.add(&sessionMgr.getPopulationManager());
-		updateList.add(World::getInstance());
-		updateList.add(&sigViewer);
+	UpdateList continuousUpdateList;
+	continuousUpdateList.add(&opStack);
+	UpdateList updateList;
+	updateList.add(&physWld);
+	updateList.add(&contactListener);
+	updateList.add(&sessionMgr.getPopulationManager());
+	updateList.add(World::getInstance());
+	updateList.add(&sigViewer);
 
-		float realTime = 0;							// [s]
-		float simulationTime = 0;					// [s]
-		float lastPrintedSimTime = 0;				// [s]
-		float simDTAcc = 0; // [s] accumulated sim dt values since last status print
-		float realDTAcc = 0; // [s] accumulated real dt values since last status print
-		constexpr float simTimePrintInterval = 10.f; // [s]
+	float realTime = 0;							// [s]
+	float simulationTime = 0;					// [s]
+	float lastPrintedSimTime = 0;				// [s]
+	float simDTAcc = 0; // [s] accumulated sim dt values since last status print
+	float realDTAcc = 0; // [s] accumulated real dt values since last status print
+	constexpr float simTimePrintInterval = 10.f; // [s]
 
-		constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
-		float lastAutosaveTime = 0;
+	constexpr float autoSaveInterval = 600.f; // 10 minutes of real time
+	float lastAutosaveTime = 0;
 
-		float frameTime = 0;
+	float frameTime = 0;
 
-		sigViewer.addSignal("frameTime", &frameTime, 50, 0.1f, glm::vec3(1.f, 0.2f, 0.2f));
+	sigViewer.addSignal("frameTime", &frameTime, glm::vec3(1.f, 0.2f, 0.2f), 0.1f);
 
 #ifdef DEBUG
-		Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntitiesOfType(ENTITY_BUG)[0]);
-		static constexpr float neuronUpdateTime = 0.05f;
-		float n14_out = 0;
-		float n14_i0=0, n14_i1=0;
-		sigViewer.addSignal("N14#0", &n14_i0, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
-		sigViewer.addSignal("N14#1", &n14_i1, 50, neuronUpdateTime, glm::vec3(0.2f, 1.f, 0.2f));
+	Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
+	static constexpr float neuronUpdateTime = 0.05f;
+	float nl_out = 0;
+	float nr_out = 0;
+	float sigma = 0;
+	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
+	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
+	sigViewer.addSignal("sigma", &sigma, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime, 50, 1.f, -1.f);
 
-		std::function<void(float)> debugNeurons_update = [&] (float dt) {
-			n14_out = pB->getNeuronData(17);
-			n14_i0 = pB->getNeuronData(6);
-			n14_i1 = pB->getNeuronData(11);
-		};
-		updateList.add(&debugNeurons_update);
+	std::function<void(float)> debugValues_update = [&] (float dt) {
+		// neuron values:
+		sigma = pB->getNeuronData(3);
+		// nose values:
+		Torso* t = pB->getBody();
+		if (t && t->getChildrenCount() >= 3) {
+			nl_out = ((Nose*)t->getChild(1))->getOutputSocket(0)->debugGetCachedValue();
+			nr_out = ((Nose*)t->getChild(3))->getOutputSocket(0)->debugGetCachedValue();
+		}
+	};
+	updateList.add(&debugValues_update);
 #endif
 
-		float t = glfwGetTime();
-		while (GLFWInput::checkInput()) {
-			float newTime = glfwGetTime();
-			float realDT = newTime - t;
-			frameTime = realDT;
-			realDTAcc += realDT;
-			t = newTime;
-			realTime += realDT;
+	float t = glfwGetTime();
+	while (GLFWInput::checkInput()) {
+		float newTime = glfwGetTime();
+		float realDT = newTime - t;
+		frameTime = realDT;
+		realDTAcc += realDT;
+		t = newTime;
+		realTime += realDT;
 
-			if (enableAutosave && realTime - lastAutosaveTime > autoSaveInterval) {
-				LOGLN("Autosaving...");
-				if (autosave(sessionMgr)) {
-					LOGLN("Autosave successful.");
-					lastAutosaveTime = realTime;
-				} else {
-					LOGLN("Autosave FAILED. Retrying in 10 seconds...");
-					lastAutosaveTime = realTime - autoSaveInterval + 10;
-				}
-			}
-
-			// fixed time step for simulation (unless slowMo is on)
-			float simDT = updatePaused ? 0 : 0.02f;
-			if (slowMo) {
-				// use same fixed timestep in order to avoid breaking physics, but
-				// only update once every n frames to slow down
-				static float frameCounter = 0;
-				constexpr float cycleLength = 10; // frames
-				if (++frameCounter == cycleLength) {
-					frameCounter = 0;
-				} else
-					simDT = 0;
-			}
-
-			simulationTime += simDT;
-			simDTAcc += simDT;
-
-			if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
-				int population = sessionMgr.getPopulationManager().getPopulationCount();
-				int maxGeneration = sessionMgr.getPopulationManager().getMaxGeneration();
-				printStatus(simulationTime, realTime, simDTAcc, realDTAcc, population, maxGeneration);
-				simDTAcc = realDTAcc = 0;
-				lastPrintedSimTime = simulationTime;
-			}
-
-			continuousUpdateList.update(realDT);
-			if (simDT > 0) {
-				updateList.update(simDT);
-			}
-
-			if (!skipRendering) {
-				// wait until previous frame finishes rendering and show frame output:
-				gltEnd();
-				// draw builds the render queue for the current frame
-				drawList.draw(renderContext);
-
-				renderContext.text->print("Salut Lume!\n[Powered by Box2D]", 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
-
-				if (updatePaused) {
-					renderContext.text->print("PAUSED", vp1.getWidth() / 2, vp1.getHeight() / 2, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
-				}
-				if (slowMo) {
-					renderContext.text->print("~~ Slow Motion ON ~~", 10, 45, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
-				}
-
-				// do the actual openGL render for the previous frame (which is independent of our world)
-				gltBegin();
-				renderer.render();
-				// now rendering is on-going, move on to the next update:
+		if (enableAutosave && realTime - lastAutosaveTime > autoSaveInterval) {
+			LOGLN("Autosaving...");
+			if (autosave(sessionMgr)) {
+				LOGLN("Autosave successful.");
+				lastAutosaveTime = realTime;
+			} else {
+				LOGLN("Autosave FAILED. Retrying in 10 seconds...");
+				lastAutosaveTime = realTime - autoSaveInterval + 10;
 			}
 		}
 
-		delete renderContext.shape;
-	} catch (std::runtime_error &e) {
-		ERROR("EXCEPTION: " << e.what());
-		throw e;
-	} catch (...) {
-		ERROR("EXCEPTION (unknown)");
-		throw;
+		// fixed time step for simulation (unless slowMo is on)
+		float simDT = updatePaused ? 0 : 0.02f;
+		if (slowMo) {
+			// use same fixed timestep in order to avoid breaking physics, but
+			// only update once every n frames to slow down
+			static float frameCounter = 0;
+			constexpr float cycleLength = 10; // frames
+			if (++frameCounter == cycleLength) {
+				frameCounter = 0;
+			} else
+				simDT = 0;
+		}
+
+		simulationTime += simDT;
+		simDTAcc += simDT;
+
+		if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
+			int population = sessionMgr.getPopulationManager().getPopulationCount();
+			int maxGeneration = sessionMgr.getPopulationManager().getMaxGeneration();
+			printStatus(simulationTime, realTime, simDTAcc, realDTAcc, population, maxGeneration);
+			simDTAcc = realDTAcc = 0;
+			lastPrintedSimTime = simulationTime;
+		}
+
+		continuousUpdateList.update(realDT);
+		if (simDT > 0) {
+			updateList.update(simDT);
+		}
+
+		if (!skipRendering) {
+			// wait until previous frame finishes rendering and show frame output:
+			gltEnd();
+			// draw builds the render queue for the current frame
+			drawList.draw(renderContext);
+
+			renderContext.text->print("Salut Lume!\n[Powered by Box2D]", 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
+
+			if (updatePaused) {
+				renderContext.text->print("PAUSED", vp1.getWidth() / 2, vp1.getHeight() / 2, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
+			}
+			if (slowMo) {
+				renderContext.text->print("~~ Slow Motion ON ~~", 10, 45, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
+			}
+
+			// do the actual openGL render for the previous frame (which is independent of our world)
+			gltBegin();
+			renderer.render();
+			// now rendering is on-going, move on to the next update:
+		}
 	}
+
+	delete renderContext.shape;
 
 	return 0;
 }

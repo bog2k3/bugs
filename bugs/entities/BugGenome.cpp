@@ -1420,13 +1420,13 @@ Chromosome Bug::createBasicChromosome() {
 		for (uint i=0; i<c.genes.size(); i+=padding+1) {
 			for (int k=0; k<padding; k++)
 				c.genes.insert(c.genes.begin()+i+1, GeneNoOp());
-			if (c.genes[i].type == GENE_TYPE_SKIP) {
+			if (c.genes[i].type == gene_type::SKIP) {
 				c.genes[i].data.gene_skip.count.set(c.genes[i].data.gene_skip.count * (padding+1));
 			}
-			if (c.genes[i].type == GENE_TYPE_OFFSET) {
+			if (c.genes[i].type == gene_type::OFFSET) {
 				c.genes[i].data.gene_offset.offset.set(c.genes[i].data.gene_offset.offset * (padding+1));
 			}
-			if (c.genes[i].type == GENE_TYPE_JOINT_OFFSET) {
+			if (c.genes[i].type == gene_type::JOINT_OFFSET) {
 				c.genes[i].data.gene_joint_offset.offset.set(c.genes[i].data.gene_joint_offset.offset * (padding+1));
 			}
 		}

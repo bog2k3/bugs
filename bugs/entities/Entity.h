@@ -9,32 +9,39 @@
 #define ENTITIES_ENTITY_H_
 
 #include "enttypes.h"
+#include <glm/vec3.hpp>
 
 class RenderContext;
 class BinaryStream;
 enum class SerializationObjectTypes;
+struct aabb;
 
 class Entity {
 public:
 	virtual ~Entity();
 
-	typedef unsigned FunctionalityFlags;
-	static constexpr FunctionalityFlags FF_NONE			= 0;
-	static constexpr FunctionalityFlags FF_DRAWABLE		= 1;
-	static constexpr FunctionalityFlags FF_UPDATABLE	= 2;
-	static constexpr FunctionalityFlags FF_SERIALIZABLE	= 4;
+	enum class FunctionalityFlags {
+		NONE			= 0,
+		DRAWABLE		= 1,
+		UPDATABLE		= 2,
+		SERIALIZABLE	= 4,
+
+		ALL				= 0xFFFF,
+	};
 
 	// these flags MUST NOT change during the life time of the object, or else UNDEFINED BEHAVIOUR
-	virtual FunctionalityFlags getFunctionalityFlags() { return FF_NONE; }
+	virtual FunctionalityFlags getFunctionalityFlags() { return FunctionalityFlags::NONE; }
+	virtual glm::vec3 getWorldTransform() = 0;
 
 	virtual void update(float dt) {}
 	virtual void draw(RenderContext const& ctx) {}
 	virtual void serialize(BinaryStream &stream);
 	virtual SerializationObjectTypes getSerializationType();
-	virtual EntityType::Values getEntityType() = 0;
+	virtual EntityType getEntityType() = 0;
+	virtual aabb getAABB() const = 0;
 
 	void destroy();
-	bool isZombie() { return markedForDeletion_; }
+	bool isZombie() const { return markedForDeletion_; }
 
 protected:
 	Entity() = default;

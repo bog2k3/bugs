@@ -10,8 +10,8 @@
 
 namespace lifeApplication
 {
-	typedef std::vector<BSP::BSPNode*> BSPNodeVector;
-	typedef std::vector<WorldObject*> WorldObjVector;
+	using BSPNodeVector = std::vector<BSP::BSPNode*>;
+	using WorldObjVector = std::vector<WorldObject*>;
 
 	class BSPTree : 
 		public Render::ISpatialResolver,

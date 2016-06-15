@@ -2,6 +2,7 @@
 
 #include <glm/vec2.hpp>
 #include <glm/geometric.hpp>
+#include <utility>
 #include "constants.h"
 #include "../utils/assert.h"
 
@@ -91,12 +92,36 @@ inline float absAngleDiff(float a, float b) {
 	return d;
 }
 
+inline glm::vec2 operator * (glm::vec2 const& x, float f) {
+	return glm::vec2(x.x*f, x.y*f);
+}
+
 inline glm::vec2 vec3xy(glm::vec3 const &in) {
 	return glm::vec2(in.x, in.y);
 }
 
+inline glm::vec2& vec3xy(glm::vec3 &in) {
+	return (glm::vec2&)in;
+}
+
 inline glm::vec2 vec3xy(glm::ivec3 const &in) {
 	return glm::vec2(in.x, in.y);
+}
+
+inline float vec3lenSq(glm::vec3 const&v) {
+	return sqr(v.x) + sqr(v.y) + sqr(v.z);
+}
+
+inline float vec3len(glm::vec3 const&v) {
+	return sqrtf(vec3lenSq(v));
+}
+
+inline float vec2lenSq(glm::vec2 const& v) {
+	return vec3lenSq(glm::vec3(v, 0));
+}
+
+inline float vec2len(glm::vec2 const& v) {
+	return vec3len(glm::vec3(v, 0));
 }
 
 /**

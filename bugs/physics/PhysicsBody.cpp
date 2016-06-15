@@ -6,8 +6,9 @@
  */
 
 #include "PhysicsBody.h"
-#include "World.h"
-#include "math/box2glm.h"
+#include "../World.h"
+#include "../math/box2glm.h"
+#include "../math/aabb.h"
 #include <Box2D/Box2D.h>
 #include <cmath>
 
@@ -51,4 +52,20 @@ PhysicsBody::~PhysicsBody() {
 	onDestroy.trigger(this);
 	if (b2Body_)
 		b2Body_->GetWorld()->DestroyBody(b2Body_);
+}
+
+PhysicsBody* PhysicsBody::getForB2Body(b2Body* body) {
+	if (!body->GetUserData())
+		return nullptr;
+	return (PhysicsBody*)body->GetUserData();
+}
+
+aabb PhysicsBody::getAABB() const {
+	aabb x;
+	if (b2Body_) {
+		for (b2Fixture* pFix = b2Body_->GetFixtureList(); pFix; pFix = pFix->GetNext()) {
+			x = x.reunion(pFix->GetAABB(0));
+		}
+	}
+	return x;
 }

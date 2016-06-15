@@ -13,6 +13,7 @@
 #include "../genetics/Ribosome.h"
 #include "../neuralnet/functions.h"
 #include "../math/math2D.h"
+#include "../math/aabb.h"
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Torso.h"
 #include "../body-parts/BodyConst.h"
@@ -393,4 +394,15 @@ float Bug::getNeuronData(int neuronIndex) {
 	if (neuronIndex < 0 || neuronIndex >= neuralNet_->neurons.size())
 		return 0;
 	return neuralNet_->neurons[neuronIndex]->getValue();
+}
+
+glm::vec3 Bug::getWorldTransform() {
+	return body_ ? body_->getWorldTransformation() : glm::vec3(0);
+}
+
+aabb Bug::getAABB() const {
+	if (zygoteShell_)
+		return zygoteShell_->getAABBRecursive();
+	else
+		return body_ ? body_->getAABBRecursive() : aabb();
 }
