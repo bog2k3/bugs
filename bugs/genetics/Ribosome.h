@@ -32,15 +32,13 @@ struct NeuronInfo {
 	CummulativeValue param;
 	CummulativeValue inputVMSCoord;
 	CummulativeValue outputVMSCoord;
-	NeuronInfo(int index, float transfer, float constant)
+	/*NeuronInfo(int index, float transfer, float constant)
 		: index(index), transfer(transfer), bias(constant) {
-	}
+	}*/
 	explicit NeuronInfo(int index)
 		: index(index) {
 	}
-	NeuronInfo(NeuronInfo const& other)
-		: index(other.index), transfer(other.transfer), bias(other.bias) {
-	}
+	NeuronInfo(NeuronInfo const& other) = default;
 	NeuronInfo() : index(-1) {
 	}
 };

@@ -47,6 +47,8 @@ struct Atom {
 	}
 
 	Atom() : value(), chanceToMutate(), changeAmount() {}
+
+	Atom(Atom const& a) = default;
 };
 
 struct GeneStartMarker {

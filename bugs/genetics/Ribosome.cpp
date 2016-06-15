@@ -100,7 +100,7 @@ void Ribosome::decodeDeferredGenes() {
 	for (auto &g : neuralGenes_)
 		decodeGene(*g, nullptr, nullptr, false);
 	// apply all neuron properties
-	for (auto n : mapNeurons_) {
+	for (auto &n : mapNeurons_) {
 		if (n.second.transfer.hasValue()) {
 			int funcIndex = clamp((int)n.second.transfer.get(),
 					(int)transferFuncNames::FN_ONE,

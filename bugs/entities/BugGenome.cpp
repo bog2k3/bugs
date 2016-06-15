@@ -123,13 +123,38 @@ Chromosome Bug::createBasicChromosome() {
 
 	// neuron #2 transfer:
 	gt.targetNeuron.set(2);
-	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
+	gt.functionID.set((int)transferFuncNames::FN_GATE);
 	c.genes.push_back(gt);
+	// neuron #2 gate threshold
+	gnb.targetNeuron.set(2);
+	gnb.value.set(0);
+	c.genes.push_back(gnb);
+	// neuron #2 gate switch steepness
+	gnp.targetNeuron.set(2);
+	gnp.value.set(10);
+	c.genes.push_back(gnp);
 
 	// neuron #3 transfer:
 	gt.targetNeuron.set(3);
-	gt.functionID.set((int)transferFuncNames::FN_THRESHOLD);
+	gt.functionID.set((int)transferFuncNames::FN_GATE);
 	c.genes.push_back(gt);
+	// neuron #3 gate threshold
+	gnb.targetNeuron.set(3);
+	gnb.value.set(0);
+	c.genes.push_back(gnb);
+	// neuron #3 gate switch steepness
+	gnp.targetNeuron.set(3);
+	gnp.value.set(10);
+	c.genes.push_back(gnp);
+
+	// neuron #19 transfer:
+	gt.targetNeuron.set(19);
+	gt.functionID.set((int)transferFuncNames::FN_SIGMOID);
+	c.genes.push_back(gt);
+	// neuron #19 sigmoid steepness
+	gnp.targetNeuron.set(19);
+	gnp.value.set(10);
+	c.genes.push_back(gnp);
 
 	// neuron #4 transfer:
 	gt.targetNeuron.set(4);
@@ -273,14 +298,7 @@ Chromosome Bug::createBasicChromosome() {
 	// synapse 0 to 2
 	gs.from.set(0);
 	gs.to.set(2);
-	gs.weight.set(-1);
-	gs.priority.set(0);
-	c.genes.push_back(gs);
-
-	// synapse 0 to 3
-	gs.from.set(0);
-	gs.to.set(3);
-	gs.weight.set(1);
+	gs.weight.set(+1);
 	gs.priority.set(0);
 	c.genes.push_back(gs);
 
@@ -291,25 +309,46 @@ Chromosome Bug::createBasicChromosome() {
 	gs.priority.set(0);
 	c.genes.push_back(gs);
 
-	// synapse 1 to 2
-	gs.from.set(1);
-	gs.to.set(2);
-	gs.weight.set(1);
+	// synapse 0 to 19
+	gs.from.set(0);
+	gs.to.set(19);
+	gs.weight.set(-1);
 	gs.priority.set(0);
 	c.genes.push_back(gs);
 
 	// synapse 1 to 3
 	gs.from.set(1);
 	gs.to.set(3);
-	gs.weight.set(-1);
+	gs.weight.set(+1);
 	gs.priority.set(0);
 	c.genes.push_back(gs);
 
 	// synapse 1 to 5
 	gs.from.set(1);
 	gs.to.set(5);
-	gs.weight.set(1);
+	gs.weight.set(+1);
 	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 1 to 19
+	gs.from.set(1);
+	gs.to.set(19);
+	gs.weight.set(+1);
+	gs.priority.set(0);
+	c.genes.push_back(gs);
+
+	// synapse 19 to 2
+	gs.from.set(19);
+	gs.to.set(2);
+	gs.weight.set(-1);
+	gs.priority.set(100);	// #0 for gate
+	c.genes.push_back(gs);
+
+	// synapse 19 to 3
+	gs.from.set(19);
+	gs.to.set(3);
+	gs.weight.set(+1);
+	gs.priority.set(100);	// #0 for gate
 	c.genes.push_back(gs);
 
 	// synapse 2 to 4
