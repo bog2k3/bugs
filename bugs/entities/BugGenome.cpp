@@ -164,6 +164,10 @@ Chromosome Bug::createBasicChromosome() {
 	gnp.targetNeuron.set(4);
 	gnp.value.set(-1);
 	c.genes.push_back(gnp);
+	// neuron #4 bias (to avoid division by 0)
+	gnb.targetNeuron.set(4);
+	gnb.value.set(1.e-10f);
+	c.genes.push_back(gnb);
 
 	// neuron #5 transfer:
 	gt.targetNeuron.set(5);
@@ -375,14 +379,14 @@ Chromosome Bug::createBasicChromosome() {
 	// synapse 5 to 13
 	gs.from.set(5);
 	gs.to.set(13);
-	gs.weight.set(-0.5f);
+	gs.weight.set(+0.5f);
 	gs.priority.set(0);
 	c.genes.push_back(gs);
 
 	// synapse 5 to 17
 	gs.from.set(5);
 	gs.to.set(17);
-	gs.weight.set(0.5f);
+	gs.weight.set(-0.5f);
 	gs.priority.set(0);
 	c.genes.push_back(gs);
 
@@ -648,7 +652,7 @@ Chromosome Bug::createBasicChromosome() {
 	ga.minDepth.set(2);
 	ga.maxDepth.set(2);
 	ga.attribute = GENE_ATTRIB_SIZE;
-	ga.value.set(0.08f * 0.01f);
+	ga.value.set(0.25f * 0.02f);
 	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
