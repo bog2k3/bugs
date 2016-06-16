@@ -107,7 +107,7 @@ void Nose::update(float dt) {
 	float kt = BodyConst::SensorNoiseThreshConstant;
 	float maxDist = sqrtf((ks*kt*size_*size_ - 1) / (ks*size_ + 1));
 
-#ifdef DEBUG
+#ifdef NONE //DEBUG
 	static int whichNose = 0;
 	whichNose = 1 - whichNose;
 	static std::vector<Entity*> entLabels[2];
@@ -144,7 +144,7 @@ void Nose::update(float dt) {
 
 			float signal = noise + ia + s1;
 
-#ifdef DEBUG
+#ifdef NONE //DEBUG
 			// attach a debug label to the entity
 			entLabels[whichNose].push_back(ent);
 			std::stringstream ss;
