@@ -175,27 +175,20 @@ void World::draw(RenderContext const& ctx) {
 		e->draw(ctx);
 }
 
-std::vector<Entity*> World::getEntities(Entity::FunctionalityFlags filterFlags) {
+std::vector<Entity*> World::getEntities(EntityType filterTypes, Entity::FunctionalityFlags filterFlags) {
 	std::vector<Entity*> vec;
 	for (auto &e : entities) {
-		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags && !e->isZombie())
+		if (((e->getEntityType() & filterTypes) != 0) &&
+			(e->getFunctionalityFlags() & filterFlags) == filterFlags &&
+			!e->isZombie()
+		)
 			vec.push_back(e.get());
 	}
 	for (auto &e : entsToTakeOver) {
-		if ((e->getFunctionalityFlags() & filterFlags) == filterFlags && !e->isZombie())
-			vec.push_back(e.get());
-	}
-	return vec;
-}
-
-std::vector<Entity*> World::getEntities(EntityType::Values type) {
-	std::vector<Entity*> vec;
-	for (auto &e : entities) {
-		if (e->getEntityType() == type && !e->isZombie())
-			vec.push_back(e.get());
-	}
-	for (auto &e : entsToTakeOver) {
-		if (e->getEntityType() == type && !e->isZombie())
+		if (((e->getEntityType() & filterTypes) != 0) &&
+			(e->getFunctionalityFlags() & filterFlags) == filterFlags &&
+			!e->isZombie()
+		)
 			vec.push_back(e.get());
 	}
 	return vec;

@@ -34,7 +34,7 @@ class Bug : public Entity {
 public:
 
 	struct defaultConstants {
-		static constexpr float lifetimeSensor_vmsCoord = 50;
+		static constexpr float lifetimeSensor_vmsCoord = 500;
 	};
 
 	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation);

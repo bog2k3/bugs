@@ -1,4 +1,4 @@
-* fix MAX neural structure processing nose outputs - replace thresh neurons with gates
+		* fix MAX neural structure processing nose outputs - replace thresh neurons with gates
 		* !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
 			- EntityLabeler created
 		* parts with no fixtures (noses) are not drawn correctly after commit
@@ -8,9 +8,9 @@
 		* multiple outputs from nose (sense different types of entities)
 		* need FAST method to get nearest body of certain type (for nose)
 		* outputVMS coord genes for sensors (indexed)
-* extend VMS to 0..1000 (0..100 is to small compared to mutation values)
-* redesign bug with two simple legs, two nose sensors - drive by smell
-	- simple neural system, just bias towards the stronger sensor
+		* extend VMS to 0..1000 (0..100 is to small compared to mutation values)
+		* redesign bug with two simple legs, two nose sensors - drive by smell
+			- simple neural system, just bias towards the stronger sensor
 		* add priority to synapses (float) - inputs will be ordered by highest priority first
 			- this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
 			- default 0 priority to input nerves so they shouldn't affect the order;

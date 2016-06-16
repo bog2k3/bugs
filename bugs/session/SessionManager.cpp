@@ -103,7 +103,7 @@ bool SessionManager::saveSessionToFile(std::string const& path) {
 	LOGPREFIX("SessionManager");
 	LOGLN("Saving session to file \"" << path << "\"...");
 	Serializer serializer;
-	auto vecSer = World::getInstance()->getEntities(Entity::FunctionalityFlags::SERIALIZABLE);
+	auto vecSer = World::getInstance()->getEntities(EntityType::ALL, Entity::FunctionalityFlags::SERIALIZABLE);
 	for (auto e : vecSer)
 		serializer.queueObject(e);
 	if (!serializer.serializeToFile(path)) {

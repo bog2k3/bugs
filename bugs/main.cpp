@@ -296,27 +296,27 @@ int main(int argc, char* argv[]) {
 	float gate2 = 0, gate3 = 0;
 	float sigma = 0;
 	float invmax = 0;
-	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
-	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
-	sigViewer.addSignal("R>L", &rgtl, glm::vec3(0.1, 0.3, 1.f), neuronUpdateTime, 50, 1.1f, -1.1f);
-	sigViewer.addSignal("gateL", &gate2, glm::vec3(0.1, 1.0, 0.3f), neuronUpdateTime, 50, 1.0f, 0);
-	sigViewer.addSignal("gateR", &gate3, glm::vec3(0.1, 1.0, 0.3f), neuronUpdateTime, 50, 1.0f, 0);
-	sigViewer.addSignal("sigma", &sigma, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime, 50, 1.f, -1.f);
+//	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
+//	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
+//	sigViewer.addSignal("R>L", &rgtl, glm::vec3(0.1, 0.3, 1.f), neuronUpdateTime, 50, 1.1f, -1.1f);
+//	sigViewer.addSignal("gateL", &gate2, glm::vec3(0.1, 1.0, 0.3f), neuronUpdateTime, 50, 1.0f, 0);
+//	sigViewer.addSignal("gateR", &gate3, glm::vec3(0.1, 1.0, 0.3f), neuronUpdateTime, 50, 1.0f, 0);
+//	sigViewer.addSignal("sigma", &sigma, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime, 50, 1.f, -1.f);
 	//sigViewer.addSignal("1/max", &invmax, glm::vec3(0.7f, 1.f, 0.f), neuronUpdateTime, 50, 1.f, -1.f);
 
 	std::function<void(float)> debugValues_update = [&] (float dt) {
 		// neuron values:
-		sigma = pB->getNeuronData(2);
-		rgtl = pB->getNeuronData(3);
-		gate2 = pB->getNeuronData(1);
-		gate3 = pB->getNeuronData(5);
-		invmax = pB->getNeuronData(6);
-		// nose values:
-		Torso* t = pB->getBody();
-		if (t && t->getChildrenCount() >= 3) {
-			nl_out = ((Nose*)t->getChild(1))->getOutputSocket(0)->debugGetCachedValue();
-			nr_out = ((Nose*)t->getChild(3))->getOutputSocket(0)->debugGetCachedValue();
-		}
+//		sigma = pB->getNeuronData(2);
+//		rgtl = pB->getNeuronData(3);
+//		gate2 = pB->getNeuronData(1);
+//		gate3 = pB->getNeuronData(5);
+//		invmax = pB->getNeuronData(6);
+//		// nose values:
+//		Torso* t = pB->getBody();
+//		if (t && t->getChildrenCount() >= 3) {
+//			nl_out = ((Nose*)t->getChild(1))->getOutputSocket(0)->debugGetCachedValue();
+//			nr_out = ((Nose*)t->getChild(3))->getOutputSocket(0)->debugGetCachedValue();
+//		}
 	};
 	updateList.add(&debugValues_update);
 #endif

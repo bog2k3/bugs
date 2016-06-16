@@ -49,9 +49,7 @@ public:
 	void destroyEntity(Entity* e);
 
 	// returns a vector of all entities that match ALL of the requested features
-	std::vector<Entity*> getEntities(Entity::FunctionalityFlags filterFlags);
-	// returns a vector of all entities of a given type
-	std::vector<Entity*> getEntities(EntityType::Values type);
+	std::vector<Entity*> getEntities(EntityType filterTypes, Entity::FunctionalityFlags filterFlags = Entity::FunctionalityFlags::NONE);
 
 	// we have physBody->getEntity(), so:
 	std::vector<Entity*> getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 pos, float radius, bool clipToCircle);
@@ -73,7 +71,7 @@ protected:
 	void destroyPending();
 	void takeOverPending();
 
-	std::vector<Entity*> getEntities(std::function<bool(Entity const&)> predicate);
+	// std::vector<Entity*> getEntities(std::function<bool(Entity const&)> predicate);
 };
 
 #endif /* WORLD_H_ */

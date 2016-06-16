@@ -14,6 +14,8 @@ enum class EntityType {	// bitfield
 	WALL				= 4,
 	FOOD_DISPENSER		= 8,
 	FOOD_CHUNK			= 16,
+
+	ALL					= 0xFFFF,
 };
 
 #endif /* ENTITIES_ENTTYPES_H_ */
