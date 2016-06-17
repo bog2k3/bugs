@@ -645,23 +645,56 @@ Chromosome Bug::createBasicChromosome() {
 #endif
 
 	gjo.minDepth.set(2);
-	gjo.maxDepth.set(2);
+	gjo.maxDepth.set(4);
 	INSERT_JOFFSET(TORSO_JOINT8)
 	c.genes.push_back(gjo);
 
 	ga.minDepth.set(2);
-	ga.maxDepth.set(2);
+	ga.maxDepth.set(4);
 	ga.attribute = GENE_ATTRIB_SIZE;
 	ga.value.set(0.25f * 0.02f);
 	c.genes.push_back(ga);
 
+	ga.minDepth.set(4);
+	ga.maxDepth.set(4);
+	ga.attribute = GENE_ATTRIB_SIZE;
+	ga.value.set(0.0003f);
+	c.genes.push_back(ga);
+
+	ga.minDepth.set(2);
+	ga.maxDepth.set(4);
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(0.4f);
 	c.genes.push_back(ga);
 
-	// grow Egg Layer:
+	ga.minDepth.set(4);
+	ga.maxDepth.set(4);
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(6.5f);
+	c.genes.push_back(ga);
+
+	// grow second bone:
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
+	gp.targetSegment.set(0);
+	gp.protein.set(GENE_PROT_A);	// X-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_C);	// Y-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_E);	// Z-
+	c.genes.push_back(gp);
+	gp.protein.set(GENE_PROT_G);	// W-
+	c.genes.push_back(gp);
+
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
+	go.targetSegment.set(0);
+	INSERT_OFFSET(TORSO_BONE8);
+	c.genes.push_back(go);
+
+	// grow Egg Layer (on second bone):
+	gp.minDepth.set(4);
+	gp.maxDepth.set(4);
 	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_B);	// X+
 	c.genes.push_back(gp);
@@ -672,13 +705,15 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.minDepth.set(2);
-	go.maxDepth.set(2);
-	go.targetSegment.set(5);
+	go.minDepth.set(4);
+	go.maxDepth.set(4);
+	go.targetSegment.set(0);
 	INSERT_OFFSET(EGGLAYER)
 	c.genes.push_back(go);
 
 	// grow right leg (2):
+	gp.minDepth.set(2);
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(2);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -689,11 +724,15 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
 	go.targetSegment.set(2);
 	INSERT_OFFSET(RIGHT_LEG)
 	c.genes.push_back(go);
 
 	// grow right leg pull Muscle(3):
+	gp.minDepth.set(2);
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(3);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -705,10 +744,14 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(3);
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
 	INSERT_OFFSET(RIGHT_MUSCLE_PULL)
 	c.genes.push_back(go);
 
 	// grow right leg push Muscle (1):
+	gp.minDepth.set(2);
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -720,10 +763,14 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(1);
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
 	INSERT_OFFSET(RIGHT_MUSCLE_PUSH)
 	c.genes.push_back(go);
 
 	// grow left leg (14):
+	gp.minDepth.set(2);
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(14);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -735,10 +782,14 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(14);
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
 	INSERT_OFFSET(LEFT_LEG)
 	c.genes.push_back(go);
 
 	// grow left leg pull Muscle(13):
+	gp.minDepth.set(2);
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(13);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -750,10 +801,14 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(13);
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
 	INSERT_OFFSET(LEFT_MUSCLE_PULL)
 	c.genes.push_back(go);
 
 	// grow left leg push Muscle (15):
+	gp.minDepth.set(2);
+	gp.maxDepth.set(2);
 	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
@@ -765,6 +820,8 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gp);
 
 	go.targetSegment.set(15);
+	go.minDepth.set(2);
+	go.maxDepth.set(2);
 	INSERT_OFFSET(LEFT_MUSCLE_PUSH)
 	c.genes.push_back(go);
 
