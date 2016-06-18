@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lGLEW -lglfw -lXcursor -lXinerama -lGL -lX11 -lXxf86vm -lpthread -lXrandr -lXi -lrt -lpng -lBox2D -ldl
+LIBS := -lGLEW -lglfw -lGL -lX11 -lXxf86vm -lpthread -lrt -lpng -lBox2D -ldl
 

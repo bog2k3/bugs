@@ -12,6 +12,7 @@ RM := rm -rf
 -include session/subdir.mk
 -include serialization/subdir.mk
 -include renderOpenGL/subdir.mk
+-include physics/subdir.mk
 -include neuralnet/subdir.mk
 -include math/subdir.mk
 -include input/operations/subdir.mk
@@ -20,6 +21,7 @@ RM := rm -rf
 -include entities/food/subdir.mk
 -include entities/Bug/subdir.mk
 -include entities/subdir.mk
+-include body-parts/sensors/subdir.mk
 -include body-parts/subdir.mk
 -include OSD/subdir.mk
 -include GUI/controls/subdir.mk

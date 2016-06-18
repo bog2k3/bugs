@@ -29,6 +29,7 @@ GUI/controls \
 OSD \
 . \
 body-parts \
+body-parts/sensors \
 entities/Bug \
 entities \
 entities/food \
@@ -37,6 +38,7 @@ input \
 input/operations \
 math \
 neuralnet \
+physics \
 renderOpenGL \
 serialization \
 session \
