@@ -50,7 +50,7 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float rightGripper_VMScoord = 300;
 	constexpr float musclePeriod = 3.f; // seconds
 	constexpr float gripper_signal_threshold = -0.55f;
-	constexpr float gripper_signal_phase_offset = 0.9f * PI;
+	constexpr float gripper_signal_phase_offset = 1.0f * PI;
 
 	GeneOffset go;
 	GeneJointOffset gjo;

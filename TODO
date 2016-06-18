@@ -2,7 +2,7 @@
 * eyes
 * orientation sensor (compass)
 		* add a second body segment and move egg layer to the other end of it (to prevent interference with legs)
-* synchronize grippers better (earlier)
+		* synchronize grippers better (earlier)
 * split update list to each core to run faster
 		* fix MAX neural structure processing nose outputs - replace thresh neurons with gates
 		* !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
@@ -51,8 +51,8 @@
 * fix world design to favour movers
 	- food spawners should pause from time to time to make them go in another place
 	- movable food spawners - spawn more food than static ones
-* print mutation statistics after meyosis
-* !!! add SENSORS
+		* print mutation statistics after meyosis
+		* !!! add SENSORS
 * prevent fixture overlapping after load from file -> results in box2D hang (maybe do an epsilon update on physWorld after each entity is deserialized)
 * make multiple worlds on different CPU cores which communicate through portals
 		* [obsolete]  !!! have redundancy in neural system to make muscle command harder to break
