@@ -1,5 +1,5 @@
-* crash after commit - probably due to some body not having the getAssociatedEntity func ptr set
-	- egg & zygote may still be problematic
+	* [FIXED] crash after commit - probably due to some body not having the getAssociatedEntity func ptr set
+		- egg & zygote may still be problematic
 
 	* [FIXED] nose & egglayer positions after commit are broken
 	* [FIXED] CRASH after joint break: joint Torso(8)::J breaks but no motor lines are removed
