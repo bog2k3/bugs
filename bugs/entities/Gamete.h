@@ -55,6 +55,9 @@ protected:
 	int updateSkipCounter_ = 0;
 
 	void onCollision(PhysicsBody* pOther, float impulse);
+
+private:
+	static Entity* getEntityFromGametePhysBody(PhysicsBody const& body);
 };
 
 #endif /* ENTITIES_GAMETE_H_ */

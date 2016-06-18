@@ -29,11 +29,12 @@ static const int UPDATE_PERIOD = 10; // [frames]
 Gamete::Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 	: chromosome_(ch)
 	, body_(ObjectTypes::GAMETE, this,
-			EventCategoryFlags::GAMETE,
+			EventCategoryFlags::GAMETE | EventCategoryFlags::FOOD,	// TODO handle mouth collision properly (from Mouth)
 			EventCategoryFlags::GAMETE)
 {
 	PhysicsProperties props(pos, 0, true, speed, 0);
 	body_.create(props);
+	body_.getEntityFunc_ = &getEntityFromGametePhysBody;
 
 	float size = mass * BodyConst::ZygoteDensityInv;
 	b2CircleShape shp;
@@ -146,6 +147,12 @@ glm::vec3 Gamete::getWorldTransform() {
 		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
 	} else
 		return glm::vec3(0);
+}
+
+Entity* Gamete::getEntityFromGametePhysBody(PhysicsBody const& body) {
+	Gamete* pGamete = static_cast<Gamete*>(body.userPointer_);
+	assertDbg(pGamete);
+	return pGamete;
 }
 
 aabb Gamete::getAABB() const {
