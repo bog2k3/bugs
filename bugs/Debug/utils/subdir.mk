@@ -4,14 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../utils/UpdateList.cpp \
 ../utils/log.cpp \
 ../utils/rand.cpp 
 
 OBJS += \
+./utils/UpdateList.o \
 ./utils/log.o \
 ./utils/rand.o 
 
 CPP_DEPS += \
+./utils/UpdateList.d \
 ./utils/log.d \
 ./utils/rand.d 
 
