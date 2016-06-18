@@ -616,8 +616,8 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 #endif
 
-	ga.minDepth.set(1);
-	ga.maxDepth.set(1);
+	ga.minDepth.set(5);
+	ga.maxDepth.set(5);
 	ga.attribute = GENE_ATTRIB_EGG_EJECT_SPEED;
 	ga.value.set(BodyConst::initialEggEjectSpeed);
 	c.genes.push_back(ga);

@@ -817,7 +817,7 @@ void Ribosome::resolveMuscleLinkage() {
 				targetJoint = jPos;
 			} else if (posDelta == negDelta) {
 				// angle differences are equal, choose the one towards which the muscle is oriented
-				if (m->getAngleOffset() > 0) {
+				if (m->getLocalRotation() > 0) {
 					targetJoint = jPos;
 				}
 			}

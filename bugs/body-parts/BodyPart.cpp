@@ -26,7 +26,7 @@
 #endif
 
 BodyPartInitializationData::BodyPartInitializationData()
-	: angleOffset(0)
+	: localRotation(0)
 	, lateralOffset(0)
 	, size(BodyConst::initialBodyPartSize)
 	, density(BodyConst::initialBodyPartDensity)
@@ -42,7 +42,7 @@ BodyPart::BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData
 	, dontCreateBody_(false)
 	, geneValuesCached_(false)
 	, attachmentDirectionParent_(0)
-	, angleOffset_(0)
+	, localRotation_(0)
 	, lateralOffset_(0)
 	, size_(0.01f)
 	, density_(1.f)
@@ -54,7 +54,7 @@ BodyPart::BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData
 {
 	assertDbg (initialData != nullptr);
 
-	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->angleOffset);
+	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->localRotation);
 	registerAttribute(GENE_ATTRIB_ATTACHMENT_OFFSET, initialData_->lateralOffset);
 	registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
 
@@ -435,10 +435,10 @@ glm::vec2 BodyPart::getParentSpacePosition() {
 	if (!geneValuesCached_)
 		cacheInitializationData();
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
-	glm::vec2 localOffset = getChildAttachmentPoint(PI - angleOffset_);
+	glm::vec2 localOffset = getChildAttachmentPoint(PI - localRotation_);
 	assertDbg(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
 	float angle;
-	angle = attachmentDirectionParent_ + angleOffset_;
+	angle = attachmentDirectionParent_ + localRotation_;
 	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
@@ -475,7 +475,7 @@ void BodyPart::computeBodyPhysProps() {
 	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
 	cachedProps_.position = pos;
 	// compute world space angle:
-	cachedProps_.angle = parentProps.angle + attachmentDirectionParent_ + angleOffset_;
+	cachedProps_.angle = parentProps.angle + attachmentDirectionParent_ + localRotation_;
 	assertDbg(!std::isnan(cachedProps_.angle));
 }
 
@@ -488,7 +488,7 @@ glm::vec3 BodyPart::getWorldTransformation() {
 		glm::vec2 pos = getParentSpacePosition(); // this will temporarily cache gene values as well
 		return parentTransform + glm::vec3(
 				glm::rotate(pos, parentTransform.z),
-				attachmentDirectionParent_ + angleOffset_);
+				attachmentDirectionParent_ + localRotation_);
 	}
 }
 
@@ -605,7 +605,7 @@ void BodyPart::draw_tree(RenderContext const& ctx) {
 }
 
 void BodyPart::cacheInitializationData() {
-	angleOffset_ = limitAngle(initialData_->angleOffset, 2*PI);
+	localRotation_ = limitAngle(initialData_->localRotation, 2*PI);
 	lateralOffset_ = initialData_->lateralOffset;
 	size_ = initialData_->size.clamp(BodyConst::MinBodyPartSize, 1.e10f);
 	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);

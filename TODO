@@ -1,3 +1,6 @@
+* velocity & angular velocity sensors
+* eyes
+* orientation sensor (compass)
 		* add a second body segment and move egg layer to the other end of it (to prevent interference with legs)
 * synchronize grippers better (earlier)
 * split update list to each core to run faster

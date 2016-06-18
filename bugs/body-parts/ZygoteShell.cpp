@@ -30,7 +30,7 @@ ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
 {
 	getInitializationData()->size.reset(mass*BodyConst::ZygoteDensityInv);
 	getInitializationData()->density.reset(BodyConst::ZygoteDensity);
-	getInitializationData()->angleOffset.reset(randf()*2*PI);
+	getInitializationData()->localRotation.reset(randf()*2*PI);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;
 	physBody_.userPointer_ = this;

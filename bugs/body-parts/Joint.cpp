@@ -90,7 +90,7 @@ void Joint::commit() {
 	parentAnchor *= 1 + radius/parentAnchorLength;	// move away from the edge by joint radius
 	def.localAnchorA = g2b(parentAnchor);
 
-	glm::vec2 childAnchor = children_[0]->getChildAttachmentPoint(PI - children_[0]->getAngleOffset());
+	glm::vec2 childAnchor = children_[0]->getChildAttachmentPoint(PI - children_[0]->getLocalRotation());
 	float childAnchorLength = glm::length(childAnchor);
 	childAnchor *= 1 + radius/childAnchorLength;
 	def.localAnchorB = g2b(childAnchor);

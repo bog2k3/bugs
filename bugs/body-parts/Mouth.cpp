@@ -103,7 +103,7 @@ void Mouth::commit() {
 	jdef.bodyB = physBody_.b2Body_;
 	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
 	jdef.localAnchorA = g2b(parentAnchor);
-	glm::vec2 childAnchor = getChildAttachmentPoint(angleOffset_);
+	glm::vec2 childAnchor = getChildAttachmentPoint(PI - localRotation_);
 	jdef.localAnchorB = g2b(childAnchor);
 	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
 }

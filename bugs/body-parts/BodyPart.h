@@ -118,8 +118,8 @@ public:
 
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
-	inline float getDefaultAngle() const { return attachmentDirectionParent_ + angleOffset_; }
-	inline float getAngleOffset() const { return angleOffset_; }
+	inline float getDefaultAngle() const { return attachmentDirectionParent_ + localRotation_; }
+	inline float getLocalRotation() const { return localRotation_; }
 	inline float getAttachmentAngle() const { return attachmentDirectionParent_; }
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
@@ -173,7 +173,7 @@ protected:
 
 	// final positioning and physical values:
 	float attachmentDirectionParent_;
-	float angleOffset_;
+	float localRotation_;
 	float lateralOffset_;
 	float size_;
 	float density_;
@@ -260,7 +260,7 @@ struct BodyPartInitializationData {
 	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
 	 */
 
-	CummulativeValue angleOffset;					// rotation offset from the original attachment angle
+	CummulativeValue localRotation;					// rotation offset from the original attachment angle
 	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
 	CummulativeValue size;							// surface area
 	CummulativeValue density;

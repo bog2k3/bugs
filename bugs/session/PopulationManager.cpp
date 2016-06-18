@@ -15,12 +15,19 @@
 #include <dmalloc.h>
 #endif
 
+#define DEBUG_ONE_BUG_ONLY
+
 #ifdef DEBUG
-static unsigned minPopulation = 5;				// minimum population number that triggers a refill
-static unsigned refillPopulationTarget = 15;	// target population after refill
+	#ifdef DEBUG_ONE_BUG_ONLY
+		static unsigned minPopulation = 0;				// minimum population number that triggers a refill
+		static unsigned refillPopulationTarget = 1;		// target population after refill
+	#else
+		static unsigned minPopulation = 5;				// minimum population number that triggers a refill
+		static unsigned refillPopulationTarget = 15;	// target population after refill
+	#endif
 #else
-static unsigned minPopulation = 30;				// minimum population number that triggers a refill
-static unsigned refillPopulationTarget = 60;	// target population after refill
+	static unsigned minPopulation = 30;				// minimum population number that triggers a refill
+	static unsigned refillPopulationTarget = 60;	// target population after refill
 #endif
 
 unsigned PopulationManager::getPopulationTarget() {
