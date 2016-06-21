@@ -33,6 +33,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <sstream>
+#include <algorithm>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -161,6 +162,10 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				part->onDied.add([this](BodyPart *dying) {
 					deadBodyParts_.push_back(dying);
 					dying->removeAllLinks();
+					if (dying->getType() == BodyPartType::EGGLAYER) {
+						// must remove from eggLayers_ vector
+						eggLayers_.erase(std::remove(eggLayers_.begin(), eggLayers_.end(), dying));
+					}
 				});
 				return false;
 			});
