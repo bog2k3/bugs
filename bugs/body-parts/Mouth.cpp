@@ -154,8 +154,9 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	case ObjectTypes::BPART_TORSO:
 		maxFoodAvailable = static_cast<BodyPart*>(pOther->userPointer_)->getFoodValue();
 		break;
-	//case ObjectTypes::BPART_ZYGOTE:
-		//break;
+	case ObjectTypes::BPART_ZYGOTE:
+		ERROR("Implement zygote eating - must check it's not owner - or have smell or something");
+		break;
 	default:
 		ERROR("Mouth can't handle object type "<<(int)pOther->userObjectType_)
 	};
