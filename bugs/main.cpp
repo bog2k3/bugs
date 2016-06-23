@@ -267,7 +267,7 @@ int main(int argc, char* argv[]) {
 	UpdateList continuousUpdateList;
 	continuousUpdateList.add(&opStack);
 
-	UpdateList updateList();
+	UpdateList updateList;
 	updateList.add(&physWld);
 	updateList.add(&contactListener);
 	updateList.add(&sessionMgr.getPopulationManager());

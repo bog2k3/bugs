@@ -7,6 +7,7 @@
 
 #include "UpdateList.h"
 #include "../utils/ThreadPool.h"
+#include "../utils/parallel.h"
 #include <algorithm>
 #include <array>
 
@@ -36,30 +37,14 @@ void UpdateList::update(float dt) {
 		return false;
 	}), list_.end());
 	pendingRemove_.clear();
-	// do update on current elements:
-	// split list into parallelThreadCount_ subsets and run them on separate threads
-	// use a thread pool for this
-	uint chunks = std::min((size_t)parallelThreadCount_, list_.size());
-	uint chunkSize = list_.size() / chunks;
 
-	if (chunks > 1) {
-		// use thread pool
-		std::vector<PoolTaskHandle> tasks;
-		uint start = 0;
-		for (uint i=0; i<chunks-1; i++) {
-			tasks.push_back(pThreadPool->queueTask([this, start, chunkSize, dt] {
-				for (uint k=start; k<start+chunkSize; k++)
-					list_[k].update(dt);
-			}));
-			start += chunkSize;
-		}
-		// run the last chunk on this thread:
-		for (uint k=start; k<list_.size(); k++)
-			list_[k].update(dt);
-		// wait for other threads to finish:
-		for (auto &t : tasks)
-			t->wait();
-	} else {
+	// do update on current elements:
+	if (pThreadPool)
+		// run in thread pool
+		parallel_for(list_.begin(), list_.end(), *pThreadPool, [dt](decltype(list_[0]) &x) {
+			x.update(dt);
+		});
+	else {
 		// run them on this thread
 		for (auto &e : list_)
 			e.update(dt);

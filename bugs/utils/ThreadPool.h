@@ -54,7 +54,7 @@ public:
 	LOGLN(__FUNCTION__ << " mutex acquired.");
 #endif
 		checkValidState();
-		auto handle = std::shared_ptr<PoolTask>(new PoolTask([=] { task(args...); }));
+		auto handle = std::shared_ptr<PoolTask>(new PoolTask([=] () mutable { task(args...); }));
 		waitingTasks_.push(handle);
 		lk.unlock();
 		condPendingTask_.notify_one();
@@ -63,6 +63,8 @@ public:
 #endif
 		return handle;
 	}
+
+	unsigned getThreadCount() const { return workers_.size(); }
 
 protected:
 	std::queue<PoolTaskHandle> waitingTasks_;
