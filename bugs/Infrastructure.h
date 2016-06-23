@@ -16,9 +16,15 @@ public:
 		static Infrastructure instance;
 		return instance;
 	}
+	// call this before exiting in order to stop the thread pool and free resources
+	void shutDown();
+
+	ThreadPool& getThreadPool() { return threadPool_; }
 
 private:
-	Infrastructure() = default;
+	Infrastructure();
+
+	ThreadPool threadPool_;
 };
 
 

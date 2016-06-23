@@ -13,6 +13,8 @@
 #include "utils/log.h"
 #include "utils/assert.h"
 #include "utils/bitFlags.h"
+#include "utils/parallel.h"
+#include "Infrastructure.h"
 #include <glm/glm.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
@@ -166,8 +168,11 @@ void World::update(float dt) {
 	destroyPending();
 
 	// do the actual update on entities:
-	for (auto e : entsToUpdate)
-		e->update(dt);
+	parallel_for(entsToUpdate.begin(), entsToUpdate.end(),
+			Infrastructure::getInst().getThreadPool(),
+			[dt] (decltype(entsToUpdate[0]) &e) {
+				e->update(dt);
+			});
 }
 
 void World::draw(RenderContext const& ctx) {
