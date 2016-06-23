@@ -47,6 +47,7 @@
 #include <functional>
 #include <stdexcept>
 #include <cstdio>
+#include <thread>
 
 #include <sys/stat.h>
 
@@ -266,7 +267,9 @@ int main(int argc, char* argv[]) {
 	UpdateList continuousUpdateList;
 	continuousUpdateList.add(&opStack);
 
-	UpdateList updateList;
+	uint threadCount = std::max(1u, std::thread::hardware_concurrency());
+	LOGLN("Detected " << threadCount << " hardware threads");
+	UpdateList updateList(threadCount);
 	updateList.add(&physWld);
 	updateList.add(&contactListener);
 	updateList.add(&sessionMgr.getPopulationManager());

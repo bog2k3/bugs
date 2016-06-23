@@ -10,13 +10,13 @@
 
 #include "updatable.h"
 #include <vector>
-#include <algorithm>
-#include <iterator>
-#include <future>
+
+class ThreadPool;
 
 class UpdateList {
 public:
-	UpdateList() = default;
+	UpdateList(uint parallelThreads = 1);
+	~UpdateList();
 
 	void add(updatable_wrap &&w) {
 		pendingAdd_.push_back(w);
@@ -32,6 +32,8 @@ private:
 	std::vector<updatable_wrap> list_;
 	std::vector<updatable_wrap> pendingAdd_;
 	std::vector<void*> pendingRemove_;
+	uint parallelThreadCount_;
+	ThreadPool* pThreadPool = nullptr;
 };
 
 #endif /* UPDATELIST_H_ */

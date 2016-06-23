@@ -8,6 +8,7 @@
 #include "../../bugs/utils/ThreadPool.h"
 
 #include <array>
+#include <iostream>
 
 #include <easyunit/test.h>
 using namespace easyunit;
@@ -23,7 +24,7 @@ TEST(threadPool, parallelFor) {
 	const uint nThreads = 4;
 	ThreadPool pool(nThreads);
 	std::vector<int> x;
-	uint workSize = 10000;
+	uint workSize = 100000;
 	for (uint i=0; i<workSize; i++)
 		x.push_back(i);
 	auto func = [&x] (uint a, uint b) {
@@ -41,6 +42,10 @@ TEST(threadPool, parallelFor) {
 	}
 	for (auto &t : tasks)
 		t->wait();
-	for (uint i=0; i<workSize; i++)
-		ASSERT_EQUALS(isPrime(x[i]) ? x[i] : 0, x[i]);
+	pool.stop();
+
+	for (uint i=0; i<workSize; i++) {
+		int expected = isPrime(x[i]) ? x[i] : 0;
+		ASSERT_EQUALS(expected, x[i]);
+	}
 }

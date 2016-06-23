@@ -1,17 +1,5 @@
 #include "Ribosome.h"
 
-#include "../neuralnet/functions.h"
-#include "../utils/rand.h"
-#include "../math/math2D.h"
-#include "../utils/log.h"
-#include "../neuralnet/Network.h"
-#include "../neuralnet/Neuron.h"
-#include "../neuralnet/OutputSocket.h"
-#include "../neuralnet/functions.h"
-#include "Gene.h"
-#include "Genome.h"
-#include "GeneDefinitions.h"
-#include "CummulativeValue.h"
 #include "../entities/Bug.h"
 #include "../body-parts/BodyPart.h"
 #include "../body-parts/Torso.h"
@@ -23,10 +11,23 @@
 #include "../body-parts/Mouth.h"
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/sensors/Nose.h"
-#include "../utils/log.h"
+#include "../neuralnet/functions.h"
+#include "../neuralnet/Network.h"
+#include "../neuralnet/Neuron.h"
+#include "../neuralnet/OutputSocket.h"
+#include "../neuralnet/functions.h"
 #include "../neuralnet/InputSocket.h"
+#include "Gene.h"
+#include "Genome.h"
+#include "GeneDefinitions.h"
+#include "CummulativeValue.h"
+#include "../utils/log.h"
+#include "../math/math2D.h"
+#include "../utils/rand.h"
+#include "../utils/log.h"
 
 #include <utility>
+#include <algorithm>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>

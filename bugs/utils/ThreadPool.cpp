@@ -6,66 +6,95 @@
  */
 
 #include "ThreadPool.h"
+#include "assert.h"
 
-ThreadPool::ThreadPool(int numberOfThreads)
-	: threadCount_(numberOfThreads)
+ThreadPool::ThreadPool(uint numberOfThreads)
 {
-	for (int i=0; i<numberOfThreads; i++)
-		workers_.push_back(spawnThread());
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__);
+#endif
+	for (uint i=0; i<numberOfThreads; i++)
+		workers_.push_back(std::thread(std::bind(&ThreadPool::workerFunc, this)));
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " finished.");
+#endif
 }
-ThreadPool::~ThreadPool(){	// throws exception if any thread is currently working - make sure all threads have finished prior to distruction
-	// TODO
-	throw std::runtime_error("Not implemented");
-}
-
-ThreadPool::threadWrap ThreadPool::spawnThread() {
-	return threadWrap(*this);
-}
-
-void ThreadPool::setThreadCount(unsigned count) {	// throws exception if trying to lower the number while threads to be discarded are busy
-	// TODO
-	throw std::runtime_error("Not implemented");
+ThreadPool::~ThreadPool() {	// throws exception if any thread is currently working - make sure you call stop() before destruction
+	if (!stopped_)
+		throw std::runtime_error("Thread pool has not been stopped before destruction!");
 }
 
-void ThreadPool::wait(unsigned id) {
-	// wait for thread to finish its task and become available
-	if (id > workers_.size())
-		throw std::runtime_error("invalid worker ID");
-	workers_[id].wait();
+void ThreadPool::stop() {
+	// wait for all tasks to be processed
+	std::unique_lock<std::mutex> poolLk(poolMutex_);
+	checkValidState();
+	stopRequested_.store(true);
+	while (!waitingTasks_.empty()) {
+		poolLk.unlock();
+		std::this_thread::yield();
+		poolLk.lock();
+	}
+	// wait for all workers to finish and shuts down the threads in the pool
+	stopSignal_.store(true);
+	poolLk.unlock();
+	condPendingTask_.notify_all();
+	for (auto &t : workers_)
+		t.join();
+	stopped_.store(true);
 }
 
-void ThreadPool::detach(unsigned id) {
-	// detach from thread and create a new one in its place
-	if (id > workers_.size())
-		throw std::runtime_error("invalid worker ID");
-	workers_[id].detach();
+void ThreadPool::workerFunc() {
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " begin");
+#endif
+	while (!stopSignal_) {
+		PoolTaskHandle task(nullptr);
+		std::unique_lock<std::mutex> lk(poolMutex_);
+		auto pred = [this] { return stopSignal_ || !!!waitingTasks_.empty(); };
+		if (!pred()) {
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " wait for work...");
+#endif
+			condPendingTask_.wait(lk, pred);
+		}
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " woke up.");
+#endif
+		if (stopSignal_)
+			return;
+		assertDbg(!!!waitingTasks_.empty());
+		task = waitingTasks_.front();
+		waitingTasks_.pop();
+		lk.unlock();
+
+		std::lock_guard<std::mutex> workLk(task->workMutex_);
+		task->started_.store(true);
+		// do work...
+		task->workFunc_();
+		task->finished_.store(true);
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " finished work.");
+#endif
+	}
 }
 
-void ThreadPool::kill(unsigned id) {
-	// if the thread is working, kill it and spawn a new one in its place, else do nothing
-	if (id > workers_.size())
-		throw std::runtime_error("invalid worker ID");
-	workers_[id].kill();
+void PoolTask::wait() {
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " waiting for task...");
+#endif
+	while (!started_)
+		std::this_thread::yield();
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " task is started.");
+#endif
+	std::lock_guard<std::mutex> lk(workMutex_);
+	assertDbg(finished_);
+#ifdef DEBUG_THREADPOOL
+	LOGLN(__FUNCTION__ << " task is finished.");
+#endif
 }
 
-void ThreadPool::wait_all() {
-	// perform join() on all threads from this pool
-	for (auto &w : workers_)
-		w.wait();
-}
-
-void ThreadPool::detach_all() {
-	// perform detach() on all threads from this pool
-	for (auto &w : workers_)
-		w.detach();
-}
-
-void ThreadPool::kill_all() {
-	// perform kill() on all threads from this pool
-	for (auto &w : workers_)
-		w.kill();
-}
-
-void ThreadPool::threadWrap::workerFunc() {
-	//while (!own)
+void ThreadPool::checkValidState() {
+	if (stopRequested_)
+		throw std::runtime_error("Invalid operation on thread pool (pool is stopping)");
 }
