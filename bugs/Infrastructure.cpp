@@ -13,7 +13,7 @@ Infrastructure::Infrastructure()
 	: threadPool_(std::max(1u, std::thread::hardware_concurrency())) {
 }
 
-void Infrastructure::shutDown() {
+void Infrastructure::shutDown_() {
 	threadPool_.stop();
 }
 

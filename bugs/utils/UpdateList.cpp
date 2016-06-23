@@ -6,23 +6,14 @@
  */
 
 #include "UpdateList.h"
-#include "../utils/ThreadPool.h"
 #include "../utils/parallel.h"
+#include "../Infrastructure.h"
 #include <algorithm>
 #include <array>
 
-UpdateList::UpdateList(uint parallelThreads)
-	: parallelThreadCount_(parallelThreads)
+UpdateList::UpdateList(bool allowMultithreaded)
+	: allowMultithreaded_(allowMultithreaded)
 {
-	if (parallelThreads > 1)
-		pThreadPool = new ThreadPool(parallelThreads);
-}
-
-UpdateList::~UpdateList() {
-	if (pThreadPool) {
-		pThreadPool->stop();
-		delete pThreadPool;
-	}
 }
 
 void UpdateList::update(float dt) {
@@ -39,12 +30,13 @@ void UpdateList::update(float dt) {
 	pendingRemove_.clear();
 
 	// do update on current elements:
-	if (pThreadPool)
+	if (allowMultithreaded_) {
 		// run in thread pool
-		parallel_for(list_.begin(), list_.end(), *pThreadPool, [dt](decltype(list_[0]) &x) {
-			x.update(dt);
-		});
-	else {
+		parallel_for(list_.begin(), list_.end(), Infrastructure::getThreadPool(),
+				[dt](decltype(list_[0]) &x) {
+					x.update(dt);
+				});
+	} else {
 		// run them on this thread
 		for (auto &e : list_)
 			e.update(dt);

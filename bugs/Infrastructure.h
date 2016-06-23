@@ -12,17 +12,19 @@
 
 class Infrastructure {
 public:
+	// call this before exiting in order to stop the thread pool and free resources
+	static void shutDown() { getInst().shutDown_(); }
+
+	static ThreadPool& getThreadPool() { return getInst().threadPool_; }
+
+private:
+	Infrastructure();
 	static Infrastructure& getInst() {
 		static Infrastructure instance;
 		return instance;
 	}
-	// call this before exiting in order to stop the thread pool and free resources
-	void shutDown();
 
-	ThreadPool& getThreadPool() { return threadPool_; }
-
-private:
-	Infrastructure();
+	void shutDown_();
 
 	ThreadPool threadPool_;
 };

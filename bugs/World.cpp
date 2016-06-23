@@ -169,7 +169,7 @@ void World::update(float dt) {
 
 	// do the actual update on entities:
 	parallel_for(entsToUpdate.begin(), entsToUpdate.end(),
-			Infrastructure::getInst().getThreadPool(),
+			Infrastructure::getThreadPool(),
 			[dt] (decltype(entsToUpdate[0]) &e) {
 				e->update(dt);
 			});
