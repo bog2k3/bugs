@@ -26,11 +26,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>.cproject</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/bugs/.cproject</locationURI>
-		</link>
-		<link>
 			<name>.project</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/bugs/.project</locationURI>

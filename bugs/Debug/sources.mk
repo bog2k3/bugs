@@ -26,8 +26,8 @@ SUBDIRS := \
 BSP \
 GUI \
 GUI/controls \
-OSD \
 . \
+OSD \
 body-parts \
 body-parts/sensors \
 entities/Bug \

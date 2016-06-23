@@ -871,6 +871,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/bugs/utils/log.h</locationURI>
 		</link>
 		<link>
+			<name>utils/parallel.h</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/utils/parallel.h</locationURI>
+		</link>
+		<link>
 			<name>utils/rand.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/bugs/utils/rand.cpp</locationURI>
