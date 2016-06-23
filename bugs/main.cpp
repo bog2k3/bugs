@@ -66,7 +66,7 @@ template<> void draw(b2World* wld, RenderContext const &ctx) {
 }
 
 template<> void update(b2World* wld, float dt) {
-	wld->Step(dt, 5, 2);
+	// wld->Step(dt, 5, 2);
 }
 
 template<> void update(std::function<void(float)> *fn, float dt) {
@@ -267,9 +267,7 @@ int main(int argc, char* argv[]) {
 	UpdateList continuousUpdateList;
 	continuousUpdateList.add(&opStack);
 
-	uint threadCount = std::max(1u, std::thread::hardware_concurrency());
-	LOGLN("Detected " << threadCount << " hardware threads");
-	UpdateList updateList(threadCount);
+	UpdateList updateList();
 	updateList.add(&physWld);
 	updateList.add(&contactListener);
 	updateList.add(&sessionMgr.getPopulationManager());
