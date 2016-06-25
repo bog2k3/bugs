@@ -66,7 +66,7 @@ template<> void draw(b2World* wld, RenderContext const &ctx) {
 }
 
 template<> void update(b2World* wld, float dt) {
-	// wld->Step(dt, 5, 2);
+	wld->Step(dt, 5, 2);
 }
 
 template<> void update(std::function<void(float)> *fn, float dt) {
@@ -192,7 +192,8 @@ int main(int argc, char* argv[]) {
 	auto gltext = new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
 	RenderContext renderContext( &vp1, shape2d, gltext);
 
-	b2World physWld(b2Vec2_zero);
+	b2ThreadPool b2tp;
+	b2World physWld(b2Vec2_zero, &b2tp);
 	pPhysWld = &physWld;
 	PhysicsDebugDraw physicsDraw(renderContext);
 	pPhysicsDraw = &physicsDraw;

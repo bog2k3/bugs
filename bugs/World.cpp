@@ -168,8 +168,9 @@ void World::update(float dt) {
 	destroyPending();
 
 	// do the actual update on entities:
-	parallel_for(entsToUpdate.begin(), entsToUpdate.end(),
-			Infrastructure::getThreadPool(),
+	//parallel_for
+	std::for_each(entsToUpdate.begin(), entsToUpdate.end(),
+			/*Infrastructure::getThreadPool(),*/
 			[dt] (decltype(entsToUpdate[0]) &e) {
 				e->update(dt);
 			});
