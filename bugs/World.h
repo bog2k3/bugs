@@ -20,7 +20,7 @@ class b2Body;
 struct b2AABB;
 class PhysDestroyListener;
 
-class World : public IOperationSpatialLocator, public b2QueryCallback {
+class World : public IOperationSpatialLocator {
 public:
 	static World* getInstance();
 	World();
@@ -33,11 +33,6 @@ public:
 
 	b2Body* getBodyAtPos(glm::vec2 const& pos) override;
 	void getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies);
-
-	/// b2QueryCallback::
-	/// Called for each fixture found in the query AABB.
-	/// @return false to terminate the query.
-	bool ReportFixture(b2Fixture* fixture) override;
 
 	void setPhysics(b2World* physWld);
 	void setDestroyListener(PhysDestroyListener *listener) { destroyListener_ = listener; }
@@ -65,13 +60,13 @@ protected:
 	std::vector<Entity*> entsToDraw;
 	std::vector<Entity*> entsToDestroy;
 	std::vector<std::unique_ptr<Entity>> entsToTakeOver;
-	std::vector<b2Fixture*> b2QueryResult;
 	PhysDestroyListener *destroyListener_ = nullptr;
 
 	void destroyPending();
 	void takeOverPending();
 
-	// std::vector<Entity*> getEntities(std::function<bool(Entity const&)> predicate);
+	std::vector<b2Fixture*> getFixtures(b2AABB const& aabb);
+	bool testEntity(Entity &e, EntityType filterTypes, Entity::FunctionalityFlags filterFlags);
 };
 
 #endif /* WORLD_H_ */

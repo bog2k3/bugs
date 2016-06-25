@@ -23,6 +23,8 @@
 #include <dmalloc.h>
 #endif
 
+#define MT_UPDATE
+
 static World *instance = nullptr;
 
 World::World() : physWld(nullptr), groundBody(nullptr) {
@@ -62,17 +64,28 @@ void World::reset() {
 	entsToUpdate.clear();
 }
 
-bool World::ReportFixture(b2Fixture* fixture) {
-	b2QueryResult.push_back(fixture);
-	return true;
+std::vector<b2Fixture*> World::getFixtures(const b2AABB& aabb) {
+	class cbWrap : public b2QueryCallback {
+	public:
+		/// b2QueryCallback::
+		/// Called for each fixture found in the query AABB.
+		/// @return false to terminate the query.
+		bool ReportFixture(b2Fixture* fixture) override {
+			fixtures_.push_back(fixture);
+			return true;
+		}
+
+		std::vector<b2Fixture*> fixtures_;
+	} wrap;
+	physWld->QueryAABB(&wrap, aabb);
+	return std::move(wrap.fixtures_);
 }
 
 b2Body* World::getBodyAtPos(glm::vec2 const& pos) {
-	assertDbg(b2QueryResult.empty());
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(0.005f, 0.005f);
 	aabb.upperBound = g2b(pos) + b2Vec2(0.005f, 0.005f);
-	physWld->QueryAABB(this, aabb);
+	auto b2QueryResult = getFixtures(aabb);
 	if (b2QueryResult.empty())
 		return nullptr;
 	b2Body* ret = nullptr;
@@ -82,37 +95,42 @@ b2Body* World::getBodyAtPos(glm::vec2 const& pos) {
 			break;
 		}
 	}
-	b2QueryResult.clear();	// reset
 	return ret;
 }
 
 void World::getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies) {
-	assertDbg(b2QueryResult.empty());
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(radius, radius);
 	aabb.upperBound = g2b(pos) + b2Vec2(radius, radius);
-	physWld->QueryAABB(this, aabb);
+	auto b2QueryResult = getFixtures(aabb);
 	for (b2Fixture* f : b2QueryResult) {
 		if (clipToCircle)
 			if (glm::length(b2g(f->GetAABB(0).GetCenter()) - pos) > radius)
 				continue;
 		outBodies.push_back(f->GetBody());
 	}
-	b2QueryResult.clear();	// reset
 }
 
 void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
 	assertDbg(e != nullptr);
 	entsToTakeOver.push_back(std::move(e));
+#warning make Thread Safe!
+	// lock-free approach:
+	// use atomic increment_exchange on the next available location in entsToTakeOver
+	// then set the pointer there
+	// if vector is at max capacity, must lock and resize - spin wait on other threads until there are available locations
 }
 
 void World::destroyEntity(Entity* e) {
+#warning make Thread Safe!
+	// lock-free approach - same as takeOwnership
+
 	entsToDestroy.push_back(e);
 #ifdef DEBUG
 	// check if ent exists in vector
 	assertDbg(std::find_if(entities.begin(), entities.end(), [e] (decltype(entities[0]) &x) {
 		return x.get() == e;
-	}) != entities.end() && "Ent is not managed!!!");
+	}) != entities.end() && "Entity is not managed by World!!!");
 #endif
 }
 
@@ -168,9 +186,15 @@ void World::update(float dt) {
 	destroyPending();
 
 	// do the actual update on entities:
-	//parallel_for
-	std::for_each(entsToUpdate.begin(), entsToUpdate.end(),
-			/*Infrastructure::getThreadPool(),*/
+#ifdef MT_UPDATE
+	parallel_for(
+#else
+	std::for_each(
+#endif
+			entsToUpdate.begin(), entsToUpdate.end(),
+#ifdef MT_UPDATE
+			Infrastructure::getThreadPool(),
+#endif
 			[dt] (decltype(entsToUpdate[0]) &e) {
 				e->update(dt);
 			});
@@ -181,20 +205,20 @@ void World::draw(RenderContext const& ctx) {
 		e->draw(ctx);
 }
 
+bool World::testEntity(Entity &e, EntityType filterTypes, Entity::FunctionalityFlags filterFlags) {
+	return (e.getEntityType() & filterTypes) != 0 &&
+		((e.getFunctionalityFlags() & filterFlags) == filterFlags);
+}
+
+
 std::vector<Entity*> World::getEntities(EntityType filterTypes, Entity::FunctionalityFlags filterFlags) {
 	std::vector<Entity*> vec;
 	for (auto &e : entities) {
-		if (((e->getEntityType() & filterTypes) != 0) &&
-			(e->getFunctionalityFlags() & filterFlags) == filterFlags &&
-			!e->isZombie()
-		)
+		if (!e->isZombie() && testEntity(*e, filterTypes, filterFlags))
 			vec.push_back(e.get());
 	}
 	for (auto &e : entsToTakeOver) {
-		if (((e->getEntityType() & filterTypes) != 0) &&
-			(e->getFunctionalityFlags() & filterFlags) == filterFlags &&
-			!e->isZombie()
-		)
+		if (!e->isZombie() && testEntity(*e, filterTypes, filterFlags))
 			vec.push_back(e.get());
 	}
 	return vec;
@@ -209,7 +233,7 @@ std::vector<Entity*> World::getEntitiesInBox(EntityType filterTypes, Entity::Fun
 		if (pb == nullptr)
 			continue;
 		Entity* ent = pb->getAssociatedEntity();
-		if (ent)
+		if (ent && !ent->isZombie() && testEntity(*ent, filterTypes, filterFlags))
 			out.push_back(ent);
 	}
 	return out;
