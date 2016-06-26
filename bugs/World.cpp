@@ -23,7 +23,7 @@
 #include <dmalloc.h>
 #endif
 
-#define MT_UPDATE
+#define MT_UPDATE	// enables parallel update on entities, using the thread pool
 
 static World *instance = nullptr;
 
@@ -124,7 +124,6 @@ void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
 void World::destroyEntity(Entity* e) {
 #warning make Thread Safe!
 	// lock-free approach - same as takeOwnership
-
 	entsToDestroy.push_back(e);
 #ifdef DEBUG
 	// check if ent exists in vector
