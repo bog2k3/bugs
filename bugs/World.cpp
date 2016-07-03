@@ -27,7 +27,12 @@
 
 static World *instance = nullptr;
 
-World::World() : physWld(nullptr), groundBody(nullptr) {
+World::World()
+	: physWld(nullptr)
+	, groundBody(nullptr)
+	, entsToDestroy(40)
+	, entsToTakeOver(40)
+{
 	assert(instance == nullptr && "attempting to initialize multiple instances of World!!!");
 	instance = this;
 }
@@ -134,7 +139,7 @@ void World::destroyEntity(Entity* e) {
 }
 
 void World::destroyPending() {
-	decltype(entsToDestroy) destroyNow;
+	decltype(entsToDestroy) destroyNow(entsToDestroy.getLockFreeCapacity());
 	destroyNow.swap(entsToDestroy);
 	for (auto &e : destroyNow) {
 		auto it = std::find_if(entities.begin(), entities.end(), [&] (decltype(entities[0]) &it) {
@@ -161,7 +166,7 @@ void World::destroyPending() {
 }
 
 void World::takeOverPending() {
-	decltype(entsToTakeOver) takeOverNow;
+	decltype(entsToTakeOver) takeOverNow(entsToTakeOver.getLockFreeCapacity());
 	takeOverNow.swap(entsToTakeOver);
 	for (auto &e : takeOverNow) {
 		// add to update and draw lists if appropriate

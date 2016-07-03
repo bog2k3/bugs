@@ -11,6 +11,7 @@
 #include "entities/Entity.h"
 #include "input/operations/IOperationSpatialLocator.h"
 #include "renderOpenGL/RenderContext.h"
+#include "utils/MTVector.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <vector>
 #include <memory>
@@ -58,8 +59,8 @@ protected:
 	std::vector<std::unique_ptr<Entity>> entities;
 	std::vector<Entity*> entsToUpdate;
 	std::vector<Entity*> entsToDraw;
-	std::vector<Entity*> entsToDestroy;
-	std::vector<std::unique_ptr<Entity>> entsToTakeOver;
+	MTVector<Entity*> entsToDestroy;
+	MTVector<std::unique_ptr<Entity>> entsToTakeOver;
 	PhysDestroyListener *destroyListener_ = nullptr;
 
 	void destroyPending();

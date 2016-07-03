@@ -10,7 +10,9 @@
 
 #include <cassert>
 
+#ifdef DEBUG
 #define ASSERTDBG_ENABLE
+#endif
 
 #ifdef ASSERTDBG_ENABLE
 static void assertDbg(bool e) {
