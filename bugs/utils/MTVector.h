@@ -26,6 +26,7 @@
 #include <mutex>
 #include <atomic>
 #include <vector>
+#include <utility>
 
 template<class C>
 class MTVector {
@@ -49,11 +50,23 @@ public:
 		}
 	}
 
+	// this is NOT thread-safe !!!
+	// make sure no one is accessing the source object while calling this
 	MTVector(MTVector &&src)
 		: capacity_(0)
 		, array_(nullptr)
 	{
-		std::swap(*this, src);
+		operator =(std::move(src));
+	}
+
+	// this is NOT thread-safe !!!
+	// make sure no one is accessing the source object while calling this
+	MTVector& operator = (MTVector&& src) {
+		xchg(array_, src.array_);
+		xchg(capacity_, src.capacity_);
+		extra_.swap(src.extra_);
+		insertPtr_.exchange(src.insertPtr_, std::memory_order_acq_rel);
+		return *this;
 	}
 
 	~MTVector() {
@@ -125,7 +138,7 @@ public:
 	// this is NOT thread-safe !!!
 	// make sure no one is pushing data into either vector when calling this
 	void swap(MTVector<C> &other) {
-		std::swap(*this, other);
+		operator =(std::move(other));
 	}
 
 	// this is NOT thread-safe !!!
@@ -155,13 +168,13 @@ private:
 		}
 		if (expected < capacity_) {
 			// this is our write index
-			new(array_ + expected) C(std::forward(r));
+			new(array_ + expected) C(std::forward<ref>(r));
 		} else {
 			// preallocated space filled up, must lock on the extra vector
 			LOGPREFIX("MTVECTOR");
 			LOG("PERFORMANCE WARNING: preallocated capacity reached, performing LOCK !!!");
 			std::lock_guard<std::mutex> lk(extraMtx_);
-			extra_.push_back(std::forward(r));
+			extra_.push_back(std::forward<ref>(r));
 		}
 	}
 };

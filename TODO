@@ -1,3 +1,4 @@
+* Logger must be thread-safe!
 * velocity & angular velocity sensors
 * eyes
 * orientation sensor (compass)

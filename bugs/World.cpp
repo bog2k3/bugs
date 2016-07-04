@@ -119,16 +119,9 @@ void World::getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircl
 void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
 	assertDbg(e != nullptr);
 	entsToTakeOver.push_back(std::move(e));
-#warning make Thread Safe!
-	// lock-free approach:
-	// use atomic increment_exchange on the next available location in entsToTakeOver
-	// then set the pointer there
-	// if vector is at max capacity, must lock and resize - spin wait on other threads until there are available locations
 }
 
 void World::destroyEntity(Entity* e) {
-#warning make Thread Safe!
-	// lock-free approach - same as takeOwnership
 	entsToDestroy.push_back(e);
 #ifdef DEBUG
 	// check if ent exists in vector
