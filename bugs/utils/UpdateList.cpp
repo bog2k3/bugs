@@ -6,17 +6,11 @@
  */
 
 #include "UpdateList.h"
-#include "../utils/parallel.h"
-#include "../Infrastructure.h"
+#include "parallel.h"
 #include <algorithm>
 #include <array>
 
-UpdateList::UpdateList(bool allowMultithreaded)
-	: allowMultithreaded_(allowMultithreaded)
-{
-}
-
-void UpdateList::update(float dt) {
+void UpdateList::update(float dt, ThreadPool *pool /*= nullptr*/) {
 	// add pending:
 	std::move(pendingAdd_.begin(), pendingAdd_.end(), std::back_inserter(list_));
 	pendingAdd_.clear();
@@ -30,12 +24,12 @@ void UpdateList::update(float dt) {
 	pendingRemove_.clear();
 
 	// do update on current elements:
-	if (allowMultithreaded_) {
+	if (pool) {
 		// run in thread pool
-		parallel_for(list_.begin(), list_.end(), Infrastructure::getThreadPool(),
-				[dt](decltype(list_[0]) &x) {
-					x.update(dt);
-				});
+		parallel_for(list_.begin(), list_.end(), *pool,
+			[dt](decltype(list_[0]) &x) {
+				x.update(dt);
+			});
 	} else {
 		// run them on this thread
 		for (auto &e : list_)

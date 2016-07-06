@@ -1,8 +1,9 @@
 * problems (deadlock/crash) when calling Box2D on multiple threads
 	- must defer all WRITE calls (createFixture and such) from world update until the end and execute them sequentially
-	- investigate if query calls may happen simultaneously (with callback mechanism, small chance)
-		-- will probably have to synchronize queries which would screw performance
-		-- or find another way (MT Box2D perhaps?)
+		- [FIXED] investigate if query calls may happen simultaneously (with callback mechanism, small chance)
+			(using Box2D-MT and stack-local query callback objects)
+			-- will probably have to synchronize queries which would screw performance
+			-- or find another way (MT Box2D perhaps?)
  
 	* [FIXED] crash after commit - probably due to some body not having the getAssociatedEntity func ptr set
 		- egg & zygote may still be problematic

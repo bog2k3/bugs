@@ -11,11 +11,10 @@
 #include "updatable.h"
 #include <vector>
 
+class ThreadPool;
+
 class UpdateList {
 public:
-	UpdateList(bool allowMultithreaded = false);	// if allowMultithreaded is true, update will be done in parallel, using the thread pool
-	~UpdateList() = default;
-
 	void add(updatable_wrap &&w) {
 		pendingAdd_.push_back(w);
 	}
@@ -24,13 +23,12 @@ public:
 		pendingRemove_.push_back(ptr);
 	}
 
-	void update(float dt);
+	void update(float dt, ThreadPool *pool = nullptr);
 
 private:
 	std::vector<updatable_wrap> list_;
 	std::vector<updatable_wrap> pendingAdd_;
 	std::vector<void*> pendingRemove_;
-	bool allowMultithreaded_ = false;
 };
 
 #endif /* UPDATELIST_H_ */

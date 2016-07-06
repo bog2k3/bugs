@@ -15,10 +15,12 @@
 #include <iostream>
 #include <deque>
 
-std::deque<std::string> logger::prefix_;
-logger logger::instance_;
-std::ostream* logger::pLogStream_ = &std::cout;
-std::ostream* logger::pErrStream_ = nullptr;
+thread_local logger theInstance;
+thread_local logger& logger::instance_ { theInstance };
+std::atomic<std::ostream*> logger::pLogStream_ { &std::cout };
+std::atomic<std::ostream*> logger::pErrStream_ { nullptr };
+std::mutex logger::logMutex_;
+std::mutex logger::errMutex_;
 
 std::string formatCrtDateTime() {
 	time_t t = time(0);   // get time now

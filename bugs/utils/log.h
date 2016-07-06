@@ -14,39 +14,47 @@
 
 #include <iostream>
 #include <string>
+#include <deque>
 #include <ostream>
+#include <mutex>
+#include <atomic>
 
 #define LOGPREFIX(PREF) logger_prefix logger_prefix_token(PREF);
 
+#define LOGIMPL(X) if (logger::instance().getLogStream()) {\
+	std::lock_guard<std::mutex> lk(logger::getLogMutex());\
+	logger::instance().writeprefix(*logger::instance().getLogStream());\
+	*logger::instance().getLogStream() << X;\
+}
+
 #ifdef DEBUG
-#define LOG(X) {\
-	if (logger::getLogStream()) {\
-		logger::writeprefix(*logger::getLogStream());\
-		*logger::getLogStream() << X;\
-	}\
+#define LOG(X) { LOGIMPL(X)\
 	/* also put the log on stdout in DEBUG mode */\
-	if (logger::getLogStream() != &std::cout) {\
-		logger::writeprefix(std::cout);\
+	if (logger::instance().getLogStream() != &std::cout) {\
+		std::lock(logger::getLogMutex(), logger::getErrMutex());\
+		std::lock_guard<std::mutex> lkL(logger::getLogMutex(), std::adopt_lock);\
+		std::lock_guard<std::mutex> lkE(logger::getErrMutex(), std::adopt_lock);\
+		logger::instance().writeprefix(std::cout);\
 		std::cout << X;\
 	}\
 }
 #else
-#define LOG(X) {\
-	if (logger::getLogStream()) {\
-		logger::writeprefix(*logger::getLogStream());\
-		*logger::getLogStream() << X;\
-	}\
-}
+#define LOG(X) LOGIMPL(X)
 #endif
 
-#define LOGNP(X) { if (*logger::getLogStream()) *logger::getLogStream() << X; }
+#define LOGNP(X) { if (*logger::instance().getLogStream()) {\
+	std::lock_guard<std::mutex> lk(logger::getLogMutex());\
+	*logger::instance().getLogStream() << X;\
+	}\
+}
 #define LOGLN(X) LOG(X << "\n")
 #define ERROR(X) {\
-	for (auto stream : {&std::cerr, logger::getErrStream()}) {\
+	std::lock_guard<std::mutex> lk(logger::getErrMutex());\
+	for (auto stream : {&std::cerr, logger::instance().getErrStream()}) {\
 		if (!stream)\
 			continue;\
 		*stream << "[ERROR]";\
-		logger::writeprefix(*stream);\
+		logger::instance().writeprefix(*stream);\
 		*stream << X << "\n";\
 	}\
 }
@@ -60,37 +68,43 @@
 
 #ifdef _ENABLE_LOGGING_
 
-#include <deque>
-#include <stack>
-
 class logger {
 public:
-	static void writeprefix(std::ostream &stream);
+	void writeprefix(std::ostream &stream);
 
 	// returns old stream
 	static std::ostream* setLogStream(std::ostream* newStream) {
-		std::ostream* pOld = pLogStream_;
-		pLogStream_ = newStream;
+		std::lock_guard<std::mutex> lk(logMutex_);
+		std::ostream* pOld = instance_.pLogStream_;
+		instance_.pLogStream_.store(newStream);
 		return pOld;
 	}
 	// returns old stream
-	static std::ostream* setAdditionalErrStream(std::ostream* newStream) {
-		std::ostream* pOld = pErrStream_;
-		pErrStream_ = newStream;
+	std::ostream* setAdditionalErrStream(std::ostream* newStream) {
+		std::lock_guard<std::mutex> lk(errMutex_);
+		std::ostream* pOld = instance_.pErrStream_;
+		instance_.pErrStream_.store(newStream);
 		return pOld;
 	}
 
-	static std::ostream* getLogStream() { return pLogStream_; }
-	static std::ostream* getErrStream() { return pErrStream_; }
+	std::ostream* getLogStream() { return pLogStream_; }
+	std::ostream* getErrStream() { return pErrStream_; }
+
+	static logger& instance() { return instance_; }
+
+	static std::mutex& getLogMutex() { return logMutex_; }
+	static std::mutex& getErrMutex() { return errMutex_; }
 
 private:
-	static std::ostream* pLogStream_;
-	static std::ostream* pErrStream_;
-	static std::deque<std::string> prefix_;
-	static logger instance_;
+	static std::atomic<std::ostream*> pLogStream_;
+	static std::atomic<std::ostream*> pErrStream_;
+	std::deque<std::string> prefix_;
+	static thread_local logger& instance_;
+	static std::mutex logMutex_;
+	static std::mutex errMutex_;
 
-	static void push_prefix(std::string prefix) { prefix_.push_back(prefix); }
-	static void pop_prefix() { prefix_.pop_back(); }
+	void push_prefix(std::string prefix) { prefix_.push_back(prefix); }
+	void pop_prefix() { prefix_.pop_back(); }
 
 	friend class logger_prefix;
 };
@@ -98,10 +112,10 @@ private:
 class logger_prefix {
 public:
 	logger_prefix(std::string s) {
-		logger::push_prefix(s);
+		logger::instance_.push_prefix(s);
 	}
 	~logger_prefix() {
-		logger::pop_prefix();
+		logger::instance_.pop_prefix();
 	}
 };
 
