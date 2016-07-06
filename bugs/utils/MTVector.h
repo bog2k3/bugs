@@ -65,7 +65,7 @@ public:
 		xchg(array_, src.array_);
 		xchg(capacity_, src.capacity_);
 		extra_.swap(src.extra_);
-		insertPtr_.exchange(src.insertPtr_, std::memory_order_acq_rel);
+		src.insertPtr_.store(insertPtr_.exchange(src.insertPtr_, std::memory_order_acq_rel));
 		return *this;
 	}
 
