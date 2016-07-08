@@ -13,9 +13,9 @@
 #ifdef _ENABLE_LOGGING_
 
 #include <iostream>
-#include <string>
 #include <deque>
 #include <ostream>
+#include <string>
 #include <mutex>
 #include <atomic>
 

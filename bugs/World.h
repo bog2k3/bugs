@@ -15,6 +15,7 @@
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <vector>
 #include <memory>
+#include <atomic>
 
 class b2World;
 class b2Body;
@@ -53,6 +54,9 @@ public:
 	void update(float dt);
 	void draw(RenderContext const& ctx);
 
+	// this is thread safe by design; if called from the synchronous loop that executes deferred actions, it's executed immediately, else added to the queue
+	void queueDeferredAction(std::function<void()> &&fun);
+
 protected:
 	b2World* physWld;
 	b2Body* groundBody;
@@ -62,6 +66,10 @@ protected:
 	MTVector<Entity*> entsToDestroy;
 	MTVector<std::unique_ptr<Entity>> entsToTakeOver;
 	PhysDestroyListener *destroyListener_ = nullptr;
+
+	// this holds actions deferred from the multi-threaded update which will be executed synchronously at the end on a single thread
+	MTVector<std::function<void()>> deferredActions_;
+	std::atomic<bool> executingDeferredActions_ { false };
 
 	void destroyPending();
 	void takeOverPending();

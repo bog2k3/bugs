@@ -16,6 +16,7 @@
 #include "../utils/log.h"
 #include "../utils/assert.h"
 #include "../genetics/GeneDefinitions.h"
+#include "../World.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <cassert>
@@ -404,27 +405,30 @@ void BodyPart::commit_tree(float initialScale) {
 	} else
 		reverseUpdateCachedProps();
 	lastCommitSize_inv_ = 1.f / size_;
-	// perform commit on local node:
-	if (type_ != BodyPartType::JOINT) {
-		if (!physBody_.b2Body_ && !dontCreateBody_)
-			physBody_.create(cachedProps_);
-		commit();
-	}
-	// perform recursive commit on all non-muscle children:
-	for (int i=0; i<nChildren_; i++) {
-		if (children_[i]->type_ != BodyPartType::MUSCLE)
-			children_[i]->commit_tree(initialScale);
-	}
-	// muscles go after all other children:
-	for (int i=0; i<nChildren_; i++) {
-		if (children_[i]->type_ == BodyPartType::MUSCLE)
-			children_[i]->commit_tree(initialScale);
-	}
 
-	if (type_ == BodyPartType::JOINT) {
-		commit();
-	}
-	committed_ = true;
+	World::getInstance()->queueDeferredAction([this, initialScale] () {
+		// perform commit on local node:
+		if (type_ != BodyPartType::JOINT) {
+			if (!physBody_.b2Body_ && !dontCreateBody_)
+				physBody_.create(cachedProps_);
+			commit();
+		}
+		// perform recursive commit on all non-muscle children:
+		for (int i=0; i<nChildren_; i++) {
+			if (children_[i]->type_ != BodyPartType::MUSCLE)
+				children_[i]->commit_tree(initialScale);
+		}
+		// muscles go after all other children:
+		for (int i=0; i<nChildren_; i++) {
+			if (children_[i]->type_ == BodyPartType::MUSCLE)
+				children_[i]->commit_tree(initialScale);
+		}
+
+		if (type_ == BodyPartType::JOINT) {
+			commit();
+		}
+		committed_ = true;
+	});
 }
 
 void BodyPart::purge_initializationData() {

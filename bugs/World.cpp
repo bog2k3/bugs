@@ -32,6 +32,7 @@ World::World()
 	, groundBody(nullptr)
 	, entsToDestroy(40)
 	, entsToTakeOver(40)
+	, deferredActions_(200)
 {
 	assert(instance == nullptr && "attempting to initialize multiple instances of World!!!");
 	instance = this;
@@ -132,7 +133,7 @@ void World::destroyEntity(Entity* e) {
 }
 
 void World::destroyPending() {
-	decltype(entsToDestroy) destroyNow(entsToDestroy.getLockFreeCapacity());
+	static decltype(entsToDestroy) destroyNow(entsToDestroy.getLockFreeCapacity());
 	destroyNow.swap(entsToDestroy);
 	for (auto &e : destroyNow) {
 		auto it = std::find_if(entities.begin(), entities.end(), [&] (decltype(entities[0]) &it) {
@@ -156,10 +157,11 @@ void World::destroyPending() {
 			ERROR("[WARNING] World skip DESTROY unmanaged obj: "<<e);
 		}
 	}
+	destroyNow.clear();
 }
 
 void World::takeOverPending() {
-	decltype(entsToTakeOver) takeOverNow(entsToTakeOver.getLockFreeCapacity());
+	static decltype(entsToTakeOver) takeOverNow(entsToTakeOver.getLockFreeCapacity());
 	takeOverNow.swap(entsToTakeOver);
 	for (auto &e : takeOverNow) {
 		// add to update and draw lists if appropriate
@@ -173,6 +175,7 @@ void World::takeOverPending() {
 		e->managed_ = true;
 		entities.push_back(std::move(e));
 	}
+	takeOverNow.clear();
 }
 
 void World::update(float dt) {
@@ -195,6 +198,20 @@ void World::update(float dt) {
 			[dt] (decltype(entsToUpdate[0]) &e) {
 				e->update(dt);
 			});
+
+	// execute deferred actions synchronously:
+	executingDeferredActions_.store(true, std::memory_order_release);
+	for (auto &a : deferredActions_)
+		a();
+	deferredActions_.clear();
+	executingDeferredActions_.store(false, std::memory_order_release);
+}
+
+void World::queueDeferredAction(std::function<void()> &&fun) {
+	if (executingDeferredActions_)
+		fun();
+	else
+		deferredActions_.push_back(std::move(fun));
 }
 
 void World::draw(RenderContext const& ctx) {
