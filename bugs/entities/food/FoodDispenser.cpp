@@ -32,12 +32,14 @@ FoodDispenser::FoodDispenser(glm::vec2 const &position, float direction)
 	PhysicsProperties props(position, direction, false, glm::vec2(0), 0);
 	physBody_.create(props);
 
-	// create fixture
-	b2CircleShape shp;
-	shp.m_radius = radius_;
-	b2FixtureDef fdef;
-	fdef.shape = &shp;
-	physBody_.b2Body_->CreateFixture(&fdef);
+	World::getInstance()->queueDeferredAction([this]() {
+		// create fixture
+		b2CircleShape shp;
+		shp.m_radius = radius_;
+		b2FixtureDef fdef;
+		fdef.shape = &shp;
+		physBody_.b2Body_->CreateFixture(&fdef);
+	});
 }
 
 FoodDispenser::~FoodDispenser() {

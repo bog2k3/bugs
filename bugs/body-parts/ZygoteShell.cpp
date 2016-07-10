@@ -7,6 +7,7 @@
 
 #include "ZygoteShell.h"
 #include "BodyConst.h"
+#include "../World.h"
 #include "../math/math2D.h"
 #include "../math/box2glm.h"
 #include "../utils/rand.h"
@@ -39,9 +40,12 @@ ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
 	computeBodyPhysProps();
 	cachedProps_.position = position;
 	cachedProps_.velocity = velocity;
-	physBody_.create(cachedProps_);
-	commit();
-	committed_ = true;
+
+	World::getInstance()->queueDeferredAction([this]() {
+		physBody_.create(cachedProps_);
+		commit();
+		committed_ = true;
+	});
 }
 
 ZygoteShell::~ZygoteShell() {

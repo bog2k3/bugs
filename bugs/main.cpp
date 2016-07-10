@@ -31,6 +31,7 @@
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
 #include "utils/rand.h"
+#include "Infrastructure.h"
 
 #ifdef DEBUG
 #include "entities/Bug.h"
@@ -323,6 +324,9 @@ int main(int argc, char* argv[]) {
 	updateList.add(&debugValues_update);
 #endif
 
+	// initial update:
+	updateList.update(0);
+
 	float t = glfwGetTime();
 	while (GLFWInput::checkInput()) {
 		float newTime = glfwGetTime();
@@ -395,6 +399,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	delete renderContext.shape;
+	Infrastructure::shutDown();
 
 	return 0;
 }

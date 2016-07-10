@@ -32,21 +32,23 @@ Gamete::Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 			EventCategoryFlags::GAMETE | EventCategoryFlags::FOOD,	// TODO handle mouth collision properly (from Mouth)
 			EventCategoryFlags::GAMETE)
 {
-	PhysicsProperties props(pos, 0, true, speed, 0);
-	body_.create(props);
-	body_.getEntityFunc_ = &getEntityFromGametePhysBody;
+	World::getInstance()->queueDeferredAction([this, pos, speed, mass]() {
+		PhysicsProperties props(pos, 0, true, speed, 0);
+		body_.create(props);
+		body_.getEntityFunc_ = &getEntityFromGametePhysBody;
 
-	float size = mass * BodyConst::ZygoteDensityInv;
-	b2CircleShape shp;
-	shp.m_radius = sqrtf(size * PI_INV);
-	b2FixtureDef fd;
-	fd.density = BodyConst::ZygoteDensity;
-	fd.friction = 0.5f;
-	fd.restitution = 0.5f;
-	fd.shape = &shp;
-	body_.b2Body_->CreateFixture(&fd);
+		float size = mass * BodyConst::ZygoteDensityInv;
+		b2CircleShape shp;
+		shp.m_radius = sqrtf(size * PI_INV);
+		b2FixtureDef fd;
+		fd.density = BodyConst::ZygoteDensity;
+		fd.friction = 0.5f;
+		fd.restitution = 0.5f;
+		fd.shape = &shp;
+		body_.b2Body_->CreateFixture(&fd);
 
-	body_.onCollision.add(std::bind(&Gamete::onCollision, this, std::placeholders::_1, std::placeholders::_2));
+		body_.onCollision.add(std::bind(&Gamete::onCollision, this, std::placeholders::_1, std::placeholders::_2));
+	});
 }
 
 Gamete::~Gamete() {

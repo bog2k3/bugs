@@ -7,6 +7,7 @@
 
 #include "FoodChunk.h"
 #include "../WorldConst.h"
+#include "../../World.h"
 #include "../../math/math2D.h"
 #include "../../math/aabb.h"
 #include "../../renderOpenGL/RenderContext.h"
@@ -20,27 +21,30 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 	, amountLeft_(mass)
 {
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
-	physBody_.create(props);
-	physBody_.getEntityFunc_ = &getEntityFromFoodChunkPhysBody;
 
-	// now create the sensor fixture
-	b2CircleShape shp;
-	shp.m_radius = sqrtf(size_ * WorldConst::FoodChunkSensorRatio * PI_INV);
-	b2FixtureDef fdef;
-	fdef.density = 0;
-	fdef.shape = &shp;
-	fdef.isSensor = true;
-	physBody_.b2Body_->CreateFixture(&fdef);
+	World::getInstance()->queueDeferredAction([this, props]() {
+		physBody_.create(props);
+		physBody_.getEntityFunc_ = &getEntityFromFoodChunkPhysBody;
 
-	// and the kernel fixture:
-	shp.m_radius = sqrtf(size_ * PI_INV);
-	b2FixtureDef fdefK;
-	fdefK.density = WorldConst::FoodChunkDensity;
-	fdefK.friction = 0.2f;
-	fdefK.restitution = 0.3f;
-	fdefK.shape = &shp;
-	fdefK.filter.groupIndex = b2FilterGroup::FOOD_CHUNK;
-	physBody_.b2Body_->CreateFixture(&fdefK);
+		// now create the sensor fixture
+		b2CircleShape shp;
+		shp.m_radius = sqrtf(size_ * WorldConst::FoodChunkSensorRatio * PI_INV);
+		b2FixtureDef fdef;
+		fdef.density = 0;
+		fdef.shape = &shp;
+		fdef.isSensor = true;
+		physBody_.b2Body_->CreateFixture(&fdef);
+
+		// and the kernel fixture:
+		shp.m_radius = sqrtf(size_ * PI_INV);
+		b2FixtureDef fdefK;
+		fdefK.density = WorldConst::FoodChunkDensity;
+		fdefK.friction = 0.2f;
+		fdefK.restitution = 0.3f;
+		fdefK.shape = &shp;
+		fdefK.filter.groupIndex = b2FilterGroup::FOOD_CHUNK;
+		physBody_.b2Body_->CreateFixture(&fdefK);
+	});
 }
 
 FoodChunk::~FoodChunk() {

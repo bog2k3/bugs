@@ -26,16 +26,19 @@ Wall::Wall(glm::vec2 const &from, glm::vec2 const &to, float width)
 	float length = glm::length(delta);
 	float angle = pointDirectionNormalized(delta / length);
 	PhysicsProperties props((from + to)*0.5f, angle, false, glm::vec2(0), 0);
-	body_.create(props);
-	body_.getEntityFunc_ = &getEntityFromWallPhysBody;
 
-	b2PolygonShape shp;
-	shp.SetAsBox(length * 0.5f, width*0.5f);
-	b2FixtureDef fd;
-	fd.friction = 0.5f;
-	fd.restitution = 0.5f;
-	fd.shape = &shp;
-	body_.b2Body_->CreateFixture(&fd);
+	World::getInstance()->queueDeferredAction([this, props, length, width]() {
+		body_.create(props);
+		body_.getEntityFunc_ = &getEntityFromWallPhysBody;
+
+		b2PolygonShape shp;
+		shp.SetAsBox(length * 0.5f, width*0.5f);
+		b2FixtureDef fd;
+		fd.friction = 0.5f;
+		fd.restitution = 0.5f;
+		fd.shape = &shp;
+		body_.b2Body_->CreateFixture(&fd);
+	});
 }
 
 Wall::~Wall() {
