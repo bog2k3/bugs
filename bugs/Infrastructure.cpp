@@ -10,7 +10,7 @@
 #include <algorithm>
 
 Infrastructure::Infrastructure()
-	: threadPool_(std::max(1u, std::thread::hardware_concurrency())) {
+	: threadPool_(std::max(1u, (std::thread::hardware_concurrency()*3u) / 2u)) {
 }
 
 void Infrastructure::shutDown_() {
