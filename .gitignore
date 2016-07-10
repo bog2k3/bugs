@@ -5,6 +5,7 @@ bugs/Debug/bugs
 watchdog/Debug/watchdog
 bugs-tests/Debug/bugs-tests
 bugs/Release/bugs
+bugs/Profile/bugs
 watchdog/Release/watchdog
 bugs-tests/Release/bugs-tests
 *.o
