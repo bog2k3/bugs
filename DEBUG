@@ -1,3 +1,4 @@
+* add instrumentation to find out why CPU stays at 25% (on each core)	
 	* [FIXED] problems (deadlock/crash) when calling Box2D on multiple threads
 		- [DONE] must defer all WRITE calls (createFixture and such) from world update until the end and execute them sequentially
 		- [DONE] also joint breakage
