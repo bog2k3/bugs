@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
 	auto gltext = new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
 	RenderContext renderContext( &vp1, shape2d, gltext);
 
-	b2ThreadPool b2tp;
+	b2ThreadPool b2tp(6);
 	b2World physWld(b2Vec2_zero, &b2tp);
 	pPhysWld = &physWld;
 	PhysicsDebugDraw physicsDraw(renderContext);
