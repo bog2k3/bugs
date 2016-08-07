@@ -10,21 +10,21 @@
 
 #include "../utils/MTVector.h"
 
-class Stack;
+class CallGraph;
 
 namespace perf {
 
 class Results {
-	friend class Stack;
+	friend class CallGraph;
 public:
 
 	void getResults(); // TODO implement
 
 private:
-	static MTVector<Stack*> threadStacks_;
+	static MTVector<CallGraph*> threadGraphs_;
 
-	static void registerStack(Stack &stack) {
-		threadStacks_.push_back(&stack);
+	static void registerGraph(CallGraph &graph) {
+		threadGraphs_.push_back(&graph);
 	}
 };
 

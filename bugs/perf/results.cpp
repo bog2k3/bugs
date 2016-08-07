@@ -9,6 +9,6 @@
 
 namespace perf {
 
-MTVector<Stack*> Results::threadStacks_ { 16 };
+MTVector<CallGraph*> Results::threadGraphs_ { 16 };
 
 }

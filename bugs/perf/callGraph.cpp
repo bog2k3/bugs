@@ -6,10 +6,15 @@
  */
 
 #include "callGraph.h"
+#include "results.h"
 
 namespace perf {
 
 thread_local CallGraph CallGraph::crtInstance_;
+
+CallGraph::CallGraph() {
+	Results::registerGraph(*this);
+}
 
 void CallGraph::pushSection(const char name[]) {
 	auto &sections = crtInstance_.sections_;

@@ -27,6 +27,8 @@ public:
 		unsigned callCount_ = 0;
 	};
 
+	CallGraph();
+
 	static void pushSection(const char name[]);
 	static void popSection(unsigned nanoseconds);
 
