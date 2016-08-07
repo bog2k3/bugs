@@ -18,11 +18,10 @@ namespace perf {
 
 class CallGraph {
 public:
+
 	class Edge {
 		friend class CallGraph;
 	private:
-		char caller_[256];
-		char callee_[256];
 		unsigned totalNanoseconds_ = 0;
 		unsigned callCount_ = 0;
 	};
@@ -33,10 +32,8 @@ public:
 	static void popSection(unsigned nanoseconds);
 
 private:
-	struct charArrHash
-	{
-		size_t operator()(const char* s) const
-		{
+	struct charArrHash {
+		size_t operator()(const char* s) const {
 			size_t h = 5381;
 			int c;
 			const char* s0 = s;
@@ -45,13 +42,22 @@ private:
 			return h;
 		}
 	};
+	struct namePairHash {
+		size_t operator() (std::pair<const char*, const char*> p) const {
+			charArrHash hasher;
+			auto x = hasher(p.first);
+			auto y = hasher(p.second);
+			return y + 0x9e3779b9U + (x << 6) + (x >> 2);
+		}
+	};
 
 	std::unordered_map<const char*, std::unique_ptr<sectionData>, charArrHash> sections_;
 	std::stack<sectionData*> crtStack_;
+	std::unordered_map<std::pair<const char*, const char*>, Edge, namePairHash> edges_;
 
 	static thread_local CallGraph crtInstance_;
 };
 
-}
+} // namespace
 
 #endif /* PERF_CALLGRAPH_H_ */

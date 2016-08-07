@@ -28,7 +28,22 @@ void CallGraph::pushSection(const char name[]) {
 }
 
 void CallGraph::popSection(unsigned nanoseconds) {
-	// TODO: add time to secion, ++callCount, increment previous->crt_frame edge time & callcount
+	auto &stack = crtInstance_.crtStack_;
+	// add time to secion, ++callCount
+	sectionData *pCrt = stack.top();
+	pCrt->executionCount_++;
+	pCrt->nanoseconds_ += nanoseconds;
+	stack.pop();
+
+	// increment previous->crt_frame edge time & callcount
+	sectionData* pPrev = stack.top();
+	auto &edges = crtInstance_.edges_;
+	auto edgeName = std::make_pair(pPrev->name_, pCrt->name_);
+	auto it = edges.find(edgeName);
+	if (it == edges.end())
+		it = edges.emplace(edgeName, Edge()).first;
+	it->second.totalNanoseconds_ += nanoseconds;
+	it->second.callCount_++;
 }
 
 } // namespace
