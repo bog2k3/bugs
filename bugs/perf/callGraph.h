@@ -26,12 +26,13 @@ public:
 		unsigned callCount_ = 0;
 	};
 
-	CallGraph();
-
 	static void pushSection(const char name[]);
 	static void popSection(unsigned nanoseconds);
 
 private:
+	CallGraph() {}
+	static CallGraph& getCrtThreadInstance();
+
 	struct charArrHash {
 		size_t operator()(const char* s) const {
 			size_t h = 5381;
@@ -55,7 +56,7 @@ private:
 	std::stack<sectionData*> crtStack_;
 	std::unordered_map<std::pair<const char*, const char*>, Edge, namePairHash> edges_;
 
-	static thread_local CallGraph crtInstance_;
+	static thread_local std::shared_ptr<CallGraph> crtThreadInstance_;
 };
 
 } // namespace

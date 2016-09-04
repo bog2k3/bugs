@@ -24,7 +24,7 @@ public:
 
 	~Marker() {
 		auto end = std::chrono::high_resolution_clock::now();
-		auto nanosec = std::chrono::nanoseconds(end - start);
+		auto nanosec = std::chrono::nanoseconds(end - start_).count();
 		CallGraph::popSection(nanosec);
 	}
 

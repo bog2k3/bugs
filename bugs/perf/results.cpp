@@ -9,6 +9,6 @@
 
 namespace perf {
 
-MTVector<CallGraph*> Results::threadGraphs_ { 16 };
+MTVector<std::shared_ptr<CallGraph>> Results::threadGraphs_ { 16 };
 
 }

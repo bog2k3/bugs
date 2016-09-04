@@ -9,6 +9,7 @@
 #define PERF_RESULTS_H_
 
 #include "../utils/MTVector.h"
+#include <memory>
 
 class CallGraph;
 
@@ -21,10 +22,10 @@ public:
 	void getResults(); // TODO implement
 
 private:
-	static MTVector<CallGraph*> threadGraphs_;
+	static MTVector<std::shared_ptr<CallGraph>> threadGraphs_;
 
-	static void registerGraph(CallGraph &graph) {
-		threadGraphs_.push_back(&graph);
+	static void registerGraph(std::shared_ptr<CallGraph> graph) {
+		threadGraphs_.push_back(graph);
 	}
 };
 

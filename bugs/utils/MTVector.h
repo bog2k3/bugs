@@ -72,6 +72,7 @@ public:
 	~MTVector() {
 		clear();
 		free(array_);
+		array_ = nullptr;
 	}
 
 	class iterator {
