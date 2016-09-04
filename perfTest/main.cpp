@@ -6,17 +6,21 @@
  */
 
 #include <thread>
+#include <cmath>
 #include "../bugs/perf/marker.h"
 
 void foo() {
 	perf::Marker(__FUNCTION__);
+	for (int i=0; i<1000; i++)
+		std::sqrt(i);
 }
 
 void callee(int rec) {
 	perf::Marker(__FUNCTION__);
 	if (rec)
 		callee(rec-1);
-	foo();
+	for (int i=0; i<10; i++)
+		foo();
 }
 
 void caller(int rec) {
@@ -27,6 +31,15 @@ void caller(int rec) {
 }
 
 int main() {
+	{
+		perf::Marker marker(__FUNCTION__);
+		caller(4);
+		perf::Marker marker2("part 2");
+		foo();
+	}
+
+	auto res = perf::Results::getResults();
+
 	return 0;
 }
 

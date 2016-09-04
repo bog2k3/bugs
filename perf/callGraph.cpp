@@ -39,6 +39,9 @@ void CallGraph::popSection(unsigned nanoseconds) {
 	pCrt->nanoseconds_ += nanoseconds;
 	stack.pop();
 
+	if (stack.empty())
+		return;
+
 	// increment previous->crt_frame edge time & callcount
 	sectionData* pPrev = stack.top();
 	auto &edges = getCrtThreadInstance().edges_;

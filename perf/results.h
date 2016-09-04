@@ -10,6 +10,7 @@
 
 #include "../utils/MTVector.h"
 #include <memory>
+#include <vector>
 
 class CallGraph;
 
@@ -19,7 +20,34 @@ class Results {
 	friend class CallGraph;
 public:
 
-	void getResults(); // TODO implement
+	struct CallFrame {
+		std::string name;
+		unsigned inclusiveNanosec;
+		unsigned exclusiveNanosec;
+		unsigned callCount;
+		CallFrame(std::string &&name, unsigned inclusiveNs, unsigned exclusiveNs, unsigned callCount)
+			: name(std::move(name)), inclusiveNanosec(inclusiveNs), exclusiveNanosec(exclusiveNs), callCount(callCount)
+		{}
+		CallFrame(CallFrame &&f) : CallFrame(std::move(f.name), f.inclusiveNanosec, f.exclusiveNanosec, f.callCount) {}
+	};
+
+	struct CallTree {
+		const CallFrame nodeFrame;
+		std::vector<std::shared_ptr<CallTree>> callees;
+		CallTree(CallFrame &&nodeFrame) : nodeFrame(std::move(nodeFrame)) {}
+	};
+
+	// return the number of threads that contain traced calls
+	unsigned getNumberOfThreads() {} // TODO
+
+	// get a list of independent call trees on the specified thread
+	std::vector<std::shared_ptr<CallTree>> getCallTree(unsigned threadID) {} // TODO
+	// get a flat list of frames on the specified thread
+	std::vector<std::shared_ptr<CallFrame>> getFlatList(unsigned threadID) {} // TODO
+
+	// TODO: have a way to name threads - maybe a ThreadMarker("walala") which would assign a string to the threadID
+	// TODO: void ProcessData() which construct the trees and frames internally, ready for inspection - called internally first time needed
+	// TODO: assert(crt thread's callStack is empty) when process() is called
 
 private:
 	static MTVector<std::shared_ptr<CallGraph>> threadGraphs_;
