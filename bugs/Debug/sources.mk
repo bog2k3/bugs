@@ -38,6 +38,7 @@ input \
 input/operations \
 math \
 neuralnet \
+perf \
 physics \
 renderOpenGL \
 serialization \
