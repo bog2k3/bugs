@@ -12,9 +12,9 @@
 #include <memory>
 #include <vector>
 
-class CallGraph;
-
 namespace perf {
+
+class CallGraph;
 
 class Results {
 	friend class CallGraph;
@@ -38,12 +38,12 @@ public:
 	};
 
 	// return the number of threads that contain traced calls
-	unsigned getNumberOfThreads() {} // TODO
+	static unsigned getNumberOfThreads() { return threadGraphs_.size(); }
 
 	// get a list of independent call trees on the specified thread
-	std::vector<std::shared_ptr<CallTree>> getCallTree(unsigned threadID) {} // TODO
+	static std::vector<std::shared_ptr<CallTree>> getCallTree(unsigned threadID);  // TODO
 	// get a flat list of frames on the specified thread
-	std::vector<std::shared_ptr<CallFrame>> getFlatList(unsigned threadID) {} // TODO
+	static std::vector<std::shared_ptr<CallFrame>> getFlatList(unsigned threadID); // TODO
 
 	// TODO: have a way to name threads - maybe a ThreadMarker("walala") which would assign a string to the threadID
 	// TODO: void ProcessData() which construct the trees and frames internally, ready for inspection - called internally first time needed
@@ -55,6 +55,8 @@ private:
 	static void registerGraph(std::shared_ptr<CallGraph> graph) {
 		threadGraphs_.push_back(graph);
 	}
+
+	static void processData();
 };
 
 }

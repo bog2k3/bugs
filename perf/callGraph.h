@@ -17,10 +17,12 @@
 namespace perf {
 
 class CallGraph {
+	friend class Results;
 public:
 
 	class Edge {
 		friend class CallGraph;
+		friend class Results;
 	private:
 		unsigned totalNanoseconds_ = 0;
 		unsigned callCount_ = 0;

@@ -87,13 +87,19 @@ public:
 			move_to(pos_+1);
 			return *this;
 		}
+		iterator& operator + (size_t offs) {
+			if (offs == 1)
+				return this->operator ++();
+			else
+				return (this->operator ++()).operator+(offs-1);
+		}
 		bool operator !=(iterator &i) {
 			assertDbg(&i.parent_ == &parent_ && "iterators must belong to the same vector");
 			return i.pos_ != pos_;
 		}
 	private:
 		friend class MTVector<C>;
-		iterator(MTVector<C> &parent, size_t pos) : parent_(parent) {
+		iterator(MTVector<C>& parent, size_t pos) : parent_(parent) {
 			move_to(pos);
 		}
 
@@ -103,7 +109,7 @@ public:
 			offs_ = extra_ ? pos_ - parent_.capacity_ : pos_;
 		}
 
-		MTVector<C> &parent_;
+		MTVector<C>& parent_;
 		bool extra_ = false;
 		size_t pos_;
 		size_t offs_;
@@ -122,6 +128,17 @@ public:
 	// thread safe
 	size_t getLockFreeCapacity() const {
 		return capacity_;
+	}
+
+	// thread safe-ish (may return non-up-to-date value if another thread is writing to the vector)
+	size_t size() const {
+		return size_;
+	}
+
+	// this is NOT thread-safe !!!
+	// make sure no one is pushing data into either vector when calling this
+	C& operator[] (size_t i) {
+		return *iterator(*this, i);
 	}
 
 	// this is NOT thread-safe !!!
@@ -156,6 +173,7 @@ private:
 	size_t capacity_;
 	C* array_;
 	std::atomic<size_t> insertPtr_ { 0 };
+	std::atomic<size_t> size_ { 0 };
 	std::vector<C> extra_;
 	std::mutex extraMtx_;
 
@@ -177,6 +195,7 @@ private:
 			std::lock_guard<std::mutex> lk(extraMtx_);
 			extra_.push_back(std::forward<ref>(r));
 		}
+		++size_;
 	}
 };
 

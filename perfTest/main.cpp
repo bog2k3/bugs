@@ -7,7 +7,8 @@
 
 #include <thread>
 #include <cmath>
-#include "../bugs/perf/marker.h"
+#include "perf/marker.h"
+#include "perf/results.h"
 
 void foo() {
 	perf::Marker(__FUNCTION__);
@@ -38,7 +39,7 @@ int main() {
 		foo();
 	}
 
-	auto res = perf::Results::getResults();
+	auto res = perf::Results::getCallTree(0);
 
 	return 0;
 }
