@@ -8,6 +8,7 @@
 #include <thread>
 #include <cmath>
 #include "perf/marker.h"
+#include "perf/threadMarker.h"
 #include "perf/results.h"
 
 void foo() {
@@ -32,6 +33,7 @@ void caller(int rec) {
 }
 
 int main() {
+	perf::setCrtThreadName("main");
 	{
 		perf::Marker marker(__FUNCTION__);
 		caller(4);
@@ -40,6 +42,7 @@ int main() {
 	}
 
 	auto res = perf::Results::getCallTree(0);
+	auto resn = perf::Results::getCallTree("main");
 
 	return 0;
 }

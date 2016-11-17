@@ -19,10 +19,15 @@ std::vector<std::shared_ptr<Results::CallTree>> Results::getCallTree(unsigned th
 	auto pGraph = threadGraphs_[threadID];
 	pGraph->edges_;
 }
+
+std::vector<std::shared_ptr<Results::CallTree>> Results::getCallTree(std::string const& threadName) {
+	// TODO
+}
+
 // get a flat list of frames on the specified thread
 std::vector<std::shared_ptr<Results::CallFrame>> Results::getFlatList(unsigned threadID) {
 
 }
 
-}
+} // namespace perf
 

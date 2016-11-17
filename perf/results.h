@@ -42,6 +42,8 @@ public:
 
 	// get a list of independent call trees on the specified thread
 	static std::vector<std::shared_ptr<CallTree>> getCallTree(unsigned threadID);  // TODO
+	// get a list of independent call trees on the specified named thread
+	static std::vector<std::shared_ptr<CallTree>> getCallTree(std::string const& threadName);  // TODO
 	// get a flat list of frames on the specified thread
 	static std::vector<std::shared_ptr<CallFrame>> getFlatList(unsigned threadID); // TODO
 
