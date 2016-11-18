@@ -20,7 +20,7 @@ class CallGraph {
 	friend class Results;
 public:
 
-	class Edge {
+	class EdgeData {
 		friend class CallGraph;
 		friend class Results;
 	private:
@@ -57,7 +57,7 @@ private:
 	std::string threadName_;
 	std::unordered_map<const char*, std::unique_ptr<sectionData>, charArrHash> sections_;
 	std::stack<sectionData*> crtStack_;
-	std::unordered_map<std::pair<const char*, const char*>, Edge, namePairHash> edges_;
+	std::unordered_map<std::pair<const char*, const char*>, EdgeData, namePairHash> edges_;
 
 	static thread_local std::shared_ptr<CallGraph> crtThreadInstance_;
 

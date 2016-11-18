@@ -48,7 +48,7 @@ void CallGraph::popSection(unsigned nanoseconds) {
 	auto edgeName = std::make_pair(pPrev->name_, pCrt->name_);
 	auto it = edges.find(edgeName);
 	if (it == edges.end())
-		it = edges.emplace(edgeName, Edge()).first;
+		it = edges.emplace(edgeName, EdgeData()).first;
 	it->second.totalNanoseconds_ += nanoseconds;
 	it->second.callCount_++;
 }

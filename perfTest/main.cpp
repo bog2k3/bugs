@@ -41,7 +41,7 @@ int main() {
 		foo();
 	}
 
-	auto res = perf::Results::getCallTree(0);
+	auto res = perf::Results::getCallTrees(0);
 	auto resn = perf::Results::getCallTree("main");
 
 	return 0;

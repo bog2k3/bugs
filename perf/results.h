@@ -29,27 +29,34 @@ public:
 			: name(std::move(name)), inclusiveNanosec(inclusiveNs), exclusiveNanosec(exclusiveNs), callCount(callCount)
 		{}
 		CallFrame(CallFrame &&f) : CallFrame(std::move(f.name), f.inclusiveNanosec, f.exclusiveNanosec, f.callCount) {}
+		CallFrame(CallFrame const& f) = default;
+
+		CallFrame& operator += (CallFrame const& x) {
+			assert(name == x.name);
+			inclusiveNanosec += x.inclusiveNanosec;
+			exclusiveNanosec += x.exclusiveNanosec;
+			callCount += x.callCount;
+			return *this;
+		}
 	};
 
 	struct CallTree {
 		const CallFrame nodeFrame;
 		std::vector<std::shared_ptr<CallTree>> callees;
-		CallTree(CallFrame &&nodeFrame) : nodeFrame(std::move(nodeFrame)) {}
+		CallTree(CallFrame nodeFrame) : nodeFrame(std::move(nodeFrame)) {}
 	};
 
 	// return the number of threads that contain traced calls
 	static unsigned getNumberOfThreads() { return threadGraphs_.size(); }
 
 	// get a list of independent call trees on the specified thread
-	static std::vector<std::shared_ptr<CallTree>> getCallTree(unsigned threadID);  // TODO
+	static std::vector<std::shared_ptr<CallTree>> getCallTrees(unsigned threadID);
 	// get a list of independent call trees on the specified named thread
-	static std::vector<std::shared_ptr<CallTree>> getCallTree(std::string const& threadName);  // TODO
+	static std::vector<std::shared_ptr<CallTree>> getCallTrees(std::string const& threadName);
 	// get a flat list of frames on the specified thread
-	static std::vector<std::shared_ptr<CallFrame>> getFlatList(unsigned threadID); // TODO
-
-	// TODO: have a way to name threads - maybe a ThreadMarker("walala") which would assign a string to the threadID
-	// TODO: void ProcessData() which construct the trees and frames internally, ready for inspection - called internally first time needed
-	// TODO: assert(crt thread's callStack is empty) when process() is called
+	static std::vector<CallFrame> getFlatList(unsigned threadID);
+	// get a flat list of frames on the specified named thread
+	static std::vector<CallFrame> getFlatList(std::string const& threadName);
 
 private:
 	static MTVector<std::shared_ptr<CallGraph>> threadGraphs_;
@@ -58,7 +65,11 @@ private:
 		threadGraphs_.push_back(graph);
 	}
 
+	// first is threadID, second is a CallTree from that thread
+	static std::vector<std::pair<unsigned, std::shared_ptr<CallTree>>> threadTrees_;
+
 	static void processData();
+	static void addNodeDataToListRecursive(std::vector<CallFrame> &list, CallTree const& node);
 };
 
 }
