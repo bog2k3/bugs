@@ -8,6 +8,9 @@
 #include "callGraph.h"
 #include "results.h"
 
+#include <cstring>
+#include <algorithm>
+
 namespace perf {
 
 thread_local std::shared_ptr<CallGraph> CallGraph::crtThreadInstance_;
@@ -21,14 +24,26 @@ CallGraph& CallGraph::getCrtThreadInstance() {
 }
 
 void CallGraph::pushSection(const char name[]) {
-	auto &sections = getCrtThreadInstance().sections_;
-	auto &crtStack = getCrtThreadInstance().crtStack_;
-
-	auto it = sections.find(name);
-	if (it == sections.end()) {
-		it = sections.emplace(name, std::unique_ptr<sectionData>(new sectionData(name))).first;
+	// add to call-trees:
+	std::vector<std::shared_ptr<sectionData>> &treeContainer =
+		getCrtThreadInstance().crtStack_.empty()
+			? getCrtThreadInstance().rootTrees_
+			: getCrtThreadInstance().crtStack_.top()->callees_;
+	auto treeIt = std::find_if(treeContainer.begin(), treeContainer.end(), [&name] (auto &sec) {
+		return !std::strcmp(sec->name_, name);
+	});
+	if (treeIt == treeContainer.end()) {
+		treeIt = treeContainer.emplace_back(std::make_shared<sectionData>(name));
 	}
-	crtStack.push(it->second.get());
+	getCrtThreadInstance().crtStack_.push(treeIt->get());
+
+	// add to flat list:
+	auto &flatList = getCrtThreadInstance().flatSectionData_;
+
+	auto it = flatList.find(name);
+	if (it == flatList.end()) {
+		it = flatList.emplace(name, std::unique_ptr<sectionData>(new sectionData(name))).first;
+	}
 }
 
 void CallGraph::popSection(unsigned nanoseconds) {

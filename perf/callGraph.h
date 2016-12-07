@@ -19,15 +19,6 @@ namespace perf {
 class CallGraph {
 	friend class Results;
 public:
-
-	class EdgeData {
-		friend class CallGraph;
-		friend class Results;
-	private:
-		unsigned totalNanoseconds_ = 0;
-		unsigned callCount_ = 0;
-	};
-
 	static void pushSection(const char name[]);
 	static void popSection(unsigned nanoseconds);
 
@@ -45,19 +36,17 @@ private:
 			return h;
 		}
 	};
-	struct namePairHash {
-		size_t operator() (std::pair<const char*, const char*> p) const {
-			charArrHash hasher;
-			auto x = hasher(p.first);
-			auto y = hasher(p.second);
-			return y + 0x9e3779b9U + (x << 6) + (x >> 2);
-		}
-	};
 
 	std::string threadName_;
-	std::unordered_map<const char*, std::unique_ptr<sectionData>, charArrHash> sections_;
+
+	// this structure holds cummulated data for each section
+	// (if a section is called from multiple other sections, all the timings here are aggregate)
+	std::unordered_map<const char*, std::unique_ptr<sectionData>, charArrHash> flatSectionData_;
+
+	// this holds call-tree data - a section with the same name may exist in multiple instances if called from different places
+	std::vector<std::shared_ptr<sectionData>> rootTrees_;
+
 	std::stack<sectionData*> crtStack_;
-	std::unordered_map<std::pair<const char*, const char*>, EdgeData, namePairHash> edges_;
 
 	static thread_local std::shared_ptr<CallGraph> crtThreadInstance_;
 

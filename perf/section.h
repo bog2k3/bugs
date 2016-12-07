@@ -9,12 +9,27 @@
 #define PERF_SECTION_H_
 
 #include <cstring>
+#include <vector>
+#include <memory>
+#include <numeric>
 
 namespace perf {
 
 class sectionData {
-	friend class CallGraph;
+public:
+	std::string getName() const { return name_; }
+	unsigned getInclusiveNanosec() const { return nanoseconds_; }
+	unsigned getExclusiveNanosec() const { return nanoseconds_ - std::accumulate(callees_.begin(), callees_.end(), 0,
+			[] (auto sum, auto &callee) {
+			return sum + callee->nanoseconds_;
+		});
+	}
+	unsigned getExecutionCount() const { return executionCount_; }
+	const std::vector<std::shared_ptr<sectionData>>& getCallees() const { return callees_; }
+
 private:
+	friend class CallGraph;
+
 	sectionData(const char name[]) {
 		strncpy(name_, name, sizeof(name_)/sizeof(name_[0]));
 	}
@@ -22,6 +37,7 @@ private:
 	unsigned nanoseconds_ = 0;
 	unsigned executionCount_ = 0;
 	char name_[256];
+	std::vector<std::shared_ptr<sectionData>> callees_;
 };
 
 }
