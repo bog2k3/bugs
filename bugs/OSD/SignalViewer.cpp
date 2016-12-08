@@ -12,6 +12,8 @@
 #include "../renderOpenGL/Viewport.h"
 #include "../math/math2D.h"
 
+#include "../perf/marker.h"
+
 #include <sstream>
 #include <iomanip>
 
@@ -25,6 +27,7 @@ SignalDataSource::~SignalDataSource() {
 }
 
 void SignalDataSource::update(float dt) {
+	PERF_MARKER_FUNC;
 	timeSinceLastSample_ += dt;
 	if (timeSinceLastSample_ < sampleInterval_)
 		return;

@@ -14,6 +14,12 @@ namespace perf {
 
 MTVector<std::shared_ptr<CallGraph>> Results::threadGraphs_ { 16 };
 
+std::string Results::getThreadName(unsigned id) {
+	if (id > threadGraphs_.size())
+		return "unknown thread";
+	return threadGraphs_[id]->threadName_;
+}
+
 // get a list of independent call trees on the specified thread
 std::vector<std::shared_ptr<sectionData>> Results::getCallTrees(unsigned threadID) {
 	if (threadID >= threadGraphs_.size())

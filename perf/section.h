@@ -18,8 +18,8 @@ namespace perf {
 class sectionData {
 public:
 	std::string getName() const { return name_; }
-	unsigned getInclusiveNanosec() const { return nanoseconds_; }
-	unsigned getExclusiveNanosec() const { return nanoseconds_ - std::accumulate(callees_.begin(), callees_.end(), 0,
+	uint64_t getInclusiveNanosec() const { return nanoseconds_; }
+	uint64_t getExclusiveNanosec() const { return nanoseconds_ - std::accumulate(callees_.begin(), callees_.end(), (uint64_t)0,
 			[] (auto sum, auto &callee) {
 			return sum + callee->nanoseconds_;
 		});
@@ -30,16 +30,19 @@ public:
 private:
 	friend class CallGraph;
 
-	static std::shared_ptr<sectionData> create(const char name[]) {
+	static std::shared_ptr<sectionData> make_shared(const char name[]) {
 		return std::shared_ptr<sectionData>(new sectionData(name));
+	}
+	static std::unique_ptr<sectionData> make_unique(const char name[]) {
+		return std::unique_ptr<sectionData>(new sectionData(name));
 	}
 
 	sectionData(const char name[]) {
 		strncpy(name_, name, sizeof(name_)/sizeof(name_[0]));
 	}
 
-	unsigned nanoseconds_ = 0;
-	unsigned executionCount_ = 0;
+	uint64_t nanoseconds_ = 0;
+	uint64_t executionCount_ = 0;
 	char name_[256];
 	std::vector<std::shared_ptr<sectionData>> callees_;
 };

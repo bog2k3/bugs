@@ -6,6 +6,7 @@
  */
 
 #include "ThreadPool.h"
+#include "../perf/marker.h"
 #include "assert.h"
 
 ThreadPool::ThreadPool(uint numberOfThreads)
@@ -47,11 +48,14 @@ void ThreadPool::workerFunc() {
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " begin");
 #endif
+	perf::setCrtThreadName("ThreadPool::worker");
+	PERF_MARKER_FUNC;
 	while (!stopSignal_) {
 		PoolTaskHandle task(nullptr);
 		std::unique_lock<std::mutex> lk(poolMutex_);
 		auto pred = [this] { return stopSignal_ || !!!waitingTasks_.empty(); };
 		if (!pred()) {
+			PERF_MARKER("starving");
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " wait for work...");
 #endif
@@ -70,7 +74,10 @@ void ThreadPool::workerFunc() {
 		std::lock_guard<std::mutex> workLk(task->workMutex_);
 		task->started_.store(true);
 		// do work...
-		task->workFunc_();
+		{
+			PERF_MARKER("working");
+			task->workFunc_();
+		}
 		task->finished_.store(true);
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " finished work.");

@@ -20,7 +20,7 @@ class CallGraph {
 	friend class Results;
 public:
 	static void pushSection(const char name[]);
-	static void popSection(unsigned nanoseconds);
+	static void popSection(uint64_t nanoseconds);
 
 private:
 	CallGraph() {}

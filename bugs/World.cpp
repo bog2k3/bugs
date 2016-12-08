@@ -10,11 +10,15 @@
 #include "physics/PhysicsBody.h"
 #include "math/math2D.h"
 #include "math/box2glm.h"
-#include "utils/log.h"
-#include "utils/assert.h"
+#include "Infrastructure.h"
+
 #include "utils/bitFlags.h"
 #include "utils/parallel.h"
-#include "Infrastructure.h"
+#include "utils/assert.h"
+#include "utils/log.h"
+
+#include "../perf/marker.h"
+
 #include <glm/glm.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
@@ -71,6 +75,7 @@ void World::reset() {
 }
 
 std::vector<b2Fixture*> World::getFixtures(const b2AABB& aabb) {
+	PERF_MARKER_FUNC;
 	class cbWrap : public b2QueryCallback {
 	public:
 		/// b2QueryCallback::
@@ -88,6 +93,7 @@ std::vector<b2Fixture*> World::getFixtures(const b2AABB& aabb) {
 }
 
 b2Body* World::getBodyAtPos(glm::vec2 const& pos) {
+	PERF_MARKER_FUNC;
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(0.005f, 0.005f);
 	aabb.upperBound = g2b(pos) + b2Vec2(0.005f, 0.005f);
@@ -105,6 +111,7 @@ b2Body* World::getBodyAtPos(glm::vec2 const& pos) {
 }
 
 void World::getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircle, std::vector<b2Body*> &outBodies) {
+	PERF_MARKER_FUNC;
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(radius, radius);
 	aabb.upperBound = g2b(pos) + b2Vec2(radius, radius);
@@ -123,6 +130,7 @@ void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
 }
 
 void World::destroyEntity(Entity* e) {
+	PERF_MARKER_FUNC;
 	entsToDestroy.push_back(e);
 #ifdef DEBUG
 	// check if ent exists in vector
@@ -133,6 +141,7 @@ void World::destroyEntity(Entity* e) {
 }
 
 void World::destroyPending() {
+	PERF_MARKER_FUNC;
 	static decltype(entsToDestroy) destroyNow(entsToDestroy.getLockFreeCapacity());
 	destroyNow.swap(entsToDestroy);
 	for (auto &e : destroyNow) {
@@ -161,6 +170,7 @@ void World::destroyPending() {
 }
 
 void World::takeOverPending() {
+	PERF_MARKER_FUNC;
 	static decltype(entsToTakeOver) takeOverNow(entsToTakeOver.getLockFreeCapacity());
 	takeOverNow.swap(entsToTakeOver);
 	for (auto &e : takeOverNow) {
@@ -179,6 +189,7 @@ void World::takeOverPending() {
 }
 
 void World::update(float dt) {
+	PERF_MARKER_FUNC;
 	// take over pending entities:
 	takeOverPending();
 
@@ -195,7 +206,7 @@ void World::update(float dt) {
 #ifdef MT_UPDATE
 			Infrastructure::getThreadPool(),
 #endif
-			[dt] (decltype(entsToUpdate[0]) &e) {
+			[dt] (auto &e) {
 				e->update(dt);
 			});
 
@@ -215,6 +226,7 @@ void World::queueDeferredAction(std::function<void()> &&fun) {
 }
 
 void World::draw(RenderContext const& ctx) {
+	PERF_MARKER_FUNC;
 	for (auto e : entsToDraw)
 		e->draw(ctx);
 }
@@ -226,6 +238,7 @@ bool World::testEntity(Entity &e, EntityType filterTypes, Entity::FunctionalityF
 
 
 std::vector<Entity*> World::getEntities(EntityType filterTypes, Entity::FunctionalityFlags filterFlags) {
+	PERF_MARKER_FUNC;
 	std::vector<Entity*> vec;
 	for (auto &e : entities) {
 		if (!e->isZombie() && testEntity(*e, filterTypes, filterFlags))
@@ -239,6 +252,7 @@ std::vector<Entity*> World::getEntities(EntityType filterTypes, Entity::Function
 }
 
 std::vector<Entity*> World::getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 pos, float radius, bool clipToCircle) {
+	PERF_MARKER_FUNC;
 	std::vector<b2Body*> bodies;
 	getBodiesInArea(pos, radius, clipToCircle, bodies);
 	std::vector<Entity*> out;

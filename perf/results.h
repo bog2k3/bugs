@@ -24,6 +24,8 @@ public:
 	// return the number of threads that contain traced calls
 	static unsigned getNumberOfThreads() { return threadGraphs_.size(); }
 
+	static std::string getThreadName(unsigned id);
+
 	// get a list of independent call trees on the specified thread
 	static std::vector<std::shared_ptr<sectionData>> getCallTrees(unsigned threadID);
 	// get a list of independent call trees on the specified named thread

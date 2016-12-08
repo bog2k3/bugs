@@ -7,7 +7,10 @@
 
 #include "PhysContactListener.h"
 #include "PhysicsBody.h"
+
+#include "../perf/marker.h"
 #include "../utils/log.h"
+
 #include <Box2D/Box2D.h>
 
 #ifdef DEBUG_DMALLOC
@@ -46,6 +49,7 @@ void PhysContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* 
 }
 
 void PhysContactListener::update(float dt) {
+	PERF_MARKER_FUNC;
 	for (auto e : eventBuffer) {
 		e.target->onCollision.trigger(e.argument, e.impulseMagnitude);
 	}

@@ -7,9 +7,11 @@
 
 #include "PopulationManager.h"
 #include "../entities/Bug.h"
+#include "../World.h"
+
+#include "../perf/marker.h"
 #include "../utils/log.h"
 #include "../utils/rand.h"
-#include "../World.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -35,6 +37,7 @@ unsigned PopulationManager::getPopulationTarget() {
 }
 
 void PopulationManager::update(float dt) {
+	PERF_MARKER_FUNC;
 	unsigned bugPopulation = Bug::getPopulationCount() + Bug::getZygotesCount();
 	if (bugPopulation != 0 && bugPopulation <= minPopulation) {
 		LOGPREFIX("PopulationManager");

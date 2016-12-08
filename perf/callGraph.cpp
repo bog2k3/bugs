@@ -33,13 +33,13 @@ void CallGraph::pushSection(const char name[]) {
 		return !std::strcmp(sec->name_, name);
 	});
 	if (treeIt == treeContainer.end()) {
-		treeContainer.emplace_back(sectionData::create(name));
+		treeContainer.emplace_back(sectionData::make_shared(name));
 		treeIt = treeContainer.end()-1;
 	}
 	getCrtThreadInstance().crtStack_.push(treeIt->get());
 }
 
-void CallGraph::popSection(unsigned nanoseconds) {
+void CallGraph::popSection(uint64_t nanoseconds) {
 	auto &stack = getCrtThreadInstance().crtStack_;
 	// add time to secion, ++callCount
 	sectionData *pCrt = stack.top();
@@ -52,7 +52,7 @@ void CallGraph::popSection(unsigned nanoseconds) {
 
 	auto it = flatList.find(pCrt->name_);
 	if (it == flatList.end()) {
-		it = flatList.emplace(pCrt->name_, std::unique_ptr<sectionData>(new sectionData(pCrt->name_))).first;
+		it = flatList.emplace(pCrt->name_, sectionData::make_unique(pCrt->name_)).first;
 	}
 	it->second->executionCount_++;
 	it->second->nanoseconds_ += nanoseconds;

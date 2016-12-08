@@ -13,7 +13,21 @@
 #include <chrono>
 #include <cstring>
 
+#define ENABLE_PERF_MARKERS
+
+#ifdef ENABLE_PERF_MARKERS
+	#define PERF_MARKER_FUNC perf::Marker funcMarker##__LINE__(__PRETTY_FUNCTION__)
+	#define PERF_MARKER(NAME) perf::Marker perfMarker##__LINE__(NAME)
+#else
+	#define PERF_MARKER_FUNC
+	#define PERF_MARKER(NAME)
+#endif
+
 namespace perf {
+
+inline void setCrtThreadName(std::string name) {
+	CallGraph::getCrtThreadInstance().threadName_ = name;
+}
 
 class Marker {
 public:
