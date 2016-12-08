@@ -33,17 +33,10 @@ void CallGraph::pushSection(const char name[]) {
 		return !std::strcmp(sec->name_, name);
 	});
 	if (treeIt == treeContainer.end()) {
-		treeIt = treeContainer.emplace_back(std::make_shared<sectionData>(name));
+		treeContainer.emplace_back(sectionData::create(name));
+		treeIt = treeContainer.end()-1;
 	}
 	getCrtThreadInstance().crtStack_.push(treeIt->get());
-
-	// add to flat list:
-	auto &flatList = getCrtThreadInstance().flatSectionData_;
-
-	auto it = flatList.find(name);
-	if (it == flatList.end()) {
-		it = flatList.emplace(name, std::unique_ptr<sectionData>(new sectionData(name))).first;
-	}
 }
 
 void CallGraph::popSection(unsigned nanoseconds) {
@@ -54,18 +47,15 @@ void CallGraph::popSection(unsigned nanoseconds) {
 	pCrt->nanoseconds_ += nanoseconds;
 	stack.pop();
 
-	if (stack.empty())
-		return;
+	// add time to flat list:
+	auto &flatList = getCrtThreadInstance().flatSectionData_;
 
-	// increment previous->crt_frame edge time & callcount
-	sectionData* pPrev = stack.top();
-	auto &edges = getCrtThreadInstance().edges_;
-	auto edgeName = std::make_pair(pPrev->name_, pCrt->name_);
-	auto it = edges.find(edgeName);
-	if (it == edges.end())
-		it = edges.emplace(edgeName, EdgeData()).first;
-	it->second.totalNanoseconds_ += nanoseconds;
-	it->second.callCount_++;
+	auto it = flatList.find(pCrt->name_);
+	if (it == flatList.end()) {
+		it = flatList.emplace(pCrt->name_, std::unique_ptr<sectionData>(new sectionData(pCrt->name_))).first;
+	}
+	it->second->executionCount_++;
+	it->second->nanoseconds_ += nanoseconds;
 }
 
 } // namespace

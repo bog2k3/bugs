@@ -30,6 +30,10 @@ public:
 private:
 	friend class CallGraph;
 
+	static std::shared_ptr<sectionData> create(const char name[]) {
+		return std::shared_ptr<sectionData>(new sectionData(name));
+	}
+
 	sectionData(const char name[]) {
 		strncpy(name_, name, sizeof(name_)/sizeof(name_[0]));
 	}

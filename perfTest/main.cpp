@@ -32,6 +32,17 @@ void caller(int rec) {
 		caller(rec-1);
 }
 
+void printTree(const std::vector<std::shared_ptr<perf::sectionData>> &t, int level) {
+	const auto tab = "    ";
+	for (auto &s : t) {
+		for (int i=0; i<level; i++) {
+			std::cout<<"|" << tab;
+		}
+		std::cout<<"|--" << s->getName() << tab << "[#" << s->getExecutionCount() << "  i:" << s->getInclusiveNanosec() << "us  e:" << s->getExclusiveNanosec() << "us]\n";
+		printTree(s->getCallees(), level+1);
+	}
+}
+
 int main() {
 	perf::setCrtThreadName("main");
 	{
@@ -42,7 +53,9 @@ int main() {
 	}
 
 	auto res = perf::Results::getCallTrees(0);
-	auto resn = perf::Results::getCallTree("main");
+	auto resn = perf::Results::getCallTrees("main");
+
+	printTree(resn, 0);
 
 	return 0;
 }
