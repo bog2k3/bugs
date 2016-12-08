@@ -38,7 +38,7 @@ void printTree(const std::vector<std::shared_ptr<perf::sectionData>> &t, int lev
 		for (int i=0; i<level; i++) {
 			std::cout<<"|" << tab;
 		}
-		std::cout<<"|--" << s->getName() << tab << "[#" << s->getExecutionCount() << "  i:" << s->getInclusiveNanosec() << "us  e:" << s->getExclusiveNanosec() << "us]\n";
+		std::cout<<"|--" << s->getName() << tab << "[#" << s->getExecutionCount() << "  i:" << s->getInclusiveNanosec() << " ns  e:" << s->getExclusiveNanosec() << " ns]\n";
 		printTree(s->getCallees(), level+1);
 	}
 }
