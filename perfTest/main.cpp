@@ -8,7 +8,6 @@
 #include <thread>
 #include <cmath>
 #include "perf/marker.h"
-#include "perf/threadMarker.h"
 #include "perf/results.h"
 
 void foo() {

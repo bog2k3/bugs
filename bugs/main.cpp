@@ -149,23 +149,42 @@ std::string formatTime(uint64_t val, int mul=1) {
 	return str.str();
 }
 
+
+void printCallFrame(perf::sectionData const& s) {
+	std::cout << s.getName() << "    {"
+		<< "calls " << s.getExecutionCount() << " | "
+		<< "inc " << formatTime(s.getInclusiveNanosec()) << " | "
+		<< "exc " << formatTime(s.getExclusiveNanosec()) << " | "
+		<< "avg-inc " << formatTime(s.getInclusiveNanosec() / s.getExecutionCount()) << " | "
+		<< "avg-exc " << formatTime(s.getExclusiveNanosec() / s.getExecutionCount())
+		<< "}";
+}
+
 void printCallTree(std::vector<std::shared_ptr<perf::sectionData>> t, int level) {
 	std::sort(t.begin(), t.end(), [](auto &x, auto &y) {
-		return x->getExclusiveNanosec() > y->getExclusiveNanosec();
+		return x->getInclusiveNanosec() > y->getInclusiveNanosec();
 	});
 	const auto tab = "    ";
 	for (auto &s : t) {
 		for (int i=0; i<level; i++) {
 			std::cout<<"|" << tab;
 		}
-		std::cout<<"|--" << s->getName() << tab << "{"
-				<< "calls " << s->getExecutionCount() << " | "
-				<< "inc " << formatTime(s->getInclusiveNanosec()) << " | "
-				<< "exc " << formatTime(s->getExclusiveNanosec()) << " | "
-				<< "avg-inc " << formatTime(s->getInclusiveNanosec() / s->getExecutionCount()) << " | "
-				<< "avg-exc " << formatTime(s->getExclusiveNanosec() / s->getExecutionCount())
-				<< "}\n";
+		std::cout << "|--";
+		printCallFrame(*s);
+		std::cout << "\n";
 		printCallTree(s->getCallees(), level+1);
+	}
+}
+
+void printTopHits(std::vector<perf::sectionData> data) {
+	std::sort(data.begin(), data.end(), [](auto &x, auto &y) {
+		return x.getInclusiveNanosec() > y.getInclusiveNanosec();
+	});
+	const size_t maxHits = 6;
+	for (unsigned i=0; i<min(maxHits, data.size()); i++) {
+		std::cout << i << ": ";
+		printCallFrame(data[i]);
+		std::cout << "\n";
 	}
 }
 
@@ -448,8 +467,11 @@ int main(int argc, char* argv[]) {
 	} while (0);
 
 	for (uint i=0; i<perf::Results::getNumberOfThreads(); i++) {
-		std::cout << "\nCall Tree for thread [" << perf::Results::getThreadName(i) << "]-------------------------------------\n\n";
+		std::cout << "\n=============Call Tree for thread [" << perf::Results::getThreadName(i) << "]==========================================\n";
 		printCallTree(perf::Results::getCallTrees(i), 0);
+		std::cout << "\n------------ TOP HITS -------------\n";
+		printTopHits(perf::Results::getFlatList(i));
+		std::cout << "\n---------- END TOP HITS -----------\n";
 	}
 
 	std::cout << "\n\n";

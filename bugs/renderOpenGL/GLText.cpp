@@ -28,7 +28,9 @@ GLText::GLText(Renderer* renderer, const char * texturePath, int rows, int cols,
 	textureID = TextureLoader::loadFromPNG(texturePath, nullptr, nullptr);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
+#ifndef DISABLE_MIPMAPS
 	glGenerateMipmap(GL_TEXTURE_2D);
+#endif
 
 	// Initialize VBO
 	glGenBuffers(1, &vertexBufferID);

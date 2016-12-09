@@ -41,7 +41,7 @@ std::vector<sectionData> Results::getFlatList(unsigned threadID) {
 	std::vector<sectionData> ret;
 	for (auto &p : threadGraphs_[threadID]->flatSectionData_)
 		ret.push_back(*p.second);
-	return {};
+	return ret;
 }
 
 std::vector<sectionData> Results::getFlatList(std::string const& threadName) {
