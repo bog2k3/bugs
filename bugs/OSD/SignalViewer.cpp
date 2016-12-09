@@ -58,6 +58,7 @@ void SignalViewer::addSignal(std::string const& name, std::function<float()> get
 }
 
 void SignalViewer::update(float dt) {
+	PERF_MARKER_FUNC;
 	for (auto &s : sourceInfo_)
 		s.source_->update(dt);
 }

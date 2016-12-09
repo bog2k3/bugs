@@ -14,8 +14,11 @@
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../World.h"
-#include "../utils/log.h"
 #include "Bug.h"
+
+#include "../utils/log.h"
+#include "../perf/marker.h"
+
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -86,6 +89,7 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 }
 
 void Gamete::update(float dt) {
+	PERF_MARKER_FUNC;
 	if (isZombie())
 		return;
 	if (++updateSkipCounter_ < UPDATE_PERIOD)

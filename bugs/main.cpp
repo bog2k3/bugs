@@ -27,11 +27,13 @@
 #include "serialization/objectTypes.h"
 #include "session/SessionManager.h"
 #include "session/PopulationManager.h"
+#include "Infrastructure.h"
+
 #include "utils/log.h"
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
 #include "utils/rand.h"
-#include "Infrastructure.h"
+#include "utils/ioModif.h"
 
 #include "perf/marker.h"
 #include "perf/results.h"
@@ -149,14 +151,21 @@ std::string formatTime(uint64_t val, int mul=1) {
 }
 
 
-void printCallFrame(perf::sectionData const& s) {
-	std::cout << s.getName() << "    {"
+void printCallFrame(perf::sectionData const& s, bool flatMode=false) {
+	bool missingInfo = s.getExclusiveNanosec() > s.getInclusiveNanosec() / 10; // more than 10% unknown
+	if (s.getInclusiveNanosec() < 1e9)
+		missingInfo = false; // this is not significant
+
+	std::cout << ioModif::BOLD << ioModif::FG_LIGHT_YELLOW << s.getName() << ioModif::RESET << "    {"
 		<< "calls " << s.getExecutionCount() << " | "
-		<< "inc " << formatTime(s.getInclusiveNanosec()) << " | "
-		<< "exc " << formatTime(s.getExclusiveNanosec()) << " | "
-		<< "avg-inc " << formatTime(s.getInclusiveNanosec() / s.getExecutionCount()) << " | "
-		<< "avg-exc " << formatTime(s.getExclusiveNanosec() / s.getExecutionCount())
-		<< "}";
+		<< "inc " << ioModif::FG_LIGHT_GREEN << formatTime(s.getInclusiveNanosec()) << ioModif::RESET << " | ";
+	if (!flatMode)
+		std::cout << "exc " << (missingInfo ? ioModif::FG_RED : ioModif::FG_DEFAULT)
+				<< formatTime(s.getExclusiveNanosec()) << ioModif::RESET << " | ";
+	std::cout << "avg-inc " << formatTime(s.getInclusiveNanosec() / s.getExecutionCount()) << " | ";
+	if (!flatMode)
+		std::cout << "avg-exc " << formatTime(s.getExclusiveNanosec() / s.getExecutionCount());
+	std::cout << "}";
 }
 
 void printCallTree(std::vector<std::shared_ptr<perf::sectionData>> t, int level) {
@@ -182,7 +191,7 @@ void printTopHits(std::vector<perf::sectionData> data) {
 	const size_t maxHits = 6;
 	for (unsigned i=0; i<min(maxHits, data.size()); i++) {
 		std::cout << i << ": ";
-		printCallFrame(data[i]);
+		printCallFrame(data[i], true);
 		std::cout << "\n";
 	}
 }
@@ -468,7 +477,7 @@ int main(int argc, char* argv[]) {
 		printCallTree(perf::Results::getCallTrees(i), 0);
 		std::cout << "\n------------ TOP HITS -------------\n";
 		printTopHits(perf::Results::getFlatList(i));
-		std::cout << "\n---------- END TOP HITS -----------\n";
+		std::cout << "\n--------------- END -------------------------------\n";
 	}
 
 	std::cout << "\n\n";

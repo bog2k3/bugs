@@ -12,6 +12,9 @@
 #include "../../math/aabb.h"
 #include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
+
+#include "../../perf/marker.h"
+
 #include <Box2D/Box2D.h>
 
 FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass)
@@ -60,6 +63,7 @@ void FoodChunk::draw(RenderContext const& ctx) {
 #endif
 
 void FoodChunk::update(float dt) {
+	PERF_MARKER_FUNC;
 	consume(dt * WorldConst::FoodChunkDecaySpeed);
 }
 

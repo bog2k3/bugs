@@ -86,6 +86,7 @@ void ThreadPool::workerFunc() {
 }
 
 void PoolTask::wait() {
+	PERF_MARKER_FUNC;
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " waiting for task...");
 #endif

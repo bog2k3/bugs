@@ -11,12 +11,16 @@
 #include "../renderOpenGL/Shape2D.h"
 #include "../math/math2D.h"
 #include "../neuralnet/InputSocket.h"
+
+#include "../utils/log.h"
 #include "../utils/UpdateList.h"
 #include "../utils/assert.h"
+
+#include "../perf/marker.h"
+
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include "../utils/log.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -76,6 +80,7 @@ void Gripper::commit() {
 }
 
 void Gripper::update(float dt) {
+	PERF_MARKER_FUNC;
 	if (isDead())
 		return;
 	float intensity = inputSocket_->value;

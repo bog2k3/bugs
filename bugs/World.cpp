@@ -197,6 +197,8 @@ void World::update(float dt) {
 	destroyPending();
 
 	// do the actual update on entities:
+	{
+	PERF_MARKER("entities-update");
 #ifdef MT_UPDATE
 	parallel_for(
 #else
@@ -209,13 +211,17 @@ void World::update(float dt) {
 			[dt] (auto &e) {
 				e->update(dt);
 			});
+	}
 
 	// execute deferred actions synchronously:
-	executingDeferredActions_.store(true, std::memory_order_release);
-	for (auto &a : deferredActions_)
-		a();
-	deferredActions_.clear();
-	executingDeferredActions_.store(false, std::memory_order_release);
+	{
+		PERF_MARKER("deferred-actions");
+		executingDeferredActions_.store(true, std::memory_order_release);
+		for (auto &a : deferredActions_)
+			a();
+		deferredActions_.clear();
+		executingDeferredActions_.store(false, std::memory_order_release);
+	}
 }
 
 void World::queueDeferredAction(std::function<void()> &&fun) {

@@ -11,9 +11,13 @@
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
+
 #include "../utils/UpdateList.h"
 #include "../utils/log.h"
 #include "../utils/assert.h"
+
+#include "../perf/marker.h"
+
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -127,6 +131,7 @@ void Torso::consumeEnergy(float amount) {
 }
 
 void Torso::update(float dt) {
+	PERF_MARKER_FUNC;
 	energyBuffer_ -= frameUsedEnergy_;
 	if (energyBuffer_ < 0) {
 		// must use up some fat to compensate since our energy buffer is empty

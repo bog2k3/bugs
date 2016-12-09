@@ -12,9 +12,13 @@
 #include "../math/box2glm.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
+
 #include "../utils/log.h"
 #include "../utils/UpdateList.h"
 #include "../utils/assert.h"
+
+#include "../perf/marker.h"
+
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -188,6 +192,7 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 }
 
 void Mouth::update(float dt) {
+	PERF_MARKER_FUNC;
 	if (isDead())
 		return;
 	if (usedBuffer_ > 0)

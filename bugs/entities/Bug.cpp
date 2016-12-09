@@ -20,7 +20,6 @@
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/BodyPart.h"
 #include "../body-parts/Joint.h"
-#include "../utils/log.h"
 #include "../World.h"
 #include "../serialization/BinaryStream.h"
 #include "../serialization/GenomeSerialization.h"
@@ -29,6 +28,9 @@
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
 #include "Gamete.h"
+
+#include "../utils/log.h"
+#include "../perf/marker.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -117,6 +119,7 @@ Bug::~Bug() {
 }
 
 void Bug::updateEmbryonicDevelopment(float dt) {
+	PERF_MARKER_FUNC;
 	// developing embryo
 	tRibosomeStep_ += dt;
 	if (tRibosomeStep_ >= DECODE_PERIOD) {
@@ -208,19 +211,26 @@ void Bug::kill() {
 }
 
 void Bug::update(float dt) {
+	PERF_MARKER_FUNC;
 	if (isDeveloping_) {
 		updateEmbryonicDevelopment(dt);
 		return;
 	}
 
 	lifeTimeSensor_.update(dt);
-	bodyPartsUpdateList_.update(dt);
+	{
+		PERF_MARKER("update-bodyParts");
+		bodyPartsUpdateList_.update(dt);
+	}
 	updateDeadDecaying(dt); // this updates all dead body parts
 
 	if (!isAlive_)
 		return;
 
-	neuralNet_->iterate();
+	{
+		PERF_MARKER("update-neuralNet");
+		neuralNet_->iterate();
+	}
 
 	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
 		// we just depleted our energy supply and died

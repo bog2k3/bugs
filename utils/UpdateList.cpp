@@ -27,7 +27,7 @@ void UpdateList::update(float dt, ThreadPool *pool /*= nullptr*/) {
 	if (pool) {
 		// run in thread pool
 		parallel_for(list_.begin(), list_.end(), *pool,
-			[dt](decltype(list_[0]) &x) {
+			[dt](auto &x) {
 				x.update(dt);
 			});
 	} else {

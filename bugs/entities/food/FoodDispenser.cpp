@@ -8,10 +8,13 @@
 #include "FoodDispenser.h"
 #include "FoodChunk.h"
 #include "../WorldConst.h"
-#include "../../utils/rand.h"
 #include "../../World.h"
 #include "../../serialization/BinaryStream.h"
 #include "../../math/aabb.h"
+
+#include "../../utils/rand.h"
+#include "../../perf/marker.h"
+
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 
@@ -50,6 +53,7 @@ void FoodDispenser::draw(RenderContext const& ctx) {
 }
 
 void FoodDispenser::update(float dt) {
+	PERF_MARKER_FUNC;
 	timer_ += dt;
 	if (timer_ > period_) {
 		// create one food chunk

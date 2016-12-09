@@ -29,7 +29,7 @@
 	#endif
 #else
 	static unsigned minPopulation = 15;				// minimum population number that triggers a refill
-	static unsigned refillPopulationTarget = 30;	// target population after refill
+	static unsigned refillPopulationTarget = 60;	// target population after refill
 #endif
 
 unsigned PopulationManager::getPopulationTarget() {

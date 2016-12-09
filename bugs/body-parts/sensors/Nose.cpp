@@ -11,11 +11,15 @@
 #include "../../World.h"
 #include "../../neuralnet/OutputSocket.h"
 #include "../../math/math2D.h"
-#include "../../utils/UpdateList.h"
-#include "../../utils/rand.h"
 #include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../OSD/EntityLabeler.h"
+
+#include "../../utils/UpdateList.h"
+#include "../../utils/rand.h"
+
+#include "../../perf/marker.h"
+
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
 #include <algorithm>
@@ -81,6 +85,7 @@ glm::vec2 Nose::getChildAttachmentPoint(float relativeAngle) {
 
 
 void Nose::update(float dt) {
+	PERF_MARKER_FUNC;
 	/*
 	 * max radius & accuracy are proportional to the size of the nose
 	 * detect the nearest object of the right flavour and compute the output signal like this:

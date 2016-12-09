@@ -11,10 +11,13 @@
 #include "../math/box2glm.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
+#include "../physics/PhysDestroyListener.h"
+
 #include "../utils/log.h"
 #include "../utils/assert.h"
 #include "../utils/UpdateList.h"
-#include "../physics/PhysDestroyListener.h"
+
+#include "../perf/marker.h"
 
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
@@ -170,6 +173,7 @@ void Joint::addTorque(float t, float maxSpeed) {
 }
 
 void Joint::update(float dt) {
+	PERF_MARKER_FUNC;
 	if (!physJoint_ || dt == 0)
 		return;
 	float invdt = 1.f / dt;
