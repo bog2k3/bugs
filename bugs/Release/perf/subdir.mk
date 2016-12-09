@@ -5,18 +5,15 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../perf/callGraph.cpp \
-../perf/results.cpp \
-../perf/threadMarker.cpp 
+../perf/results.cpp 
 
 OBJS += \
 ./perf/callGraph.o \
-./perf/results.o \
-./perf/threadMarker.o 
+./perf/results.o 
 
 CPP_DEPS += \
 ./perf/callGraph.d \
-./perf/results.d \
-./perf/threadMarker.d 
+./perf/results.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
