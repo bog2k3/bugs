@@ -17,8 +17,8 @@
 #include <sstream>
 #include <iomanip>
 
-SignalDataSource::SignalDataSource(float* pValue, int maxSamples, float sampleInterval)
-	: pValue_(pValue), capacity_(maxSamples), sampleInterval_(sampleInterval) {
+SignalDataSource::SignalDataSource(std::function<float()> getValue, int maxSamples, float sampleInterval)
+	: getValue_(getValue), capacity_(maxSamples), sampleInterval_(sampleInterval) {
 	samples_ = new float[maxSamples];
 }
 
@@ -35,9 +35,9 @@ void SignalDataSource::update(float dt) {
 	timeSinceLastSample_ -= sampleInterval_;
 
 	if (n_ < capacity_)
-		samples_[n_++] = *pValue_;
+		samples_[n_++] = getValue_();
 	else {
-		samples_[zero_] = *pValue_;
+		samples_[zero_] = getValue_();
 		zero_ = (zero_+1) % n_;
 	}
 }
@@ -50,7 +50,11 @@ SignalViewer::~SignalViewer() {
 }
 
 void SignalViewer::addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minUpperY, float maxLowerY) {
-	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(pValue, maxSamples, sampleInterval)), name, rgb, minUpperY, maxLowerY));
+	addSignal(name, [pValue] { return *pValue; }, rgb, sampleInterval, maxSamples, minUpperY, maxLowerY);
+}
+
+void SignalViewer::addSignal(std::string const& name, std::function<float()> getValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minUpperY, float maxLowerY) {
+	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(getValue, maxSamples, sampleInterval)), name, rgb, minUpperY, maxLowerY));
 }
 
 void SignalViewer::update(float dt) {

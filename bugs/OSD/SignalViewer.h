@@ -12,6 +12,8 @@
 #include <glm/vec2.hpp>
 #include <memory>
 #include <vector>
+#include <type_traits>
+#include <functional>
 
 class RenderContext;
 class SignalDataSource;
@@ -40,6 +42,13 @@ public:
 	virtual ~SignalViewer();
 
 	void addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples = 50, float minUpperY = -1e20f, float maxLowerY = 1e20f);
+	void addSignal(std::string const& name, std::function<float()> getValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples = 50, float minUpperY = -1e20f, float maxLowerY = 1e20f);
+
+	template <class Callable,
+		typename std::enable_if<std::is_same<typename std::result_of<Callable()>::type, float>::value>::type>
+	void addSignal(std::string const& name, Callable c, glm::vec3 const& rgb, float sampleInterval, int maxSamples = 50, float minUpperY = -1e20f, float maxLowerY = 1e20f) {
+		addSignal(name, [c]() { return c(); }, rgb, sampleInterval, maxSamples, minUpperY, maxLowerY);
+	}
 
 	void update(float dt);
 	void draw(RenderContext const& ctx);
@@ -52,14 +61,14 @@ private:
 
 class SignalDataSource {
 public:
-	SignalDataSource(float* pValue, int maxSamples, float sampleInterval);
+	SignalDataSource(std::function<float()> getValue, int maxSamples, float sampleInterval);
 	virtual ~SignalDataSource();
 	void update(float dt);
 	inline float getSample(uint i) { return samples_[(i+zero_)%n_]; }
 	inline uint getNumSamples() { return n_; }
 	inline uint getCapacity() { return capacity_; }
 private:
-	float* pValue_ = nullptr;
+	std::function<float()> getValue_ = nullptr;
 	float* samples_ = nullptr;	// circular buffer
 	uint n_ = 0;
 	uint zero_ = 0;

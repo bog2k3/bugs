@@ -66,7 +66,6 @@ b2World *pPhysWld = nullptr;
 PhysicsDebugDraw *pPhysicsDraw = nullptr;
 
 template<> void draw(b2World* wld, RenderContext const &ctx) {
-	PERF_MARKER_FUNC;
 	wld->DrawDebugData();
 }
 
@@ -350,17 +349,14 @@ int main(int argc, char* argv[]) {
 
 		float frameTime = 0;
 
-		sigViewer.addSignal("frameTime", &frameTime, glm::vec3(1.f, 0.2f, 0.2f), 0.1f);
+		sigViewer.addSignal("frameTime", &frameTime,
+				glm::vec3(1.f, 0.2f, 0.2f), 0.1f);
+		sigViewer.addSignal("population", [&] { return sessionMgr.getPopulationManager().getPopulationCount();},
+				glm::vec3(0.3f, 0.3f, 1.f), 5.f);
 
 	#ifdef DEBUG
-		Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
-		static constexpr float neuronUpdateTime = 0.05f;
-		float nl_out = 0;
-		float nr_out = 0;
-		float rgtl = 0;	// R > L ?
-		float gate2 = 0, gate3 = 0;
-		float sigma = 0;
-		float invmax = 0;
+		// Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
+		// static constexpr float neuronUpdateTime = 0.05f;
 	//	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
 	//	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
 	//	sigViewer.addSignal("R>L", &rgtl, glm::vec3(0.1, 0.3, 1.f), neuronUpdateTime, 50, 1.1f, -1.1f);
@@ -441,6 +437,7 @@ int main(int argc, char* argv[]) {
 			}
 
 			if (!skipRendering) {
+				PERF_MARKER("frame-draw");
 				// wait until previous frame finishes rendering and show frame output:
 				gltEnd();
 				// draw builds the render queue for the current frame
