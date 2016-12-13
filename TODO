@@ -1,3 +1,4 @@
+* write a proper build config (make or cmake) - don't rely on eclipse any more
 		* Logger must be thread-safe!
 * velocity & angular velocity sensors
 * eyes
