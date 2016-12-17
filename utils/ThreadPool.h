@@ -55,7 +55,7 @@ public:
 #endif
 		checkValidState();
 		auto handle = std::shared_ptr<PoolTask>(new PoolTask([=] () mutable { task(args...); }));
-		waitingTasks_.push(handle);
+		queuedTasks_.push(handle);
 		lk.unlock();
 		condPendingTask_.notify_one();
 #ifdef DEBUG_THREADPOOL
@@ -67,7 +67,7 @@ public:
 	unsigned getThreadCount() const { return workers_.size(); }
 
 protected:
-	std::queue<PoolTaskHandle> waitingTasks_;
+	std::queue<PoolTaskHandle> queuedTasks_;
 	std::mutex poolMutex_;
 	std::condition_variable condPendingTask_;
 	std::vector<std::thread> workers_;

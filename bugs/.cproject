@@ -31,7 +31,6 @@
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1722497403" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="GLM_FORCE_RADIANS"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
-									<listOptionValue builtIn="false" value="DISABLE_MIPMAPS"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.763534355" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../3rdparty/easyunit"/>
@@ -111,8 +110,6 @@
 								<option id="gnu.cpp.compiler.option.debugging.level.1147111673" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1619317332" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="GLM_FORCE_RADIANS"/>
-									<listOptionValue builtIn="false" value="DEBUG"/>
-									<listOptionValue builtIn="false" value="DISABLE_MIPMAPS"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1421184658" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../3rdparty/easyunit"/>

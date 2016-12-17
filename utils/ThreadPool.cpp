@@ -30,7 +30,7 @@ void ThreadPool::stop() {
 	std::unique_lock<std::mutex> poolLk(poolMutex_);
 	checkValidState();
 	stopRequested_.store(true);
-	while (!waitingTasks_.empty()) {
+	while (!queuedTasks_.empty()) {
 		poolLk.unlock();
 		std::this_thread::yield();
 		poolLk.lock();
@@ -53,9 +53,9 @@ void ThreadPool::workerFunc() {
 	while (!stopSignal_) {
 		PoolTaskHandle task(nullptr);
 		std::unique_lock<std::mutex> lk(poolMutex_);
-		auto pred = [this] { return stopSignal_ || !!!waitingTasks_.empty(); };
+		auto pred = [this] { return stopSignal_ || !!!queuedTasks_.empty(); };
 		if (!pred()) {
-			PERF_MARKER("starving");
+			PERF_MARKER("idling");
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " wait for work...");
 #endif
@@ -66,9 +66,9 @@ void ThreadPool::workerFunc() {
 #endif
 		if (stopSignal_)
 			return;
-		assertDbg(!!!waitingTasks_.empty());
-		task = waitingTasks_.front();
-		waitingTasks_.pop();
+		assertDbg(!!!queuedTasks_.empty());
+		task = queuedTasks_.front();
+		queuedTasks_.pop();
 		lk.unlock();
 
 		std::lock_guard<std::mutex> workLk(task->workMutex_);
@@ -90,8 +90,12 @@ void PoolTask::wait() {
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " waiting for task...");
 #endif
-	while (!started_)
-		std::this_thread::yield();
+	{
+		PERF_MARKER("waitForTaskToStart");
+		while (!started_)
+			std::this_thread::yield();
+	}
+	PERF_MARKER("waitForTaskToEnd");
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " task is started.");
 #endif
