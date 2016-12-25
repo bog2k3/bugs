@@ -13,12 +13,20 @@
 namespace ioModif {
 enum Code {
 	RESET = 0,
+
 	BOLD = 1,
 	ITALIC = 3,
 	DARK = 2,
 	UNDERLINE = 4,
 	SELECTED = 7,
 	STRIKETHROUGH = 9,
+
+	NO_BOLD = 21,
+	NO_ITALIC = 23,
+	NO_DARK = 22,
+	NO_UNDERLINE = 24,
+	NO_SELECTED = 27,
+	NO_STRIKETHROUGH = 29,
 
 	FG_BLACK = 30,
 	FG_RED = 31,
@@ -48,6 +56,29 @@ enum Code {
 	BG_GRAY = 47,
 	BG_DEFAULT = 49,
 };
+
+struct FG_RGB {
+	int r, g, b;
+	FG_RGB(unsigned char r, unsigned char g, unsigned char b)
+		: r(r), g(g), b(b) {
+	}
+};
+
+struct BG_RGB {
+	int r, g, b;
+	BG_RGB(unsigned char r, unsigned char g, unsigned char b)
+		: r(r), g(g), b(b) {
+	}
+};
+
+std::ostream& operator<<(std::ostream& os, FG_RGB fg) {
+	return os << "\033[38;2;" << fg.r << ";" << fg.g << ";" << fg.b << "m";
+}
+
+std::ostream& operator<<(std::ostream& os, BG_RGB bg) {
+	return os << "\033[48;2;" << bg.r << ";" << bg.g << ";" << bg.b << "m";
+}
+
 std::ostream& operator<<(std::ostream& os, Code code) {
 	return os << "\033[" << static_cast<int>(code) << "m";
 }

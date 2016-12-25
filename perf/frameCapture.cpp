@@ -7,12 +7,33 @@
 
 #include "frameCapture.h"
 
+#include <algorithm>
+
 namespace perf {
 
 std::atomic<FrameCapture::CaptureMode> FrameCapture::mode_ {FrameCapture::Disabled};
 std::atomic<std::thread::id> FrameCapture::exclusiveThreadID_;
 MTVector<std::shared_ptr<std::vector<FrameCapture::frameData>>> FrameCapture::allFrames_ {8};
 MTVector<std::string> FrameCapture::threadNames_ {8};
+std::chrono::time_point<std::chrono::high_resolution_clock> FrameCapture::captureStartTime_;
+
+void FrameCapture::start(FrameCapture::CaptureMode mode) {
+	assert(mode_ == Disabled && "Capture already in progress!");
+	if (mode == ThisThreadOnly)
+		exclusiveThreadID_.store(std::this_thread::get_id());
+	captureStartTime_ = std::chrono::high_resolution_clock::now();
+	mode_.store(mode, std::memory_order_release);
+}
+
+void FrameCapture::stop() {
+	mode_.store(Disabled);
+	// check all unfinished frames
+	auto now = std::chrono::high_resolution_clock::now();
+	for (auto &tf : allFrames_)
+		for (auto &f : *tf)
+			if (f.endTime_.time_since_epoch().count() == 0)
+				f.endTime_ = now;
+}
 
 std::string FrameCapture::getThreadNameForIndex(unsigned index) {
 	assert(index < threadNames_.size());
@@ -20,7 +41,13 @@ std::string FrameCapture::getThreadNameForIndex(unsigned index) {
 }
 
 std::vector<FrameCapture::frameData> FrameCapture::getResults() {
-
+	std::vector<FrameCapture::frameData> ret;
+	for (auto &fv : allFrames_)
+		std::copy(fv->begin(), fv->end(), std::back_inserter(ret));
+	std::sort(ret.begin(), ret.end(), [] (auto &x, auto &y) {
+		return x.startTime_ < y.startTime_;
+	});
+	return ret;
 }
 
 void FrameCapture::cleanup() {

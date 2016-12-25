@@ -34,25 +34,18 @@ public:
 		std::chrono::time_point<std::chrono::high_resolution_clock> startTime_;
 		std::chrono::time_point<std::chrono::high_resolution_clock> endTime_;
 		char name_[256];
-		unsigned threadNameIndex_;
+		unsigned threadIndex_;
 
 		frameData(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> start, unsigned threadIndex)
-			: startTime_(start), threadNameIndex_(threadIndex) {
+			: startTime_(start), threadIndex_(threadIndex) {
 			strncpy(name_, name, sizeof(name_)/sizeof(name_[0]));
 		}
 	};
 
 	// start capturing a frame, recording all markers' absolute times
-	static void start(CaptureMode mode) {
-		assert(mode_ == Disabled && "Capture already in progress!");
-		if (mode == ThisThreadOnly)
-			exclusiveThreadID_.store(std::this_thread::get_id());
-		mode_.store(mode, std::memory_order_release);
-	}
+	static void start(CaptureMode mode);
 	// stop capturing the frame
-	static void stop() {
-		mode_.store(Disabled);
-	}
+	static void stop();
 
 	// aggregates all calls from all recorded threads (depending on capture mode) and returns a linear sequence
 	// ordered chronologically, with interleaved threads
@@ -75,19 +68,24 @@ private:
 
 	static void beginFrame(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> now) {
 		getThreadInstance().frames_->emplace_back(name, now, getThreadInstance().threadIndex_);
+		getThreadInstance().frameStack_.push(&getThreadInstance().frames_->back());
 	}
 
 	static void endFrame(std::chrono::time_point<std::chrono::high_resolution_clock> now) {
-		getThreadInstance().frames_->back().endTime_ = now;
-		getThreadInstance().frames_->pop_back();
+		if (!getThreadInstance().frameStack_.size())
+			beginFrame("{UNKNOWN}", captureStartTime_);
+		getThreadInstance().frameStack_.top()->endTime_ = now;
+		getThreadInstance().frameStack_.pop();
 	}
 
 	static std::atomic<CaptureMode> mode_;
 	static std::atomic<std::thread::id> exclusiveThreadID_;
 	static MTVector<std::shared_ptr<std::vector<frameData>>> allFrames_;
 	static MTVector<std::string> threadNames_;
+	static std::chrono::time_point<std::chrono::high_resolution_clock> captureStartTime_;
 
 	std::shared_ptr<std::vector<frameData>> frames_;
+	std::stack<frameData*> frameStack_;
 	unsigned threadIndex_;
 	static FrameCapture& getThreadInstance() {
 		static thread_local FrameCapture instance;

@@ -55,8 +55,11 @@
 #include <stdexcept>
 #include <cstdio>
 #include <thread>
+#include <chrono>
 
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -202,7 +205,87 @@ void printTopHits(std::vector<perf::sectionData> data) {
 }
 
 void printFramePerfData(std::vector<perf::FrameCapture::frameData> data) {
+	auto referenceTime = data.front().startTime_;
+	// convert any time point into relative amount of nanoseconds since start of frame
+	auto relativeNano = [referenceTime] (decltype(data[0].startTime_) &pt) -> int64_t {
+		return std::chrono::nanoseconds(pt - referenceTime).count();
+	};
+	// compute metrics:
+	int64_t timeSpan = relativeNano(data.back().endTime_);
+	struct winsize sz;
+	ioctl(STDOUT_FILENO,TIOCGWINSZ,&sz);
+	auto lineWidth = sz.ws_col;
+	if (lineWidth <= 0)
+		lineWidth = 80; // asume default
+	double cellsPerNanosec = (lineWidth-1) / timeSpan;
 
+	// build visual representation
+	struct threadData {
+		std::vector<std::stringstream> str;
+		std::map<std::string, int> legend;
+		std::stack<unsigned> callsEndTime;
+
+		threadData() = default;
+		threadData(threadData &&t) = default;
+	};
+	ioModif::BG_RGB colors[] = {
+		ioModif::BG_RGB(0,0,150),
+		ioModif::BG_RGB(0,150,0),
+		ioModif::BG_RGB(150,150,0),
+		ioModif::BG_RGB(150,0,0),
+		ioModif::BG_RGB(150,0,150),
+	};
+	auto colorsCount = sizeof(colors)/sizeof(colors[0]);
+	std::vector<threadData> threads;
+	for (auto &f : data) {
+		while (threads.size() <= f.threadIndex_)
+			threads.push_back(threadData());
+		threadData &td = threads[f.threadIndex_];
+		// see if this frame appeared before in this thread:
+		if (td.legend.find(f.name_) == td.legend.end())
+			td.legend[f.name_] = td.legend.size();
+		// check if this is a new level of depth
+		unsigned prevEndTime = 0;
+		if (td.callsEndTime.empty() || relativeNano(f.startTime_) < td.callsEndTime.top())
+			td.callsEndTime.push(relativeNano(f.endTime_));
+		else {
+			prevEndTime = td.callsEndTime.top();
+			td.callsEndTime.top() = relativeNano(f.endTime_);
+		}
+		int frameID = td.legend[f.name_];
+		while (td.str.size() < td.callsEndTime.size())
+			td.str.push_back(std::stringstream());
+		auto& crtStr = td.str[td.callsEndTime.size()-1];
+		// add spaces before this call:
+		int64_t spaceCells = max(1L, int64_t((relativeNano(f.startTime_) - prevEndTime) * cellsPerNanosec));
+		crtStr << std::string(spaceCells, ' ');
+		// write this call:
+		crtStr << colors[f.threadIndex_ % colorsCount] << ioModif::BOLD << ioModif::FG_WHITE << frameID;
+		int64_t callCells = max(1L, int64_t(std::chrono::nanoseconds(f.endTime_ - f.startTime_).count() * cellsPerNanosec));
+		crtStr << std::string(callCells, ' ') << ioModif::RESET;
+	}
+
+	// print stats
+	for (unsigned i=0; i<threads.size(); i++) {
+		auto &t = threads[i];
+		std::cout << ioModif::FG_ORANGE << ">>>>>>>>>>>>>>>>>>> Thread ["
+				<< perf::FrameCapture::getThreadNameForIndex(i)
+				<< "] >>>>>>>>>>>>>>>>>\n" << ioModif::FG_DEFAULT;
+		// print calls:
+		for (auto &s : t.str)
+			std::cout << s.str() << "\n";
+		// print legend:
+		std::vector<std::string> legend;
+		for (auto &p : t.legend) {
+			while (legend.size() <= p.second)
+				legend.push_back("");
+			legend[p.second] = p.first;
+		}
+		std::cout << colors[i % colorsCount];
+		for (unsigned i=0; i<legend.size(); i++)
+			std::cout << ioModif::BOLD << i << ioModif::NO_BOLD << " - " << legend[i] << ";   ";
+		std::cout << ioModif::RESET << "\n\n";
+	}
 }
 
 int main(int argc, char* argv[]) {
