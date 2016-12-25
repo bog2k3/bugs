@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../perf/callGraph.cpp \
+../perf/frameCapture.cpp \
 ../perf/results.cpp 
 
 OBJS += \
 ./perf/callGraph.o \
+./perf/frameCapture.o \
 ./perf/results.o 
 
 CPP_DEPS += \
 ./perf/callGraph.d \
+./perf/frameCapture.d \
 ./perf/results.d 
 
 

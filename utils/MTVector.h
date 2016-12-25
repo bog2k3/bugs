@@ -115,14 +115,14 @@ public:
 		size_t offs_;
 	};
 
-	// thread safe
-	void push_back(C const& c) {
-		insert(c);
+	// thread safe - returns index where the item was stored
+	size_t push_back(C const& c) {
+		return insert(c);
 	}
 
-	// thread safe
-	void push_back(C &&c) {
-		insert(std::move(c));
+	// thread safe - returns index where the item was stored
+	size_t push_back(C &&c) {
+		return insert(std::move(c));
 	}
 
 	// thread safe
@@ -178,7 +178,8 @@ private:
 	std::mutex extraMtx_;
 
 	template<class ref>
-	void insert(ref&& r) {
+	size_t insert(ref&& r) {
+		size_t finalIndex = 0;
 		auto expected = insertPtr_.load(std::memory_order_relaxed);
 		while (!insertPtr_.compare_exchange_weak(expected, expected+1,
 				std::memory_order_release,
@@ -188,14 +189,17 @@ private:
 		if (expected < capacity_) {
 			// this is our write index
 			new(array_ + expected) C(std::forward<ref>(r));
+			finalIndex = expected;
 		} else {
 			// preallocated space filled up, must lock on the extra vector
 			LOGPREFIX("MTVECTOR");
 			LOG("PERFORMANCE WARNING: preallocated capacity reached, performing LOCK !!!");
 			std::lock_guard<std::mutex> lk(extraMtx_);
 			extra_.push_back(std::forward<ref>(r));
+			finalIndex = extra_.size() - 1 + capacity_;
 		}
 		++size_;
+		return finalIndex;
 	}
 };
 

@@ -9,6 +9,7 @@
 #define PERF_MARKER_H_
 
 #include "callGraph.h"
+#include "frameCapture.h"
 
 #include <chrono>
 #include <cstring>
@@ -34,18 +35,22 @@ public:
 	Marker(const char name[]) {
 		CallGraph::pushSection(name);
 		start_ = std::chrono::high_resolution_clock::now();
+		if (FrameCapture::captureEnabledOnThisThread())
+			FrameCapture::beginFrame(name, start_);
 	}
 
 	~Marker() {
 		auto end = std::chrono::high_resolution_clock::now();
 		auto nanosec = std::chrono::nanoseconds(end - start_).count();
 		CallGraph::popSection(nanosec);
+		if (FrameCapture::captureEnabledOnThisThread())
+			FrameCapture::endFrame(end);
 	}
 
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> start_;
 };
 
-}
+} // namespace perf
 
 #endif /* PERF_MARKER_H_ */

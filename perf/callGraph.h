@@ -17,12 +17,18 @@
 namespace perf {
 
 class CallGraph {
-	friend class Results;
 public:
 	static void pushSection(const char name[]);
 	static void popSection(uint64_t nanoseconds);
 
+	static std::string getCrtThreadName() {
+		return getCrtThreadInstance().threadName_;
+	}
+
 private:
+	friend class Results;
+	friend void setCrtThreadName(std::string name);
+
 	CallGraph() {}
 	static CallGraph& getCrtThreadInstance();
 
@@ -49,8 +55,6 @@ private:
 	std::stack<sectionData*> crtStack_;
 
 	static thread_local std::shared_ptr<CallGraph> crtThreadInstance_;
-
-	friend void setCrtThreadName(std::string name);
 };
 
 } // namespace

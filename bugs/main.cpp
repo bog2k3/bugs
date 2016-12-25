@@ -37,6 +37,7 @@
 
 #include "perf/marker.h"
 #include "perf/results.h"
+#include "perf/frameCapture.h"
 
 #ifdef DEBUG
 #include "entities/Bug.h"
@@ -64,6 +65,7 @@
 bool skipRendering = true;
 bool updatePaused = false;
 bool slowMo = false;
+bool captureFrame = false;
 b2World *pPhysWld = nullptr;
 PhysicsDebugDraw *pPhysicsDraw = nullptr;
 
@@ -94,6 +96,9 @@ void onInputEventHandler(InputEvent& ev) {
 	} else if (ev.key == GLFW_KEY_S) {
 		if (ev.type == InputEvent::EV_KEY_DOWN)
 			slowMo ^= true;
+	} else if (ev.key == GLFW_KEY_F1) {
+		if (ev.type == InputEvent::EV_KEY_DOWN)
+			captureFrame = true;
 	}
 }
 
@@ -194,6 +199,10 @@ void printTopHits(std::vector<perf::sectionData> data) {
 		printCallFrame(data[i], true);
 		std::cout << "\n";
 	}
+}
+
+void printFramePerfData(std::vector<perf::FrameCapture::frameData> data) {
+
 }
 
 int main(int argc, char* argv[]) {
@@ -442,7 +451,17 @@ int main(int argc, char* argv[]) {
 			continuousUpdateList.update(realDT);
 			if (simDT > 0) {
 				PERF_MARKER("frame-update");
+				if (captureFrame)
+					perf::FrameCapture::start(perf::FrameCapture::AllThreads);
+
 				updateList.update(simDT);
+
+				if (captureFrame) {
+					captureFrame = false;
+					perf::FrameCapture::stop();
+					printFramePerfData(perf::FrameCapture::getResults());
+					perf::FrameCapture::cleanup();
+				}
 			}
 
 			if (!skipRendering) {

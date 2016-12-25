@@ -21,8 +21,7 @@ ThreadPool::ThreadPool(uint numberOfThreads)
 #endif
 }
 ThreadPool::~ThreadPool() {	// throws exception if any thread is currently working - make sure you call stop() before destruction
-	if (!stopped_)
-		throw std::runtime_error("Thread pool has not been stopped before destruction!");
+	assertDbg(stopped_ && "Thread pool has not been stopped before destruction!");
 }
 
 void ThreadPool::stop() {
