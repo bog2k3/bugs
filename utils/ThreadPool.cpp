@@ -73,10 +73,10 @@ void ThreadPool::workerFunc() {
 		std::lock_guard<std::mutex> workLk(task->workMutex_);
 		task->started_.store(true);
 		// do work...
-		{
+		do {
 			PERF_MARKER("working");
 			task->workFunc_();
-		}
+		} while (0);
 		task->finished_.store(true);
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " finished work.");
@@ -85,7 +85,7 @@ void ThreadPool::workerFunc() {
 }
 
 void PoolTask::wait() {
-	PERF_MARKER_FUNC;
+	PERF_MARKER_FUNC_BLOCKED;
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " waiting for task...");
 #endif

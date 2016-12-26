@@ -210,7 +210,7 @@ void printTopHits(std::vector<perf::sectionData> data) {
 	}
 }
 
-void printFramePerfData(std::vector<perf::FrameCapture::frameData> data) {
+void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 	auto referenceTime = data.front().startTime_;
 	// convert any time point into relative amount of nanoseconds since start of frame
 	auto relativeNano = [referenceTime] (decltype(data[0].startTime_) &pt) -> int64_t {
@@ -228,8 +228,9 @@ void printFramePerfData(std::vector<perf::FrameCapture::frameData> data) {
 	// build visual representation
 	struct threadData {
 		std::vector<std::stringstream> str;
-		std::map<std::string, int> legend;
-		std::stack<unsigned> callsEndTime;
+		std::vector<int> strOffs;
+		std::map<std::string, uint> legend;
+		std::vector<unsigned> callsEndTime;
 
 		threadData() = default;
 		threadData(threadData &&t) = default;
@@ -258,27 +259,34 @@ void printFramePerfData(std::vector<perf::FrameCapture::frameData> data) {
 		// see if this frame appeared before in this thread:
 		if (td.legend.find(f.name_) == td.legend.end())
 			td.legend[f.name_] = td.legend.size();
-		// check if this is a new level of depth
-		unsigned prevEndTime = 0;
-		if (td.callsEndTime.empty() || relativeNano(f.startTime_) < td.callsEndTime.top())
-			td.callsEndTime.push(relativeNano(f.endTime_));
+		// check if need to pop a stack level
+		if (td.callsEndTime.size() >= 2 && *(td.callsEndTime.end()-2) < relativeNano(f.startTime_))
+			td.callsEndTime.pop_back();
+		// check if this is a new level on the stack
+		if (td.callsEndTime.empty() || relativeNano(f.startTime_) < td.callsEndTime.back())
+			td.callsEndTime.push_back(relativeNano(f.endTime_));
 		else {
-			prevEndTime = td.callsEndTime.top();
-			td.callsEndTime.top() = relativeNano(f.endTime_);
+			td.callsEndTime.back() = relativeNano(f.endTime_);
 		}
 		int frameID = td.legend[f.name_];
-		while (td.str.size() < td.callsEndTime.size())
+		while (td.str.size() < td.callsEndTime.size()) {
 			td.str.push_back(std::stringstream());
+			td.strOffs.push_back(0);
+		}
 		auto& crtStr = td.str[td.callsEndTime.size()-1];
+		auto& crtStrOffs = td.strOffs[td.callsEndTime.size()-1];
 		// add spaces before this call:
-		int64_t spaceCells = max(0L, int64_t((relativeNano(f.startTime_) - prevEndTime) * cellsPerNanosec));
+		int startOffs = relativeNano(f.startTime_) * cellsPerNanosec;
+		int spaceCells = max(0, startOffs - crtStrOffs);
 		crtStr << std::string(spaceCells, ' ');
+		crtStrOffs += spaceCells;
 		// write this call:
 		crtStr << ioModif::RESET << (((ioModif::BG_RGB)colors[f.threadIndex_ % colorsCount]) * (f.deadTime_? 0.5 : 1))
 				<< ioModif::BOLD << (f.deadTime_ ? ioModif::FG_GRAY : ioModif::FG_WHITE)
-				<< frameID;
-		int64_t callCells = max(0L, int64_t(std::chrono::nanoseconds(f.endTime_ - f.startTime_).count() * cellsPerNanosec));
+				<< (char)('A' + frameID - 1);
+		int callCells = max(0, (int)(relativeNano(f.endTime_) * cellsPerNanosec - crtStrOffs - 1));
 		crtStr << std::string(callCells, ' ') << ioModif::RESET;
+		crtStrOffs += callCells + 1;
 	}
 
 	// print stats
@@ -289,11 +297,11 @@ void printFramePerfData(std::vector<perf::FrameCapture::frameData> data) {
 				<< perf::FrameCapture::getThreadNameForIndex(i)
 				<< "] >>>>>>>>>>>>>>>>>\n";
 		// print calls:
-		for (auto &s : t.str)
-			std::cout << s.str() << "\n";
-		std::cout << "\n\n";
+		for (int i=t.str.size()-1; i>=0; --i)
+			std::cout << t.str[i].str() << "\n";
 	}
 	// print legend
+	std::cout << ioModif::RESET << "\n";
 	for (unsigned i=0; i<threads.size(); i++) {
 		auto &t = threads[i];
 		std::cout << (ioModif::FG_RGB)colors[i % colorsCount];
@@ -303,8 +311,8 @@ void printFramePerfData(std::vector<perf::FrameCapture::frameData> data) {
 				legend.push_back("");
 			legend[p.second] = p.first;
 		}
-		for (unsigned i=0; i<legend.size(); i++)
-			std::cout << ioModif::BOLD << i << ioModif::NO_BOLD << " - " << legend[i] << "\n";
+		for (unsigned i=1; i<legend.size(); i++)
+			std::cout << ioModif::BOLD << (char)('A' + i - 1) << ioModif::NO_BOLD << " - " << legend[i] << "\n";
 	}
 	std::cout << ioModif::RESET << "\n\n";
 }
@@ -563,7 +571,7 @@ int main(int argc, char* argv[]) {
 				if (captureFrame) {
 					captureFrame = false;
 					perf::FrameCapture::stop();
-					printFramePerfData(perf::FrameCapture::getResults());
+					printFrameCaptureData(perf::FrameCapture::getResults());
 					perf::FrameCapture::cleanup();
 				}
 			}
