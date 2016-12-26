@@ -62,12 +62,18 @@ struct FG_RGB {
 	FG_RGB(unsigned char r, unsigned char g, unsigned char b)
 		: r(r), g(g), b(b) {
 	}
+	FG_RGB operator * (double mx) {
+		return {r*mx, g*mx, b*mx};
+	}
 };
 
 struct BG_RGB {
 	int r, g, b;
 	BG_RGB(unsigned char r, unsigned char g, unsigned char b)
 		: r(r), g(g), b(b) {
+	}
+	BG_RGB operator * (double mx) {
+		return {r*mx, g*mx, b*mx};
 	}
 };
 

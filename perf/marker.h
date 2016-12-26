@@ -19,9 +19,11 @@
 #ifdef ENABLE_PERF_MARKERS
 	#define PERF_MARKER_FUNC perf::Marker funcMarker##__LINE__(__PRETTY_FUNCTION__)
 	#define PERF_MARKER(NAME) perf::Marker perfMarker##__LINE__(NAME)
+	#define PERF_MARKER_BLOCKED(NAME) perf::Marker perfMarker##__LINE__(NAME, true)
 #else
 	#define PERF_MARKER_FUNC
 	#define PERF_MARKER(NAME)
+	#define PERF_MARKER_BLOCKED(NAME)
 #endif
 
 namespace perf {
@@ -32,11 +34,11 @@ inline void setCrtThreadName(std::string name) {
 
 class Marker {
 public:
-	Marker(const char name[]) {
-		CallGraph::pushSection(name);
+	Marker(const char name[], bool blocked = false) {
+		CallGraph::pushSection(name, blocked);
 		start_ = std::chrono::high_resolution_clock::now();
 		if (FrameCapture::captureEnabledOnThisThread())
-			FrameCapture::beginFrame(name, start_);
+			FrameCapture::beginFrame(name, start_, blocked);
 	}
 
 	~Marker() {

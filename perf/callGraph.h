@@ -18,7 +18,7 @@ namespace perf {
 
 class CallGraph {
 public:
-	static void pushSection(const char name[]);
+	static void pushSection(const char name[], bool deadTime);
 	static void popSection(uint64_t nanoseconds);
 
 	static std::string getCrtThreadName() {

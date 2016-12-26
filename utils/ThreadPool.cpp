@@ -54,7 +54,7 @@ void ThreadPool::workerFunc() {
 		std::unique_lock<std::mutex> lk(poolMutex_);
 		auto pred = [this] { return stopSignal_ || !!!queuedTasks_.empty(); };
 		if (!pred()) {
-			PERF_MARKER("idling");
+			PERF_MARKER_BLOCKED("idling");
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " wait for work...");
 #endif
@@ -90,11 +90,11 @@ void PoolTask::wait() {
 	LOGLN(__FUNCTION__ << " waiting for task...");
 #endif
 	{
-		PERF_MARKER("waitForTaskToStart");
+		PERF_MARKER_BLOCKED("waitForTaskToStart");
 		while (!started_)
 			std::this_thread::yield();
 	}
-	PERF_MARKER("waitForTaskToEnd");
+	PERF_MARKER_BLOCKED("waitForTaskToEnd");
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " task is started.");
 #endif

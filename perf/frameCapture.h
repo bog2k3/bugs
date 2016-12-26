@@ -35,9 +35,11 @@ public:
 		std::chrono::time_point<std::chrono::high_resolution_clock> endTime_;
 		char name_[256];
 		unsigned threadIndex_;
+		bool deadTime_;
 
-		frameData(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> start, unsigned threadIndex)
-			: startTime_(start), threadIndex_(threadIndex) {
+		frameData(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> start,
+				unsigned threadIndex, bool deadTime)
+			: startTime_(start), threadIndex_(threadIndex), deadTime_(deadTime) {
 			strncpy(name_, name, sizeof(name_)/sizeof(name_[0]));
 		}
 	};
@@ -66,14 +68,14 @@ private:
 		return (mode_ == AllThreads || std::this_thread::get_id() == exclusiveThreadID_);
 	}
 
-	static void beginFrame(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> now) {
-		getThreadInstance().frames_->emplace_back(name, now, getThreadInstance().threadIndex_);
+	static void beginFrame(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> now, bool deadTime) {
+		getThreadInstance().frames_->emplace_back(name, now, getThreadInstance().threadIndex_, deadTime);
 		getThreadInstance().frameStack_.push(&getThreadInstance().frames_->back());
 	}
 
 	static void endFrame(std::chrono::time_point<std::chrono::high_resolution_clock> now) {
 		if (!getThreadInstance().frameStack_.size())
-			beginFrame("{UNKNOWN}", captureStartTime_);
+			beginFrame("{UNKNOWN}", captureStartTime_, false);
 		getThreadInstance().frameStack_.top()->endTime_ = now;
 		getThreadInstance().frameStack_.pop();
 	}

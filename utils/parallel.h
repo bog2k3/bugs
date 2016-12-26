@@ -42,7 +42,7 @@ void parallel_for(ITER itB, ITER itE, ThreadPool &pool, F predicate)
 	}
 	// wait for pool tasks to finish:
 	{
-		PERF_MARKER("wait-finish");
+		PERF_MARKER_BLOCKED("wait-finish");
 		for (auto &t : tasks)
 			t->wait();
 	}

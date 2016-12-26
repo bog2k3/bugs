@@ -23,7 +23,7 @@ CallGraph& CallGraph::getCrtThreadInstance() {
 	return *crtThreadInstance_;
 }
 
-void CallGraph::pushSection(const char name[]) {
+void CallGraph::pushSection(const char name[], bool deadTime) {
 	// add to call-trees:
 	std::vector<std::shared_ptr<sectionData>> &treeContainer =
 		getCrtThreadInstance().crtStack_.empty()
@@ -36,6 +36,7 @@ void CallGraph::pushSection(const char name[]) {
 		treeContainer.emplace_back(sectionData::make_shared(name));
 		treeIt = treeContainer.end()-1;
 	}
+	(*treeIt)->deadTime_ = deadTime;
 	getCrtThreadInstance().crtStack_.push(treeIt->get());
 }
 
