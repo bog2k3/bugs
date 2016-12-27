@@ -26,13 +26,13 @@ void FrameCapture::start(FrameCapture::CaptureMode mode) {
 }
 
 void FrameCapture::stop() {
-	mode_.store(Disabled);
+	mode_.store(Disabled, std::memory_order_release);
 	// check all unfinished frames
 	auto now = std::chrono::high_resolution_clock::now();
-	for (auto &tf : allFrames_)
+	/*for (auto &tf : allFrames_)
 		for (auto &f : *tf)
 			if (f.endTime_.time_since_epoch().count() == 0)
-				f.endTime_ = now;
+				f.endTime_ = now;*/
 }
 
 std::string FrameCapture::getThreadNameForIndex(unsigned index) {

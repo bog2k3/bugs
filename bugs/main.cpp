@@ -210,7 +210,20 @@ void printTopHits(std::vector<perf::sectionData> data) {
 	}
 }
 
+void dumpFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
+	auto referenceTime = data.front().startTime_;
+	// convert any time point into relative amount of nanoseconds since start of frame
+	auto relativeNano = [referenceTime] (decltype(data[0].startTime_) &pt) -> int64_t {
+		return std::chrono::nanoseconds(pt - referenceTime).count();
+	};
+	for (auto &f : data) {
+		std::cout << "FRAME " << f.name_ << "\n\t" << "thread: " << f.threadIndex_ << "\tstart: "
+				<< relativeNano(f.startTime_)/1000 << "\tend: " << relativeNano(f.endTime_)/1000 << "\n";
+	}
+}
+
 void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
+	dumpFrameCaptureData(data);
 	auto referenceTime = data.front().startTime_;
 	// convert any time point into relative amount of nanoseconds since start of frame
 	auto relativeNano = [referenceTime] (decltype(data[0].startTime_) &pt) -> int64_t {
@@ -220,7 +233,7 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 	int64_t timeSpan = relativeNano(data.back().endTime_);
 	struct winsize sz;
 	ioctl(STDOUT_FILENO,TIOCGWINSZ,&sz);
-	auto lineWidth = sz.ws_col - 5;
+	auto lineWidth = sz.ws_col - 10;
 	if (lineWidth <= 0)
 		lineWidth = 80; // asume default
 	double cellsPerNanosec = (lineWidth-1.0) / timeSpan;
@@ -277,16 +290,19 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 		auto& crtStrOffs = td.strOffs[td.callsEndTime.size()-1];
 		// add spaces before this call:
 		int startOffs = relativeNano(f.startTime_) * cellsPerNanosec;
+		int endOffs = relativeNano(f.endTime_) * cellsPerNanosec;
 		int spaceCells = max(0, startOffs - crtStrOffs);
 		crtStr << std::string(spaceCells, ' ');
 		crtStrOffs += spaceCells;
 		// write this call:
-		crtStr << ioModif::RESET << (((ioModif::BG_RGB)colors[f.threadIndex_ % colorsCount]) * (f.deadTime_? 0.5 : 1))
-				<< ioModif::BOLD << (f.deadTime_ ? ioModif::FG_GRAY : ioModif::FG_WHITE)
-				<< (char)('A' + frameID - 1);
-		int callCells = max(0, (int)(relativeNano(f.endTime_) * cellsPerNanosec - crtStrOffs - 1));
-		crtStr << std::string(callCells, ' ') << ioModif::RESET;
-		crtStrOffs += callCells + 1;
+		if (endOffs > startOffs) {
+			crtStr << ioModif::RESET << (((ioModif::BG_RGB)colors[f.threadIndex_ % colorsCount]) * (f.deadTime_? 0.5 : 1))
+					<< ioModif::BOLD << (f.deadTime_ ? ioModif::FG_GRAY : ioModif::FG_WHITE)
+					<< (char)('A' + frameID - 1);
+			int callCells = max(0, (int)(endOffs - crtStrOffs - 1));
+			crtStr << std::string(callCells, ' ') << ioModif::RESET;
+			crtStrOffs += callCells + 1;
+		}
 	}
 
 	// print stats
@@ -517,6 +533,8 @@ int main(int argc, char* argv[]) {
 
 		float t = glfwGetTime();
 		while (GLFWInput::checkInput()) {
+			if (captureFrame)
+				perf::FrameCapture::start(perf::FrameCapture::ThisThreadOnly);
 			PERF_MARKER("frame");
 			float newTime = glfwGetTime();
 			float realDT = newTime - t;
@@ -563,17 +581,7 @@ int main(int argc, char* argv[]) {
 			continuousUpdateList.update(realDT);
 			if (simDT > 0) {
 				PERF_MARKER("frame-update");
-				if (captureFrame)
-					perf::FrameCapture::start(perf::FrameCapture::AllThreads);
-
 				updateList.update(simDT);
-
-				if (captureFrame) {
-					captureFrame = false;
-					perf::FrameCapture::stop();
-					printFrameCaptureData(perf::FrameCapture::getResults());
-					perf::FrameCapture::cleanup();
-				}
 			}
 
 			if (!skipRendering) {
@@ -596,6 +604,13 @@ int main(int argc, char* argv[]) {
 				gltBegin();
 				renderer.render();
 				// now rendering is on-going, move on to the next update:
+			}
+
+			if (captureFrame) {
+				captureFrame = false;
+				perf::FrameCapture::stop();
+				printFrameCaptureData(perf::FrameCapture::getResults());
+				perf::FrameCapture::cleanup();
 			}
 		}
 

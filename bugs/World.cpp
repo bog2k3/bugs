@@ -197,7 +197,7 @@ void World::update(float dt) {
 	destroyPending();
 
 	// do the actual update on entities:
-	{
+	do {
 	PERF_MARKER("entities-update");
 #ifdef MT_UPDATE
 	parallel_for(
@@ -211,7 +211,7 @@ void World::update(float dt) {
 			[dt] (auto &e) {
 				e->update(dt);
 			});
-	}
+	} while (0);
 
 	// execute deferred actions synchronously:
 	{
