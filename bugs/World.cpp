@@ -27,7 +27,7 @@
 #include <dmalloc.h>
 #endif
 
-#define MT_UPDATE	// enables parallel update on entities, using the thread pool
+//#define MT_UPDATE	// enables parallel update on entities, using the thread pool
 
 static World *instance = nullptr;
 

@@ -535,76 +535,79 @@ int main(int argc, char* argv[]) {
 		while (GLFWInput::checkInput()) {
 			if (captureFrame)
 				perf::FrameCapture::start(perf::FrameCapture::ThisThreadOnly);
-			PERF_MARKER("frame");
-			float newTime = glfwGetTime();
-			float realDT = newTime - t;
-			frameTime = realDT;
-			realDTAcc += realDT;
-			t = newTime;
-			realTime += realDT;
+			/* frame context */
+			{
+				PERF_MARKER("frame");
+				float newTime = glfwGetTime();
+				float realDT = newTime - t;
+				frameTime = realDT;
+				realDTAcc += realDT;
+				t = newTime;
+				realTime += realDT;
 
-			if (enableAutosave && realTime - lastAutosaveTime > autoSaveInterval) {
-				LOGLN("Autosaving...");
-				if (autosave(sessionMgr)) {
-					LOGLN("Autosave successful.");
-					lastAutosaveTime = realTime;
-				} else {
-					LOGLN("Autosave FAILED. Retrying in 10 seconds...");
-					lastAutosaveTime = realTime - autoSaveInterval + 10;
+				if (enableAutosave && realTime - lastAutosaveTime > autoSaveInterval) {
+					LOGLN("Autosaving...");
+					if (autosave(sessionMgr)) {
+						LOGLN("Autosave successful.");
+						lastAutosaveTime = realTime;
+					} else {
+						LOGLN("Autosave FAILED. Retrying in 10 seconds...");
+						lastAutosaveTime = realTime - autoSaveInterval + 10;
+					}
 				}
-			}
 
-			// fixed time step for simulation (unless slowMo is on)
-			float simDT = updatePaused ? 0 : 0.02f;
-			if (slowMo) {
-				// use same fixed timestep in order to avoid breaking physics, but
-				// only update once every n frames to slow down
-				static float frameCounter = 0;
-				constexpr float cycleLength = 10; // frames
-				if (++frameCounter == cycleLength) {
-					frameCounter = 0;
-				} else
-					simDT = 0;
-			}
-
-			simulationTime += simDT;
-			simDTAcc += simDT;
-
-			if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
-				int population = sessionMgr.getPopulationManager().getPopulationCount();
-				int maxGeneration = sessionMgr.getPopulationManager().getMaxGeneration();
-				printStatus(simulationTime, realTime, simDTAcc, realDTAcc, population, maxGeneration);
-				simDTAcc = realDTAcc = 0;
-				lastPrintedSimTime = simulationTime;
-			}
-
-			continuousUpdateList.update(realDT);
-			if (simDT > 0) {
-				PERF_MARKER("frame-update");
-				updateList.update(simDT);
-			}
-
-			if (!skipRendering) {
-				PERF_MARKER("frame-draw");
-				// wait until previous frame finishes rendering and show frame output:
-				gltEnd();
-				// draw builds the render queue for the current frame
-				drawList.draw(renderContext);
-
-				renderContext.text->print("Salut Lume!\n[Powered by Box2D]", 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
-
-				if (updatePaused) {
-					renderContext.text->print("PAUSED", vp1.getWidth() / 2, vp1.getHeight() / 2, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
-				}
+				// fixed time step for simulation (unless slowMo is on)
+				float simDT = updatePaused ? 0 : 0.02f;
 				if (slowMo) {
-					renderContext.text->print("~~ Slow Motion ON ~~", 10, 45, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
+					// use same fixed timestep in order to avoid breaking physics, but
+					// only update once every n frames to slow down
+					static float frameCounter = 0;
+					constexpr float cycleLength = 10; // frames
+					if (++frameCounter == cycleLength) {
+						frameCounter = 0;
+					} else
+						simDT = 0;
 				}
 
-				// do the actual openGL render for the previous frame (which is independent of our world)
-				gltBegin();
-				renderer.render();
-				// now rendering is on-going, move on to the next update:
-			}
+				simulationTime += simDT;
+				simDTAcc += simDT;
+
+				if (simulationTime > lastPrintedSimTime+simTimePrintInterval) {
+					int population = sessionMgr.getPopulationManager().getPopulationCount();
+					int maxGeneration = sessionMgr.getPopulationManager().getMaxGeneration();
+					printStatus(simulationTime, realTime, simDTAcc, realDTAcc, population, maxGeneration);
+					simDTAcc = realDTAcc = 0;
+					lastPrintedSimTime = simulationTime;
+				}
+
+				continuousUpdateList.update(realDT);
+				if (simDT > 0) {
+					PERF_MARKER("frame-update");
+					updateList.update(simDT);
+				}
+
+				if (!skipRendering) {
+					PERF_MARKER("frame-draw");
+					// wait until previous frame finishes rendering and show frame output:
+					gltEnd();
+					// draw builds the render queue for the current frame
+					drawList.draw(renderContext);
+
+					renderContext.text->print("Salut Lume!\n[Powered by Box2D]", 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
+
+					if (updatePaused) {
+						renderContext.text->print("PAUSED", vp1.getWidth() / 2, vp1.getHeight() / 2, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
+					}
+					if (slowMo) {
+						renderContext.text->print("~~ Slow Motion ON ~~", 10, 45, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
+					}
+
+					// do the actual openGL render for the previous frame (which is independent of our world)
+					gltBegin();
+					renderer.render();
+					// now rendering is on-going, move on to the next update:
+				}
+			} /* frame context */
 
 			if (captureFrame) {
 				captureFrame = false;

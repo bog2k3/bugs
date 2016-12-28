@@ -12,7 +12,6 @@
 #include "frameCapture.h"
 
 #include <chrono>
-#include <cstring>
 
 #define ENABLE_PERF_MARKERS
 
@@ -34,7 +33,7 @@ inline void setCrtThreadName(std::string name) {
 	CallGraph::getCrtThreadInstance().threadName_ = name;
 }
 
-//#define DEBUG_MARKERS
+#define DEBUG_MARKERS
 
 class Marker {
 public:
@@ -42,11 +41,12 @@ public:
 		CallGraph::pushSection(name, blocked);
 		start_ = std::chrono::high_resolution_clock::now();
 		if (FrameCapture::captureEnabledOnThisThread()) {
-			FrameCapture::beginFrame(name, start_, blocked);
 #ifdef DEBUG_MARKERS
 			wasCapture_ = true;
 			strncpy(name_, name, sizeof(name_));
+			std::cout << "MARKER START :: " << name << "\n";
 #endif
+			FrameCapture::beginFrame(name, start_, blocked);
 		}
 	}
 
@@ -54,12 +54,15 @@ public:
 		auto end = std::chrono::high_resolution_clock::now();
 		auto nanosec = std::chrono::nanoseconds(end - start_).count();
 		CallGraph::popSection(nanosec);
-		if (FrameCapture::captureEnabledOnThisThread())
+		if (FrameCapture::captureEnabledOnThisThread()) {
+#ifdef DEBUG_MARKERS
+			std::cout << "MARKER END   :: " << name_ << "\n";
+#endif
 			FrameCapture::endFrame(end);
+		}
 #ifdef DEBUG_MARKERS
 		else if (wasCapture_) {
-			int placeBreakpointHere = 1;
-			return;
+			std::cout << "!!!! ERROR MARKER END :: " << name_ << "\n";
 		}
 #endif
 	}

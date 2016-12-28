@@ -22,6 +22,8 @@
 
 namespace perf {
 
+#define DEBUG_CAPTURE
+
 class FrameCapture {
 public:
 	enum CaptureMode {
@@ -63,19 +65,30 @@ private:
 	friend class Marker;
 
 	static bool captureEnabledOnThisThread() {
-		if (mode_ == Disabled)
+		auto mode = mode_.load(std::memory_order_acquire);
+		if (mode == Disabled)
 			return false;
-		return (mode_ == AllThreads || std::this_thread::get_id() == exclusiveThreadID_);
+		return (mode == AllThreads || std::this_thread::get_id() == exclusiveThreadID_.load(std::memory_order_consume));
 	}
 
 	static void beginFrame(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> now, bool deadTime) {
+#ifdef DEBUG_CAPTURE
+		std::cout << "\t\t\tbeginFrame()\n";
+#endif
 		getThreadInstance().frames_->emplace_back(name, now, getThreadInstance().threadIndex_, deadTime);
 		getThreadInstance().frameStack_.push(&getThreadInstance().frames_->back());
 	}
 
 	static void endFrame(std::chrono::time_point<std::chrono::high_resolution_clock> now) {
-		if (!getThreadInstance().frameStack_.size())
+#ifdef DEBUG_CAPTURE
+		std::cout << "\t\t\tendFrame()\n";
+#endif
+		if (!getThreadInstance().frameStack_.size()) {
+#ifdef DEBUG_CAPTURE
+		std::cout << "\t\t\t\tframe start not found, create default\n";
+#endif
 			beginFrame("{UNKNOWN}", captureStartTime_, false);
+		}
 		getThreadInstance().frameStack_.top()->endTime_ = now;
 		getThreadInstance().frameStack_.pop();
 	}
@@ -85,6 +98,11 @@ private:
 	static MTVector<std::shared_ptr<std::vector<frameData>>> allFrames_;
 	static MTVector<std::string> threadNames_;
 	static std::chrono::time_point<std::chrono::high_resolution_clock> captureStartTime_;
+
+#define DEBUG_INSTANCES
+#ifdef DEBUG_INSTANCES
+	static MTVector<FrameCapture*> allInstances_;
+#endif
 
 	std::shared_ptr<std::vector<frameData>> frames_;
 	std::stack<frameData*> frameStack_;
@@ -96,6 +114,9 @@ private:
 	FrameCapture() : frames_(new std::vector<frameData>()) {
 		allFrames_.push_back(frames_);
 		threadIndex_ = threadNames_.push_back(CallGraph::getCrtThreadName());
+#ifdef DEBUG_INSTANCES
+		allInstances_.push_back(this);
+#endif
 	}
 };
 
