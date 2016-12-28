@@ -222,8 +222,23 @@ void dumpFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 	}
 }
 
+void printFrameCaptureStatistics(std::vector<perf::FrameCapture::frameData> data) {
+	std::cout << "============= FRAME CAPTURE STATS ================\n";
+	std::cout << data.size() << " frames total\n";
+	std::map<int, int> framesPerThread;
+	for (auto &f : data)
+		framesPerThread[f.threadIndex_]++;
+	std::cout << "Frames distribution:\n";
+	for (auto &p : framesPerThread)
+		std::cout << "\tThread " << p.first << ": " << p.second << " frames\n";
+	std::cout << "Average frames per thread: " << std::accumulate(framesPerThread.begin(), framesPerThread.end(), 0, [] (int x, auto &p) {
+		return x + p.second;
+	}) / framesPerThread.size() << "\n";
+}
+
 void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 	//dumpFrameCaptureData(data);
+	printFrameCaptureStatistics(data);
 	auto referenceTime = data.front().startTime_;
 	// convert any time point into relative amount of nanoseconds since start of frame
 	auto relativeNano = [referenceTime] (decltype(data[0].startTime_) &pt) -> int64_t {
@@ -276,7 +291,7 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 		if (td.callsEndTime.size() >= 2 && *(td.callsEndTime.end()-2) < relativeNano(f.endTime_))
 			td.callsEndTime.pop_back();
 		// check if this is a new level on the stack
-		if (td.callsEndTime.empty() || relativeNano(f.startTime_) < td.callsEndTime.back())
+		if (td.callsEndTime.empty() || relativeNano(f.endTime_) < td.callsEndTime.back())
 			td.callsEndTime.push_back(relativeNano(f.endTime_));
 		else {
 			td.callsEndTime.back() = relativeNano(f.endTime_);

@@ -16,12 +16,14 @@
 #include <algorithm>
 #include <vector>
 
+static constexpr int maxJobsPerThread = 8;
+
 template<class ITER, class F>
 void parallel_for(ITER itB, ITER itE, ThreadPool &pool, F predicate)
 {
 	PERF_MARKER_FUNC;
 	size_t rangeSize = std::distance(itB, itE);
-	uint chunks = std::min((size_t)pool.getThreadCount(), rangeSize);
+	uint chunks = std::min((size_t)pool.getThreadCount() * maxJobsPerThread, rangeSize);
 	uint chunkSize = std::max((size_t)1, rangeSize / chunks);
 	std::vector<PoolTaskHandle> tasks;
 	decltype(itB) start = itB;

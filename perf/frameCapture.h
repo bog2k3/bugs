@@ -76,7 +76,7 @@ private:
 
 	static void endFrame(std::chrono::time_point<std::chrono::high_resolution_clock> now) {
 		if (!getThreadInstance().frameStack_.size()) {
-			beginFrame("{UNKNOWN}", captureStartTime_, false);
+			beginFrame("{UNKNOWN}", captureStartTime_, true);
 		}
 		getThreadInstance().frameStack_.top()->endTime_ = now;
 		getThreadInstance().frameStack_.pop();

@@ -126,6 +126,7 @@ void World::getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircl
 
 void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
 	assertDbg(e != nullptr);
+	e->managed_ = true;
 	entsToTakeOver.push_back(std::move(e));
 }
 
@@ -182,7 +183,6 @@ void World::takeOverPending() {
 		if ((flags & Entity::FunctionalityFlags::UPDATABLE) != 0) {
 			entsToUpdate.push_back(e.get());
 		}
-		e->managed_ = true;
 		entities.push_back(std::move(e));
 	}
 	takeOverNow.clear();
