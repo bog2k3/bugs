@@ -22,8 +22,6 @@
 
 namespace perf {
 
-#define DEBUG_CAPTURE
-
 class FrameCapture {
 public:
 	enum CaptureMode {
@@ -72,21 +70,12 @@ private:
 	}
 
 	static void beginFrame(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> now, bool deadTime) {
-#ifdef DEBUG_CAPTURE
-		std::cout << "\t\t\tbeginFrame()\n";
-#endif
 		getThreadInstance().frames_->emplace_back(name, now, getThreadInstance().threadIndex_, deadTime);
 		getThreadInstance().frameStack_.push(&getThreadInstance().frames_->back());
 	}
 
 	static void endFrame(std::chrono::time_point<std::chrono::high_resolution_clock> now) {
-#ifdef DEBUG_CAPTURE
-		std::cout << "\t\t\tendFrame()\n";
-#endif
 		if (!getThreadInstance().frameStack_.size()) {
-#ifdef DEBUG_CAPTURE
-		std::cout << "\t\t\t\tframe start not found, create default\n";
-#endif
 			beginFrame("{UNKNOWN}", captureStartTime_, false);
 		}
 		getThreadInstance().frameStack_.top()->endTime_ = now;
@@ -95,28 +84,20 @@ private:
 
 	static std::atomic<CaptureMode> mode_;
 	static std::atomic<std::thread::id> exclusiveThreadID_;
-	static MTVector<std::shared_ptr<std::vector<frameData>>> allFrames_;
+	static MTVector<std::shared_ptr<MTVector<frameData>>> allFrames_;
 	static MTVector<std::string> threadNames_;
 	static std::chrono::time_point<std::chrono::high_resolution_clock> captureStartTime_;
 
-#define DEBUG_INSTANCES
-#ifdef DEBUG_INSTANCES
-	static MTVector<FrameCapture*> allInstances_;
-#endif
-
-	std::shared_ptr<std::vector<frameData>> frames_;
+	std::shared_ptr<MTVector<frameData>> frames_;
 	std::stack<frameData*> frameStack_;
 	unsigned threadIndex_;
 	static FrameCapture& getThreadInstance() {
 		static thread_local FrameCapture instance;
 		return instance;
 	}
-	FrameCapture() : frames_(new std::vector<frameData>()) {
+	FrameCapture() : frames_(new MTVector<frameData>(1024)) {
 		allFrames_.push_back(frames_);
 		threadIndex_ = threadNames_.push_back(CallGraph::getCrtThreadName());
-#ifdef DEBUG_INSTANCES
-		allInstances_.push_back(this);
-#endif
 	}
 };
 

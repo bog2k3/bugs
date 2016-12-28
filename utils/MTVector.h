@@ -27,10 +27,12 @@
 #include <atomic>
 #include <vector>
 #include <utility>
+#include <thread>
 
 template<class C>
 class MTVector {
 public:
+
 	MTVector(size_t preallocatedCapacity)
 		: capacity_(preallocatedCapacity)
 		, array_(static_cast<C*>(malloc(sizeof(C)*preallocatedCapacity)))
@@ -66,6 +68,7 @@ public:
 		xchg(capacity_, src.capacity_);
 		extra_.swap(src.extra_);
 		src.insertPtr_.store(insertPtr_.exchange(src.insertPtr_, std::memory_order_acq_rel));
+		src.size_.store(size_.exchange(src.size_, std::memory_order_acq_rel));
 		return *this;
 	}
 
@@ -75,27 +78,37 @@ public:
 		array_ = nullptr;
 	}
 
-	class iterator {
+	class iterator : public std::iterator<std::output_iterator_tag, C> {
 	public:
 		C& operator *() {
+			assert(pos_ < parent_.size_.load(std::memory_order_consume));
 			if (extra_)
 				return parent_.extra_[offs_];
 			else
 				return parent_.array_[offs_];
 		}
 		iterator& operator++() {
-			move_to(pos_+1);
+			move_to(pos_ + 1);
 			return *this;
 		}
-		iterator& operator + (size_t offs) {
-			if (offs == 1)
-				return this->operator ++();
-			else
-				return (this->operator ++()).operator+(offs-1);
+		iterator& operator--() {
+			move_to(pos_ - 1);
+			return *this;
+		}
+		iterator& operator + (int offs) {
+			move_to(pos_ + offs);
+			return *this;
+		}
+		iterator& operator - (int offs) {
+			return operator+(-offs);
 		}
 		bool operator !=(iterator &i) {
 			assertDbg(&i.parent_ == &parent_ && "iterators must belong to the same vector");
 			return i.pos_ != pos_;
+		}
+		bool operator <(iterator &i) {
+			assertDbg(&i.parent_ == &parent_ && "iterators must belong to the same vector");
+			return pos_ < i.pos_;
 		}
 	private:
 		friend class MTVector<C>;
@@ -115,6 +128,28 @@ public:
 		size_t offs_;
 	};
 
+	// thread safe - block insertions from all threads and return current contents
+	void getContentsExclusive(std::vector<C> &out) {
+		insertionsBlocked_.store(true, std::memory_order_release);
+		// wait if anyone is currently inserting:
+		auto expected = insertPtr_.load(std::memory_order_relaxed);
+		while (!insertPtr_.compare_exchange_weak(expected, expected,
+				std::memory_order_release,
+				std::memory_order_relaxed)) {
+			// nothing, just loop
+		}
+		std::lock_guard<std::mutex> lk(extraMtx_);
+		std::copy(begin(), end(), std::back_inserter(out));
+		insertionsBlocked_.store(false, std::memory_order_release);
+	}
+
+	// thread safe - block insertions from all threads and return current contents
+	std::vector<C> getContentsExclusive() {
+		std::vector<C> ret;
+		getContentsExclusive(ret);
+		return ret;
+	}
+
 	// thread safe - returns index where the item was stored
 	size_t push_back(C const& c) {
 		return insert(c);
@@ -125,6 +160,12 @@ public:
 		return insert(std::move(c));
 	}
 
+	// thread safe - returns index where the item was stored
+	template<class... Args>
+	size_t emplace_back(Args... args) {
+		return push_back(C(args...));
+	}
+
 	// thread safe
 	size_t getLockFreeCapacity() const {
 		return capacity_;
@@ -133,6 +174,11 @@ public:
 	// thread safe-ish (may return non-up-to-date value if another thread is writing to the vector)
 	size_t size() const {
 		return size_;
+	}
+
+	// thread safe-ish (may return non-up-to-date value if another thread is writing to the vector)
+	bool empty() const {
+		return size_ == 0;
 	}
 
 	// this is NOT thread-safe !!!
@@ -150,7 +196,12 @@ public:
 	// this is NOT thread-safe !!!
 	// make sure no one is pushing data into either vector when calling this
 	iterator end() {
-		return iterator(*this, insertPtr_ >= capacity_ ? capacity_+extra_.size() : insertPtr_.load());
+		auto lastIndex = insertPtr_.load(std::memory_order_acquire);
+		return iterator(*this, lastIndex >= capacity_ ? capacity_+extra_.size() : lastIndex);
+	}
+
+	C& back() {
+		return *(end() - 1);
 	}
 
 	// this is NOT thread-safe !!!
@@ -176,9 +227,12 @@ private:
 	std::atomic<size_t> size_ { 0 };
 	std::vector<C> extra_;
 	std::mutex extraMtx_;
+	std::atomic<bool> insertionsBlocked_ {false};
 
 	template<class ref>
 	size_t insert(ref&& r) {
+		while (insertionsBlocked_.load(std::memory_order_acquire))
+			std::this_thread::yield();
 		size_t finalIndex = 0;
 		auto expected = insertPtr_.load(std::memory_order_relaxed);
 		while (!insertPtr_.compare_exchange_weak(expected, expected+1,
@@ -193,7 +247,7 @@ private:
 		} else {
 			// preallocated space filled up, must lock on the extra vector
 			LOGPREFIX("MTVECTOR");
-			LOG("PERFORMANCE WARNING: preallocated capacity reached, performing LOCK !!!");
+			LOGLN("PERFORMANCE WARNING: preallocated capacity reached, performing LOCK !!! capacity:" << capacity_<< "   size:" << size_.load(std::memory_order_consume));
 			std::lock_guard<std::mutex> lk(extraMtx_);
 			extra_.push_back(std::forward<ref>(r));
 			finalIndex = extra_.size() - 1 + capacity_;

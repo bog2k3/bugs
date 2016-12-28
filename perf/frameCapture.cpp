@@ -13,7 +13,7 @@ namespace perf {
 
 std::atomic<FrameCapture::CaptureMode> FrameCapture::mode_ {FrameCapture::Disabled};
 std::atomic<std::thread::id> FrameCapture::exclusiveThreadID_;
-MTVector<std::shared_ptr<std::vector<FrameCapture::frameData>>> FrameCapture::allFrames_ {8};
+MTVector<std::shared_ptr<MTVector<FrameCapture::frameData>>> FrameCapture::allFrames_ {8};
 MTVector<std::string> FrameCapture::threadNames_ {8};
 std::chrono::time_point<std::chrono::high_resolution_clock> FrameCapture::captureStartTime_;
 #ifdef DEBUG_INSTANCES
@@ -47,9 +47,7 @@ std::vector<FrameCapture::frameData> FrameCapture::getResults() {
 	std::vector<FrameCapture::frameData> ret;
 	for (auto &fv : allFrames_) {
 		assert (fv != nullptr);
-		if (fv->empty())
-			continue;
-		std::copy(fv->begin(), fv->end(), std::back_inserter(ret));
+		fv->getContentsExclusive(ret);
 	}
 	std::sort(ret.begin(), ret.end(), [] (auto &x, auto &y) {
 		return x.startTime_ < y.startTime_;

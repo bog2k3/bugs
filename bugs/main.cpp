@@ -223,7 +223,7 @@ void dumpFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 }
 
 void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
-	dumpFrameCaptureData(data);
+	//dumpFrameCaptureData(data);
 	auto referenceTime = data.front().startTime_;
 	// convert any time point into relative amount of nanoseconds since start of frame
 	auto relativeNano = [referenceTime] (decltype(data[0].startTime_) &pt) -> int64_t {
@@ -273,7 +273,7 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 		if (td.legend.find(f.name_) == td.legend.end())
 			td.legend[f.name_] = td.legend.size();
 		// check if need to pop a stack level
-		if (td.callsEndTime.size() >= 2 && *(td.callsEndTime.end()-2) < relativeNano(f.startTime_))
+		if (td.callsEndTime.size() >= 2 && *(td.callsEndTime.end()-2) < relativeNano(f.endTime_))
 			td.callsEndTime.pop_back();
 		// check if this is a new level on the stack
 		if (td.callsEndTime.empty() || relativeNano(f.startTime_) < td.callsEndTime.back())
@@ -534,7 +534,7 @@ int main(int argc, char* argv[]) {
 		float t = glfwGetTime();
 		while (GLFWInput::checkInput()) {
 			if (captureFrame)
-				perf::FrameCapture::start(perf::FrameCapture::ThisThreadOnly);
+				perf::FrameCapture::start(perf::FrameCapture::AllThreads);
 			/* frame context */
 			{
 				PERF_MARKER("frame");

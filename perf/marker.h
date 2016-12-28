@@ -33,19 +33,12 @@ inline void setCrtThreadName(std::string name) {
 	CallGraph::getCrtThreadInstance().threadName_ = name;
 }
 
-#define DEBUG_MARKERS
-
 class Marker {
 public:
 	Marker(const char name[], bool blocked = false) {
 		CallGraph::pushSection(name, blocked);
 		start_ = std::chrono::high_resolution_clock::now();
 		if (FrameCapture::captureEnabledOnThisThread()) {
-#ifdef DEBUG_MARKERS
-			wasCapture_ = true;
-			strncpy(name_, name, sizeof(name_));
-			std::cout << "MARKER START :: " << name << "\n";
-#endif
 			FrameCapture::beginFrame(name, start_, blocked);
 		}
 	}
@@ -55,24 +48,12 @@ public:
 		auto nanosec = std::chrono::nanoseconds(end - start_).count();
 		CallGraph::popSection(nanosec);
 		if (FrameCapture::captureEnabledOnThisThread()) {
-#ifdef DEBUG_MARKERS
-			std::cout << "MARKER END   :: " << name_ << "\n";
-#endif
 			FrameCapture::endFrame(end);
 		}
-#ifdef DEBUG_MARKERS
-		else if (wasCapture_) {
-			std::cout << "!!!! ERROR MARKER END :: " << name_ << "\n";
-		}
-#endif
 	}
 
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> start_;
-#ifdef DEBUG_MARKERS
-	bool wasCapture_ = false;
-	char name_[256];
-#endif
 };
 
 } // namespace perf

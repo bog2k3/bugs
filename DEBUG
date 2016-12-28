@@ -1,5 +1,6 @@
 * add instrumentation to find out why CPU stays at 25% (on each core)	
-* regarding ^ seems like race condition between FrameCapture::start()/::stop() and ::getResults
+	* [FIXED] regarding ^ seems like race condition between FrameCapture::start()/::stop() and ::getResults
+	-- only first worker thread gets a shitload of work, while the others idle around... fix parallel_for
 
 	* [FIXED] problems (deadlock/crash) when calling Box2D on multiple threads
 		- [DONE] must defer all WRITE calls (createFixture and such) from world update until the end and execute them sequentially
