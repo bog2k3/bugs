@@ -96,14 +96,18 @@ void Gripper::setActive(bool active) {
 		return;
 	active_ = active;
 	if (active) {
-		b2WeldJointDef jd;
-		jd.bodyA = World::getInstance()->getGroundBody();
-		jd.localAnchorA = physBody_.b2Body_->GetWorldPoint(b2Vec2_zero);
-		jd.bodyB = physBody_.b2Body_;
-		groundJoint_ = (b2WeldJoint*)World::getInstance()->getPhysics()->CreateJoint(&jd);
+		World::getInstance()->queueDeferredAction([this] {
+			b2WeldJointDef jd;
+			jd.bodyA = World::getInstance()->getGroundBody();
+			jd.localAnchorA = physBody_.b2Body_->GetWorldPoint(b2Vec2_zero);
+			jd.bodyB = physBody_.b2Body_;
+			groundJoint_ = (b2WeldJoint*)World::getInstance()->getPhysics()->CreateJoint(&jd);
+		});
 	} else {
-		physBody_.b2Body_->GetWorld()->DestroyJoint(groundJoint_);
-		groundJoint_ = nullptr;
+		World::getInstance()->queueDeferredAction([this] {
+			physBody_.b2Body_->GetWorld()->DestroyJoint(groundJoint_);
+			groundJoint_ = nullptr;
+		});
 	}
 }
 

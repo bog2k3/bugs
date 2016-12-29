@@ -36,7 +36,7 @@ World::World()
 	, groundBody(nullptr)
 	, entsToDestroy(40)
 	, entsToTakeOver(40)
-	, deferredActions_(200)
+	, deferredActions_(4096)
 {
 	assert(instance == nullptr && "attempting to initialize multiple instances of World!!!");
 	instance = this;

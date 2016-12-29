@@ -16,30 +16,34 @@
 #include <algorithm>
 #include <vector>
 
-static constexpr int maxJobsPerThread = 8;
+static constexpr size_t maxItemsPerJob = 8;
 
 template<class ITER, class F>
 void parallel_for(ITER itB, ITER itE, ThreadPool &pool, F predicate)
 {
 	PERF_MARKER_FUNC;
 	size_t rangeSize = std::distance(itB, itE);
-	uint chunks = std::min((size_t)pool.getThreadCount() * maxJobsPerThread, rangeSize);
-	uint chunkSize = std::max((size_t)1, rangeSize / chunks);
+	uint minJobs = std::min((size_t)pool.getThreadCount(), rangeSize);
+	uint itemsPerJob = std::min(maxItemsPerJob, rangeSize / minJobs);
+	uint jobs = rangeSize / itemsPerJob;
+	if (jobs * itemsPerJob < rangeSize)
+		++jobs;
+
 	std::vector<PoolTaskHandle> tasks;
 	decltype(itB) start = itB;
 
 	{
 		PERF_MARKER("queue-tasks");
-		for (uint i=0; i<chunks; i++) {
-			if (i == chunks-1) {
-				// last chunk - make sure we don't lose any remaining elements:
-				chunkSize = rangeSize - (chunks-1)*chunkSize;
+		for (uint i=0; i<jobs; ++i) {
+			if (i == jobs-1) {
+				// last job - make sure we don't lose any remaining elements:
+				itemsPerJob = rangeSize - (jobs-1)*itemsPerJob;
 			}
-			tasks.push_back(pool.queueTask([start, chunkSize, predicate] () mutable {
-				for (uint k=0; k<chunkSize; k++, ++start)
+			tasks.push_back(pool.queueTask([start, itemsPerJob, predicate] () mutable {
+				for (uint k=0; k<itemsPerJob; k++, ++start)
 					predicate(*start);
 			}));
-			start += chunkSize;
+			start += itemsPerJob;
 		}
 	}
 	// wait for pool tasks to finish:

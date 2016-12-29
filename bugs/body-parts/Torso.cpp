@@ -167,8 +167,11 @@ void Torso::update(float dt) {
 
 void Torso::die() {
 	// if this was ever alive, do a final commit to update its size to the cached mass
-	if (committed_)
-		commit();
+	if (committed_) {
+		World::getInstance()->queueDeferredAction([this] {
+			commit();
+		});
+	}
 	if (getUpdateList())
 		getUpdateList()->remove(this);
 }

@@ -288,7 +288,7 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 		if (td.legend.find(f.name_) == td.legend.end())
 			td.legend[f.name_] = td.legend.size();
 		// check if need to pop a stack level
-		if (td.callsEndTime.size() >= 2 && *(td.callsEndTime.end()-2) < relativeNano(f.endTime_))
+		while (td.callsEndTime.size() >= 2 && *(td.callsEndTime.end()-2) < relativeNano(f.endTime_))
 			td.callsEndTime.pop_back();
 		// check if this is a new level on the stack
 		if (td.callsEndTime.empty() || relativeNano(f.endTime_) < td.callsEndTime.back())
@@ -513,7 +513,7 @@ int main(int argc, char* argv[]) {
 		sigViewer.addSignal("frameTime", &frameTime,
 				glm::vec3(1.f, 0.2f, 0.2f), 0.1f);
 		sigViewer.addSignal("population", [&] { return sessionMgr.getPopulationManager().getPopulationCount();},
-				glm::vec3(0.3f, 0.3f, 1.f), 5.f);
+				glm::vec3(0.3f, 0.3f, 1.f), 30.f, 50, sessionMgr.getPopulationManager().getPopulationTarget()+1, 0);
 
 	#ifdef DEBUG
 		// Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
