@@ -151,8 +151,10 @@ void Torso::update(float dt) {
 		float crtSize = fatMass_ * BodyConst::FatDensityInv + size_;
 		if (crtSize * lastCommittedTotalSizeInv_ > BodyConst::SizeThresholdToCommit
 				|| crtSize * lastCommittedTotalSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
-			commit();
-			reattachChildren();
+			World::getInstance()->queueDeferredAction([this] {
+				commit();
+				reattachChildren();
+			});
 		}
 	}
 	frameUsedEnergy_ = 0;
