@@ -71,6 +71,9 @@ void Joint::onAddedToParent() {
 }
 
 void Joint::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	assertDbg(nChildren_ == 1);
 
 	if (committed_) {
@@ -208,10 +211,10 @@ void Joint::update(float dt) {
 		LOGNP(reason.str() << ")\n");
 
 #endif
-		BodyPart* downStream = children_[0];
-		downStream->detach(true); // this will be taken over by bug entity
-		detach(true);
 		World::getInstance()->queueDeferredAction([this] () {
+			BodyPart* downStream = children_[0];
+			downStream->detach(true); // this will be taken over by bug entity
+			detach(true);
 			destroyPhysJoint();
 		});
 		return;

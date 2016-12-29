@@ -37,6 +37,7 @@
 #include "Joint.h"
 #include "Bone.h"
 #include "BodyConst.h"
+#include "../World.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
@@ -130,6 +131,9 @@ void Muscle::onAddedToParent() {
 }
 
 void Muscle::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (joint_) {
 		// here we compute the characteristics of the muscle
 		float w0 = sqrtf(size_ / aspectRatio_); // relaxed width

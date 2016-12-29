@@ -7,11 +7,13 @@
 
 #include "Bone.h"
 #include "BodyConst.h"
+#include "../World.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../utils/log.h"
 #include "../utils/assert.h"
+
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -59,6 +61,9 @@ void Bone::die() {
 }
 
 void Bone::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (committed_) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}

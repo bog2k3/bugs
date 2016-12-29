@@ -360,6 +360,9 @@ void BodyPart::fixOverlaps(int startIndex) {
 }
 
 void BodyPart::detach(bool die) {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (parent_) {
 		// first must detach all neural connections
 		detachMotorLines(motorLines_);
@@ -547,7 +550,9 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 		{
 			lastCommitSize_inv_ = 1.f / size_;
 			if (type_ != BodyPartType::JOINT) {
-				commit();
+				World::getInstance()->queueDeferredAction([this] {
+					commit();
+				});
 				committed_now = true;
 			} else
 				should_commit_joint = true;
@@ -559,7 +564,9 @@ bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
 	}
 	if (type_ == BodyPartType::JOINT && committed_ && (should_commit_joint || parentChanged || child_changed)) {
 		// must commit a joint whenever the threshold is reached, or parent or child has committed
-		commit();
+		World::getInstance()->queueDeferredAction([this] {
+			commit();
+		});
 		committed_now = true;
 	}
 

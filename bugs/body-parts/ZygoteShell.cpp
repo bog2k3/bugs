@@ -52,6 +52,9 @@ ZygoteShell::~ZygoteShell() {
 }
 
 void ZygoteShell::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	b2CircleShape shape;
 	shape.m_p.Set(0, 0);
 	shape.m_radius = sqrtf(size_*PI_INV);

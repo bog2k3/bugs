@@ -57,6 +57,12 @@ public:
 	// this is thread safe by design; if called from the synchronous loop that executes deferred actions, it's executed immediately, else added to the queue
 	void queueDeferredAction(std::function<void()> &&fun);
 
+#ifdef DEBUG
+	static void assertOnMainThread() {
+		assert(std::this_thread::get_id() == getInstance()->ownerThreadId_);
+	}
+#endif
+
 protected:
 	b2World* physWld;
 	b2Body* groundBody;
@@ -66,6 +72,9 @@ protected:
 	MTVector<Entity*> entsToDestroy;
 	MTVector<std::unique_ptr<Entity>> entsToTakeOver;
 	PhysDestroyListener *destroyListener_ = nullptr;
+#ifdef DEBUG
+	std::thread::id ownerThreadId_;
+#endif
 
 	// this holds actions deferred from the multi-threaded update which will be executed synchronously at the end on a single thread
 	MTVector<std::function<void()>> deferredActions_;

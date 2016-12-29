@@ -8,6 +8,7 @@
 #include "Torso.h"
 #include "BodyConst.h"
 #include "Mouth.h"
+#include "../World.h"
 #include "../math/math2D.h"
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/RenderContext.h"
@@ -52,6 +53,9 @@ void Torso::onAddedToParent() {
 }
 
 void Torso::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (committed_) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}

@@ -176,6 +176,9 @@ float Nose::getOutputVMSCoord(unsigned index) const {
 
 
 void Nose::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (committed_ && !noFixtures_) {
 		physBody_.b2Body_->DestroyFixture(
 				&physBody_.b2Body_->GetFixtureList()[0]);

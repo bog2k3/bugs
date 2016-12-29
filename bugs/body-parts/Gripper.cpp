@@ -65,6 +65,9 @@ Gripper::~Gripper() {
 }
 
 void Gripper::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (committed_) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	};

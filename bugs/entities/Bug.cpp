@@ -130,10 +130,12 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			if (!isAlive_) {
 				// embryo not viable, discarded.
 				LOGLN("Embryo not viable. DISCARDED.");
-				zygoteShell_->die_tree();
-				body_->detach(false);
-				body_->destroy();
-				body_ = nullptr;
+				World::getInstance()->queueDeferredAction([this] {
+					zygoteShell_->die_tree();
+					body_->detach(false);
+					body_->destroy();
+					body_ = nullptr;
+				});
 				return;
 			}
 
@@ -154,9 +156,11 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			body_->commit_tree(cachedLeanMass_/currentMass);
 
 			// delete embryo shell
-			body_->detach(false);
-			zygoteShell_->destroy();
-			zygoteShell_ = nullptr;
+			World::getInstance()->queueDeferredAction([this] {
+				body_->detach(false);
+				zygoteShell_->destroy();
+				zygoteShell_ = nullptr;
+			});
 
 			delete ribosome_;
 			ribosome_ = nullptr;
@@ -193,9 +197,11 @@ void Bug::updateDeadDecaying(float dt) {
 			continue;
 		deadBodyParts_[i]->consumeFoodValue(dt * WorldConst::BodyDecaySpeed);
 		if (deadBodyParts_[i]->getFoodValue() <= 0) {
-			deadBodyParts_[i]->destroy();
-			bodyPartsUpdateList_.remove(deadBodyParts_[i]);
-			deadBodyParts_[i] = nullptr;
+			World::getInstance()->queueDeferredAction([this, i] {
+				deadBodyParts_[i]->destroy();
+				bodyPartsUpdateList_.remove(deadBodyParts_[i]);
+				deadBodyParts_[i] = nullptr;
+			});
 		}
 	}
 }

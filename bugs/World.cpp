@@ -40,6 +40,9 @@ World::World()
 {
 	assert(instance == nullptr && "attempting to initialize multiple instances of World!!!");
 	instance = this;
+#ifdef DEBUG
+	ownerThreadId_ = std::this_thread::get_id();
+#endif
 }
 
 void World::setPhysics(b2World* phys) {
@@ -266,6 +269,7 @@ std::vector<Entity*> World::getEntitiesInBox(EntityType filterTypes, Entity::Fun
 		PhysicsBody* pb = PhysicsBody::getForB2Body(b);
 		if (pb == nullptr)
 			continue;
+//#error "this is where a crash occurs"
 		Entity* ent = pb->getAssociatedEntity();
 		if (ent && !ent->isZombie() && testEntity(*ent, filterTypes, filterFlags))
 			out.push_back(ent);

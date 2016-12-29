@@ -7,6 +7,7 @@
 
 #include "Mouth.h"
 #include "BodyConst.h"
+#include "../World.h"
 #include "../entities/food/FoodChunk.h"
 #include "../math/math2D.h"
 #include "../math/box2glm.h"
@@ -82,6 +83,9 @@ glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {
 }
 
 void Mouth::commit() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (committed_) {
 		physBody_.b2Body_->DestroyFixture(
 				&physBody_.b2Body_->GetFixtureList()[0]);

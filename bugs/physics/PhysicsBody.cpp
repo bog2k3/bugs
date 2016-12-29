@@ -45,13 +45,20 @@ void PhysicsBody::create(const PhysicsProperties& props) {
 	def.angularVelocity = props.angularVelocity;
 	def.linearVelocity = g2b(props.velocity);
 
-	b2Body_ = World::getInstance()->getPhysics()->CreateBody(&def);
+	World::getInstance()->queueDeferredAction([this, def] {
+		b2Body_ = World::getInstance()->getPhysics()->CreateBody(&def);
+	});
 }
 
 PhysicsBody::~PhysicsBody() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	onDestroy.trigger(this);
-	if (b2Body_)
-		b2Body_->GetWorld()->DestroyBody(b2Body_);
+	if (b2Body_) {
+		auto bodyPtr = b2Body_;
+		bodyPtr->GetWorld()->DestroyBody(bodyPtr);
+	}
 }
 
 PhysicsBody* PhysicsBody::getForB2Body(b2Body* body) {

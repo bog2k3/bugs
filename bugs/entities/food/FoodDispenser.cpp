@@ -33,9 +33,9 @@ FoodDispenser::FoodDispenser(glm::vec2 const &position, float direction)
 	physBody_.getEntityFunc_ = &getEntityFromFoodDispenserPhysBody;
 
 	PhysicsProperties props(position, direction, false, glm::vec2(0), 0);
-	physBody_.create(props);
 
-	World::getInstance()->queueDeferredAction([this]() {
+	World::getInstance()->queueDeferredAction([this, props]() {
+		physBody_.create(props);
 		// create fixture
 		b2CircleShape shp;
 		shp.m_radius = radius_;
