@@ -40,7 +40,7 @@
 	- add complexity - more objects and stuff
 * mouth can only eat stuff smaller than its size
 * bugs should be able to eat smaller bugs alive
-* fix repopulation (zygot mass)
+* !!! fix repopulation (zygot mass) !!!
 		* rewrite default bug genome to use segmentation for leg
 		* tune nerve signals - GRIPPER must disengage sooner
 		* tune joint resillience
@@ -56,7 +56,7 @@
 		* print mutation statistics after meyosis
 		* !!! add SENSORS
 * prevent fixture overlapping after load from file -> results in box2D hang (maybe do an epsilon update on physWorld after each entity is deserialized)
-* make multiple worlds on different CPU cores which communicate through portals
+* make multiple worlds on different machines which communicate through portals via network TCP
 		* [obsolete]  !!! have redundancy in neural system to make muscle command harder to break
 		* prevent attraction between incompatible gamettes
 		* check for double deletion and other memory issues (valgrind)

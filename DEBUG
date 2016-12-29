@@ -1,4 +1,6 @@
-* add instrumentation to find out why CPU stays at 25% (on each core)	
+	* [FIXED] add instrumentation to find out why CPU stays at 25% (on each core)	
+		- improved workload distribution between worker threads, now CPU usage is up to 60%+ consistently
+		- further improvement may be impractical due to the nature of the architecture and thread interlocking
 	- [FIXED] regarding ^ seems like race condition between FrameCapture::start()/::stop() and ::getResults
 	- [FIXED] only first worker thread gets a shitload of work, while the others idle around... fix parallel_for
   	- [FIXED] concurrency issue - doing something when updating bugs in parallel that screws box2D - fixtures get null... 
