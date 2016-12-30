@@ -57,23 +57,25 @@ enum Code {
 	BG_DEFAULT = 49,
 };
 
+using byte = unsigned char;
+
 struct FG_RGB {
 	int r, g, b;
-	FG_RGB(unsigned char r, unsigned char g, unsigned char b)
+	FG_RGB(byte r, byte g, byte b)
 		: r(r), g(g), b(b) {
 	}
 	FG_RGB operator * (double mx) {
-		return {r*mx, g*mx, b*mx};
+		return {byte(r*mx), byte(g*mx), byte(b*mx)};
 	}
 };
 
 struct BG_RGB {
 	int r, g, b;
-	BG_RGB(unsigned char r, unsigned char g, unsigned char b)
+	BG_RGB(byte r, byte g, byte b)
 		: r(r), g(g), b(b) {
 	}
 	BG_RGB operator * (double mx) {
-		return {r*mx, g*mx, b*mx};
+		return {byte(r*mx), byte(g*mx), byte(b*mx)};
 	}
 };
 

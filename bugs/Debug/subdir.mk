@@ -7,19 +7,22 @@ CPP_SRCS += \
 ../Infrastructure.cpp \
 ../World.cpp \
 ../main.cpp \
-../memdebug.cpp 
+../memdebug.cpp \
+../perfPrint.cpp 
 
 OBJS += \
 ./Infrastructure.o \
 ./World.o \
 ./main.o \
-./memdebug.o 
+./memdebug.o \
+./perfPrint.o 
 
 CPP_DEPS += \
 ./Infrastructure.d \
 ./World.d \
 ./main.d \
-./memdebug.d 
+./memdebug.d \
+./perfPrint.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
