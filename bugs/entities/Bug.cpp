@@ -364,14 +364,6 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0), 1);
 }
 
-glm::vec2 Bug::getPosition() {
-	if (zygoteShell_)
-		return vec3xy(zygoteShell_->getWorldTransformation());
-	if (body_)
-		return vec3xy(body_->getWorldTransformation());
-	return glm::vec2(0);
-}
-
 glm::vec2 Bug::getVelocity() {
 	if (zygoteShell_)
 		return b2g(zygoteShell_->getBody().b2Body_->GetLinearVelocity());
@@ -418,7 +410,7 @@ float Bug::getNeuronData(int neuronIndex) {
 }
 
 glm::vec3 Bug::getWorldTransform() {
-	return body_ ? body_->getWorldTransformation() : glm::vec3(0);
+	return body_ ? body_->getWorldTransformation() : zygoteShell_ ? zygoteShell_->getWorldTransformation() : glm::vec3(0);
 }
 
 aabb Bug::getAABB() const {

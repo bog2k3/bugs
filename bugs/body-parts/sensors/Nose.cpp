@@ -125,7 +125,9 @@ void Nose::update(float dt) {
 	for (uint i=0; i<NoseDetectableFlavoursCount; i++) {
 		glm::vec3 posRot = getWorldTransformation();
 		glm::vec2 pos = vec3xy(posRot);
-		auto ents = World::getInstance()->getEntitiesInBox(NoseDetectableFlavours[i], Entity::FunctionalityFlags::ALL, pos, maxDist * 1.1f, true);
+		static thread_local std::vector<Entity*> ents;
+		ents.clear();
+		World::getInstance()->getEntitiesInBox(ents, NoseDetectableFlavours[i], Entity::FunctionalityFlags::ALL, pos, maxDist * 1.1f, true);
 
 		// use all entities in the visibility cone (where cos(phi)>0)
 		float cummulatedSignal = 0.f;

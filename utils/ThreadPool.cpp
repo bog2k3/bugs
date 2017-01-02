@@ -20,7 +20,7 @@ ThreadPool::ThreadPool(uint numberOfThreads)
 	LOGLN(__FUNCTION__ << " finished.");
 #endif
 }
-ThreadPool::~ThreadPool() {	// throws exception if any thread is currently working - make sure you call stop() before destruction
+ThreadPool::~ThreadPool() {
 	assertDbg(stopped_ && "Thread pool has not been stopped before destruction!");
 }
 

@@ -9,6 +9,7 @@
 #define MATH_AABB_H_
 
 #include "box2glm.h"
+#include "math2D.h"
 #include <Box2D/Collision/b2Collision.h>
 #include <glm/vec2.hpp>
 #include <limits>
@@ -60,8 +61,30 @@ struct aabb {
 	}
 
 	aabb intersect(aabb const& x) {
-		// TODO implement when needed
-		return aabb();
+		if (x.vMin.x >= vMax.x ||
+			x.vMax.x <= vMin.x ||
+			x.vMin.y >= vMax.y ||
+			x.vMax.y <= vMin.y)
+			return aabb();
+		return aabb(glm::vec2(max(vMin.x, x.vMin.x), max(vMin.y, x.vMin.y)),
+				glm::vec2(min(vMax.x, x.vMax.x), min(vMax.y, x.vMax.y)));
+	}
+
+	bool intersectCircle(glm::vec2 const& c, float r) {
+		if (c.x + r <= vMin.x ||
+			c.y + r <= vMin.y ||
+			c.x - r >= vMax.x ||
+			c.y - r >= vMax.y)
+			return false;
+		if ((c.x > vMin.x && c.x < vMax.x) ||
+			(c.y > vMin.y && c.y < vMax.y))
+			return true;
+		float rsq = r*r;
+		return
+			vec2lenSq(c-vMin) < rsq ||
+			vec2lenSq(c-vMax) < rsq ||
+			vec2lenSq(c-glm::vec2(vMin.x, vMax.y)) < rsq ||
+			vec2lenSq(c-glm::vec2(vMax.x, vMin.y)) < rsq;
 	}
 };
 

@@ -236,7 +236,7 @@ private:
 		size_t finalIndex = 0;
 		auto expected = insertPtr_.load(std::memory_order_relaxed);
 		while (!insertPtr_.compare_exchange_weak(expected, expected+1,
-				std::memory_order_release,
+				std::memory_order_acq_rel,
 				std::memory_order_relaxed)) {
 			// nothing, just loop
 		}

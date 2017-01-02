@@ -58,7 +58,6 @@ public:
 	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::BUG; }
 
 	const Genome& getGenome() { return genome_; }
-	glm::vec2 getPosition();
 	glm::vec2 getVelocity();
 	float getMass();
 	unsigned getGeneration() { return generation_; }

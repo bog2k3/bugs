@@ -36,3 +36,7 @@ SerializationObjectTypes Entity::getSerializationType() {
 	return (SerializationObjectTypes)0;
 }
 
+glm::vec2 Entity::getPosition() {
+	return vec3xy(getWorldTransform());
+}
+

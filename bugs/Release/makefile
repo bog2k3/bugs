@@ -27,7 +27,6 @@ RM := rm -rf
 -include OSD/subdir.mk
 -include GUI/controls/subdir.mk
 -include GUI/subdir.mk
--include BSP/subdir.mk
 -include subdir.mk
 -include objects.mk
 

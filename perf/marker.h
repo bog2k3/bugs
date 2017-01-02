@@ -16,10 +16,12 @@
 #define ENABLE_PERF_MARKERS
 
 #ifdef ENABLE_PERF_MARKERS
-	#define PERF_MARKER_FUNC perf::Marker funcMarker##__LINE__(__PRETTY_FUNCTION__)
-	#define PERF_MARKER_FUNC_BLOCKED perf::Marker funcMarker##__LINE__(__PRETTY_FUNCTION__, true)
-	#define PERF_MARKER(NAME) perf::Marker perfMarker##__LINE__(NAME)
-	#define PERF_MARKER_BLOCKED(NAME) perf::Marker perfMarker##__LINE__(NAME, true)
+	#define COMBINE1(X,Y) X##Y  // helper macro
+	#define COMBINE(X,Y) COMBINE1(X,Y)
+	#define PERF_MARKER_FUNC perf::Marker COMBINE(funcMarker,__LINE__)(__PRETTY_FUNCTION__)
+	#define PERF_MARKER_FUNC_BLOCKED perf::Marker COMBINE(funcMarker,__LINE__)(__PRETTY_FUNCTION__, true)
+	#define PERF_MARKER(NAME) perf::Marker COMBINE(perfMarker, __LINE__)(NAME)
+	#define PERF_MARKER_BLOCKED(NAME) perf::Marker COMBINE(perfMarker,__LINE__)(NAME, true)
 #else
 	#define PERF_MARKER_FUNC
 	#define PERF_MARKER_FUNC_BLOCKED

@@ -70,32 +70,35 @@ private:
 	}
 
 	static void beginFrame(const char name[], std::chrono::time_point<std::chrono::high_resolution_clock> now, bool deadTime) {
-		getThreadInstance().frames_->emplace_back(name, now, getThreadInstance().threadIndex_, deadTime);
-		getThreadInstance().frameStack_.push(&getThreadInstance().frames_->back());
+		auto &ti = getThreadInstance();
+		ti.frames_->emplace_back(name, now, ti.threadIndex_, deadTime);
+		ti.frameStack_.push(ti.frames_->size()-1);
 	}
 
 	static void endFrame(std::chrono::time_point<std::chrono::high_resolution_clock> now) {
 		if (!getThreadInstance().frameStack_.size()) {
 			beginFrame("{UNKNOWN}", captureStartTime_, true);
 		}
-		getThreadInstance().frameStack_.top()->endTime_ = now;
-		getThreadInstance().frameStack_.pop();
+		auto &ti = getThreadInstance();
+		(*ti.frames_)[ti.frameStack_.top()].endTime_ = now;
+		ti.frameStack_.pop();
 	}
 
 	static std::atomic<CaptureMode> mode_;
 	static std::atomic<std::thread::id> exclusiveThreadID_;
-	static MTVector<std::shared_ptr<MTVector<frameData>>> allFrames_;
+	static MTVector<std::shared_ptr<std::vector<frameData>>> allFrames_;
 	static MTVector<std::string> threadNames_;
 	static std::chrono::time_point<std::chrono::high_resolution_clock> captureStartTime_;
 
-	std::shared_ptr<MTVector<frameData>> frames_;
-	std::stack<frameData*> frameStack_;
+	std::shared_ptr<std::vector<frameData>> frames_;
+	std::stack<int> frameStack_;
 	unsigned threadIndex_;
 	static FrameCapture& getThreadInstance() {
 		static thread_local FrameCapture instance;
 		return instance;
 	}
-	FrameCapture() : frames_(new MTVector<frameData>(1024)) {
+	FrameCapture() : frames_(new std::vector<frameData>()) {
+		frames_->reserve(1024);
 		allFrames_.push_back(frames_);
 		threadIndex_ = threadNames_.push_back(CallGraph::getCrtThreadName());
 	}

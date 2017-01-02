@@ -41,13 +41,12 @@ void SessionManager::startEmptySession() {
 void SessionManager::startDefaultSession() {
 	LOGPREFIX("SessionManager");
 	LOGLN("Creating default session...");
-	//LOGLN("Removing all entities...");
 	World::getInstance()->reset();
-	//LOGLN("World is now clean.");
-
-	LOGLN("Building entities for default session...");
 	float worldRadius = 10.f;
 	populationMgr.setWorldSize(glm::vec2(worldRadius*2, worldRadius*2));
+	World::getInstance()->setBounds(-worldRadius, worldRadius, worldRadius, -worldRadius);
+
+	LOGLN("Building entities for default session...");
 
 	std::unique_ptr<Wall> w1(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f));
 	World::getInstance()->takeOwnershipOf(std::move(w1));
@@ -102,7 +101,8 @@ bool SessionManager::saveSessionToFile(std::string const& path) {
 	LOGPREFIX("SessionManager");
 	LOGLN("Saving session to file \"" << path << "\"...");
 	Serializer serializer;
-	auto vecSer = World::getInstance()->getEntities(EntityType::ALL, Entity::FunctionalityFlags::SERIALIZABLE);
+	std::vector<Entity*> vecSer;
+	World::getInstance()->getEntities(vecSer, EntityType::ALL, Entity::FunctionalityFlags::SERIALIZABLE);
 	for (auto e : vecSer)
 		serializer.queueObject(e);
 	if (!serializer.serializeToFile(path)) {

@@ -43,7 +43,7 @@ using PoolTaskHandle = std::shared_ptr<PoolTask>;
 class ThreadPool {
 public:
 	ThreadPool(uint numberOfThreads);
-	~ThreadPool();	// throws exception if any thread is currently working - make sure you call stop() before destruction
+	~ThreadPool();	// make sure you call stop() before destruction
 
 	void stop(); // waits for all tasks to be processed, waits for all workers to finish and shuts down the threads in the pool
 

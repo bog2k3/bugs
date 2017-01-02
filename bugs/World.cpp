@@ -11,6 +11,7 @@
 #include "math/math2D.h"
 #include "math/box2glm.h"
 #include "Infrastructure.h"
+#include "renderOpenGL/Shape2D.h"
 
 #include "utils/bitFlags.h"
 #include "utils/parallel.h"
@@ -61,6 +62,15 @@ World::~World() {
 	reset();
 }
 
+void World::setBounds(float left, float right, float top, float bottom) {
+	extentXn_ = left;
+	extentXp_ = right;
+	extentYp_ = top;
+	extentYn_ = bottom;
+	// reconfigure cache:
+	spatialCache_ = SpatialCache(left, right, top, bottom);
+}
+
 void World::reset() {
 	for (auto &e : entities) {
 		e->markedForDeletion_= true;
@@ -77,10 +87,11 @@ void World::reset() {
 	entsToUpdate.clear();
 }
 
-std::vector<b2Fixture*> World::getFixtures(const b2AABB& aabb) {
+void World::getFixtures(std::vector<b2Fixture*> &out, const b2AABB& aabb) {
 	PERF_MARKER_FUNC;
 	class cbWrap : public b2QueryCallback {
 	public:
+		cbWrap(std::vector<b2Fixture*> &fixtures) : fixtures_(fixtures) {}
 		/// b2QueryCallback::
 		/// Called for each fixture found in the query AABB.
 		/// @return false to terminate the query.
@@ -89,10 +100,9 @@ std::vector<b2Fixture*> World::getFixtures(const b2AABB& aabb) {
 			return true;
 		}
 
-		std::vector<b2Fixture*> fixtures_;
-	} wrap;
+		std::vector<b2Fixture*> &fixtures_;
+	} wrap(out);
 	physWld->QueryAABB(&wrap, aabb);
-	return std::move(wrap.fixtures_);
 }
 
 b2Body* World::getBodyAtPos(glm::vec2 const& pos) {
@@ -100,9 +110,12 @@ b2Body* World::getBodyAtPos(glm::vec2 const& pos) {
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(0.005f, 0.005f);
 	aabb.upperBound = g2b(pos) + b2Vec2(0.005f, 0.005f);
-	auto b2QueryResult = getFixtures(aabb);
+	static thread_local std::vector<b2Fixture*> b2QueryResult;
+	b2QueryResult.clear();
+	getFixtures(b2QueryResult, aabb);
 	if (b2QueryResult.empty())
 		return nullptr;
+	PERF_MARKER("precisionTest");
 	b2Body* ret = nullptr;
 	for (b2Fixture* f : b2QueryResult) {
 		if (f->TestPoint(g2b(pos))) {
@@ -118,11 +131,15 @@ void World::getBodiesInArea(glm::vec2 const& pos, float radius, bool clipToCircl
 	b2AABB aabb;
 	aabb.lowerBound = g2b(pos) - b2Vec2(radius, radius);
 	aabb.upperBound = g2b(pos) + b2Vec2(radius, radius);
-	auto b2QueryResult = getFixtures(aabb);
+	static thread_local std::vector<b2Fixture*> b2QueryResult;
+	b2QueryResult.clear();
+	getFixtures(b2QueryResult, aabb);
 	for (b2Fixture* f : b2QueryResult) {
-		if (clipToCircle)
+		if (clipToCircle) {
+			PERF_MARKER("clipToCircle");
 			if (glm::length(b2g(f->GetAABB(0).GetCenter()) - pos) > radius)
 				continue;
+		}
 		outBodies.push_back(f->GetBody());
 	}
 }
@@ -193,6 +210,8 @@ void World::takeOverPending() {
 
 void World::update(float dt) {
 	PERF_MARKER_FUNC;
+	++frameNumber_;
+
 	// take over pending entities:
 	takeOverPending();
 
@@ -236,6 +255,13 @@ void World::queueDeferredAction(std::function<void()> &&fun) {
 
 void World::draw(RenderContext const& ctx) {
 	PERF_MARKER_FUNC;
+	// draw extent lines:
+	glm::vec3 lineColor(0.2f, 0, 0.8f);
+	ctx.shape->drawLine(glm::vec2(extentXn_, extentYp_*1.5f), glm::vec2(extentXn_, extentYn_*1.5f), 0, lineColor);
+	ctx.shape->drawLine(glm::vec2(extentXp_, extentYp_*1.5f), glm::vec2(extentXp_, extentYn_*1.5f), 0, lineColor);
+	ctx.shape->drawLine(glm::vec2(extentXn_*1.5f, extentYp_), glm::vec2(extentXp_*1.5f, extentYp_), 0, lineColor);
+	ctx.shape->drawLine(glm::vec2(extentXn_*1.5f, extentYn_), glm::vec2(extentXp_*1.5f, extentYn_), 0, lineColor);
+	// draw entities
 	for (auto e : entsToDraw)
 		e->draw(ctx);
 }
@@ -246,33 +272,38 @@ bool World::testEntity(Entity &e, EntityType filterTypes, Entity::FunctionalityF
 }
 
 
-std::vector<Entity*> World::getEntities(EntityType filterTypes, Entity::FunctionalityFlags filterFlags) {
+void World::getEntities(std::vector<Entity*> &out, EntityType filterTypes, Entity::FunctionalityFlags filterFlags) {
 	PERF_MARKER_FUNC;
-	std::vector<Entity*> vec;
 	for (auto &e : entities) {
 		if (!e->isZombie() && testEntity(*e, filterTypes, filterFlags))
-			vec.push_back(e.get());
+			out.push_back(e.get());
 	}
 	for (auto &e : entsToTakeOver) {
 		if (!e->isZombie() && testEntity(*e, filterTypes, filterFlags))
-			vec.push_back(e.get());
+			out.push_back(e.get());
 	}
-	return vec;
 }
 
-std::vector<Entity*> World::getEntitiesInBox(EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 pos, float radius, bool clipToCircle) {
+void World::getEntitiesInBox(std::vector<Entity*> &out, EntityType filterTypes, Entity::FunctionalityFlags filterFlags,
+		glm::vec2 const& pos, float radius, bool clipToCircle)
+{
 	PERF_MARKER_FUNC;
-	std::vector<b2Body*> bodies;
-	getBodiesInArea(pos, radius, clipToCircle, bodies);
-	std::vector<Entity*> out;
-	for (b2Body* b : bodies) {
-		PhysicsBody* pb = PhysicsBody::getForB2Body(b);
-		if (pb == nullptr)
-			continue;
-		Entity* ent = pb->getAssociatedEntity();
-		if (ent && !ent->isZombie() && testEntity(*ent, filterTypes, filterFlags))
-			out.push_back(ent);
-	}
-	return out;
+	spatialCache_.getCachedEntities(out, pos, radius, clipToCircle, frameNumber_,
+		[this, filterTypes, filterFlags] (glm::vec2 const& pos, float radius, std::vector<Entity*> &out)
+	{
+		static thread_local std::vector<b2Body*> bodies;
+		bodies.clear();
+		getBodiesInArea(pos, radius, false, bodies);
+		for (b2Body* b : bodies) {
+			PhysicsBody* pb = PhysicsBody::getForB2Body(b);
+			if (pb == nullptr)
+				continue;
+			Entity* ent = pb->getAssociatedEntity();
+			if (ent && !ent->isZombie())
+				out.push_back(ent);
+		}
+	}, [this, filterTypes, filterFlags] (Entity *e) {
+		return testEntity(*e, filterTypes, filterFlags);
+	});
 }
 
