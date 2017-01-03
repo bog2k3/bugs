@@ -109,6 +109,9 @@ void Joint::commit() {
 }
 
 void Joint::destroyPhysJoint() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	World::getInstance()->getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
 	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
 	physJoint_ = nullptr;
@@ -150,6 +153,9 @@ void Joint::draw(RenderContext const& ctx) {
 glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::assertOnMainThread();
+#endif
 		cacheInitializationData();
 	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
@@ -159,6 +165,7 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 
 float Joint::getJointAngle() {
 	if (committed_) {
+#warning "not sure about thread safety of below:"
 		float ret = physJoint_->GetJointAngle();
 		if (std::isnan(ret))
 			ret = 0;

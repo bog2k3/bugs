@@ -2,6 +2,7 @@
 		- DONE partition the world in a matrix and cache entities in each cell; query cells overlaping the box requested
 		- DONE cache only for the duration of the frame, so for each cell at most 1 call will be made per frame
 	- must test aabb.intersect() and cache
+* remove circular buffer code from BodyPart.cpp
 * write a proper build config (make or cmake) - don't rely on eclipse any more
 		* Logger must be thread-safe!
 * velocity & angular velocity sensors

@@ -91,6 +91,7 @@ void BodyPart::addMotorLine(int lineId) {
 		parent_->addMotorLine(lineId);
 }
 
+#warning "move this in math2D"
 bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, bool sweepPositive, float &outMargin) {
 	// will set outMargin to negative if overlap, or positive shortest gap around element if no overlap
 	// move angle1 in origin for convenience:
@@ -376,11 +377,17 @@ void BodyPart::detach(bool die) {
 }
 
 void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (parent_)
 		parent_->detachMotorLines(lines);
 }
 
 void BodyPart::remove(BodyPart* part) {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	for (int i=0; i<nChildren_; i++)
 		if (children_[i] == part) {
 			children_[i] = children_[--nChildren_];
@@ -439,8 +446,12 @@ void BodyPart::purge_initializationData() {
 }
 
 glm::vec2 BodyPart::getParentSpacePosition() {
-	if (!geneValuesCached_)
+	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::assertOnMainThread();
+#endif
 		cacheInitializationData();
+	}
 	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
 	glm::vec2 localOffset = getChildAttachmentPoint(PI - localRotation_);
 	assertDbg(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
@@ -492,7 +503,8 @@ glm::vec3 BodyPart::getWorldTransformation() {
 	} else {
 		// if not committed yet, must compute these values on the fly
 		glm::vec3 parentTransform(parent_ ? parent_->getWorldTransformation() : glm::vec3(0));
-		glm::vec2 pos = getParentSpacePosition(); // this will temporarily cache gene values as well
+		glm::vec2 pos = getParentSpacePosition(); // this will temporarily cache gene values as well - that's ok because
+													// we're not committed yet, so we're invisible to other threads
 		return parentTransform + glm::vec3(
 				glm::rotate(pos, parentTransform.z),
 				attachmentDirectionParent_ + localRotation_);
@@ -579,6 +591,9 @@ void BodyPart::consumeEnergy(float amount) {
 }
 
 void BodyPart::die_tree() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (!dead_) {
 		die();
 		dead_ = true;
@@ -597,11 +612,17 @@ void BodyPart::consumeFoodValue(float amount) {
 }
 
 void BodyPart::removeAllLinks() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	parent_ = nullptr;
 	nChildren_ = 0;
 }
 
 void BodyPart::reattachChildren() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (committed_) {
 		for (int i=0; i<nChildren_; i++) {
 			children_[i]->commit();
@@ -629,7 +650,7 @@ void BodyPart::hierarchyMassChanged() {
 
 void BodyPart::buildDebugName(std::stringstream &out_stream) const {
 #ifndef DEBUG
-	assert(false); // don't call this on release builds because it's slow
+	throw "BodyPart::buildDebugName(): Don't call this on release builds because it's slow";
 #endif
 	if (parent_) {
 		parent_->buildDebugName(out_stream);

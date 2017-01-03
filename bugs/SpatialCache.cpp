@@ -12,8 +12,8 @@
 
 #include <cmath>
 
-static constexpr float preferredCellSize = 4;	// meters
-static constexpr int minCellsPerAxis = 8;		// less - faster cache, but less accurate, which results in more time spent in user code
+static constexpr float preferredCellSize = 5;	// meters
+static constexpr int minCellsPerAxis = 5;		// less - faster cache, but less accurate, which results in more time spent in user code
 static constexpr int maxCellsPerAxis = 256;		// the more, the better, but more memory may be used
 
 SpatialCache::SpatialCache(float left, float right, float top, float bottom)

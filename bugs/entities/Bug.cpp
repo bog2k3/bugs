@@ -137,6 +137,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 					body_ = nullptr;
 				});
 				return;
+#warning "this will live forever"
 			}
 
 			population++; // new member of the bug population
@@ -167,8 +168,10 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			body_->applyRecursive([this](BodyPart* part) {
 				part->onDied.add([this](BodyPart *dying) {
+					World::getInstance()->queueDeferredAction([this, dying] {
+						dying->removeAllLinks();
+					});
 					deadBodyParts_.push_back(dying);
-					dying->removeAllLinks();
 					if (dying->getType() == BodyPartType::EGGLAYER) {
 						// must remove from eggLayers_ vector
 						eggLayers_.erase(std::remove(eggLayers_.begin(), eggLayers_.end(), dying));
