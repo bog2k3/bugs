@@ -42,6 +42,7 @@ void PhysContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* 
 	if (!body1 || !body2)
 		return;
 
+#warning "should this be thread safe ?!?! use MTVector?"
 	if (body1->categoryFlags_ & body2->collisionEventMask_)
 		eventBuffer.push_back(eventData(body2, body1, impulse->normalImpulses[0]));
 	if (body2->categoryFlags_ & body1->collisionEventMask_)

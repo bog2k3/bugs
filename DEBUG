@@ -1,3 +1,5 @@
+* !!! check PhysContactListener::PostSolve() thread safety
+* !!! check all body parts and entities for thread safety - atomic vars and stuff
 	* [FIXED] add instrumentation to find out why CPU stays at 25% (on each core)	
 		- improved workload distribution between worker threads, now CPU usage is up to 60%+ consistently
 		- further improvement may be impractical due to the nature of the architecture and thread interlocking

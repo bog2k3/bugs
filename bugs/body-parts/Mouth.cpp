@@ -152,7 +152,10 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	// check how much food there is:
 	switch (pOther->userObjectType_) {
 	case ObjectTypes::FOOD_CHUNK: {
-		maxFoodAvailable = static_cast<FoodChunk*>(pOther->userPointer_)->getMassLeft();
+		auto pFoodChunk = static_cast<FoodChunk*>(pOther->userPointer_);
+		if (pFoodChunk->isZombie())
+			return;
+		maxFoodAvailable = pFoodChunk->getMassLeft();
 		break;
 	}
 	case ObjectTypes::BPART_BONE:

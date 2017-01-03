@@ -19,6 +19,7 @@ Entity::~Entity() {
 }
 
 void Entity::destroy() {
+#warning "this is not thread safe - two simultaneous calls"
 	if (markedForDeletion_) {
 		return;
 	}

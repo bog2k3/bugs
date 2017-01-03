@@ -10,7 +10,9 @@
 
 #include "BodyPart.h"
 #include "../entities/Bug/IMotor.h"
+
 #include <memory>
+#include <atomic>
 
 class b2WeldJoint;
 
@@ -42,7 +44,7 @@ public:
 
 protected:
 	InputSocket* inputSocket_;
-	bool active_;
+	std::atomic<bool> active_;
 	b2WeldJoint* groundJoint_;
 
 	void setActive(bool active);

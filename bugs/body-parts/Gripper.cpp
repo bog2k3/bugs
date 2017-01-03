@@ -92,11 +92,13 @@ void Gripper::update(float dt) {
 }
 
 void Gripper::setActive(bool active) {
-	if (active_ == active)
+	if (active_.load(std::memory_order_acquire) == active)
 		return;
-	active_ = active;
+	active_.store(active, std::memory_order_release);
 	if (active) {
 		World::getInstance()->queueDeferredAction([this] {
+			if (groundJoint_)
+				return;
 			b2WeldJointDef jd;
 			jd.bodyA = World::getInstance()->getGroundBody();
 			jd.localAnchorA = physBody_.b2Body_->GetWorldPoint(b2Vec2_zero);
@@ -105,6 +107,8 @@ void Gripper::setActive(bool active) {
 		});
 	} else {
 		World::getInstance()->queueDeferredAction([this] {
+			if (!groundJoint_)
+				return;
 			physBody_.b2Body_->GetWorld()->DestroyJoint(groundJoint_);
 			groundJoint_ = nullptr;
 		});

@@ -68,6 +68,7 @@ void FoodChunk::update(float dt) {
 }
 
 void FoodChunk::consume(float massAmount) {
+#warning "this is not thread safe"
 	amountLeft_ -= massAmount;
 	if (amountLeft_ <= 0)
 		destroy();
