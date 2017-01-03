@@ -21,7 +21,7 @@ public:
 
 	static constexpr EntityType entityType = EntityType::FOOD_DISPENSER;
 	virtual EntityType getEntityType() override { return entityType; }
-	glm::vec3 getWorldTransform() override;
+	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
 	FunctionalityFlags getFunctionalityFlags() override { return

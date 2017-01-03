@@ -5,18 +5,18 @@
  *      Author: bog
  */
 
-#include "shader.hpp"
-#include "TextureLoader.h"
+#include "GLText.h"
 #include "Renderer.h"
 #include "Viewport.h"
+#include "TextureLoader.h"
+#include "shader.hpp"
 
-#include <vector>
-#include <GL/glew.h>
-// Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <GL/glew.h>
 
-#include "GLText.h"
+#include <vector>
+
 using namespace glm;
 
 GLText::GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar, int defaultSize)

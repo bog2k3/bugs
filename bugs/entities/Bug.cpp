@@ -409,13 +409,24 @@ float Bug::getNeuronData(int neuronIndex) {
 	return neuralNet_->neurons[neuronIndex]->getValue();
 }
 
-glm::vec3 Bug::getWorldTransform() {
+glm::vec3 Bug::getWorldTransform() const {
 	return body_ ? body_->getWorldTransformation() : zygoteShell_ ? zygoteShell_->getWorldTransformation() : glm::vec3(0);
 }
 
 aabb Bug::getAABB() const {
-	if (zygoteShell_)
-		return zygoteShell_->getAABBRecursive();
-	else
-		return body_ ? body_->getAABBRecursive() : aabb();
+	PERF_MARKER_FUNC;
+	static constexpr float maxSqDeviation = sqr(5.e-2f);
+	static constexpr float maxAngleDeviation = PI / 8;
+	glm::vec3 tr = getWorldTransform();
+	if (cachedAABB_.empty()
+			|| vec2lenSq(vec3xy(cachedWorldTransform_ - tr)) > maxSqDeviation
+			|| abs(tr.z - cachedWorldTransform_.z) > maxAngleDeviation ) {
+		// update cached
+		if (zygoteShell_)
+			cachedAABB_ = zygoteShell_->getAABBRecursive();
+		else
+			cachedAABB_ = body_ ? body_->getAABBRecursive() : aabb();
+		cachedWorldTransform_ = tr;
+	}
+	return cachedAABB_;
 }

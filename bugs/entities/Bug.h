@@ -17,6 +17,7 @@
 #include "../serialization/objectTypes.h"
 #include "../utils/UpdateList.h"
 #include "../utils/bitFlags.h"
+#include "../math/aabb.h"
 #include <glm/fwd.hpp>
 #include <vector>
 #include <map>
@@ -46,7 +47,7 @@ public:
 	}
 	static constexpr EntityType entityType = EntityType::BUG;
 	virtual EntityType getEntityType() override { return entityType; }
-	glm::vec3 getWorldTransform() override;
+	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
 	// deserialize a Bug from the stream and add it to the world
@@ -133,6 +134,9 @@ protected:
 private:
 	static uint64_t nextId;
 	uint64_t id = nextId++;
+
+	mutable aabb cachedAABB_;
+	mutable glm::vec3 cachedWorldTransform_;
 };
 
 #endif /* ENTITIES_BUG_H_ */

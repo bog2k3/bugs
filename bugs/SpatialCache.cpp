@@ -85,12 +85,9 @@ void SpatialCache::getCachedEntities(std::vector<Entity*> &out, glm::vec2 const&
 
 	for (int i=i1; i<i2; i++)
 		for (int j=j1; j<j2; j++) {
-			{
-				PERF_MARKER_BLOCKED("spin-wait");
-				bool expectedLocked = false;
-				while (!cells_[i][j].locked_.compare_exchange_weak(expectedLocked, true, std::memory_order_acq_rel, std::memory_order_relaxed))
-					expectedLocked = false; // spin wait
-			}
+			bool expectedLocked = false;
+			while (!cells_[i][j].locked_.compare_exchange_weak(expectedLocked, true, std::memory_order_acq_rel, std::memory_order_relaxed))
+				expectedLocked = false; // spin wait
 			if (cells_[i][j].lastUpdateFrame_ != frameID) {
 				PERF_MARKER("update-cache");
 				// update cell
@@ -99,26 +96,15 @@ void SpatialCache::getCachedEntities(std::vector<Entity*> &out, glm::vec2 const&
 				cells_[i][j].lastUpdateFrame_ = frameID;
 			}
 			for (Entity* e : cells_[i][j].entities_) {
-				PERF_MARKER("validate-entity");
 				// test against requested area:
-				auto eAABB = e->getAABB();
-				{
-					PERF_MARKER("aabb-intersect");
-					if (eAABB.intersect(area).empty())
-						continue;
-				}
-				{
-					PERF_MARKER("clip-to-circle");
-					if (clipToCircle && !eAABB.intersectCircle(pos, radius))
-						continue;
-				}
+				aabb eAABB = eAABB= e->getAABB();
+				if (eAABB.intersect(area).empty())
+					continue;
+				if (clipToCircle && !eAABB.intersectCircle(pos, radius))
+					continue;
 				// user validation:
-				{
-					PERF_MARKER("user-validation");
-					if (!validFn(e))
-						continue;
-				}
-				PERF_MARKER("push-back");
+				if (!validFn(e))
+					continue;
 				out.push_back(e);
 			}
 			cells_[i][j].locked_.store(false, std::memory_order_release);

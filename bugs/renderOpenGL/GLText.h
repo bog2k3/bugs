@@ -14,6 +14,8 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
+#define DISABLE_MIPMAPS
+
 class Renderer;
 
 class GLText : public IRenderable {

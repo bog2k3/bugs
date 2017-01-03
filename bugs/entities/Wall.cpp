@@ -57,7 +57,7 @@ void Wall::serialize(BinaryStream &stream) {
 	stream << width_;
 }
 
-glm::vec3 Wall::getWorldTransform() {
+glm::vec3 Wall::getWorldTransform() const {
 	if (body_.b2Body_) {
 		auto pos = body_.b2Body_->GetPosition();
 		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());

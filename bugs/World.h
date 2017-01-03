@@ -54,7 +54,7 @@ public:
 	// get all entities that match ALL of the requested features
 	void getEntities(std::vector<Entity*> &out, EntityType filterTypes, Entity::FunctionalityFlags filterFlags = Entity::FunctionalityFlags::NONE);
 
-	// we have physBody->getEntity(), so:
+	// get all entities in a specific area that match ALL of the requested features
 	void getEntitiesInBox(std::vector<Entity*> &out, EntityType filterTypes, Entity::FunctionalityFlags filterFlags, glm::vec2 const& pos, float radius, bool clipToCircle);
 
 	void update(float dt);

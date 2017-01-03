@@ -73,7 +73,7 @@ void FoodChunk::consume(float massAmount) {
 		destroy();
 }
 
-glm::vec3 FoodChunk::getWorldTransform() {
+glm::vec3 FoodChunk::getWorldTransform() const {
 	if (physBody_.b2Body_) {
 		auto pos = physBody_.b2Body_->GetPosition();
 		return glm::vec3(b2g(pos), physBody_.b2Body_->GetAngle());

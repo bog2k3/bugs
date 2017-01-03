@@ -86,6 +86,10 @@ glm::vec2 Nose::getChildAttachmentPoint(float relativeAngle) {
 
 void Nose::update(float dt) {
 	PERF_MARKER_FUNC;
+	// only update once every several frames to speed up things
+	static constexpr int everyNframes = 5;
+	if (randf() > 1.f / everyNframes)
+		return;
 	/*
 	 * max radius & accuracy are proportional to the size of the nose
 	 * detect the nearest object of the right flavour and compute the output signal like this:
@@ -127,7 +131,8 @@ void Nose::update(float dt) {
 		glm::vec2 pos = vec3xy(posRot);
 		static thread_local std::vector<Entity*> ents;
 		ents.clear();
-		World::getInstance()->getEntitiesInBox(ents, NoseDetectableFlavours[i], Entity::FunctionalityFlags::ALL, pos, maxDist * 1.1f, true);
+#warning "TODO: optimize here - restrict box to area in fron of the nose"
+		World::getInstance()->getEntitiesInBox(ents, NoseDetectableFlavours[i], Entity::FunctionalityFlags::DONT_CARE, pos, maxDist * 1.1f, true);
 
 		// use all entities in the visibility cone (where cos(phi)>0)
 		float cummulatedSignal = 0.f;
