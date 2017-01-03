@@ -35,8 +35,8 @@ static World *instance = nullptr;
 World::World()
 	: physWld(nullptr)
 	, groundBody(nullptr)
-	, entsToDestroy(40)
-	, entsToTakeOver(40)
+	, entsToDestroy(1024)
+	, entsToTakeOver(1024)
 	, deferredActions_(4096)
 {
 	assert(instance == nullptr && "attempting to initialize multiple instances of World!!!");

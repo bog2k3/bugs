@@ -67,8 +67,10 @@ public:
 		xchg(array_, src.array_);
 		xchg(capacity_, src.capacity_);
 		extra_.swap(src.extra_);
-		src.insertPtr_.store(insertPtr_.exchange(src.insertPtr_, std::memory_order_acq_rel));
-		src.size_.store(size_.exchange(src.size_, std::memory_order_acq_rel));
+		src.insertPtr_.store(insertPtr_.exchange(src.insertPtr_.load(std::memory_order_consume), std::memory_order_acq_rel),
+				std::memory_order_release);
+		src.size_.store(size_.exchange(src.size_.load(std::memory_order_consume), std::memory_order_acq_rel),
+				std::memory_order_release);
 		return *this;
 	}
 
@@ -216,7 +218,8 @@ public:
 		extra_.clear();
 		for (size_t i=0; i<min(capacity_, insertPtr_.load()); i++)
 			array_[i].~C();
-		insertPtr_.store(0);
+		insertPtr_.store(0, std::memory_order_release);
+		size_.store(0, std::memory_order_release);
 	}
 
 private:
