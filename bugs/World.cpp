@@ -153,12 +153,6 @@ void World::takeOwnershipOf(std::unique_ptr<Entity> &&e) {
 void World::destroyEntity(Entity* e) {
 	PERF_MARKER_FUNC;
 	entsToDestroy.push_back(e);
-#ifdef DEBUG
-	// check if ent exists in vector
-	assertDbg(std::find_if(entities.begin(), entities.end(), [e] (decltype(entities[0]) &x) {
-		return x.get() == e;
-	}) != entities.end() && "Entity is not managed by World!!!");
-#endif
 }
 
 void World::destroyPending() {
@@ -166,7 +160,7 @@ void World::destroyPending() {
 	static decltype(entsToDestroy) destroyNow(entsToDestroy.getLockFreeCapacity());
 	destroyNow.swap(entsToDestroy);
 	for (auto &e : destroyNow) {
-		auto it = std::find_if(entities.begin(), entities.end(), [&] (decltype(entities[0]) &it) {
+		auto it = std::find_if(entities.begin(), entities.end(), [&] (auto &it) {
 			return it.get() == e;
 		});
 		if (it != entities.end()) {
@@ -184,7 +178,14 @@ void World::destroyPending() {
 			entities.erase(it); // this will also delete
 #warning "optimize this, it will be O(n^2) - must move the pointer from entities to entsToDestroy when destroy()"
 		} else {
-			ERROR("[WARNING] World skip DESTROY unmanaged obj: "<<e);
+			auto it2 = std::find_if(entsToTakeOver.begin(), entsToTakeOver.end(), [&] (auto &it) {
+				return it.get() == e;
+			});
+			if (it2 != entsToTakeOver.end()) {
+				(*it2).reset();
+			} else {
+				ERROR("[WARNING] World skip DESTROY unmanaged obj: "<<e);
+			}
 		}
 	}
 	destroyNow.clear();
@@ -195,6 +196,8 @@ void World::takeOverPending() {
 	static decltype(entsToTakeOver) takeOverNow(entsToTakeOver.getLockFreeCapacity());
 	takeOverNow.swap(entsToTakeOver);
 	for (auto &e : takeOverNow) {
+		if (!e)
+			continue;	// entity was destroyed in the mean time
 		// add to update and draw lists if appropriate
 		Entity::FunctionalityFlags flags = e->getFunctionalityFlags();
 		if ((flags & Entity::FunctionalityFlags::DRAWABLE) != 0) {
@@ -212,11 +215,11 @@ void World::update(float dt) {
 	PERF_MARKER_FUNC;
 	++frameNumber_;
 
-	// take over pending entities:
-	takeOverPending();
-
 	// delete pending entities:
 	destroyPending();
+
+	// take over pending entities:
+	takeOverPending();
 
 	// do the actual update on entities:
 	do {

@@ -80,7 +80,7 @@ public:
 		array_ = nullptr;
 	}
 
-	class iterator : public std::iterator<std::output_iterator_tag, C> {
+	class iterator : public std::iterator<std::random_access_iterator_tag, C> {
 	public:
 		C& operator *() {
 			assert(pos_ < parent_.size_.load(std::memory_order_consume));
@@ -101,14 +101,14 @@ public:
 			move_to(pos_ + offs);
 			return *this;
 		}
-		iterator& operator - (int offs) {
-			return operator+(-offs);
+		size_t operator - (iterator const& it) {
+			return pos_ - it.pos_;
 		}
-		bool operator !=(iterator &i) {
+		bool operator !=(iterator const& i) {
 			assertDbg(&i.parent_ == &parent_ && "iterators must belong to the same vector");
 			return i.pos_ != pos_;
 		}
-		bool operator <(iterator &i) {
+		bool operator <(iterator const& i) {
 			assertDbg(&i.parent_ == &parent_ && "iterators must belong to the same vector");
 			return pos_ < i.pos_;
 		}
