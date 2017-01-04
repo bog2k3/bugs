@@ -8,8 +8,8 @@
 #ifndef PHYSCONTACTLISTENER_H_
 #define PHYSCONTACTLISTENER_H_
 
+#include "../utils/MTVector.h"
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
-#include <vector>
 
 class PhysicsBody;
 
@@ -35,7 +35,7 @@ private:
 			: target(target), argument(arg), impulseMagnitude(imp) {
 		}
 	};
-	std::vector<eventData> eventBuffer;
+	MTVector<eventData> eventBuffer;
 };
 
 #endif /* PHYSCONTACTLISTENER_H_ */
