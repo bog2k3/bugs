@@ -36,7 +36,7 @@ CPP_DEPS += \
 	@echo 'Finished building: $<'
 	@echo ' '
 
-World.o: /home/bog/bugs/bugs/World.cpp
+World.o: /mnt/docs/Work/bugs/bugs/World.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
 	g++ -std=c++14 -DGLM_FORCE_RADIANS -I../3rdparty/easyunit -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"

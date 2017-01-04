@@ -143,6 +143,9 @@ void Gripper::draw(RenderContext const& ctx) {
 glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::assertOnMainThread();
+#endif
 		cacheInitializationData();
 	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));

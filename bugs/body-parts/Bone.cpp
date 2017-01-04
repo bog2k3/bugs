@@ -115,6 +115,9 @@ void Bone::draw(RenderContext const& ctx) {
 
 float Bone::getAspectRatio() {
 	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::assertOnMainThread();
+#endif
 		cacheInitializationData();
 	}
 	return length_ / width_;
