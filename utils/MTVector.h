@@ -236,27 +236,20 @@ private:
 	size_t insert(ref&& r) {
 		while (insertionsBlocked_.load(std::memory_order_acquire))
 			std::this_thread::yield();
-		size_t finalIndex = 0;
-		auto expected = insertPtr_.load(std::memory_order_relaxed);
-		while (!insertPtr_.compare_exchange_weak(expected, expected+1,
-				std::memory_order_acq_rel,
-				std::memory_order_relaxed)) {
-			// nothing, just loop
-		}
-		if (expected < capacity_) {
+		auto writeIndex = insertPtr_.fetch_add(1, std::memory_order_relaxed);
+		if (writeIndex < capacity_) {
 			// this is our write index
-			new(array_ + expected) C(std::forward<ref>(r));
-			finalIndex = expected;
+			new(array_ + writeIndex) C(std::forward<ref>(r));
 		} else {
 			// preallocated space filled up, must lock on the extra vector
 			LOGPREFIX("MTVECTOR");
 			LOGLN("PERFORMANCE WARNING: preallocated capacity reached, performing LOCK !!! capacity:" << capacity_<< "   size:" << size_.load(std::memory_order_consume));
 			std::lock_guard<std::mutex> lk(extraMtx_);
 			extra_.push_back(std::forward<ref>(r));
-			finalIndex = extra_.size() - 1 + capacity_;
+			writeIndex = extra_.size() - 1 + capacity_;
 		}
 		++size_;
-		return finalIndex;
+		return writeIndex;
 	}
 };
 

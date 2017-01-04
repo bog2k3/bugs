@@ -10,6 +10,7 @@
 
 #include "enttypes.h"
 #include <glm/vec3.hpp>
+#include <atomic>
 
 class RenderContext;
 class BinaryStream;
@@ -41,13 +42,13 @@ public:
 	virtual aabb getAABB() const = 0;
 
 	void destroy();
-	bool isZombie() const { return markedForDeletion_; }
+	bool isZombie() const { return markedForDeletion_.load(std::memory_order_acquire); }
 
 protected:
 	Entity() = default;
 
 private:
-	bool markedForDeletion_ = false;
+	std::atomic<bool> markedForDeletion_ {false};
 	bool managed_ = false;
 	friend class World;
 };

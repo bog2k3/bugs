@@ -92,6 +92,15 @@ inline float absAngleDiff(float a, float b) {
 	return d;
 }
 
+// tests if two angle spans overlap and tells the amount of overlap (if true) or the shortest distance between them (if false)
+// angle1 - center of span1
+// span1 - the size of the "cone"
+// angle2, span2 - same
+// sweepPositive - return the gap from the "positive" side of span1 or "negative" side
+// will set outMargin to negative if overlap, or positive shortest gap around element if no overlap
+// returns true if overlap
+bool angleSpanOverlap(float angle1, float span1, float angle2, float span2, bool sweepPositive, float &outMargin);
+
 inline glm::vec2 operator * (glm::vec2 const& x, float f) {
 	return glm::vec2(x.x*f, x.y*f);
 }

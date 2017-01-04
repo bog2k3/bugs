@@ -176,7 +176,7 @@ void World::destroyPending() {
 				entsToDraw.erase(it);
 			}
 			entities.erase(it); // this will also delete
-#warning "optimize this, it will be O(n^2) - must move the pointer from entities to entsToDestroy when destroy()"
+//TODO optimize this, it will be O(n^2) - must move the pointer from entities to entsToDestroy when destroy()
 		} else {
 			auto it2 = std::find_if(entsToTakeOver.begin(), entsToTakeOver.end(), [&] (auto &it) {
 				return it.get() == e;

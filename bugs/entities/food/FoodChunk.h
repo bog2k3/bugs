@@ -14,6 +14,8 @@
 #include "../../utils/Event.h"
 #include "../../utils/bitFlags.h"
 
+#include <atomic>
+
 #define DEBUG_DRAW_FOOD_CHUNK
 
 class FoodChunk: public Entity {
@@ -35,8 +37,8 @@ public:
 	void draw(RenderContext const& rc) override;
 #endif
 
-	float getInitialMass() { return initialMass_; }
-	float getMassLeft() { return amountLeft_; }
+	float getInitialMass() const { return initialMass_; }
+	float getMassLeft() const { return amountLeft_.load(std::memory_order_relaxed); }
 	void consume(float massAmount);
 
 	Event<void(FoodChunk*)> onDestroy;
@@ -45,7 +47,7 @@ protected:
 	PhysicsBody physBody_;
 	float size_;
 	float initialMass_;
-	float amountLeft_;
+	std::atomic<float> amountLeft_;
 
 private:
 	static Entity* getEntityFromFoodChunkPhysBody(PhysicsBody const& body);

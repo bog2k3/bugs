@@ -208,7 +208,7 @@ void Muscle::commit() {
 		float D = 4*sqr(h)*(sqr(dx)*(sqr(CM)-p*CM-1) + sqr(h*p)) + sqr(sqr(dx));
 		if (D < 0)
 			D = 0;
-		#warning above if D<0 we should disable this muscle permanently
+#warning "above if D<0 we should disable this muscle permanently"
 		float sqrtD = sqrt(D);
 		float bneg = -2*sqr(dx)*h*CM + sqr(dx)*h*p;
 		float denom = 1.f / (2*sqr(h*p) - 2*sqr(dx));
@@ -255,7 +255,6 @@ glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
 	}
 	float w = sqrtf(size_ / aspectRatio_);
 	float l = aspectRatio_ * w;
-#warning "check this shit, might be l & w reversed:"
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;

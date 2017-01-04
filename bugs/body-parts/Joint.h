@@ -36,10 +36,10 @@ public:
 
 	void update(float dt);
 
-	inline float getTotalRange() { return phiMax_ - phiMin_; } // returns the total angular range (in radians) of the joint.
-	inline float getLowerLimit() { return phiMin_; }
-	inline float getUpperLimit() { return phiMax_; }
-	float getJointAngle();
+	inline float getTotalRange() const { return phiMax_ - phiMin_; } // returns the total angular range (in radians) of the joint.
+	inline float getLowerLimit() const { return phiMin_; }
+	inline float getUpperLimit() const { return phiMax_; }
+	float getJointAngle() const;
 
 	void addTorque(float t, float maxSpeed);
 
@@ -50,7 +50,6 @@ protected:
 	float resetTorque_;			// torque that resets the joint into repause position
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
-	friend class World;
 	void getNormalizedLimits(float &low, float &high);
 	void commit() override;
 	void cacheInitializationData() override;

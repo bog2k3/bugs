@@ -140,7 +140,7 @@ void Mouth::draw(RenderContext const& ctx) {
 
 void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	if (impulseMagnitude > 1000) {
-#warning "implement hurt"
+//TODO implement hurt
 		return;
 	}
 	b2AABB otherAABB;

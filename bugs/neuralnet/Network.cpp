@@ -1,5 +1,4 @@
 #include "Network.h"
-#include "Traverser.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>

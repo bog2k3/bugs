@@ -131,7 +131,7 @@ void Nose::update(float dt) {
 		glm::vec2 pos = vec3xy(posRot);
 		static thread_local std::vector<Entity*> ents;
 		ents.clear();
-#warning "TODO: optimize here - restrict box to area in fron of the nose"
+//TODO optimize here - restrict box to area in fron of the nose
 		World::getInstance()->getEntitiesInBox(ents, NoseDetectableFlavours[i], Entity::FunctionalityFlags::DONT_CARE, pos, maxDist * 1.1f, true);
 
 		// use all entities in the visibility cone (where cos(phi)>0)

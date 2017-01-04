@@ -19,11 +19,10 @@ Entity::~Entity() {
 }
 
 void Entity::destroy() {
-#warning "this is not thread safe - two simultaneous calls"
-	if (markedForDeletion_) {
+	bool expect = false;
+	if (!markedForDeletion_.compare_exchange_strong(expect, true, std::memory_order_acq_rel, std::memory_order_relaxed)) {
 		return;
 	}
-	markedForDeletion_ = true;
 	if (managed_)
 		World::getInstance()->destroyEntity(this);
 	else

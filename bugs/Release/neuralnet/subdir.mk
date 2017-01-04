@@ -7,21 +7,18 @@ CPP_SRCS += \
 ../neuralnet/Network.cpp \
 ../neuralnet/Neuron.cpp \
 ../neuralnet/OutputSocket.cpp \
-../neuralnet/Traverser.cpp \
 ../neuralnet/functions.cpp 
 
 OBJS += \
 ./neuralnet/Network.o \
 ./neuralnet/Neuron.o \
 ./neuralnet/OutputSocket.o \
-./neuralnet/Traverser.o \
 ./neuralnet/functions.o 
 
 CPP_DEPS += \
 ./neuralnet/Network.d \
 ./neuralnet/Neuron.d \
 ./neuralnet/OutputSocket.d \
-./neuralnet/Traverser.d \
 ./neuralnet/functions.d 
 
 

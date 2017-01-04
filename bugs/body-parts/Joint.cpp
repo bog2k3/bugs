@@ -163,9 +163,8 @@ glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
 	return ret;
 }
 
-float Joint::getJointAngle() {
+float Joint::getJointAngle() const {
 	if (committed_) {
-#warning "not sure about thread safety of below:"
 		float ret = physJoint_->GetJointAngle();
 		if (std::isnan(ret))
 			ret = 0;

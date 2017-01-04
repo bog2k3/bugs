@@ -215,8 +215,7 @@ protected:
 	// call this if the fixture changed for any reason:
 	void reattachChildren();
 	void computeBodyPhysProps();
-	// adds the part to this parent just as reference (does not place it on the current part)
-	void addRef(BodyPart* part);
+
 	friend class Joint;
 
 	virtual void detachMotorLines(std::vector<unsigned> const& lines);
