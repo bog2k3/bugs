@@ -231,8 +231,6 @@ private:
 	void purge_initializationData();
 	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
 	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
-	void fixOverlaps(int startIndex);
-	void pushBodyParts(int circularBufferIndex, float delta);
 	void remove(BodyPart* part);
 
 	std::map<gene_part_attribute_type, std::vector<CummulativeValue*>> mapAttributes_;
@@ -242,10 +240,6 @@ private:
 	bool destroyCalled_ = false;
 	bool dead_ = false;
 	float foodValueLeft_ = 0;
-
-#ifdef DEBUG
-	void checkCircularBuffer(bool noOverlap, bool checkOrder);
-#endif
 };
 
 
@@ -264,18 +258,6 @@ struct BodyPartInitializationData {
 	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
 	CummulativeValue size;							// surface area
 	CummulativeValue density;
-
-	struct angularEntry {
-		// these are angular gaps between children:
-		float gapBefore;
-		float gapAfter;
-		// if gap before or after is 0, then the next/prev sibling is in contact with this one
-
-		void set(float gapBefore, float gapAfter) {
-			this->gapBefore = gapBefore;
-			this->gapAfter = gapAfter;
-		}
-	} circularBuffer[BodyPart::MAX_CHILDREN]; // this is initialization data
 };
 
 #endif /* OBJECTS_BODY_PARTS_BODYPART_H_ */

@@ -19,6 +19,8 @@
 
 using namespace glm;
 
+//#define DISABLE_MIPMAPS
+
 GLText::GLText(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar, int defaultSize)
 	: rows(rows), cols(cols), firstChar(firstChar), defaultSize_(defaultSize)
 {
