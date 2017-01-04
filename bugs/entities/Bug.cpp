@@ -44,10 +44,10 @@
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
-unsigned Bug::population = 0;
-unsigned Bug::maxGeneration = 0;
-unsigned Bug::freeZygotes = 0;
-uint64_t Bug::nextId = 1;
+std::atomic<int> Bug::population {0};
+std::atomic<int> Bug::maxGeneration {0};
+std::atomic<int> Bug::freeZygotes {0};
+std::atomic<uint64_t> Bug::nextId {1};
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation)
 	: genome_(genome)
@@ -210,13 +210,15 @@ void Bug::updateDeadDecaying(float dt) {
 }
 
 void Bug::kill() {
-	if (isAlive_) {
-		LOGLN("bug DIED");
-		population--; // one less bug
-		isAlive_ = false;
-		body_->die_tree();
-		body_ = nullptr;
-	}
+	World::getInstance()->queueDeferredAction([this] {
+		if (isAlive_) {
+			LOGLN("bug DIED");
+			--population; // one less bug
+			isAlive_ = false;
+			body_->die_tree();
+			body_ = nullptr;
+		}
+	});
 }
 
 void Bug::update(float dt) {

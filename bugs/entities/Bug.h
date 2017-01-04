@@ -18,9 +18,12 @@
 #include "../utils/UpdateList.h"
 #include "../utils/bitFlags.h"
 #include "../math/aabb.h"
+
 #include <glm/fwd.hpp>
+
 #include <vector>
 #include <map>
+#include <atomic>
 
 
 class NeuralNet;
@@ -77,9 +80,9 @@ public:
 	 */
 	static Bug* newBasicMutantBug(glm::vec2 position);
 
-	static unsigned getPopulationCount() { return population; }
-	static unsigned getZygotesCount() { return freeZygotes; }
-	static unsigned getMaxGeneration() { return maxGeneration; }
+	static int getPopulationCount() { return population.load(std::memory_order_relaxed); }
+	static int getZygotesCount() { return freeZygotes.load(std::memory_order_relaxed); }
+	static int getMaxGeneration() { return maxGeneration.load(std::memory_order_relaxed); }
 	uint64_t getId() { return id; }
 
 protected:
@@ -118,9 +121,9 @@ protected:
 	CummulativeValue eggMass_;
 
 	unsigned generation_=0;  // the generation this bug represents
-	static unsigned population;
-	static unsigned freeZygotes;
-	static unsigned maxGeneration;
+	static std::atomic<int> population;
+	static std::atomic<int> freeZygotes;
+	static std::atomic<int> maxGeneration;
 
 	friend class Ribosome;
 
@@ -132,7 +135,7 @@ protected:
 	static Chromosome createBasicChromosome();
 
 private:
-	static uint64_t nextId;
+	static std::atomic<uint64_t> nextId;
 	uint64_t id = nextId++;
 
 	mutable aabb cachedAABB_;
