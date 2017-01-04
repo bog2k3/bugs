@@ -75,6 +75,9 @@ void Mouth::onAddedToParent() {
 
 glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {
 	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::getInstance()->assertOnMainThread();
+#endif
 		cacheInitializationData();
 	}
 	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));

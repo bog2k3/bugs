@@ -116,6 +116,9 @@ void Torso::draw(RenderContext const& ctx) {
 glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::getInstance()->assertOnMainThread();
+#endif
 		cacheInitializationData();
 	}
 	float fatSize = fatMass_*BodyConst::FatDensityInv;
@@ -198,6 +201,9 @@ void Torso::detachMotorLines(std::vector<unsigned> const& lines) {
 }
 
 void Torso::detach(bool die) {
+#ifdef DEBUG
+		World::getInstance()->assertOnMainThread();
+#endif
 	motorLines_.clear(); // because we don't want any line detached. And we don't need to track them either
 	BodyPart::detach(die);
 }

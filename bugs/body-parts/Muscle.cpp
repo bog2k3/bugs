@@ -248,11 +248,14 @@ void Muscle::commit() {
 
 glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
 	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::getInstance()->assertOnMainThread();
+#endif
 		cacheInitializationData();
 	}
 	float w = sqrtf(size_ / aspectRatio_);
 	float l = aspectRatio_ * w;
-#warning check this shit, might be l & w reversed:
+#warning "check this shit, might be l & w reversed:"
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
