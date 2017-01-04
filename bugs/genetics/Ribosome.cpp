@@ -809,6 +809,8 @@ void Ribosome::resolveMuscleLinkage() {
 	for (Muscle* m : muscles_) {
 		Joint* jNeg = findNearestJoint(m, -1);
 		Joint* jPos = findNearestJoint(m, +1);
+		if (!jNeg && !jPos)
+			continue;
 		// default to the joint on the negative side and only select the positive one if more appropriate:
 		Joint* targetJoint = jNeg;
 		if (jNeg != jPos) {
