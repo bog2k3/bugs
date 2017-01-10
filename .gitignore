@@ -13,8 +13,6 @@ bugs-tests/Release/bugs-tests
 *.obj
 *.d
 *.bin
-Debug
-Release
 *.mk
 
 eclipse.sh
