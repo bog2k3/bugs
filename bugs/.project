@@ -24,21 +24,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>ObjectTypesAndFlags.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/bugs/ObjectTypesAndFlags.h</locationURI>
-		</link>
-		<link>
-			<name>World.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/bugs/World.cpp</locationURI>
-		</link>
-		<link>
-			<name>World.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/bugs/World.h</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
