@@ -74,10 +74,15 @@ void Joint::commit() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	assertDbg(nChildren_ == 1);
+	assertDbg(nChildren_ <= 1);
 
 	if (committed_) {
 		destroyPhysJoint();
+	}
+
+	if (nChildren_ == 0) {
+		detach(true);
+		return;
 	}
 
 	b2RevoluteJointDef def;

@@ -302,6 +302,8 @@ char Gene::getSymbol() const {
 		return 'I';
 	case gene_type::NEURON_OUTPUT_COORD:
 		return 'O';
+	case gene_type::NEURAL_PARAM:
+		return 'N';
 	case gene_type::NO_OP:
 		return '_';
 	case gene_type::OFFSET:
@@ -314,8 +316,8 @@ char Gene::getSymbol() const {
 		return '>';
 #ifdef ENABLE_START_MARKER_GENES
 	case gene_type::START_MARKER:
-#endif
 		return ':';
+#endif
 	case gene_type::STOP:
 		return '!';
 	case gene_type::SYNAPSE:

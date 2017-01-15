@@ -32,7 +32,20 @@ BinaryStream& operator >> (BinaryStream &stream, Atom<T> &atom) {
 	return stream;
 }
 
+BinaryStream& operator << (BinaryStream &stream, gene_type type) {
+	stream << static_cast<int>(type);
+	return stream;
+}
+
+BinaryStream& operator >> (BinaryStream &stream, gene_type &type) {
+	int itype;
+	stream >> itype;
+	type = static_cast<gene_type>(itype);
+	return stream;
+}
+
 BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
+	stream << gene.type;
 	stream << gene.chance_to_delete;
 	stream << gene.chance_to_swap;
 	switch (gene.type) {
@@ -64,6 +77,10 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_neural_constant.targetNeuron;
 		stream << gene.data.gene_neural_constant.value;
 		break;
+	case gene_type::NEURAL_PARAM:
+		stream << gene.data.gene_neural_param.targetNeuron;
+		stream << gene.data.gene_neural_param.value;
+		break;
 	case gene_type::PART_ATTRIBUTE:
 		stream << gene.data.gene_attribute.attribute;
 		stream << gene.data.gene_attribute.value;
@@ -82,9 +99,16 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_transfer_function.functionID;
 		stream << gene.data.gene_transfer_function.targetNeuron;
 		break;
+	case gene_type::JOINT_OFFSET:
+		stream << gene.data.gene_joint_offset.maxDepth;
+		stream << gene.data.gene_joint_offset.minDepth;
+		stream << gene.data.gene_joint_offset.offset;
+		break;
 	case gene_type::NO_OP:
 		break;
 	case gene_type::STOP:
+		break;
+	case gene_type::START_MARKER:
 		break;
 	default:
 		assert(false); // unknown gene type
@@ -93,6 +117,7 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 }
 
 BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
+	stream >> gene.type;
 	stream >> gene.chance_to_delete;
 	stream >> gene.chance_to_swap;
 	switch (gene.type) {
@@ -124,6 +149,10 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_neural_constant.targetNeuron;
 		stream >> gene.data.gene_neural_constant.value;
 		break;
+	case gene_type::NEURAL_PARAM:
+		stream >> gene.data.gene_neural_param.targetNeuron;
+		stream >> gene.data.gene_neural_param.value;
+		break;
 	case gene_type::PART_ATTRIBUTE:
 		stream >> gene.data.gene_attribute.attribute;
 		stream >> gene.data.gene_attribute.value;
@@ -142,9 +171,16 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_transfer_function.functionID;
 		stream >> gene.data.gene_transfer_function.targetNeuron;
 		break;
+	case gene_type::JOINT_OFFSET:
+		stream >> gene.data.gene_joint_offset.maxDepth;
+		stream >> gene.data.gene_joint_offset.minDepth;
+		stream >> gene.data.gene_joint_offset.offset;
+		break;
 	case gene_type::NO_OP:
 		break;
 	case gene_type::STOP:
+		break;
+	case gene_type::START_MARKER:
 		break;
 	default:
 		assert(false); // unknown gene type

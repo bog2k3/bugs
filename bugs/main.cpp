@@ -249,8 +249,8 @@ int main(int argc, char* argv[]) {
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
 
-		randSeed(1424118659);
-		//randSeed(time(NULL));
+		//randSeed(1424118659);
+		randSeed(time(NULL));
 		LOGLN("RAND seed: "<<rand_seed);
 
 		SessionManager sessionMgr;
