@@ -4,35 +4,26 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../Infrastructure.cpp \
-../SpatialCache.cpp \
-../World.cpp \
-../main.cpp \
-../memdebug.cpp \
-../perfPrint.cpp 
+../perf/callGraph.cpp \
+../perf/frameCapture.cpp \
+../perf/results.cpp 
 
 OBJS += \
-./Infrastructure.o \
-./SpatialCache.o \
-./World.o \
-./main.o \
-./memdebug.o \
-./perfPrint.o 
+./perf/callGraph.o \
+./perf/frameCapture.o \
+./perf/results.o 
 
 CPP_DEPS += \
-./Infrastructure.d \
-./SpatialCache.d \
-./World.d \
-./main.d \
-./memdebug.d \
-./perfPrint.d 
+./perf/callGraph.d \
+./perf/frameCapture.d \
+./perf/results.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-%.o: ../%.cpp
+perf/%.o: ../perf/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	g++ -std=c++14 -DGLM_FORCE_RADIANS -I../3rdparty/easyunit -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -std=c++14 -DGLM_FORCE_RADIANS -DDEBUG -I../3rdparty/easyunit -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

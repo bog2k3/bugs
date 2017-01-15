@@ -13,7 +13,6 @@ bugs-tests/Release/bugs-tests
 *.obj
 *.d
 *.bin
-*.mk
 
 eclipse.sh
 
