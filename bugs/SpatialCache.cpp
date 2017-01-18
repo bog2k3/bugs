@@ -97,7 +97,7 @@ void SpatialCache::getCachedEntities(std::vector<Entity*> &out, glm::vec2 const&
 			}
 			for (Entity* e : cells_[i][j].entities_) {
 				// test against requested area:
-				aabb eAABB = eAABB= e->getAABB();
+				aabb eAABB = e->getAABB();
 				if (eAABB.intersect(area).empty())
 					continue;
 				if (clipToCircle && !eAABB.intersectCircle(pos, radius))

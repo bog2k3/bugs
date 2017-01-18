@@ -40,12 +40,12 @@ private:
 	cell** cells_ = nullptr;
 
 	// in meters:
-	float left_, right_, top_, bottom_;
-	float cellWidth_, cellHeight_;
-	float cellRadius_; // this is an approximation
+	float left_=0, right_=0, top_=0, bottom_=0;
+	float cellWidth_=0, cellHeight_=0;
+	float cellRadius_ = 0; // this is an approximation
 
 	// in number of cells:
-	int width_, height_;
+	int width_=0, height_=0;
 };
 
 #endif /* SPATIALCACHE_H_ */
