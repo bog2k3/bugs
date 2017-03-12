@@ -1,3 +1,13 @@
+* change synapse linkage - VMS based for each input and output
+	- gene for number of neuron inputs
+	- gene for each input vms coord and output coord
+	- weight gene per each input
+	- remove index-based synapse gene
+* body attrib gene: default x/y/z/w protein hyperspace bias if protein is missing
+* rethink hyperspace to favour most-usefull possibilities
+* !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
+	- a small change by itself must be able to benefit the bug - current model is not good at this
+
 * World must also be serializable and save the general world properties (extents and other things)
 	- create spatial cache (call setExtents) also when loading
 * parameterized loading of World - when merging a session should omit walls & adjust extents & existing walls to union

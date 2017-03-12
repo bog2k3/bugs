@@ -181,9 +181,9 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	std::map<int, bool> mapNeuronsExist;
 
-	static constexpr float numberMutationsPerChromosome = 2.0f;	// how many mutations we desire for a chromosome at most, on average
-	static constexpr float numberSwapsPerChromosome = 0.2f;
-	static constexpr float numberDeletionsPerChromosome = 0.1f;
+	static constexpr float numberMutationsPerChromosome = 0.125f;	// how many mutations we desire for a chromosome at most, on average
+	static constexpr float numberSwapsPerChromosome = 0.0625f;
+	static constexpr float numberDeletionsPerChromosome = 0.025f;
 
 	// compute the total chance for mutations in the current chromosome:
 	// also count the number of neurons, we need these in order to create new random genes
