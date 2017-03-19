@@ -24,6 +24,11 @@
 	- each cell knows if it's left or right
 	- new restrictions on genes for left/right
 	- unused positions in hyperspace create unspecialized cells
+	- division creates bond between child cells (weld joint)
+	- when dividing, each existing bond is either split or inherited by one side:
+		-- if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
+		-- otherwise each side inherits bonds on its side of the division axis
+	- result is a graph of cells - use it to find shortest path to route sensor/motor nerves
 
 * World must also be serializable and save the general world properties (extents and other things)
 	- create spatial cache (call setExtents) also when loading
