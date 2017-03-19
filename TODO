@@ -3,10 +3,27 @@
 	- gene for each input vms coord and output coord
 	- weight gene per each input
 	- remove index-based synapse gene
-* body attrib gene: default x/y/z/w protein hyperspace bias if protein is missing
 * rethink hyperspace to favour most-usefull possibilities
 * !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
 	- a small change by itself must be able to benefit the bug - current model is not good at this
+	- new cell division based system
+	- new division gene: angle, ratio, mirror?, reorientate?, priority (if multiple), level restrictions, 
+	- cell divides at an angle but its children keep the same orientation, unless reorientate is specified in the division, in which case the children will be reoriented by this angle
+	- proteins accumulate per cell, not per segment - no more segments 
+	- if proteins yield x*y*z*w = 0, the cell remains unspecialized - may store fat
+	- proteins should have a float weight instead of current int 1 (the float weight modulus is used for hyperspace)
+	- division creates weld joint between child cells
+	- each cell either specializes into a body part or remains unspecialized
+	- joint is an explicit cell type in hyperspace
+	- must rething muscle linkange and body part hierarchies
+	- must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
+	- perpendicular division of two adjacent cell problem - square of cells
+	- proteins are not inherited
+	- default child cell genome offset is 0 - same genes as parent
+	- new gene child offset left/right which changes the default offset of the child cells once the division takes place
+	- each cell knows if it's left or right
+	- new restrictions on genes for left/right
+	- unused positions in hyperspace create unspecialized cells
 
 * World must also be serializable and save the general world properties (extents and other things)
 	- create spatial cache (call setExtents) also when loading
