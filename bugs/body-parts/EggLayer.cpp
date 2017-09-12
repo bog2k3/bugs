@@ -9,8 +9,8 @@
 #include "BodyConst.h"
 #include "../entities/Bug.h"
 #include "../math/box2glm.h"
-#include "../math/math2D.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../math/math3D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../entities/Gamete.h"
 #include "../World.h"
@@ -87,35 +87,31 @@ float EggLayer::getMass_tree() {
 }
 
 void EggLayer::draw(RenderContext const& ctx) {
+	glm::vec3 transform = getWorldTransformation();
+	glm::vec3 pos {vec3xy(transform), 0};
 	if (committed_) {
 #ifdef DEBUG_DRAW_EGGLAYER
 		if (isDead()) {
-			glm::vec3 transform = getWorldTransformation();
-			glm::vec2 pos = vec3xy(transform);
 			float sizeLeft = getFoodValue() / density_;
-			ctx.shape->drawCircle(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 0, 12, glm::vec3(0.5f,0,1));
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
 		} else {
-			glm::vec3 transform = getWorldTransformation();
-			glm::vec2 pos = vec3xy(transform);
 			float r_2 = sqrtf(size_*PI_INV) * 0.5f;
 			glm::vec3 color = eggMassBuffer_ >= targetEggMass_ ? debug_color_ripe : (suppressGrowth_ ? debug_color_suppressed : debug_color);
-			ctx.shape->drawLine(
-				pos - glm::rotate(glm::vec2(r_2, 0), transform.z),
-				pos + glm::rotate(glm::vec2(r_2, 0), transform.z),
-				0, color);
-			ctx.shape->drawLine(
-				pos - glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
-				pos + glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f),
-				0, color);
+			Shape3D::get()->drawLine(
+				pos - glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z), 0),
+				pos + glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z), 0),
+				color);
+			Shape3D::get()->drawLine(
+				pos - glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f), 0),
+				pos + glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f), 0),
+				color);
 		}
 #endif // DEBUG_DRAW_EGGLAYER
 	} else {
-		glm::vec3 transform = getWorldTransformation();
-		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
-		ctx.shape->drawLine(pos,
-				pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z),
-				0, debug_color);
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
+		Shape3D::get()->drawLine(pos,
+				pos + glm::vec3(glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0),
+				debug_color);
 	}
 }
 

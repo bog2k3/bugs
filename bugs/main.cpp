@@ -15,7 +15,7 @@
 #include "physics/PhysContactListener.h"
 #include "physics/PhysDestroyListener.h"
 #include "physics/PhysicsDebugDraw.h"
-#include "math/math2D.h"
+#include "math/math3D.h"
 #include "OSD/ScaleDisplay.h"
 #include "OSD/SignalViewer.h"
 #include "OSD/EntityLabeler.h"
@@ -200,15 +200,18 @@ int main(int argc, char* argv[]) {
 	#endif
 
 		// initialize stuff:
-		if (!gltInit(800, 600, "Bugs"))
+		int winW = 800, winH = 600;
+		if (!gltInit(winW, winH, "Bugs"))
 			return -1;
 
-		Renderer renderer;
-		Viewport vp1(0, 0, 800, 600);
-		renderer.addViewport(&vp1);
-		auto shape2d = new Shape2D(&renderer);
-		auto gltext = new GLText(&renderer, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
-		RenderContext renderContext( &vp1, shape2d, gltext);
+		GLFWInput::initialize(gltGetWindow());
+		GLFWInput::onInputEvent.add(onInputEventHandler);
+
+		Renderer renderer(winW, winH);
+		auto vp = std::make_unique<Viewport>(0, 0, winW, winH);
+		auto vp1 = vp.get();
+		renderer.addViewport("main", std::move(vp));
+		RenderContext renderContext;
 
 		b2ThreadPool b2tp(6);
 		b2World physWld(b2Vec2_zero, &b2tp);
@@ -242,9 +245,7 @@ int main(int argc, char* argv[]) {
 		win1->addElement(std::make_shared<Button>(glm::vec2(100, 100), glm::vec2(60, 35), "buton1"));
 		win1->addElement(std::make_shared<TextField>(glm::vec2(50, 170), glm::vec2(200, 40), "text"));*/
 
-		OperationsStack opStack(&vp1, World::getInstance(), &physWld);
-		GLFWInput::initialize(gltGetWindow());
-		GLFWInput::onInputEvent.add(onInputEventHandler);
+		OperationsStack opStack(vp1, World::getInstance(), &physWld);
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationPan(InputEvent::MB_RIGHT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
@@ -273,7 +274,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
-		SignalViewer sigViewer(glm::vec3(0.75f, 0.1f, 1.f), glm::vec2(0.2f, 0.1f));
+		SignalViewer sigViewer(glm::vec2(0.75f, 0.1f), 1.f, glm::vec2(0.2f, 0.1f));
 
 		DrawList drawList;
 		drawList.add(World::getInstance());
@@ -403,13 +404,14 @@ int main(int argc, char* argv[]) {
 					// draw builds the render queue for the current frame
 					drawList.draw(renderContext);
 
-					renderContext.text->print("Salut Lume!\n[Powered by Box2D]", 20, vp1.getHeight()-20, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
+#warning: "fix with ViewportCoord properly"
+					GLText::get()->print("Salut Lume!\n[Powered by Box2D]", {20, vp1->height()-20}, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
 
 					if (updatePaused) {
-						renderContext.text->print("PAUSED", vp1.getWidth() / 2, vp1.getHeight() / 2, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
+						GLText::get()->print("PAUSED", {vp1->width() / 2, vp1->height() / 2}, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
 					}
 					if (slowMo) {
-						renderContext.text->print("~~ Slow Motion ON ~~", 10, 45, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
+						GLText::get()->print("~~ Slow Motion ON ~~", {10, 45}, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
 					}
 
 					// do the actual openGL render for the previous frame (which is independent of our world)
@@ -427,7 +429,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		delete renderContext.shape;
+		renderer.unload();
 		Infrastructure::shutDown();
 	} while (0);
 

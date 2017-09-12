@@ -9,8 +9,8 @@
 #include "BodyConst.h"
 #include "../World.h"
 #include "../math/box2glm.h"
-#include "../math/math2D.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../math/math3D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../physics/PhysDestroyListener.h"
 
 #include "../utils/log.h"
@@ -145,12 +145,12 @@ void Joint::draw(RenderContext const& ctx) {
 		glm::vec2 pos = vec3xy(transform);
 		if (isDead()) {
 			float sizeLeft = getFoodValue() / density_;
-			ctx.shape->drawCircle(pos, sqrtf(sizeLeft*PI_INV), 0, 12, glm::vec3(0.5f,0,1));
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV), 12, glm::vec3(0.5f,0,1));
 		} else {
-			ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
-			ctx.shape->drawLine(pos,
-					pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z),
-					0, debug_color);
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
+			Shape3D::get()->drawLine({pos, 0},
+					{pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0},
+					debug_color);
 		}
 	}
 }

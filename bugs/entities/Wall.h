@@ -19,12 +19,12 @@ public:
 	Wall(glm::vec2 const &from, glm::vec2 const &to, float width);
 	virtual ~Wall();
 
-	FunctionalityFlags getFunctionalityFlags() override {
+	FunctionalityFlags getFunctionalityFlags() const override {
 		return FunctionalityFlags::SERIALIZABLE;
 	}
 
 	static constexpr EntityType entityType = EntityType::WALL;
-	virtual EntityType getEntityType() override { return entityType; }
+	EntityType getEntityType() const override { return entityType; }
 	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 

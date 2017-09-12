@@ -43,13 +43,13 @@ public:
 
 	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation);
 	virtual ~Bug();
-	FunctionalityFlags getFunctionalityFlags() override { return
+	FunctionalityFlags getFunctionalityFlags() const override { return
 			FunctionalityFlags::UPDATABLE |
 			FunctionalityFlags::DRAWABLE |
 			FunctionalityFlags::SERIALIZABLE;
 	}
 	static constexpr EntityType entityType = EntityType::BUG;
-	virtual EntityType getEntityType() override { return entityType; }
+	virtual EntityType getEntityType() const override { return entityType; }
 	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 

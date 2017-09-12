@@ -22,7 +22,7 @@ ScaleDisplay::ScaleDisplay(glm::vec3 pos, int maxPixelsPerUnit)
 }
 
 void ScaleDisplay::draw(RenderContext const& ctx) {
-	float pixelsPerUnit = ctx.viewport->getCamera()->getZoomLevel();
+	float pixelsPerUnit = ctx.viewport->camera()->getOrthoZoom();
 	int exponent = 0;
 
 	if (pixelsPerUnit > m_MaxSize) {
@@ -54,7 +54,7 @@ void ScaleDisplay::draw(RenderContext const& ctx) {
 	int nVertex = 1 + segments * 3;
 	float cx = (float)pos_.x + segmentsXOffset;
 	float cy = (float)pos_.y - 1;
-	glm::vec2 vList[31]; // 31 is max vertex for max_seg=10
+	ViewportCoord vList[31]; // 31 is max vertex for max_seg=10
 	for (int i=0; i<segments; i++) {
 		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? segmentHeight : segmentHeight / 2;
 		vList[i*3+0] = glm::vec2(cx, cy-localSegHeight);
@@ -64,20 +64,18 @@ void ScaleDisplay::draw(RenderContext const& ctx) {
 	}
 	vList[nVertex-1] = glm::vec2(cx, cy-segmentHeight);
 
-	ctx.shape->setViewportSpaceDraw(true);
-	ctx.shape->drawLineStrip(vList, nVertex, 0, LINE_COLOR);
-	ctx.shape->setViewportSpaceDraw(false);
+	Shape2D::get()->drawLineStrip(vList, nVertex, 0, LINE_COLOR);
 
 	char scaleLabel[100];
 
 	snprintf(scaleLabel, 100, "(10^%d)", exponent);
-	ctx.text->print(scaleLabel, pos_.x, pos_.y, pos_.z, 14, TEXT_COLOR);
+	GLText::get()->print(scaleLabel, {pos_.x, pos_.y}, pos_.z, 14, TEXT_COLOR);
 	for (int i=0; i<segments+1; i++) {
 		snprintf(scaleLabel, 100, "%g", i*segIncrement);
 		int localSegHeight = (int)(i*segIncrement) == (i*segIncrement) ? 0 : segmentHeight / 2;
-		ctx.text->print(scaleLabel,
-				pos_.x - localSegHeight +segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement),
-				pos_.y - 10 + localSegHeight,
+		GLText::get()->print(scaleLabel,
+				{ pos_.x - localSegHeight +segmentsXOffset+i*(int)(pixelsPerUnit*segIncrement),
+				  pos_.y - 10 + localSegHeight },
 				pos_.z,
 				12, TEXT_COLOR);
 	}

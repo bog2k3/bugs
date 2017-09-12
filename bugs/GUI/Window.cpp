@@ -10,7 +10,7 @@
 #include "ICaptureManager.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Shape2D.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 
 Window::Window(glm::vec2 position, glm::vec2 size)
 	: GuiContainerElement(position, size)
@@ -27,17 +27,17 @@ void Window::draw(RenderContext const &ctx, glm::vec3 frameTranslation, glm::vec
 	glm::vec2 scaledSize = getSize();
 	scaledSize.x *= frameScale.x;
 	scaledSize.y *= frameScale.y;
-	ctx.shape->drawRectangleFilled(vec3xy(trans), frameTranslation.z, scaledSize, GuiTheme::getWindowColor());
-	ctx.shape->drawRectangle(vec3xy(trans), frameTranslation.z, scaledSize, GuiTheme::getWindowFrameColor());
+	Shape2D::get()->drawRectangleFilled(vec3xy(trans), frameTranslation.z, scaledSize, GuiTheme::getWindowColor());
+	Shape2D::get()->drawRectangle(vec3xy(trans), frameTranslation.z, scaledSize, GuiTheme::getWindowFrameColor());
 
 	// draw client area frame:
 	glm::vec2 clientOffset, clientSize;
 	getClientArea(clientOffset, clientSize);
 	clientSize.x *= frameScale.x;
 	clientSize.y *= frameScale.y;
-	ctx.shape->drawRectangleFilled(vec3xy(trans)+clientOffset, frameTranslation.z+0.1f,
+	Shape2D::get()->drawRectangleFilled(vec3xy(trans)+clientOffset, frameTranslation.z+0.1f,
 			clientSize, GuiTheme::getClientColor());
-	ctx.shape->drawRectangle(vec3xy(trans)+clientOffset, frameTranslation.z+0.1f,
+	Shape2D::get()->drawRectangle(vec3xy(trans)+clientOffset, frameTranslation.z+0.1f,
 			clientSize, GuiTheme::getClientFrameColor());
 
 	// now draw contents:

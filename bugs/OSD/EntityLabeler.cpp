@@ -11,7 +11,7 @@
 #include "../renderOpenGL/RenderContext.h"
 #include "../renderOpenGL/Viewport.h"
 #include "../renderOpenGL/Camera.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 #include "../math/aabb.h"
 #include <vector>
 
@@ -64,20 +64,21 @@ EntityLabeler& EntityLabeler::getInstance() {
 	return instance;
 }
 
-void EntityLabeler::draw(RenderContext const& ctx) {
+void EntityLabeler::draw(RenderContext const&) {
 	std::vector<const Entity*> entsToRemove;
 	for (auto const& p : labels_) {
 		if (p.first->isZombie()) {
 			entsToRemove.push_back(p.first);
 			continue;
 		}
-		auto aabb = p.first->getAABB();
+		// TODO restore
+		/*auto aabb = p.first->getAABB();
 		DecoratorLayout layout(aabb, 5, ctx.viewport->getCamera()->getZoomLevel()); // 5 pixel padding
 		for (auto const& lp : p.second) {
 			auto &label = lp.second.label_;
 			label->setPos(glm::vec3(layout.nextPosition(label->getBoxSize(ctx)), 0));
 			label->draw(ctx);
-		}
+		}*/
 	}
 	for (auto e : entsToRemove)
 		labels_.erase(labels_.find(e));
@@ -88,7 +89,13 @@ void EntityLabeler::setEntityLabel(const Entity* ent, std::string const& name, s
 	el.rgb_ = rgb;
 	el.value_ = value;
 	if (!el.label_) {
-		el.label_ = std::unique_ptr<Label>(new Label(el.value_, glm::vec3(0), LABEL_TEXT_SIZE, el.rgb_));
+		auto xc = [ent] (Viewport* vp) -> float {
+			return 0; //vp->project(ent->position()).x;
+		};
+		auto yc = [ent] (Viewport* vp) -> float {
+			return 0; //vp->project(ent->position()).y;
+		};
+		el.label_ = std::unique_ptr<Label>(new Label(el.value_, {xc, yc}, 0, LABEL_TEXT_SIZE, el.rgb_));
 	} else {
 		el.label_->setText("[" + name + "] " + el.value_);
 		el.label_->setColor(el.rgb_);

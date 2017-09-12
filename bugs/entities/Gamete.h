@@ -23,7 +23,7 @@ public:
 	virtual ~Gamete();
 
 	static constexpr EntityType entityType = EntityType::GAMETE;
-	virtual EntityType getEntityType() override { return entityType; }
+	EntityType getEntityType() const override { return entityType; }
 	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
@@ -31,7 +31,7 @@ public:
 	static void deserialize(BinaryStream &stream);
 
 #ifdef DEBUG_DRAW_GAMETE
-	FunctionalityFlags getFunctionalityFlags() override { return
+	FunctionalityFlags getFunctionalityFlags() const override { return
 			FunctionalityFlags::DRAWABLE |
 			FunctionalityFlags::UPDATABLE;
 	}

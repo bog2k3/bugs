@@ -8,10 +8,10 @@
 #include "ZygoteShell.h"
 #include "BodyConst.h"
 #include "../World.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 #include "../math/box2glm.h"
 #include "../utils/rand.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/vec2.hpp>
@@ -72,18 +72,18 @@ void ZygoteShell::draw(RenderContext const& ctx) {
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
 	if (dead_) {
-		ctx.shape->drawLine(
-			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), 3*PI/4 + transform.z),
-			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -PI/4 + transform.z),
-			0, debug_color);
-		ctx.shape->drawLine(
-			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), PI/4 + transform.z),
-			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -3*PI/4 + transform.z),
-			0, debug_color);
+		Shape3D::get()->drawLine(
+			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), 3*PI/4 + transform.z), 0},
+			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -PI/4 + transform.z), 0},
+			debug_color);
+		Shape3D::get()->drawLine(
+			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), PI/4 + transform.z), 0},
+			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -3*PI/4 + transform.z), 0},
+			debug_color);
 	} else {
-		ctx.shape->drawLine(pos,
-			pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), transform.z),
-			0, debug_color);
+		Shape3D::get()->drawLine({pos, 0},
+			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), transform.z), 0},
+			debug_color);
 	}
 }
 

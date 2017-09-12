@@ -20,11 +20,11 @@ public:
 	virtual ~FoodDispenser();
 
 	static constexpr EntityType entityType = EntityType::FOOD_DISPENSER;
-	virtual EntityType getEntityType() override { return entityType; }
+	virtual EntityType getEntityType() const override { return entityType; }
 	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
-	FunctionalityFlags getFunctionalityFlags() override { return
+	FunctionalityFlags getFunctionalityFlags() const override { return
 			FunctionalityFlags::UPDATABLE |
 			FunctionalityFlags::SERIALIZABLE;
 	}

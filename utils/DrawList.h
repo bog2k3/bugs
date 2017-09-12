@@ -27,7 +27,7 @@ public:
 		}), list_.end());
 	}
 
-	void draw(RenderContext const &ctx) {
+	void draw(RenderContext const& ctx) {
 		for (auto &w : list_)
 			w.draw(ctx);
 	}

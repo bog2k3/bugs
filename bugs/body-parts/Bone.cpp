@@ -8,8 +8,8 @@
 #include "Bone.h"
 #include "BodyConst.h"
 #include "../World.h"
-#include "../math/math2D.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../math/math3D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../utils/log.h"
 #include "../utils/assert.h"
@@ -97,18 +97,17 @@ void Bone::draw(RenderContext const& ctx) {
 			float widthLeft = width_ * ratio;
 			float lengthLeft = length_ * ratio;
 			glm::vec3 worldTransform = getWorldTransformation();
-			ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0,
+			Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
 				glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
 		}
 #endif
 	} else {
 		glm::vec3 worldTransform = getWorldTransformation();
-		ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0,
+		Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
 				glm::vec2(length_, width_), worldTransform.z, debug_color);
-		ctx.shape->drawLine(
-				vec3xy(worldTransform),
-				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
-				0,
+		Shape3D::get()->drawLine(
+				{vec3xy(worldTransform), 0},
+				{vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z), 0},
 				debug_color);
 	}
 }

@@ -10,9 +10,8 @@
 #include "../renderOpenGL/Shape2D.h"
 #include "../renderOpenGL/GLText.h"
 #include "../renderOpenGL/Viewport.h"
-#include "../math/math2D.h"
-
-#include "../perf/marker.h"
+#include "../math/math3D.h"
+#include "../utils/log.h"
 
 #include <sstream>
 #include <iomanip>
@@ -27,7 +26,6 @@ SignalDataSource::~SignalDataSource() {
 }
 
 void SignalDataSource::update(float dt) {
-	PERF_MARKER_FUNC;
 	timeSinceLastSample_ += dt;
 	if (timeSinceLastSample_ < sampleInterval_)
 		return;
@@ -42,55 +40,42 @@ void SignalDataSource::update(float dt) {
 	}
 }
 
-SignalViewer::SignalViewer(glm::vec3 const& uniformPos, glm::vec2 const& uniformSize)
-	: uPos_(uniformPos), uSize_(uniformSize) {
+SignalViewer::SignalViewer(ViewportCoord pos, float z, ViewportCoord size, std::set<std::string> viewportFilter)
+	: pos_(pos), z_(z), size_(size)
+	, viewportFilter_(viewportFilter) {
 }
 
 SignalViewer::~SignalViewer() {
 }
 
-void SignalViewer::addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minUpperY, float maxLowerY) {
-	addSignal(name, [pValue] { return *pValue; }, rgb, sampleInterval, maxSamples, minUpperY, maxLowerY);
+void SignalViewer::addSignal(std::string const& name, float* pValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minUpperY, float maxLowerY, int displayPrecision) {
+	addSignal(name, [pValue] { return *pValue; }, rgb, sampleInterval, maxSamples, minUpperY, maxLowerY, displayPrecision);
 }
 
-void SignalViewer::addSignal(std::string const& name, std::function<float()> getValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minUpperY, float maxLowerY) {
-	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(getValue, maxSamples, sampleInterval)), name, rgb, minUpperY, maxLowerY));
+void SignalViewer::addSignal(std::string const& name, std::function<float()> getValue, glm::vec3 const& rgb, float sampleInterval, int maxSamples, float minUpperY, float maxLowerY, int displayPrecision) {
+	sourceInfo_.push_back(DataInfo(std::unique_ptr<SignalDataSource>(new SignalDataSource(getValue, maxSamples, sampleInterval)), name, rgb, minUpperY, maxLowerY, displayPrecision));
 }
 
 void SignalViewer::update(float dt) {
-	PERF_MARKER_FUNC;
 	for (auto &s : sourceInfo_)
 		s.source_->update(dt);
 }
 
-void SignalViewer::draw(RenderContext const& ctx) {
-	constexpr float yDivisionSize = 20; // pixels
+void SignalViewer::draw(RenderContext const&) {
 	constexpr int maxYDivisions = 5;
-	constexpr float textSize = 14;
+	constexpr float textSize = 16;
 	constexpr float spacePerChar = textSize/2; // pixels
 	const glm::vec4 frameColor(1.f, 1.f, 1.f, 0.3f);
 	const glm::vec4 divisionColor(1.f, 1.f, 1.f, 0.2f);
 	const glm::vec4 divisionLabelColor(1.f, 1.f, 1.f, 0.6f);
 
-	glm::vec2 pos = vec3xy(uPos_);
-	pos.x *= ctx.viewport->getWidth();
-	pos.y *= ctx.viewport->getHeight();
-	glm::vec2 size = uSize_;
-	size.x *= ctx.viewport->getWidth();
-	size.y *= ctx.viewport->getHeight();
+	auto pos = pos_;
+
 	for (auto &s : sourceInfo_) {
-		ctx.shape->setViewportSpaceDraw(true);
-		ctx.shape->drawRectangle(pos, uPos_.z, size, frameColor);
-		std::stringstream stitle;
-		stitle << s.name_;
-		if (s.source_->getNumSamples())
-			stitle << " : " << s.source_->getSample(s.source_->getNumSamples()-1);
-		else
-			stitle << " (no values)";
-		ctx.text->print(stitle.str(), pos.x, pos.y, uPos_.z, textSize, s.color_);
+		Shape2D::get()->drawRectangle(pos, z_, size_, frameColor, viewportFilter_);
 		float sMin = 1.e20f, sMax = -1.e20f;
 		// scan all samples and seek min/max values:
-		for (uint i=0; i<s.source_->getNumSamples(); i++) {
+		for (unsigned i=0; i<s.source_->getNumSamples(); i++) {
 			float si = s.source_->getSample(i);
 			if (si < sMin)
 				sMin = si;
@@ -109,32 +94,44 @@ void SignalViewer::draw(RenderContext const& ctx) {
 		if (sMax < s.minUpperY_)
 			sMax = s.minUpperY_;
 		// draw samples:
-		float xAxisZoom = size.x / s.source_->getCapacity();
-		float yScale = size.y / (sMax - sMin);
-		if (sMin == sMax)
-			yScale = 0;
-		glm::vec2 prev(pos.x, pos.y + size.y * 0.5f);
-		for (uint i=0; i<s.source_->getNumSamples(); i++) {
-			glm::vec2 crt(prev.x + xAxisZoom, pos.y + size.y - (s.source_->getSample(i)-sMin) * yScale);
-			ctx.shape->drawLine(prev, crt, uPos_.z, s.color_);
-			prev = crt;
+		ViewportCoord widthPerSample = size_.x() / s.source_->getCapacity();
+		ViewportCoord pixelsPerYUnit = {0, 0};
+		if (sMin != sMax)
+			pixelsPerYUnit = size_.y() / (sMax - sMin);
+		ViewportCoord prevVertex = pos + size_.y() * 0.5f;
+		for (unsigned i=0; i<s.source_->getNumSamples(); i++) {
+			ViewportCoord crtVertex = prevVertex.x() + widthPerSample +
+					pos.y() + size_.y() - pixelsPerYUnit * (s.source_->getSample(i)-sMin);
+			Shape2D::get()->drawLine(prevVertex, crtVertex, z_, s.color_, viewportFilter_);
+			prevVertex = crtVertex;
 		}
 		// draw value axis division lines & labels
 		if (sMin * sMax < 0) {
 			// zero line is visible
-			float zeroY = pos.y+size.y + sMin*yScale;
-			ctx.shape->drawLine(glm::vec2(pos.x, zeroY), glm::vec2(pos.x+size.x, zeroY), uPos_.z, frameColor);
+			auto zeroY = pos.y() + size_.y() + pixelsPerYUnit*sMin;
+			Shape2D::get()->drawLine(pos.x() + zeroY, pos.x() + size_.x() + zeroY, z_, frameColor, viewportFilter_);
 		}
-		int nYDivs = min(maxYDivisions, (int)(size.y / yDivisionSize));
+		int nYDivs = maxYDivisions; //min(maxYDivisions, (int)(size.y / yDivisionSize));
 		int nDecimals = s.source_->getNumSamples() ? -log10(sMax - sMin) : 0;
+		if (s.displayPrecision_ >= 0)
+			nDecimals = s.displayPrecision_;
+		ViewportCoord yDivisionSize = size_.y() / nYDivs;
 		for (int i=1; i<nYDivs; i++) {
-			float lineY = pos.y + size.y - i * yDivisionSize;
-			ctx.shape->drawLine(glm::vec2(pos.x, lineY), glm::vec2(pos.x+size.x, lineY), uPos_.z, divisionColor);
+			auto lineY = pos.y() + size_.y() + yDivisionSize * (-i);
+			Shape2D::get()->drawLine(pos.x() + lineY, pos.x() + size_.x() + lineY, z_, divisionColor, viewportFilter_);
 			std::stringstream ss;
-			ss << std::setprecision(nDecimals) << sMin + (sMax-sMin) * i / nYDivs;
-			ctx.text->print(ss.str(), pos.x - (ss.str().size()+1) * spacePerChar, lineY+5, uPos_.z, textSize, divisionLabelColor);
+			ss << std::fixed << std::setprecision(nDecimals) << sMin + (sMax-sMin) * i / nYDivs;
+			GLText::get()->print(ss.str(), pos.x() - ViewportCoord{(ss.str().size()+1) * spacePerChar, -textSize/2} + lineY, z_, textSize, divisionLabelColor, viewportFilter_);
 		}
+		// draw title and current value:
+		std::stringstream stitle;
+		stitle << s.name_;
+		if (s.source_->getNumSamples())
+			stitle << " : " << std::fixed << std::setprecision(nDecimals) << s.source_->getSample(s.source_->getNumSamples()-1);
+		else
+			stitle << " (no values)";
+		GLText::get()->print(stitle.str(), pos, z_, textSize, s.color_, viewportFilter_);
 
-		pos.y += size.y + 15;
+		pos = pos + size_.y() + ViewportCoord{0, 15};
 	}
 }

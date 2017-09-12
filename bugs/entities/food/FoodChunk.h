@@ -22,12 +22,12 @@ class FoodChunk: public Entity {
 public:
 	FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass);
 	virtual ~FoodChunk() override;
-	FunctionalityFlags getFunctionalityFlags() override { return
+	FunctionalityFlags getFunctionalityFlags() const override { return
 			FunctionalityFlags::UPDATABLE |
 			FunctionalityFlags::DRAWABLE;
 	}
 	static constexpr EntityType entityType = EntityType::FOOD_CHUNK;
-	virtual EntityType getEntityType() override { return entityType; }
+	virtual EntityType getEntityType() const override { return entityType; }
 	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 

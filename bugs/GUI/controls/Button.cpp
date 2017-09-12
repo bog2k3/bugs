@@ -10,7 +10,7 @@
 #include "../../renderOpenGL/RenderContext.h"
 #include "../../renderOpenGL/Shape2D.h"
 #include "../../renderOpenGL/GLText.h"
-#include "../../math/math2D.h"
+#include "../../math/math3D.h"
 
 Button::Button(glm::vec2 pos, glm::vec2 size, std::string text)
 	: GuiBasicElement(pos, size)
@@ -26,12 +26,12 @@ void Button::clicked(glm::vec2 clickPosition, MouseButtons button) {
 }
 
 void Button::draw(RenderContext const& ctx, glm::vec3 frameTranslation, glm::vec2 frameScale) {
-	ctx.shape->drawRectangleFilled(
-			vec3xy(frameTranslation)+glm::vec2(2,2),
+	Shape2D::get()->drawRectangleFilled(
+			vec3xy(frameTranslation) + glm::vec2(2,2),	// TODO switch all GUI controls from absolute coordinates to ViewportCoords
 			frameTranslation.z,
 			(getSize()-glm::vec2(4,4)) * frameScale,
 			GuiTheme::getButtonColor());
-	ctx.shape->drawRectangle(
+	Shape2D::get()->drawRectangle(
 			vec3xy(frameTranslation),
 			frameTranslation.z,
 			getSize() * frameScale,
@@ -39,5 +39,5 @@ void Button::draw(RenderContext const& ctx, glm::vec3 frameTranslation, glm::vec
 	int tx = frameTranslation.x + 10;
 	int ty = frameTranslation.y + 15;
 	int tz = frameTranslation.z + 1;
-	ctx.text->print(text_, tx, ty, tz, 14, GuiTheme::getButtonTextColor());
+	GLText::get()->print(text_, {tx, ty}, tz, 14, GuiTheme::getButtonTextColor());
 }

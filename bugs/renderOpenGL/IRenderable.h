@@ -22,6 +22,9 @@ public:
 	 * Called once per frame, after viewports are finished, to clear queued data
 	 */
 	virtual void purgeRenderQueue() = 0;
+
+	// called once when the renderer is destroyed to release all resources associated with this renderable.
+	virtual void unload() = 0;
 };
 
 

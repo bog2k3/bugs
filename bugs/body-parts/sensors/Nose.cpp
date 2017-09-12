@@ -10,9 +10,9 @@
 #include "../../entities/Bug.h"
 #include "../../World.h"
 #include "../../neuralnet/OutputSocket.h"
-#include "../../math/math2D.h"
+#include "../../math/math3D.h"
 #include "../../renderOpenGL/RenderContext.h"
-#include "../../renderOpenGL/Shape2D.h"
+#include "../../renderOpenGL/Shape3D.h"
 #include "../../OSD/EntityLabeler.h"
 
 #include "../../utils/UpdateList.h"
@@ -56,19 +56,19 @@ void Nose::draw(RenderContext const& ctx) {
 	} else {
 #ifdef DEBUG_DRAW_NOSE
 		glm::vec3 worldTransform = getWorldTransformation();
-		glm::vec2 zero = vec3xy(worldTransform);
+		glm::vec3 zero {vec3xy(worldTransform), 0};
 		float sqA3 = sqrt(size_/3);
 		float base = 2 * sqA3;
 		float height = 3 * sqA3;
-		glm::vec2 vert[] {
-			glm::vec2(-height/2, base/2),
-			glm::vec2(height/2, 0),
-			glm::vec2(-height/2, -base/2),
-			glm::vec2(-height/2, base/2)
+		glm::vec3 vert[] {
+			glm::vec3(-height/2, base/2, 0),
+			glm::vec3(height/2, 0, 0),
+			glm::vec3(-height/2, -base/2, 0),
+			glm::vec3(-height/2, base/2, 0)
 		};
 		for (int i=0; i<4; i++)
-			vert[i] = zero + glm::rotate(vert[i], worldTransform.z);
-		ctx.shape->drawLineStrip(vert, 4, 0, debug_color);
+			vert[i] = zero + glm::vec3(glm::rotate(vec3xy(vert[i]), worldTransform.z), 0);
+		Shape3D::get()->drawLineStrip(vert, 4, debug_color);
 #endif
 	}
 }

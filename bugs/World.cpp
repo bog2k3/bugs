@@ -8,10 +8,10 @@
 #include "World.h"
 #include "entities/Entity.h"
 #include "physics/PhysicsBody.h"
-#include "math/math2D.h"
+#include "math/math3D.h"
 #include "math/box2glm.h"
 #include "Infrastructure.h"
-#include "renderOpenGL/Shape2D.h"
+#include "renderOpenGL/Shape3D.h"
 
 #include "utils/bitFlags.h"
 #include "utils/parallel.h"
@@ -260,10 +260,10 @@ void World::draw(RenderContext const& ctx) {
 	PERF_MARKER_FUNC;
 	// draw extent lines:
 	glm::vec3 lineColor(0.2f, 0, 0.8f);
-	ctx.shape->drawLine(glm::vec2(extentXn_, extentYp_*1.5f), glm::vec2(extentXn_, extentYn_*1.5f), 0, lineColor);
-	ctx.shape->drawLine(glm::vec2(extentXp_, extentYp_*1.5f), glm::vec2(extentXp_, extentYn_*1.5f), 0, lineColor);
-	ctx.shape->drawLine(glm::vec2(extentXn_*1.5f, extentYp_), glm::vec2(extentXp_*1.5f, extentYp_), 0, lineColor);
-	ctx.shape->drawLine(glm::vec2(extentXn_*1.5f, extentYn_), glm::vec2(extentXp_*1.5f, extentYn_), 0, lineColor);
+	Shape3D::get()->drawLine(glm::vec3(extentXn_, extentYp_*1.5f, 0), glm::vec3(extentXn_, extentYn_*1.5f, 0), lineColor);
+	Shape3D::get()->drawLine(glm::vec3(extentXp_, extentYp_*1.5f, 0), glm::vec3(extentXp_, extentYn_*1.5f, 0), lineColor);
+	Shape3D::get()->drawLine(glm::vec3(extentXn_*1.5f, extentYp_, 0), glm::vec3(extentXp_*1.5f, extentYp_, 0), lineColor);
+	Shape3D::get()->drawLine(glm::vec3(extentXn_*1.5f, extentYn_, 0), glm::vec3(extentXp_*1.5f, extentYn_, 0), lineColor);
 	// draw entities
 	for (auto e : entsToDraw)
 		e->draw(ctx);

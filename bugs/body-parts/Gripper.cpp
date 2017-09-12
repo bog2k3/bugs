@@ -8,8 +8,8 @@
 #include "Gripper.h"
 #include "BodyConst.h"
 #include "../World.h"
-#include "../renderOpenGL/Shape2D.h"
-#include "../math/math2D.h"
+#include "../renderOpenGL/Shape3D.h"
+#include "../math/math3D.h"
 #include "../neuralnet/InputSocket.h"
 
 #include "../utils/log.h"
@@ -116,27 +116,23 @@ void Gripper::setActive(bool active) {
 }
 
 void Gripper::draw(RenderContext const& ctx) {
+	glm::vec3 transform = getWorldTransformation();
+	glm::vec3 pos = {vec3xy(transform), 0};
 	if (committed_) {
 		// nothing, physics draws
 #ifdef DEBUG_DRAW_GRIPPER
 		if (isDead()) {
-			glm::vec3 transform = getWorldTransformation();
-			glm::vec2 pos = vec3xy(transform);
 			float sizeLeft = getFoodValue() / density_;
-			ctx.shape->drawCircle(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 0, 12, glm::vec3(0.5f,0,1));
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
 		} else if (active_) {
-			glm::vec3 transform = getWorldTransformation();
-			glm::vec2 pos = vec3xy(transform);
-			ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV)*0.6f, 0, 12, debug_color);
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV)*0.6f, 12, debug_color);
 		}
 #endif
 	} else {
-		glm::vec3 transform = getWorldTransformation();
-		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(size_*PI_INV), 0, 12, debug_color);
-		ctx.shape->drawLine(pos,
-				pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z),
-				0, debug_color);
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
+		Shape3D::get()->drawLine(pos,
+				pos + glm::vec3(glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0),
+				debug_color);
 	}
 }
 

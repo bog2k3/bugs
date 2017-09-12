@@ -8,11 +8,11 @@
 #include "Gamete.h"
 #include "WorldConst.h"
 #include "../genetics/Gene.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 #include "../math/aabb.h"
 #include "../body-parts/BodyConst.h"
 #include "../renderOpenGL/RenderContext.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../World.h"
 #include "Bug.h"
 
@@ -123,19 +123,19 @@ void Gamete::draw(RenderContext const& ctx) {
 	static constexpr float lengthRatio = 0.8f;
 	static constexpr float widthRatio = 0.2f;
 	float radius = sqrtf(body_.b2Body_->GetMass() * BodyConst::ZygoteDensityInv * PI_INV);
-	glm::vec2 origin = body_.getPosition();
-	glm::vec2 i(glm::rotate(glm::vec2(1,0), body_.b2Body_->GetAngle()));
-	glm::vec2 j(glm::rotate(glm::vec2(0,1), body_.b2Body_->GetAngle()));
+	glm::vec3 origin { body_.getPosition(), 0 };
+	glm::vec3 i { glm::rotate(glm::vec2(1,0), body_.b2Body_->GetAngle()), 0 };
+	glm::vec3 j { glm::rotate(glm::vec2(0,1), body_.b2Body_->GetAngle()), 0 };
 	float width = widthRatio * radius;
 	float segHeight = lengthRatio * radius * 2.f / nSeg;
 	float offset = nSeg * 0.5f * segHeight;
-	glm::vec2 v[nSeg+1];
+	glm::vec3 v[nSeg+1];
 	v[0] = origin -width*i + offset*j;
 	for (int k=0; k<nSeg; k++) {
 		float side = k%2 ? -1 : +1;
 		v[k+1] = origin + width * side * i + (offset-(k+1)*segHeight) * j;
 	}
-	ctx.shape->drawLineStrip(v, nSeg+1, 0, debug_color);
+	Shape3D::get()->drawLineStrip(v, nSeg+1, debug_color);
 }
 #endif
 

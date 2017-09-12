@@ -9,10 +9,10 @@
 #include "BodyConst.h"
 #include "../World.h"
 #include "../entities/food/FoodChunk.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 #include "../math/box2glm.h"
 #include "../renderOpenGL/RenderContext.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/Shape3D.h"
 
 #include "../utils/log.h"
 #include "../utils/UpdateList.h"
@@ -127,14 +127,14 @@ void Mouth::draw(RenderContext const& ctx) {
 		float widthLeft = width_ * ratio;
 		float lengthLeft = length_ * ratio;
 		glm::vec3 worldTransform = getWorldTransformation();
-		ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0, glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
+		Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
 #endif
 	} else {
 		glm::vec3 worldTransform = getWorldTransformation();
-		ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0, glm::vec2(length_, width_), worldTransform.z, debug_color);
-		ctx.shape->drawLine(vec3xy(worldTransform),
-				vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
-				0, debug_color);
+		Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(length_, width_), worldTransform.z, debug_color);
+		Shape3D::get()->drawLine(glm::vec3(vec3xy(worldTransform), 0),
+				glm::vec3(vec3xy(worldTransform), 0) + glm::vec3(glm::rotate(getChildAttachmentPoint(0), worldTransform.z), 0),
+				debug_color);
 	}
 }
 

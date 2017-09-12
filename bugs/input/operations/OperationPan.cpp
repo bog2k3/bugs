@@ -70,7 +70,7 @@ void OperationPan::handleInputEvent(InputEvent& ev) {
 			if (filterTimes[i] < minTime)
 				minTime = filterTimes[i];
 		}
-		flySpeed /= (glfwGetTime()- minTime) * pContext->pViewport->getCamera()->getZoomLevel() * 2;
+		flySpeed /= (glfwGetTime()- minTime) * pContext->pViewport->camera()->getOrthoZoom() * 2;
 		flySpeed.x *= -1;
 		break;
 	}
@@ -80,12 +80,12 @@ void OperationPan::handleInputEvent(InputEvent& ev) {
 		lastIndex = (lastIndex + 1) % nFilter;
 		lastDelta[lastIndex] = glm::vec2(ev.dx, ev.dy);
 		filterTimes[lastIndex] = glfwGetTime();
-		pContext->pViewport->getCamera()->move(glm::vec2(-ev.dx, ev.dy) / pContext->pViewport->getCamera()->getZoomLevel());
+		pContext->pViewport->camera()->move(glm::vec3(-ev.dx, ev.dy, 0) / pContext->pViewport->camera()->getOrthoZoom());
 		break;
 	}
 	case InputEvent::EV_MOUSE_SCROLL: {
 		float factor = ev.dz < 0 ? 0.90f : 1.10f;
-		pContext->pViewport->getCamera()->setZoomLevel(pContext->pViewport->getCamera()->getZoomLevel() * factor);
+		pContext->pViewport->camera()->setOrthoZoom(pContext->pViewport->camera()->getOrthoZoom() * factor);
 		break;
 	}
 	default:
@@ -95,9 +95,9 @@ void OperationPan::handleInputEvent(InputEvent& ev) {
 
 void OperationPan::update(float dt) {
 	if (isFlyActive) {
-		pContext->pViewport->getCamera()->move(flySpeed * dt);
+		pContext->pViewport->camera()->move({flySpeed * dt, 0});
 		flySpeed /= frictionFactor;
-		if (glm::length(flySpeed) * pContext->pViewport->getCamera()->getZoomLevel() < 5) // less than 5 screen pixels per second, then stop
+		if (glm::length(flySpeed) * pContext->pViewport->camera()->getOrthoZoom() < 5) // less than 5 screen pixels per second, then stop
 			isFlyActive = false;
 	}
 }

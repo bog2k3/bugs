@@ -8,10 +8,10 @@
 #include "FoodChunk.h"
 #include "../WorldConst.h"
 #include "../../World.h"
-#include "../../math/math2D.h"
+#include "../../math/math3D.h"
 #include "../../math/aabb.h"
 #include "../../renderOpenGL/RenderContext.h"
-#include "../../renderOpenGL/Shape2D.h"
+#include "../../renderOpenGL/Shape3D.h"
 
 #include "../../perf/marker.h"
 
@@ -56,9 +56,9 @@ FoodChunk::~FoodChunk() {
 
 #ifdef DEBUG_DRAW_FOOD_CHUNK
 void FoodChunk::draw(RenderContext const& ctx) {
-	ctx.shape->drawCircle(physBody_.getPosition(),
+	Shape3D::get()->drawCircleXOY(physBody_.getPosition(),
 			sqrtf(amountLeft_.load(std::memory_order_relaxed)*PI_INV*WorldConst::FoodChunkDensityInv),
-					0, 8, glm::vec3(1.f, 0.5f, 0.f));
+					8, glm::vec3(1.f, 0.5f, 0.f));
 }
 #endif
 

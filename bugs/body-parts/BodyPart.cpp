@@ -10,9 +10,9 @@
 #include "../entities/Bug.h"
 #include "../math/box2glm.h"
 #include "../math/aabb.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 #include "../renderOpenGL/RenderContext.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../utils/log.h"
 #include "../utils/assert.h"
 #include "../genetics/GeneDefinitions.h"
@@ -265,9 +265,9 @@ void BodyPart::draw(RenderContext const& ctx) {
 	if (committed_)
 		return;
 	glm::vec3 trans = getWorldTransformation();
-	glm::vec2 pos(trans.x, trans.y);
-	ctx.shape->drawLine(pos + glm::vec2(-0.01f, 0), pos + glm::vec2(0.01f, 0), 0, glm::vec3(0.2f, 0.2f, 1.f));
-	ctx.shape->drawLine(pos + glm::vec2(0, -0.01f), pos + glm::vec2(0, 0.01f), 0, glm::vec3(1.f, 0.2f, 0.2f));
+	glm::vec3 pos(trans.x, trans.y, 0);
+	Shape3D::get()->drawLine(pos + glm::vec3(-0.01f, 0, 0), pos + glm::vec3(0.01f, 0, 0), glm::vec3(0.2f, 0.2f, 1.f));
+	Shape3D::get()->drawLine(pos + glm::vec3(0, -0.01f, 0), pos + glm::vec3(0, 0.01f, 0), glm::vec3(1.f, 0.2f, 0.2f));
 }
 
 void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue& value) {

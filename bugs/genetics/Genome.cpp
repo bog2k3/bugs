@@ -8,7 +8,7 @@
 #include "Genome.h"
 #include "../utils/rand.h"
 #include "../utils/log.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 #include <set>
 
 #ifdef DEBUG_DMALLOC

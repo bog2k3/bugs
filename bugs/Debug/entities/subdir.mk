@@ -4,24 +4,39 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../entities/Box.cpp \
 ../entities/Bug.cpp \
 ../entities/BugGenome.cpp \
+../entities/CameraController.cpp \
 ../entities/Entity.cpp \
 ../entities/Gamete.cpp \
+../entities/LabelEntity.cpp \
+../entities/PathController.cpp \
+../entities/SigViewerEntity.cpp \
 ../entities/Wall.cpp 
 
 OBJS += \
+./entities/Box.o \
 ./entities/Bug.o \
 ./entities/BugGenome.o \
+./entities/CameraController.o \
 ./entities/Entity.o \
 ./entities/Gamete.o \
+./entities/LabelEntity.o \
+./entities/PathController.o \
+./entities/SigViewerEntity.o \
 ./entities/Wall.o 
 
 CPP_DEPS += \
+./entities/Box.d \
 ./entities/Bug.d \
 ./entities/BugGenome.d \
+./entities/CameraController.d \
 ./entities/Entity.d \
 ./entities/Gamete.d \
+./entities/LabelEntity.d \
+./entities/PathController.d \
+./entities/SigViewerEntity.d \
 ./entities/Wall.d 
 
 

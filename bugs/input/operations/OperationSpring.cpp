@@ -51,7 +51,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 	case InputEvent::EV_MOUSE_DOWN: {
 		if (ev.mouseButton != boundButton)
 			break;
-		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec2(ev.x, ev.y));
+		glm::vec2 wldClickPos = pContext->pViewport->unproject(glm::vec3(ev.x, ev.y, 0));
 		pressedObj = pContext->locator->getBodyAtPos(wldClickPos);
 		if (pressedObj == nullptr)
 			return;
@@ -90,7 +90,7 @@ void OperationSpring::handleInputEvent(InputEvent& ev) {
 	}
 	case InputEvent::EV_MOUSE_MOVED: {
 		if (mouseJoint) {
-			mouseJoint->SetTarget(g2b(pContext->pViewport->unproject(glm::vec2(ev.x, ev.y))));
+			mouseJoint->SetTarget(g2b(pContext->pViewport->unproject(glm::vec3(ev.x, ev.y, 0))));
 			mouseBody->SetTransform(mouseJoint->GetTarget(), 0);
 		}
 		break;

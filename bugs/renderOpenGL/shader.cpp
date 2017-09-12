@@ -26,8 +26,8 @@ std::string Shaders::readShaderFile(const char* path) {
 	}
 }
 
-GLuint Shaders::createAndCompileShader(std::string const &code, GLuint shaderType) {
-	GLuint shaderID = glCreateShader(shaderType);
+unsigned Shaders::createAndCompileShader(std::string const &code, unsigned shaderType) {
+	unsigned shaderID = glCreateShader(shaderType);
 	GLint Result = GL_FALSE;
 	// Compile Shader
 	const char* sourcePointer = code.c_str();
@@ -54,7 +54,7 @@ GLuint Shaders::createAndCompileShader(std::string const &code, GLuint shaderTyp
 	return shaderID;
 }
 
-GLuint Shaders::loadVertexShader(const char* path) {
+unsigned Shaders::loadVertexShader(const char* path) {
 	string vertexShaderCode = readShaderFile(path);
 	if (vertexShaderCode == "")
 		return 0;
@@ -62,14 +62,14 @@ GLuint Shaders::loadVertexShader(const char* path) {
 	return createAndCompileShader(vertexShaderCode, GL_VERTEX_SHADER);
 }
 
-GLuint Shaders::loadGeometryShader(const char* path) {
+unsigned Shaders::loadGeometryShader(const char* path) {
 	string vertexShaderCode = readShaderFile(path);
 	if (vertexShaderCode == "")
 		return 0;
 	LOG("Compiling shader : " << path << " . . . ");
 	return createAndCompileShader(vertexShaderCode, GL_GEOMETRY_SHADER);
 }
-GLuint Shaders::loadFragmentShader(const char* path) {
+unsigned Shaders::loadFragmentShader(const char* path) {
 	string vertexShaderCode = readShaderFile(path);
 	if (vertexShaderCode == "")
 		return 0;
@@ -77,16 +77,16 @@ GLuint Shaders::loadFragmentShader(const char* path) {
 	return createAndCompileShader(vertexShaderCode, GL_FRAGMENT_SHADER);
 }
 
-GLuint Shaders::createProgram(const char* vertex_file_path, const char* fragment_file_path) {
+unsigned Shaders::createProgram(const char* vertex_file_path, const char* fragment_file_path) {
 	return createProgramGeom(vertex_file_path, nullptr, fragment_file_path);
 }
-GLuint Shaders::createProgramGeom(const char* vertex_file_path, const char* geom_file_path,
+unsigned Shaders::createProgramGeom(const char* vertex_file_path, const char* geom_file_path,
 		const char* fragment_file_path) {
 	LOGPREFIX("SHADERS");
 	// Create the shaders
-	GLuint vertexShaderID = loadVertexShader(vertex_file_path);
-	GLuint geomShaderID = geom_file_path != nullptr ? loadGeometryShader(geom_file_path) : 0;
-	GLuint fragmentShaderID = loadFragmentShader(fragment_file_path);
+	unsigned vertexShaderID = loadVertexShader(vertex_file_path);
+	unsigned geomShaderID = geom_file_path != nullptr ? loadGeometryShader(geom_file_path) : 0;
+	unsigned fragmentShaderID = loadFragmentShader(fragment_file_path);
 
 	if (vertexShaderID == 0 || fragmentShaderID == 0 || (geom_file_path != nullptr && geomShaderID == 0)) {
 		LOGLN("Some shaders failed. Aborting...");
@@ -95,7 +95,7 @@ GLuint Shaders::createProgramGeom(const char* vertex_file_path, const char* geom
 
 	// Link the program
 	LOG("Linking program . . .");
-	GLuint programID = glCreateProgram();
+	unsigned programID = glCreateProgram();
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, geomShaderID);
 	glAttachShader(programID, fragmentShaderID);

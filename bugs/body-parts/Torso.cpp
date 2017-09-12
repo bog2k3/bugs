@@ -9,8 +9,8 @@
 #include "BodyConst.h"
 #include "Mouth.h"
 #include "../World.h"
-#include "../math/math2D.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../math/math3D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../renderOpenGL/RenderContext.h"
 
 #include "../utils/UpdateList.h"
@@ -94,22 +94,22 @@ void Torso::draw(RenderContext const& ctx) {
 			glm::vec3 transform = getWorldTransformation();
 			glm::vec2 pos = vec3xy(transform);
 			float sizeLeft = getFoodValue() / density_;
-			ctx.shape->drawCircle(pos, sqrtf(sizeLeft/PI), 0, 12, glm::vec3(0.5f,0,1));
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft/PI), 12, glm::vec3(0.5f,0,1));
 		} else {
 			// draw the inner circle - actual torso size without fat
 			glm::vec3 transform = getWorldTransformation();
 			glm::vec2 pos = vec3xy(transform);
-			ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(size_/PI), 12, debug_color);
 		}
 #endif
 	} else {
 		glm::vec3 transform = getWorldTransformation();
 		glm::vec2 pos = vec3xy(transform);
-		ctx.shape->drawCircle(pos, sqrtf(size_/PI), 0, 12, debug_color);
-		ctx.shape->drawCircle(pos, sqrtf((size_+fatMass_*BodyConst::FatDensityInv)*PI_INV), 0, 12, debug_color);
-		ctx.shape->drawLine(pos,
-				pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z),
-				0, debug_color);
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_/PI), 12, debug_color);
+		Shape3D::get()->drawCircleXOY(pos, sqrtf((size_+fatMass_*BodyConst::FatDensityInv)*PI_INV), 12, debug_color);
+		Shape3D::get()->drawLine({pos, 0},
+				{pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z), 0},
+				debug_color);
 	}
 }
 

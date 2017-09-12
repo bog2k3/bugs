@@ -1,10 +1,13 @@
 #pragma once
 
-#include <glm/vec2.hpp>
-#include <glm/geometric.hpp>
-#include <utility>
 #include "constants.h"
 #include "../utils/assert.h"
+
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/geometric.hpp>
+
+#include <utility>
 
 template<typename T> constexpr T sqr(T const &x) { return x*x; }
 template<typename T> inline void xchg(T &x1, T &x2) { T aux(x1); x1 = x2; x2 = aux; }

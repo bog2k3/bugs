@@ -26,7 +26,7 @@ public:
 	// remove a named label
 	void removeEntityLabel(const Entity* ent, std::string const& name);
 
-	void draw(RenderContext const& ctx);
+	void draw(RenderContext const&);
 
 private:
 	EntityLabeler();

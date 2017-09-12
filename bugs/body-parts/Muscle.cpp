@@ -38,8 +38,8 @@
 #include "Bone.h"
 #include "BodyConst.h"
 #include "../World.h"
-#include "../math/math2D.h"
-#include "../renderOpenGL/Shape2D.h"
+#include "../math/math3D.h"
+#include "../renderOpenGL/Shape3D.h"
 #include "../renderOpenGL/RenderContext.h"
 #include "../neuralnet/InputSocket.h"
 
@@ -278,19 +278,17 @@ void Muscle::draw(RenderContext const& ctx) {
 	float w = sqrtf(size_ / crtAspect);
 	float l = crtAspect * w;
 	glm::vec3 worldTransform = getWorldTransformation();
-	ctx.shape->drawRectangleCentered(vec3xy(worldTransform), 0,
+	Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
 			glm::vec2(l, w), worldTransform.z, debug_color);
-	ctx.shape->drawLine(
-			vec3xy(worldTransform),
-			vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z),
-			0,
+	Shape3D::get()->drawLine(
+			{vec3xy(worldTransform), 0},
+			{vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z), 0},
 			debug_color);
 #ifdef DEBUG_DRAW_MUSCLE
 	if (inputSocket_->value > 0)
-		ctx.shape->drawLine(
-			vec3xy(worldTransform) + glm::rotate(glm::vec2(-l/2, 0), worldTransform.z + PI/2),
-			vec3xy(worldTransform) + glm::rotate(glm::vec2(+l/2, 0), worldTransform.z + PI/2),
-			0,
+		Shape3D::get()->drawLine(
+			{vec3xy(worldTransform) + glm::rotate(glm::vec2(-l/2, 0), worldTransform.z + PI/2), 0},
+			{vec3xy(worldTransform) + glm::rotate(glm::vec2(+l/2, 0), worldTransform.z + PI/2), 0},
 			debug_color);
 #endif
 }

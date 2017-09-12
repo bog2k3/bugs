@@ -29,8 +29,8 @@ GUI/controls \
 OSD \
 body-parts \
 body-parts/sensors \
-entities/Bug \
 entities \
+entities/Bug \
 entities/food \
 genetics \
 input \

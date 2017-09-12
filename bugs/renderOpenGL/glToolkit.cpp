@@ -15,9 +15,9 @@ using namespace glm;
 using namespace std;
 
 GLFWwindow* window = NULL;
-GLuint MatrixLoc = 0;
+unsigned MatrixLoc = 0;
 
-GLuint texIDs[1000];
+unsigned texIDs[1000];
 
 unsigned winWidth = 512;
 unsigned winHeight = 512;
@@ -65,15 +65,15 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 		-0.5f, -0.5f, 0.0f, 0.01f, 0.99f,
 		+0.5f, -0.5f, 0.0f, 0.99f, 0.99f,
 	};
-	GLuint vbuf;
+	unsigned vbuf;
 	glGenBuffers(1, &vbuf);
 	glBindBuffer(GL_ARRAY_BUFFER, vbuf);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glGenTextures(sizeof(texIDs)/sizeof(GLuint), texIDs);
+	glGenTextures(sizeof(texIDs)/sizeof(unsigned), texIDs);
 	glActiveTexture(GL_TEXTURE0);
 
-	GLuint prog = Shaders::createProgram("data/shaders/posuv.vert", nullptr, "data/shaders/uvmap.frag");
+	unsigned prog = Shaders::createProgram("data/shaders/posuv.vert", nullptr, "data/shaders/uvmap.frag");
 	if (prog == 0) {
 		cout << "Could not create shader program!" << endl;
 		return false;
@@ -82,7 +82,7 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 	glUseProgram(prog);
 
 	// Get a handle for our "myTextureSampler" uniform
-	GLuint TextureLocation  = glGetUniformLocation(prog, "myTextureSampler");
+	unsigned TextureLocation  = glGetUniformLocation(prog, "myTextureSampler");
 	// Set our "myTextureSampler" sampler to user Texture Unit 0
 	glUniform1i(TextureLocation, 0);
 
@@ -118,6 +118,7 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 // begins a frame
 void gltBegin()
 {
+	glClearColor(0,0,0,0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// ================================
 }
 

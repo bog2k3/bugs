@@ -12,7 +12,7 @@
 #include "../genetics/constants.h"
 #include "../genetics/Ribosome.h"
 #include "../neuralnet/functions.h"
-#include "../math/math2D.h"
+#include "../math/math3D.h"
 #include "../math/aabb.h"
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Torso.h"
@@ -25,6 +25,7 @@
 #include "../serialization/GenomeSerialization.h"
 #include "../renderOpenGL/Viewport.h"
 #include "../renderOpenGL/GLText.h"
+#include "../renderOpenGL/ViewportCoord.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
 #include "Gamete.h"
@@ -286,10 +287,10 @@ void Bug::draw(RenderContext const &ctx) {
 	// draw debug data:
 	if (ctx.enabledLayers.bugDebug && body_) {
 		glm::vec3 wldPos = body_->getWorldTransformation();
-		glm::vec2 scrPos = ctx.viewport->project(vec3xy(wldPos));
+		glm::vec3 scrPos = ctx.viewport->project(wldPos);
 		std::stringstream ss;
 		ss << id;
-		ctx.text->print(ss.str(), scrPos.x, scrPos.y, 0, 16, glm::vec3(0.2f, 1.f, 0.1f));
+		GLText::get()->print(ss.str(), ViewportCoord{scrPos.x, scrPos.y}, 0, 16, glm::vec3(0.2f, 1.f, 0.1f));
 	}
 }
 

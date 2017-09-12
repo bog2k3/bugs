@@ -6,15 +6,14 @@
  */
 
 #include "ThreadPool.h"
-#include "../perf/marker.h"
 #include "assert.h"
 
-ThreadPool::ThreadPool(uint numberOfThreads)
+ThreadPool::ThreadPool(unsigned numberOfThreads)
 {
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__);
 #endif
-	for (uint i=0; i<numberOfThreads; i++)
+	for (unsigned i=0; i<numberOfThreads; i++)
 		workers_.push_back(std::thread(std::bind(&ThreadPool::workerFunc, this)));
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " finished.");
@@ -47,14 +46,11 @@ void ThreadPool::workerFunc() {
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " begin");
 #endif
-	perf::setCrtThreadName("ThreadPool::worker");
-	PERF_MARKER_FUNC;
 	while (!stopSignal_) {
 		PoolTaskHandle task(nullptr);
 		std::unique_lock<std::mutex> lk(poolMutex_);
 		auto pred = [this] { return stopSignal_ || !!!queuedTasks_.empty(); };
 		if (!pred()) {
-			PERF_MARKER_BLOCKED("idling");
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " wait for work...");
 #endif
@@ -74,7 +70,6 @@ void ThreadPool::workerFunc() {
 		task->started_.store(true);
 		// do work...
 		do {
-			PERF_MARKER("working");
 			task->workFunc_();
 		} while (0);
 		task->finished_.store(true);
@@ -85,16 +80,13 @@ void ThreadPool::workerFunc() {
 }
 
 void PoolTask::wait() {
-	PERF_MARKER_FUNC_BLOCKED;
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " waiting for task...");
 #endif
 	{
-		PERF_MARKER_BLOCKED("waitForTaskToStart");
 		while (!started_)
 			std::this_thread::yield();
 	}
-	PERF_MARKER_BLOCKED("waitForTaskToEnd");
 #ifdef DEBUG_THREADPOOL
 	LOGLN(__FUNCTION__ << " task is started.");
 #endif
