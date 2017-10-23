@@ -85,6 +85,14 @@ GLText::~GLText() {
 	glDeleteProgram(shaderID_);
 }
 
+void GLText::setViewportFilter(std::string viewportName) {
+	viewportFilter_ = viewportName;
+}
+
+void GLText::resetViewportFilter() {
+	viewportFilter_ = "";
+}
+
 glm::vec2 GLText::getTextRect(const std::string& text, int fontSize) {
 	unsigned int length = text.length();
 	float xSize = fontSize*cellRatio_;
@@ -112,11 +120,11 @@ glm::vec2 GLText::getTextRect(const std::string& text, int fontSize) {
 	return glm::vec2(x, y+lineH);
 }
 
-void GLText::print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec3 const& color, std::set<std::string> viewportFilter) {
-	print(text, pos, z, size, glm::vec4(color, 1), viewportFilter);
+void GLText::print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec3 const& color) {
+	print(text, pos, z, size, glm::vec4(color, 1));
 }
 
-void GLText::print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec4 const& color, std::set<std::string> viewportFilter) {
+void GLText::print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec4 const& color) {
 	unsigned int length = text.length();
 	float xSize = size*cellRatio_;
 	glm::vec4 altColor = color;
@@ -126,7 +134,7 @@ void GLText::print(const std::string &text, ViewportCoord pos, int z, int size, 
 
 	// Fill buffers
 	itemPositions_.push_back(pos);
-	viewportFilters_.push_back(viewportFilter);
+	viewportFilters_.push_back(viewportFilter_);
 	verticesPerItem_.push_back(length * 6);
 	int x = 0;
 	int y = 0;
@@ -217,7 +225,7 @@ void GLText::render(Viewport* pCrtViewport) {
 	// do the drawing:
 	uint offset = 0;
 	for (uint i=0; i<itemPositions_.size(); i++) {
-		if (viewportFilters_[i].empty() || viewportFilters_[i].find(pCrtViewport->name()) != viewportFilters_[i].end()) {
+		if (viewportFilters_[i].empty() || viewportFilters_[i] == pCrtViewport->name()) {
 			glm::vec2 translate(itemPositions_[i].x(pCrtViewport), itemPositions_[i].y(pCrtViewport));
 			glUniform2fv(translationID_, 1, &translate[0]);
 			glDrawArrays(GL_TRIANGLES, offset, verticesPerItem_[i] );

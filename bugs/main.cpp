@@ -404,19 +404,24 @@ int main(int argc, char* argv[]) {
 					// draw builds the render queue for the current frame
 					drawList.draw(renderContext);
 
-#warning: "fix with ViewportCoord properly"
-					GLText::get()->print("Salut Lume!\n[Powered by Box2D]", {20, vp1->height()-20}, 0, 16, glm::vec3(0.2f, 0.4, 1.0f));
+					GLText::get()->print("Salut Lume!\n[Powered by Box2D]",
+							{20, 20, ViewportCoord::absolute, ViewportCoord::bottom | ViewportCoord::left},
+							0, 16, glm::vec3(0.2f, 0.4, 1.0f));
 
 					if (updatePaused) {
-						GLText::get()->print("PAUSED", {vp1->width() / 2, vp1->height() / 2}, 0, 32, glm::vec3(1.f, 0.8f, 0.2f));
+						GLText::get()->print("PAUSED",
+								{50, 50, ViewportCoord::percent},
+								0, 32, glm::vec3(1.f, 0.8f, 0.2f));
 					}
 					if (slowMo) {
-						GLText::get()->print("~~ Slow Motion ON ~~", {10, 45}, 0, 18, glm::vec3(1.f, 0.5f, 0.1f));
+						GLText::get()->print("~~ Slow Motion ON ~~",
+								{10, 45},
+								0, 18, glm::vec3(1.f, 0.5f, 0.1f));
 					}
 
 					// do the actual openGL render for the previous frame (which is independent of our world)
 					gltBegin();
-					renderer.render();
+					renderer.render(renderContext);
 					// now rendering is on-going, move on to the next update:
 				}
 			} /* frame context */

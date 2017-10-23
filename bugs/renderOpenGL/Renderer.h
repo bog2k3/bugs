@@ -13,6 +13,8 @@
 #include <vector>
 #include <map>
 
+class RenderContext;
+
 class Renderer : public IViewportManager {
 public:
 	virtual ~Renderer();
@@ -28,7 +30,7 @@ public:
 	void deleteViewport(std::string const& name) override;
 	void clearViewports() override { viewports_.clear(); }
 
-	void render();
+	void render(RenderContext const& ctx);
 
 	void unload();
 

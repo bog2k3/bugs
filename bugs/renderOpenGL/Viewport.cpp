@@ -1,54 +1,57 @@
 #include "Viewport.h"
 #include "Camera.h"
 
-#include <glm/vec2.hpp>
-
 using namespace glm;
 
 Viewport::Viewport(int x, int y, int w, int h)
-	: m_userData(0)
-	, viewportArea(x, y, w, h)
-	, pCamera(new Camera(this))
-	, mEnabled(true)
+	: userData_(0)
+	, viewportArea_(x, y, w, h)
+	, pCamera_(new Camera(this))
+	, enabled_(true)
 {
 }
 
 Viewport::~Viewport()
 {
-	delete pCamera;
+	delete pCamera_;
 }
 
 void Viewport::setArea(int vpX, int vpY, int vpW, int vpH)
 {
-	viewportArea = vec4(vpX, vpY, vpW, vpH);
+	viewportArea_ = vec4(vpX, vpY, vpW, vpH);
 
-	pCamera->updateProj();
+	pCamera_->updateProj();
 }
 
 vec3 Viewport::unproject(vec3 point) const
 {
-	assert(false); // TODO restore
+	vec4 unif {point, 1};
+	unif.x /= viewportArea_.z * 0.5f;
+	unif.y /= viewportArea_.w * 0.5f;
 
-	/*vec2 vCamPos = pCamera->getPos();
-	point.x = vCamPos.x + _1mag*(point.x - viewportArea.z*0.5f);
-	point.y = vCamPos.y + _1mag*(viewportArea.w*0.5 - point.y);
-	return point;*/
+	auto camPV = camera()->matProjView();
+	if (mPV_cache_ != camPV) {
+		mPV_cache_ = camPV;
+		mPV_inv_cache_ = glm::inverse(camPV);
+	}
+
+	auto ret = mPV_inv_cache_ * unif;
+	return {ret.x, ret.y, ret.z};
 }
 
 vec3 Viewport::project(vec3 point) const
 {
-	assert(false); // TODO restore
-
-	/*vec2 vCamPos = pCamera->getPos();
-	point -= vCamPos;
-	point *= pCamera->getZoomLevel();
-	point.x += viewportArea.z * 0.5f;
-	point.y = viewportArea.w * 0.5f - point.y;
-	return point;*/
+	auto matPV = camera()->matProjView();
+	auto unif = matPV * vec4{point, 1};
+	vec3 ret { unif.x, unif.y, unif.z };
+	ret *= 1.f / unif.w;
+	ret.x *= viewportArea_.z * 0.5f;
+	ret.y *= viewportArea_.w * 0.5f;
+	return ret;
 }
 
 bool Viewport::containsPoint(glm::vec2 const&p) const {
-	return p.x >= viewportArea.x && p.y >= viewportArea.y &&
-			p.x <= viewportArea.x + viewportArea.z &&
-			p.y <= viewportArea.y + viewportArea.w;
+	return p.x >= viewportArea_.x && p.y >= viewportArea_.y &&
+			p.x <= viewportArea_.x + viewportArea_.z &&
+			p.y <= viewportArea_.y + viewportArea_.w;
 }

@@ -10,7 +10,6 @@
 
 #include "IRenderable.h"
 #include <string>
-#include <set>
 #include <vector>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
@@ -24,10 +23,15 @@ public:
 	virtual ~GLText() override;
 	static void init(Renderer* renderer, const char * texturePath, int rows, int cols, char firstChar, int defaultSize);
 
+	// restricts rendering of following commands to only one viewport
+	void setViewportFilter(std::string viewportName);
+	// resets the viewport filter
+	void resetViewportFilter();
+
 	// z is between [0..100] (bottom to top)
-	void print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec3 const& color, std::set<std::string> viewportFilter = {});
+	void print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec3 const& color);
 	// z is between [0..100] (bottom to top)
-	void print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec4 const& color, std::set<std::string> viewportFilter = {});
+	void print(const std::string &text, ViewportCoord pos, int z, int size, glm::vec4 const& color);
 
 	glm::vec2 getTextRect(std::string const& text, int fontSize);
 
@@ -56,7 +60,8 @@ private:
 	std::vector<glm::vec2> UVs_;
 	std::vector<glm::vec4> colors_;
 	std::vector<ViewportCoord> itemPositions_;
-	std::vector<std::set<std::string>> viewportFilters_;
+	std::string viewportFilter_;
+	std::vector<std::string> viewportFilters_;
 	std::vector<int> verticesPerItem_;
 };
 

@@ -286,11 +286,20 @@ void Bug::draw(RenderContext const &ctx) {
 
 	// draw debug data:
 	if (ctx.enabledLayers.bugDebug && body_) {
-		glm::vec3 wldPos = body_->getWorldTransformation();
-		glm::vec3 scrPos = ctx.viewport->project(wldPos);
+		auto x = [this](Viewport* vp) {
+			glm::vec3 wldPos = body_->getWorldTransformation();
+			glm::vec3 viewpPos = vp->project(wldPos);
+			return viewpPos.x;
+		};
+		auto y = [this](Viewport* vp) {
+			glm::vec3 wldPos = body_->getWorldTransformation();
+			glm::vec3 viewpPos = vp->project(wldPos);
+			return viewpPos.y;
+		};
+
 		std::stringstream ss;
 		ss << id;
-		GLText::get()->print(ss.str(), ViewportCoord{scrPos.x, scrPos.y}, 0, 16, glm::vec3(0.2f, 1.f, 0.1f));
+		GLText::get()->print(ss.str(), ViewportCoord{x, y}, 0, 16, glm::vec3(0.2f, 1.f, 0.1f));
 	}
 }
 

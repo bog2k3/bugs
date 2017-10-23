@@ -58,6 +58,14 @@ void Shape2D::unload() {
 	instance = nullptr;
 }
 
+void Shape2D::setViewportFilter(std::string viewportName) {
+	viewportFilter_ = viewportName;
+}
+
+void Shape2D::resetViewportFilter() {
+	viewportFilter_ = "";
+}
+
 void Shape2D::render(Viewport* vp) {
 	glUseProgram(lineShaderProgram_);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -82,22 +90,20 @@ void Shape2D::render(Viewport* vp) {
 	glEnableVertexAttribArray(indexPos_);
 	glEnableVertexAttribArray(indexColor_);
 
-	// build triangle vertex buffer:
 	static std::vector<glm::vec3> posBuf;
-	posBuf.reserve(max(buffer_.size(), bufferTri_.size()));
+	posBuf.reserve(max(buffer_.size(), max(bufferTri_.size(), buffer_.size())));
 	static std::vector<glm::vec4> colorBuf;
-	colorBuf.reserve(max(buffer_.size(), bufferTri_.size()));
+	colorBuf.reserve(max(buffer_.size(), max(bufferTri_.size(), buffer_.size())));
 
-	// render triangle primitives:
-	posBuf.clear();
-	colorBuf.clear();
-	for (auto &v : bufferTri_) {
+	// build triangle vertex buffer:
+	/*for (auto &v : bufferTri_) {
 		posBuf.push_back(glm::vec3(v.pos.x(vp), v.pos.y(vp), v.z));
 		colorBuf.push_back(v.rgba);
 	}
+	// render triangle primitives:
 	glVertexAttribPointer(indexPos_, 3, GL_FLOAT, GL_FALSE, 0, &posBuf[0]);
 	glVertexAttribPointer(indexColor_, 4, GL_FLOAT, GL_FALSE, 0, &colorBuf[0]);
-	glDrawElements(GL_TRIANGLES, indicesTri_.size(), GL_UNSIGNED_SHORT, &indicesTri_[0]);
+	glDrawElements(GL_TRIANGLES, indicesTri_.size(), GL_UNSIGNED_SHORT, &indicesTri_[0]);*/
 
 	// render line primitives:
 	posBuf.clear();
@@ -109,8 +115,7 @@ void Shape2D::render(Viewport* vp) {
 	glVertexAttribPointer(indexPos_, 3, GL_FLOAT, GL_FALSE, 0, &posBuf[0]);
 	glVertexAttribPointer(indexColor_, 4, GL_FLOAT, GL_FALSE, 0, &colorBuf[0]);
 	for (unsigned i=0; i<viewportFiltersLine_.size(); i++) {
-		if (viewportFiltersLine_[i].empty()
-				|| viewportFiltersLine_[i].find(vp->name()) != viewportFiltersLine_[i].end()) {
+		if (viewportFiltersLine_[i].empty() || viewportFiltersLine_[i] == vp->name()) {
 			glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, &indices_[i*2]);
 		}
 	}
@@ -127,88 +132,88 @@ void Shape2D::purgeRenderQueue() {
 	viewportFiltersTri_.clear();
 }
 
-void Shape2D::drawLine(ViewportCoord point1, ViewportCoord point2, float z, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawLine(point1, point2, z, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawLine(ViewportCoord point1, ViewportCoord point2, float z, glm::vec3 rgb) {
+	drawLine(point1, point2, z, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawLine(ViewportCoord point1, ViewportCoord point2, float z, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawLine(ViewportCoord point1, ViewportCoord point2, float z, glm::vec4 rgba) {
 	buffer_.push_back({point1, z, rgba});
 	indices_.push_back(buffer_.size()-1);
 	buffer_.push_back({point2, z, rgba});
 	indices_.push_back(buffer_.size()-1);
-	viewportFiltersLine_.push_back(viewportFilter);
+	viewportFiltersLine_.push_back(viewportFilter_);
 }
 
-void Shape2D::drawLineList(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawLineList(verts, nVerts, z, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawLineList(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb) {
+	drawLineList(verts, nVerts, z, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawLineList(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawLineList(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba) {
 	for (int i=0; i<nVerts; i++) {
 		buffer_.push_back({verts[i], z, rgba});
 		indices_.push_back(buffer_.size()-1);
-		viewportFiltersLine_.push_back(viewportFilter);
+		viewportFiltersLine_.push_back(viewportFilter_);
 	}
 }
 
-void Shape2D::drawLineStrip(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawLineStrip(verts, nVerts, z, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawLineStrip(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb) {
+	drawLineStrip(verts, nVerts, z, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawLineStrip(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawLineStrip(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba) {
 	for (int i=0; i<nVerts; i++) {
 		buffer_.push_back({verts[i], z, rgba});
 		indices_.push_back(buffer_.size()-1);
 		if (i > 0 && i < nVerts-1)
 			indices_.push_back(buffer_.size()-1);
-		viewportFiltersLine_.push_back(viewportFilter);
+		viewportFiltersLine_.push_back(viewportFilter_);
 	}
 }
 
-void Shape2D::drawPolygon(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawPolygon(verts, nVerts, z, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawPolygon(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb) {
+	drawPolygon(verts, nVerts, z, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawPolygon(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawPolygon(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba) {
 	for (int i=0; i<nVerts; i++) {
 		buffer_.push_back({verts[i], z, rgba});
 		indices_.push_back(buffer_.size()-1);
 		if (i > 0) {
 			indices_.push_back(buffer_.size()-1);
-			viewportFiltersLine_.push_back(viewportFilter);
+			viewportFiltersLine_.push_back(viewportFilter_);
 		}
 	}
 	indices_.push_back(buffer_.size()-nVerts);
-	viewportFiltersLine_.push_back(viewportFilter);
+	viewportFiltersLine_.push_back(viewportFilter_);
 }
 
-void Shape2D::drawPolygonFilled(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawPolygonFilled(verts, nVerts, z, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawPolygonFilled(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb) {
+	drawPolygonFilled(verts, nVerts, z, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawPolygonFilled(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawPolygonFilled(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba) {
 	//TODO must tesselate into triangles
 }
 
-void Shape2D::drawRectangle(ViewportCoord pos, float z, ViewportCoord size, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawRectangle(pos, z, size, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawRectangle(ViewportCoord pos, float z, ViewportCoord size, glm::vec3 rgb) {
+	drawRectangle(pos, z, size, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawRectangle(ViewportCoord pos, float z, ViewportCoord size, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawRectangle(ViewportCoord pos, float z, ViewportCoord size, glm::vec4 rgba) {
 	ViewportCoord coords[] {
 		pos,
 		pos + size.y(),
 		pos + size,
 		pos + size.x()
 	};
-	drawPolygon(coords, 4, z, rgba, viewportFilter);
+	drawPolygon(coords, 4, z, rgba);
 }
 
-void Shape2D::drawRectangleCentered(ViewportCoord pos, float z, ViewportCoord size, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawRectangleCentered(pos, z, size, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawRectangleCentered(ViewportCoord pos, float z, ViewportCoord size, glm::vec3 rgb) {
+	drawRectangleCentered(pos, z, size, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawRectangleCentered(ViewportCoord pos, float z, ViewportCoord size, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawRectangleCentered(ViewportCoord pos, float z, ViewportCoord size, glm::vec4 rgba) {
 	auto hSize = size * 0.5f;
 	ViewportCoord coords[] {
 		pos - hSize,
@@ -216,28 +221,28 @@ void Shape2D::drawRectangleCentered(ViewportCoord pos, float z, ViewportCoord si
 		pos + hSize,
 		pos + hSize - hSize.y()
 	};
-	drawPolygon(coords, 4, z, rgba, viewportFilter);
+	drawPolygon(coords, 4, z, rgba);
 }
 
-void Shape2D::drawRectangleFilled(ViewportCoord pos, float z, ViewportCoord size, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawRectangleFilled(pos, z, size, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawRectangleFilled(ViewportCoord pos, float z, ViewportCoord size, glm::vec3 rgb) {
+	drawRectangleFilled(pos, z, size, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawRectangleFilled(ViewportCoord pos, float z, ViewportCoord size, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawRectangleFilled(ViewportCoord pos, float z, ViewportCoord size, glm::vec4 rgba) {
 	ViewportCoord coords[] {
 		pos,
 		pos + size.y(),
 		pos + size,
 		pos + size.x()
 	};
-	drawPolygonFilled(coords, 4, z, rgba, viewportFilter);
+	drawPolygonFilled(coords, 4, z, rgba);
 }
 
-void Shape2D::drawCircle(ViewportCoord pos, float radius, float z, int nSides, glm::vec3 rgb, std::set<std::string> viewportFilter) {
-	drawCircle(pos, radius, z, nSides, glm::vec4(rgb, 1), viewportFilter);
+void Shape2D::drawCircle(ViewportCoord pos, float radius, float z, int nSides, glm::vec3 rgb) {
+	drawCircle(pos, radius, z, nSides, glm::vec4(rgb, 1));
 }
 
-void Shape2D::drawCircle(ViewportCoord pos, float radius, float z, int nSides, glm::vec4 rgba, std::set<std::string> viewportFilter) {
+void Shape2D::drawCircle(ViewportCoord pos, float radius, float z, int nSides, glm::vec4 rgba) {
 	// make a polygon out of the circle
 	float phiStep = 2 * PI * 1.f / nSides;
 	ViewportCoord *v = new ViewportCoord[nSides];
@@ -246,6 +251,6 @@ void Shape2D::drawCircle(ViewportCoord pos, float radius, float z, int nSides, g
 		v[i] = pos + ViewportCoord{cosf(phi) * radius, sinf(phi) * radius};
 		phi += phiStep;
 	}
-	drawPolygon(v, nSides, z, rgba, viewportFilter);
+	drawPolygon(v, nSides, z, rgba);
 	delete [] v;
 }

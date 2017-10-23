@@ -10,9 +10,7 @@ CPP_SRCS += \
 ../entities/CameraController.cpp \
 ../entities/Entity.cpp \
 ../entities/Gamete.cpp \
-../entities/LabelEntity.cpp \
 ../entities/PathController.cpp \
-../entities/SigViewerEntity.cpp \
 ../entities/Wall.cpp 
 
 OBJS += \
@@ -22,9 +20,7 @@ OBJS += \
 ./entities/CameraController.o \
 ./entities/Entity.o \
 ./entities/Gamete.o \
-./entities/LabelEntity.o \
 ./entities/PathController.o \
-./entities/SigViewerEntity.o \
 ./entities/Wall.o 
 
 CPP_DEPS += \
@@ -34,9 +30,7 @@ CPP_DEPS += \
 ./entities/CameraController.d \
 ./entities/Entity.d \
 ./entities/Gamete.d \
-./entities/LabelEntity.d \
 ./entities/PathController.d \
-./entities/SigViewerEntity.d \
 ./entities/Wall.d 
 
 

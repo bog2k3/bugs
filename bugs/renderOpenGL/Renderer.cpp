@@ -11,6 +11,7 @@
 #include "Shape3D.h"
 #include "GLText.h"
 #include "MeshRenderer.h"
+#include "RenderContext.h"
 #include "../utils/DrawList.h"
 #include "../utils/assert.h"
 
@@ -62,8 +63,8 @@ void Renderer::deleteViewport(std::string const& name) {
 	viewports_.erase(it);
 }
 
-void Renderer::render() {
-	// first clear viewports:
+void Renderer::render(RenderContext const& ctx) {
+	// 1. clear viewports:
 	for (auto &vp : viewports_) {
 		if (!vp.second->isEnabled())
 			continue;
@@ -75,6 +76,14 @@ void Renderer::render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glDisable(GL_SCISSOR_TEST);
 	}
+	// 2. execute deferred drawing per viewport
+	for (auto &vp : viewports_) {
+		for (auto &cb : ctx.deferred_)
+			cb(vp.second.get());
+	}
+	ctx.deferred_.clear();
+
+	// 3. do the low-level rendering
 	for (auto r : renderComponents_) {
 		for (auto &vp : viewports_) {
 			if (!vp.second->isEnabled())

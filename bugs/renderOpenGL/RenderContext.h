@@ -8,6 +8,9 @@
 #ifndef RENDEROPENGL_RENDERCONTEXT_H_
 #define RENDEROPENGL_RENDERCONTEXT_H_
 
+#include <functional>
+#include <vector>
+
 class Shape2D;
 class Viewport;
 class GLText;
@@ -21,19 +24,20 @@ struct RenderLayers {
 	bool osd = true;	// 2D on-screen-display
 };
 
+using deferredCallback = std::function<void(Viewport* vp)>;
+
 class RenderContext {
 public:
-	const Viewport* const viewport;
-
 	RenderLayers enabledLayers;
 
-	RenderContext()
-		: viewport(nullptr) {
-	}
+	RenderContext() = default;
 
-	RenderContext(Viewport* vp)
-		: viewport(vp) {
-	}
+	// defers the drawing to a function which will be called on a per-viewport basis
+	void defer(deferredCallback perViewportCallback) const { deferred_.push_back(perViewportCallback); }
+
+private:
+	mutable std::vector<deferredCallback> deferred_;
+	friend class Renderer;
 };
 
 #endif /* RENDEROPENGL_RENDERCONTEXT_H_ */

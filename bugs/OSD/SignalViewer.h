@@ -42,7 +42,7 @@ public:
 		}
 	};
 
-	SignalViewer(ViewportCoord pos, float z, ViewportCoord size, std::set<std::string> viewportFilter = {});
+	SignalViewer(ViewportCoord pos, float z, ViewportCoord size, std::string viewportFilter="");
 	virtual ~SignalViewer();
 
 	// displayPrecision < 0 means auto. n>=0 means max n decimal places
@@ -64,7 +64,7 @@ private:
 	ViewportCoord pos_;
 	float z_;
 	ViewportCoord size_;
-	std::set<std::string> viewportFilter_;
+	std::string viewportFilter_;
 };
 
 class SignalDataSource {
