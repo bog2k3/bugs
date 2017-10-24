@@ -19,7 +19,9 @@ void main(){
 	vec2 vertexPosition_homoneneousspace = vertexPosition_screenspace.xy + translation.xy - viewportHalfSize + 0.5f;
 	vertexPosition_homoneneousspace.y *= -1;
 	vertexPosition_homoneneousspace /= viewportHalfSize;
-	gl_Position =  vec4(vertexPosition_homoneneousspace,vertexPosition_screenspace.z,1);
+	// map screen-space z from [0..1] to homogenous [-1..+1]
+	float homogenous_z = vertexPosition_screenspace.z * 2 - 1;
+	gl_Position = vec4(vertexPosition_homoneneousspace, homogenous_z, 1);
 	
 	// UV of the vertex. No special space for this one.
 	UV = vertexUV;

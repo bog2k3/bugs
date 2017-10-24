@@ -137,7 +137,7 @@ void GLText::print(const std::string &text, ViewportCoord pos, int z, int size, 
 	// Fill buffers
 	itemPositions_.push_back(pos);
 	viewportFilters_.push_back(viewportFilter_);
-	verticesPerItem_.push_back(length * 6);
+	size_t nPrevVertices = vertices_.size();
 	int x = 0;
 	int y = 0;
 	int initialX = 0;
@@ -186,6 +186,8 @@ void GLText::print(const std::string &text, ViewportCoord pos, int z, int size, 
 		for (int ci=0; ci<6; ci++)
 			colors_.push_back(altColor);
 	}
+
+	verticesPerItem_.push_back(vertices_.size() - nPrevVertices);
 }
 
 void GLText::render(Viewport* pCrtViewport) {

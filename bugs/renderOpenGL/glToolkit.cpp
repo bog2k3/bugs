@@ -57,6 +57,7 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 	}
 
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 
 	/*GLfloat vertices[] = {
 		// x, y, z, u, v
@@ -119,6 +120,7 @@ bool gltInit(unsigned windowWidth, unsigned windowHeight, const char windowTitle
 void gltBegin()
 {
 	glClearColor(0,0,0,0);
+	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// ================================
 }
 

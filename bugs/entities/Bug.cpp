@@ -301,7 +301,7 @@ void Bug::draw(RenderContext const &ctx) {
 
 		std::stringstream ss;
 		ss << id;
-		GLText::get()->print(ss.str(), ViewportCoord{x, y}, 0, 16, glm::vec3(0.2f, 1.f, 0.1f));
+		GLText::get()->print(ss.str(), ViewportCoord{x, y}, 0.99f, 16, glm::vec3(0.2f, 1.f, 0.1f));
 	}
 }
 

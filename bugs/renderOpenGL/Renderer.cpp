@@ -25,10 +25,10 @@ Renderer::~Renderer() {
 Renderer::Renderer(int winW, int winH)
 	: winW_(winW), winH_(winH)
 {
-	Shape2D::init(this);
 	Shape3D::init(this);
-	GLText::init(this, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
 	MeshRenderer::init(this);
+	Shape2D::init(this);
+	GLText::init(this, "data/fonts/DejaVuSansMono_256_16_8.png", 8, 16, ' ', 22);
 }
 
 void Renderer::registerRenderable(IRenderable* r) {
