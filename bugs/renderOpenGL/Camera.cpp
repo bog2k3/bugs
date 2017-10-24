@@ -73,7 +73,7 @@ void Camera::updateProj() {
 	float zFar = 50.f;
 	if (fov_ == 0) {
 		// set ortho
-		matProj_ = glm::ortho(-orthoSize_.x * 0.5f, orthoSize_.x * 0.5f, -orthoSize_.y * 0.5f, orthoSize_.y * 0.5f, zNear, zFar);
+		matProj_ = glm::orthoLH(-orthoSize_.x * 0.5f, orthoSize_.x * 0.5f, -orthoSize_.y * 0.5f, orthoSize_.y * 0.5f, zNear, zFar);
 	} else {
 		// set perspective
 		matProj_ = glm::perspectiveFovLH(fov_, (float)pViewport_->width(), (float)pViewport_->height(), zNear, zFar);
