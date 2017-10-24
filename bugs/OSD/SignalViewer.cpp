@@ -134,7 +134,7 @@ void SignalViewer::draw(RenderContext const&) {
 			stitle << " (no values)";
 		GLText::get()->print(stitle.str(), pos, z_, textSize, s.color_);
 
-		pos = pos + size_.y() + ViewportCoord{0, 15};
+		pos = pos + size_.y() + ViewportCoord{0, 10 + textSize};
 	}
 
 	Shape2D::get()->resetViewportFilter();

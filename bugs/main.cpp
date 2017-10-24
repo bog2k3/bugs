@@ -273,7 +273,10 @@ int main(int argc, char* argv[]) {
 		}
 
 		ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
-		SignalViewer sigViewer(glm::vec2(0.75f, 0.1f), 1.f, glm::vec2(0.2f, 0.1f));
+		SignalViewer sigViewer(
+				{24, 4, ViewportCoord::percent, ViewportCoord::top|ViewportCoord::right},	// position
+				-0.1f, 																		// z
+				{20, 10, ViewportCoord::percent}); 											// size
 
 		DrawList drawList;
 		drawList.add(World::getInstance());
