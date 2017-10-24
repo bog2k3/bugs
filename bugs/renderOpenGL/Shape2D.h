@@ -79,11 +79,18 @@ private:
 	// line buffers
 	std::vector<s_lineVertex> buffer_;
 	std::vector<unsigned short> indices_;
-	std::vector<std::string> viewportFiltersLine_;
+
+	struct s_batch {
+		size_t offset;	// offset in index buffer
+		size_t length;	// number of indices
+		std::string viewportFilter;
+	};
+	std::vector<s_batch> batches_;
+
 	// triangle buffers
 	std::vector<s_lineVertex> bufferTri_;
 	std::vector<unsigned short> indicesTri_;
-	std::vector<std::string> viewportFiltersTri_;
+
 	std::string viewportFilter_ {""};
 	unsigned lineShaderProgram_;
 	unsigned indexPos_;

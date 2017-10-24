@@ -288,11 +288,13 @@ void Bug::draw(RenderContext const &ctx) {
 	if (ctx.enabledLayers.bugDebug && body_) {
 		auto x = [this](Viewport* vp) {
 			glm::vec3 wldPos = body_->getWorldTransformation();
+			wldPos.z = 0; // z was rotation before
 			glm::vec3 viewpPos = vp->project(wldPos);
 			return viewpPos.x;
 		};
 		auto y = [this](Viewport* vp) {
 			glm::vec3 wldPos = body_->getWorldTransformation();
+			wldPos.z = 0; // z was rotation before
 			glm::vec3 viewpPos = vp->project(wldPos);
 			return viewpPos.y;
 		};

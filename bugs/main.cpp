@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "renderOpenGL/glToolkit.h"
-#include "renderOpenGL/Shape2D.h"
 #include "renderOpenGL/Renderer.h"
 #include "renderOpenGL/Viewport.h"
 #include "renderOpenGL/GLText.h"

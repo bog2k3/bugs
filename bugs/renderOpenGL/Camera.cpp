@@ -37,17 +37,15 @@ void Camera::setOrthoZoom(float zoom) {
 	zoomLevel_ = zoom;
 	float width = pViewport_->width() / zoomLevel_;
 	float height = pViewport_->height() / zoomLevel_;
-	float left = position_.x - width * 0.5;
-	float top = position_.y + height * 0.5;
-	ortho_ = { left, top, width, height };
+	orthoSize_ = { width, height };
 	fov_ = 0;
 	updateProj();
 }
 
-void Camera::setOrtho(glm::vec4 rc) {
-	ortho_ = rc;
+void Camera::setOrtho(glm::vec2 size) {
+	orthoSize_ = size;
 	fov_ = 0;
-	zoomLevel_ = pViewport_->width() / ortho_.z;
+	zoomLevel_ = pViewport_->width() / orthoSize_.x;
 	updateProj();
 }
 
@@ -75,7 +73,7 @@ void Camera::updateProj() {
 	float zFar = 50.f;
 	if (fov_ == 0) {
 		// set ortho
-		matProj_ = glm::ortho(ortho_.x, ortho_.x + ortho_.z, ortho_.y, ortho_.y+ortho_.w, zNear, zFar);
+		matProj_ = glm::ortho(-orthoSize_.x * 0.5f, orthoSize_.x * 0.5f, -orthoSize_.y * 0.5f, orthoSize_.y * 0.5f, zNear, zFar);
 	} else {
 		// set perspective
 		matProj_ = glm::perspectiveFovLH(fov_, (float)pViewport_->width(), (float)pViewport_->height(), zNear, zFar);

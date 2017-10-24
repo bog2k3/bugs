@@ -38,16 +38,16 @@ Shape3D::Shape3D(Renderer* renderer)
 	: lineShaderProgram_(0)
 	, indexPos_(0)
 	, indexColor_(0)
-	, indexMatViewProj_(0)
+	, indexMatProjView_(0)
 {
 	renderer->registerRenderable(this);
 	lineShaderProgram_ = Shaders::createProgram("data/shaders/shape3d.vert", "data/shaders/shape3d.frag");
 	if (lineShaderProgram_ == 0) {
-		throw std::runtime_error("Unable to load line shaders!!");
+		throw std::runtime_error("Unable to load shape3D shaders!!");
 	}
 	indexPos_ = glGetAttribLocation(lineShaderProgram_, "vPos");
 	indexColor_ = glGetAttribLocation(lineShaderProgram_, "vColor");
-	indexMatViewProj_ = glGetUniformLocation(lineShaderProgram_, "mViewportInverse");
+	indexMatProjView_ = glGetUniformLocation(lineShaderProgram_, "mProjView");
 }
 
 Shape3D::~Shape3D() {
@@ -67,7 +67,7 @@ void Shape3D::render(Viewport* vp) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendEquation(GL_BLEND_EQUATION_ALPHA);
 
-	glUniformMatrix4fv(indexMatViewProj_, 1, GL_FALSE, glm::value_ptr(vp->camera()->matProjView()));
+	glUniformMatrix4fv(indexMatProjView_, 1, GL_FALSE, glm::value_ptr(vp->camera()->matProjView()));
 	glEnableVertexAttribArray(indexPos_);
 	glEnableVertexAttribArray(indexColor_);
 

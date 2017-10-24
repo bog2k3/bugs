@@ -70,7 +70,7 @@ private:
 	unsigned lineShaderProgram_;
 	unsigned indexPos_;
 	unsigned indexColor_;
-	unsigned indexMatViewProj_;
+	unsigned indexMatProjView_;
 };
 
 #endif /* RENDEROPENGL_SHAPE3D_H_ */

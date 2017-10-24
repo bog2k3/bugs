@@ -42,7 +42,7 @@ Shape2D::Shape2D(Renderer* renderer)
 	renderer->registerRenderable(this);
 	lineShaderProgram_ = Shaders::createProgram("data/shaders/shape2d.vert", "data/shaders/shape2d.frag");
 	if (lineShaderProgram_ == 0) {
-		throw std::runtime_error("Unable to load line shaders!!");
+		throw std::runtime_error("Unable to load shape2D shaders!!");
 	}
 	indexPos_ = glGetAttribLocation(lineShaderProgram_, "vPos");
 	indexColor_ = glGetAttribLocation(lineShaderProgram_, "vColor");
@@ -114,9 +114,9 @@ void Shape2D::render(Viewport* vp) {
 	}
 	glVertexAttribPointer(indexPos_, 3, GL_FLOAT, GL_FALSE, 0, &posBuf[0]);
 	glVertexAttribPointer(indexColor_, 4, GL_FLOAT, GL_FALSE, 0, &colorBuf[0]);
-	for (unsigned i=0; i<viewportFiltersLine_.size(); i++) {
-		if (viewportFiltersLine_[i].empty() || viewportFiltersLine_[i] == vp->name()) {
-			glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, &indices_[i*2]);
+	for (auto &b : batches_) {
+		if (b.viewportFilter.empty() || b.viewportFilter == vp->name()) {
+			glDrawElements(GL_LINES, b.length, GL_UNSIGNED_SHORT, &indices_[b.offset]);
 		}
 	}
 
@@ -128,8 +128,7 @@ void Shape2D::purgeRenderQueue() {
 	indices_.clear();
 	bufferTri_.clear();
 	indicesTri_.clear();
-	viewportFiltersLine_.clear();
-	viewportFiltersTri_.clear();
+	batches_.clear();
 }
 
 void Shape2D::drawLine(ViewportCoord point1, ViewportCoord point2, float z, glm::vec3 rgb) {
@@ -137,11 +136,15 @@ void Shape2D::drawLine(ViewportCoord point1, ViewportCoord point2, float z, glm:
 }
 
 void Shape2D::drawLine(ViewportCoord point1, ViewportCoord point2, float z, glm::vec4 rgba) {
+	batches_.push_back({
+		indices_.size(),
+		2,
+		viewportFilter_
+	});
 	buffer_.push_back({point1, z, rgba});
 	indices_.push_back(buffer_.size()-1);
 	buffer_.push_back({point2, z, rgba});
 	indices_.push_back(buffer_.size()-1);
-	viewportFiltersLine_.push_back(viewportFilter_);
 }
 
 void Shape2D::drawLineList(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb) {
@@ -149,10 +152,14 @@ void Shape2D::drawLineList(ViewportCoord verts[], int nVerts, float z, glm::vec3
 }
 
 void Shape2D::drawLineList(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba) {
+	batches_.push_back({
+		indices_.size(),
+		nVerts,
+		viewportFilter_
+	});
 	for (int i=0; i<nVerts; i++) {
 		buffer_.push_back({verts[i], z, rgba});
 		indices_.push_back(buffer_.size()-1);
-		viewportFiltersLine_.push_back(viewportFilter_);
 	}
 }
 
@@ -161,12 +168,16 @@ void Shape2D::drawLineStrip(ViewportCoord verts[], int nVerts, float z, glm::vec
 }
 
 void Shape2D::drawLineStrip(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba) {
+	batches_.push_back({
+		indices_.size(),
+		(nVerts-1) * 2,
+		viewportFilter_
+	});
 	for (int i=0; i<nVerts; i++) {
 		buffer_.push_back({verts[i], z, rgba});
 		indices_.push_back(buffer_.size()-1);
 		if (i > 0 && i < nVerts-1)
 			indices_.push_back(buffer_.size()-1);
-		viewportFiltersLine_.push_back(viewportFilter_);
 	}
 }
 
@@ -175,16 +186,19 @@ void Shape2D::drawPolygon(ViewportCoord verts[], int nVerts, float z, glm::vec3 
 }
 
 void Shape2D::drawPolygon(ViewportCoord verts[], int nVerts, float z, glm::vec4 rgba) {
+	batches_.push_back({
+		indices_.size(),
+		nVerts * 2,
+		viewportFilter_
+	});
 	for (int i=0; i<nVerts; i++) {
 		buffer_.push_back({verts[i], z, rgba});
 		indices_.push_back(buffer_.size()-1);
 		if (i > 0) {
 			indices_.push_back(buffer_.size()-1);
-			viewportFiltersLine_.push_back(viewportFilter_);
 		}
 	}
 	indices_.push_back(buffer_.size()-nVerts);
-	viewportFiltersLine_.push_back(viewportFilter_);
 }
 
 void Shape2D::drawPolygonFilled(ViewportCoord verts[], int nVerts, float z, glm::vec3 rgb) {

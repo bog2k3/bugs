@@ -9,6 +9,8 @@ Viewport::Viewport(int x, int y, int w, int h)
 	, pCamera_(new Camera(this))
 	, enabled_(true)
 {
+	pCamera_->moveTo({0, 0, -1});
+	pCamera_->updateProj();
 }
 
 Viewport::~Viewport()
@@ -26,8 +28,8 @@ void Viewport::setArea(int vpX, int vpY, int vpW, int vpH)
 vec3 Viewport::unproject(vec3 point) const
 {
 	vec4 unif {point, 1};
-	unif.x /= viewportArea_.z * 0.5f;
-	unif.y /= viewportArea_.w * 0.5f;
+	unif.x = unif.x / viewportArea_.z * 2 - 1;
+	unif.y = 1 - unif.y / viewportArea_.w * 2;
 
 	auto camPV = camera()->matProjView();
 	if (mPV_cache_ != camPV) {
@@ -47,7 +49,7 @@ vec3 Viewport::project(vec3 point) const
 	ret *= 1.f / unif.w;
 	ret.x *= viewportArea_.z * 0.5f;
 	ret.y *= viewportArea_.w * 0.5f;
-	return ret;
+	return ret + glm::vec3{viewportArea_.z * 0.5f, viewportArea_.w * 0.5f, 0};
 }
 
 bool Viewport::containsPoint(glm::vec2 const&p) const {

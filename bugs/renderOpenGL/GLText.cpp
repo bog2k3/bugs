@@ -60,6 +60,8 @@ GLText::GLText(Renderer* renderer, const char * texturePath, int rows, int cols,
 
 	// Initialize Shader
 	shaderID_ = Shaders::createProgram("data/shaders/text.vert", "data/shaders/text.frag");
+	if (!shaderID_)
+		throw std::runtime_error("Could not load text shaders!");
 
 	// Get a handle for our buffers
 	vertexPosition_screenspaceID_ = glGetAttribLocation(shaderID_, "vertexPosition_screenspace");

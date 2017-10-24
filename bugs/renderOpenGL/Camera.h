@@ -36,8 +36,15 @@ public:
 	void setViewTransform(glm::mat4 aTrans);
 	float FOV() const { return fov_; }
 	void setFOV(float fov);
-	void setOrtho(glm::vec4 rect); // sets ortho projection - x,y=pos, z,w=size
-	glm::vec4 getOrthoRect() const { return ortho_; }
+	void setOrtho(glm::vec2 size); // sets ortho projection size {width, height} in world units
+	glm::vec4 getOrthoRect() const {
+		return {
+			position_.x - orthoSize_.x * 0.5f,	// left
+			position_.y - orthoSize_.y * 0.5f,	// bottom
+			position_.x + orthoSize_.x * 0.5f,	// right
+			position_.y + orthoSize_.y * 0.5f,  // top
+		};
+	}
 
 protected:
 	Viewport* pViewport_;
@@ -47,7 +54,7 @@ protected:
 	glm::mat4 matProj_;
 	glm::vec3 position_;
 	glm::vec3 direction_;
-	glm::vec4 ortho_;
+	glm::vec2 orthoSize_; // in world units
 
 	void updateView();
 	void updateProj();

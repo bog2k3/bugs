@@ -71,7 +71,7 @@ void OperationPan::handleInputEvent(InputEvent& ev) {
 				minTime = filterTimes[i];
 		}
 		flySpeed /= (glfwGetTime()- minTime) * pContext->pViewport->camera()->getOrthoZoom() * 2;
-		flySpeed.x *= -1;
+		flySpeed *= -1;
 		break;
 	}
 	case InputEvent::EV_MOUSE_MOVED: {
@@ -80,7 +80,7 @@ void OperationPan::handleInputEvent(InputEvent& ev) {
 		lastIndex = (lastIndex + 1) % nFilter;
 		lastDelta[lastIndex] = glm::vec2(ev.dx, ev.dy);
 		filterTimes[lastIndex] = glfwGetTime();
-		pContext->pViewport->camera()->move(glm::vec3(-ev.dx, ev.dy, 0) / pContext->pViewport->camera()->getOrthoZoom());
+		pContext->pViewport->camera()->move(glm::vec3(-ev.dx, -ev.dy, 0) / pContext->pViewport->camera()->getOrthoZoom());
 		break;
 	}
 	case InputEvent::EV_MOUSE_SCROLL: {
