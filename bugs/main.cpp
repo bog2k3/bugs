@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
 	#endif
 
 		// initialize stuff:
-		int winW = 800, winH = 600;
+		int winW = 1024, winH = 768;
 		if (!gltInit(winW, winH, "Bugs"))
 			return -1;
 
@@ -309,9 +309,9 @@ int main(int argc, char* argv[]) {
 		float frameTime = 0;
 
 		sigViewer.addSignal("frameTime", &frameTime,
-				glm::vec3(1.f, 0.2f, 0.2f), 0.1f);
+				glm::vec3(1.f, 0.2f, 0.2f), 0.1f, 50, 0.1, 0, 3);
 		sigViewer.addSignal("population", [&] { return sessionMgr.getPopulationManager().getPopulationCount();},
-				glm::vec3(0.3f, 0.3f, 1.f), 30.f, 50, sessionMgr.getPopulationManager().getPopulationTarget()+1, 0);
+				glm::vec3(0.3f, 0.3f, 1.f), 30.f, 50, sessionMgr.getPopulationManager().getPopulationTarget()+1, 0, 0);
 
 	#ifdef DEBUG
 		// Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
