@@ -25,6 +25,7 @@ enum class ObjectTypes : uint32_t {
 	FOOD_DISPENSER,
 	WALL,
 	GAMETE,
+	PROTOTYPE,
 };
 
 /*

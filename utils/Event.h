@@ -17,6 +17,12 @@ template <typename T>
 class Event {
 public:
 
+	Event() = default;
+
+	Event(Event &&e)
+		: callbackList_(std::move(e.callbackList_)) {
+	}
+
 	int add(std::function<T> fn) {
 		callbackList_.push_back(fn);
 		return callbackList_.size() - 1;
@@ -25,6 +31,10 @@ public:
 	void remove(int handle) {
 		assertDbg(handle >= 0 && (unsigned)handle < callbackList_.size());
 		callbackList_[handle] = nullptr;
+	}
+
+	void clear() {
+		callbackList_.clear();
 	}
 
 	void trigger() {

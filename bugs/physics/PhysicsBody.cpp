@@ -25,6 +25,22 @@ PhysicsBody::PhysicsBody(ObjectTypes userObjType, void* userPtr, EventCategoryFl
 {
 }
 
+PhysicsBody::PhysicsBody(PhysicsBody &&b)
+	: onCollision(std::move(b.onCollision))
+	, onDestroy(std::move(b.onDestroy))
+	, b2Body_(b.b2Body_)
+	, userObjectType_(b.userObjectType_)
+	, userPointer_(b.userPointer_)
+	, getEntityFunc_(std::move(b.getEntityFunc_))
+	, categoryFlags_(b.categoryFlags_)
+	, collisionEventMask_(b.collisionEventMask_)
+{
+	b.b2Body_ = nullptr;
+	b.onCollision.clear();
+	b.onDestroy.clear();
+}
+
+
 void PhysicsBody::create(const PhysicsProperties& props) {
 	assertDbg(b2Body_==nullptr);
 	assertDbg(userPointer_ != nullptr);

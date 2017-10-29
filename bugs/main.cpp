@@ -28,6 +28,8 @@
 #include "session/PopulationManager.h"
 #include "Infrastructure.h"
 
+#include "Prototype.h"
+
 #include "utils/log.h"
 #include "utils/DrawList.h"
 #include "utils/UpdateList.h"
@@ -66,6 +68,8 @@ bool captureFrame = false;
 b2World *pPhysWld = nullptr;
 PhysicsDebugDraw *pPhysicsDraw = nullptr;
 
+Prototype prototype;
+
 template<> void draw(b2World* wld, RenderContext const &ctx) {
 	wld->DrawDebugData();
 }
@@ -96,7 +100,10 @@ void onInputEventHandler(InputEvent& ev) {
 	} else if (ev.key == GLFW_KEY_F1) {
 		if (ev.type == InputEvent::EV_KEY_DOWN)
 			captureFrame = true;
-	}
+	} else if (ev.type == InputEvent::EV_KEY_DOWN)
+		prototype.onKeyDown(ev.key);
+	 else if (ev.type == InputEvent::EV_KEY_UP)
+		prototype.onKeyUp(ev.key);
 }
 
 bool autosave(SessionManager &sessionMgr) {
@@ -285,6 +292,7 @@ int main(int argc, char* argv[]) {
 		drawList.add(&sigViewer);
 		drawList.add(&Gui);
 		drawList.add(&EntityLabeler::getInstance());
+		drawList.add(&prototype);
 
 		UpdateList continuousUpdateList;
 		continuousUpdateList.add(&opStack);
@@ -295,6 +303,7 @@ int main(int argc, char* argv[]) {
 		updateList.add(&sessionMgr.getPopulationManager());
 		updateList.add(World::getInstance());
 		updateList.add(&sigViewer);
+		updateList.add(&prototype);
 
 		float realTime = 0;							// [s]
 		float simulationTime = 0;					// [s]
@@ -340,6 +349,8 @@ int main(int argc, char* argv[]) {
 		};
 		updateList.add(&debugValues_update);
 	#endif
+
+		prototype.enable(true);
 
 		// initial update:
 		updateList.update(0);

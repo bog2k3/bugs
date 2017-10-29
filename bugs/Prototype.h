@@ -1,0 +1,31 @@
+/*
+ * Prototype.h
+ *
+ *  Created on: Oct 29, 2017
+ *      Author: bog
+ */
+
+#ifndef PROTOTYPE_H_
+#define PROTOTYPE_H_
+
+/*
+ * Wrapper class for prototyping new features
+ */
+
+class RenderContext;
+
+class Prototype {
+public:
+	void enable(bool enable) { enabled_ = enable; }
+
+	void draw(RenderContext const& ctx);
+	void update(float dt);
+
+	void onKeyDown(int key);
+	void onKeyUp(int key);
+
+private:
+	bool enabled_;
+};
+
+#endif /* PROTOTYPE_H_ */

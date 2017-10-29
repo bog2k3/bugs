@@ -42,10 +42,13 @@ class PhysicsBody {
 public:
 	PhysicsBody(ObjectTypes userObjType, void* userPtr, EventCategoryFlags::type categFlags, EventCategoryFlags::type collisionMask);
 	PhysicsBody() : PhysicsBody(ObjectTypes::UNDEFINED, nullptr, 0, 0) {}
+	PhysicsBody(PhysicsBody &&b);
+	PhysicsBody(PhysicsBody const& b) = delete;
 	virtual ~PhysicsBody();
 
 	void create(PhysicsProperties const &props);
-	inline glm::vec2 getPosition() { return b2g(b2Body_->GetPosition()); }
+	inline glm::vec2 getPosition() { return b2Body_ ? b2g(b2Body_->GetPosition()) : glm::vec2{0, 0}; }
+	inline float getRotation() { return b2Body_ ? b2Body_->GetAngle() : 0; }
 	inline Entity* getAssociatedEntity() { assertDbg(getEntityFunc_ != nullptr); return getEntityFunc_(*this); }
 	aabb getAABB() const;
 

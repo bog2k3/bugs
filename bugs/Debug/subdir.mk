@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../Infrastructure.cpp \
+../Prototype.cpp \
 ../SpatialCache.cpp \
 ../World.cpp \
 ../main.cpp \
@@ -13,6 +14,7 @@ CPP_SRCS += \
 
 OBJS += \
 ./Infrastructure.o \
+./Prototype.o \
 ./SpatialCache.o \
 ./World.o \
 ./main.o \
@@ -21,6 +23,7 @@ OBJS += \
 
 CPP_DEPS += \
 ./Infrastructure.d \
+./Prototype.d \
 ./SpatialCache.d \
 ./World.d \
 ./main.d \
