@@ -60,8 +60,40 @@ struct cell {
 		other->neighbours_.push_back({oAngle, this});
 	}
 
-	void fixOverlap(std::set<cell*> &overlapping) {
+	static void fixOverlap(std::set<cell*> &marked) {
+		// 1. push all overlapping cells away until they touch on the edges
+		// 2. pull all bonded cells inward until they touch on the edges
+		// 3. mark all cells that have been moved and their neighbors
+		// 4. repeat until no more marked cells
 
+		std::set<cell*> newMarked;
+
+		while (!marked.empty()) {
+			for (cell* c : marked) {
+				for (auto &n : c->neighbours_) {
+					float dist = glm::length(c->position_ - n.other->position_);
+					constexpr float tolerance = 1e-3f;
+					float overlap = (c->radius() + n.other->radius()) - dist;
+					if (abs(overlap) <= tolerance)
+						continue;
+					glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap * 0.5f;
+
+					c->position_ -= offset;
+					n.other->position_ += offset;
+
+					newMarked.insert(c);
+					newMarked.insert(n.other);
+				}
+			}
+			marked.swap(newMarked);
+			newMarked.clear();
+		}
+	}
+
+	void updateBonds() {
+		for (auto &n : neighbours_) {
+			n.angle = rangle(limitAngle(pointDirection(n.other->position_ - position_), 2*PI));
+		}
 	}
 
 	/*
@@ -123,6 +155,8 @@ struct cell {
 		}
 
 		fixOverlap(overlapping);
+		for (auto c : cells)
+			c->updateBonds();
 
 		delete this;
 	}
