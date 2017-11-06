@@ -11,63 +11,87 @@
 #include "math/constants.h"
 #include "utils/rand.h"
 #include "World.h"
-#include "physics/PhysicsBody.h"
 
-#include <Box2D/Box2D.h>
 #include <GLFW/glfw3.h>
 
 #include <vector>
+#include <algorithm>
 
 // ------------------------------------------------------------------------------
 
 struct cell {
 	static constexpr float density = 0.1f;
 
-	float size; // area
-	float division_angle;
-
-	PhysicsBody body;
-	b2Fixture* fixture;
+	glm::vec2 position_;
+	float angle_;
+	float size_; // area
+	float division_angle_;	// relative to cell orientation angle
+	bool mirror_ = false;
 
 	struct link {
-		float angle;
-		b2WeldJoint* joint;
+		float angle;	// relative to cell orientation angle
 		cell* other;
 	};
-	std::vector<link> neighbours;
+	std::vector<link> neighbours_;
 
-	float radius() { return sqrtf(size / M_PI); }
-	glm::vec2 position() { return body.getPosition(); }
-	float rotation() { return body.getRotation(); }
+	float radius() { return sqrtf(size_ / PI); }
 
-	cell(float size, glm::vec2 position, float rotation)
-		: size(size), division_angle(randf() * 2*PI)
-		, body(ObjectTypes::PROTOTYPE, this, 0, 0)
-		, fixture(nullptr)
+	cell(float size, glm::vec2 position, float rotation, bool mirror)
+		: position_(position), angle_(rotation), size_(size), division_angle_(randf() * 2*PI), mirror_(mirror)
 	{
-		World::getInstance()->queueDeferredAction([this, position, rotation] {
-			body.create(PhysicsProperties{position, rotation});
-
-			b2CircleShape shape;
-			shape.m_p.Set(0, 0);
-			shape.m_radius = radius();
-
-			b2FixtureDef fixDef;
-			fixDef.density = density;
-			fixDef.friction = 0.2f;
-			fixDef.restitution = 0.3f;
-			fixDef.shape = &shape;
-
-			body.b2Body_->CreateFixture(&fixDef);
-		});
 	}
 
 	cell(cell &&) = delete;
 	cell(cell const&) = delete;
 	~cell() = default;
 
-	void divide(float ratio, bool reorientate, bool mirror) {
+	// computes a world angle from a cell-relative angle, taking into account mirroring and cell orientation
+	float wangle(float angle) {
+		return angle_ + angle * (mirror_ ? -1 : 1);
+	}
 
+	void fixOverlap(std::set<cell*> &overlapping) {
+
+	}
+
+	/*
+	 * ratio = size_left / size_right
+	 * reorientate: true to align the newly spawned cells with the division axis, false to keep parent orientation
+	 * mirror: true to mirror the right side - it's orientation will be mirrored with respect to division axis, and it's angles will be CW
+	 */
+	void divide(std::vector<cell*> &cells, float ratio, bool reorientate, bool mirror) {
+		float ls = size_ * ratio / (ratio + 1);
+		float rs = size_ / (ratio + 1);
+		float lr = sqrtf(ls / PI);
+		float rr = sqrtf(rs / PI);
+		float offset_angle = wangle(division_angle_ + PI/2);
+		glm::vec2 offsetDir = {cosf(offset_angle), sinf(offset_angle)};
+		glm::vec2 lC = position_ + offsetDir * lr;
+		glm::vec2 rC = position_ - offsetDir * rr;
+		float la = reorientate ? wangle(division_angle_) : angle_;
+		float ra = reorientate ? wangle(division_angle_) : (mirror ? angle_ + 2*division_angle_ : angle_);
+
+		cell* cl = new cell(ls, lC, la, false);
+		cell* cr = new cell(rs, rC, ra, mirror);
+
+		// create bond between siblings:
+		float lba = reorientate ? -PI/2 : -PI/2 + division_angle_;
+		float rba = reorientate ? (mirror ? -PI/2 : PI/2) : (mirror ? -PI/2 + division_angle_ : PI/2 + division_angle_);
+		cl->neighbours_.push_back({lba, cr});
+		cr->neighbours_.push_back({rba, cl});
+
+		auto it = std::find(cells.begin(), cells.end(), this);
+		*it = cl;
+		cells.push_back(cr);
+
+		std::set<cell*> overlapping {cl, cr};
+		for (auto n : neighbours_) {
+			overlapping.insert(n.other);
+		}
+
+		fixOverlap(overlapping);
+
+		delete this;
 	}
 };
 
@@ -82,19 +106,29 @@ void Prototype::draw(RenderContext const& ctx) {
 
 	if (selected < cells.size()) {
 		float rad = cells[selected]->radius();
-		glm::vec2 pos = cells[selected]->position();
+		glm::vec2 pos = cells[selected]->position_;
 		Shape3D::get()->drawRectangleXOYCentered(pos, {2*rad, 2*rad}, 0.f, {0, 1, 0});
 	}
 	for (auto c : cells) {
-		glm::vec2 v2 = c->position();
-		v2.x += cosf(c->rotation()) * c->radius();
-		v2.y += sinf(c->rotation()) * c->radius();
-		Shape3D::get()->drawLine({c->position(), 0}, {v2, 0}, {1, 1, 0});
-		v2 = c->position();
-		v2.x += cosf(c->division_angle + c->rotation()) * c->radius() * 1.2f;
-		v2.y += sinf(c->division_angle + c->rotation()) * c->radius() * 1.2f;
-		glm::vec2 v1 = 2.f * c->position() - v2;
-		Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {1, 0, 0});
+		Shape3D::get()->drawCircleXOY(c->position_, c->radius(), 12, {0.8f, 0.8f, 0.8f});
+		glm::vec2 v2 = c->position_;
+		v2.x += cosf(c->angle_) * c->radius();
+		v2.y += sinf(c->angle_) * c->radius();
+		Shape3D::get()->drawLine({c->position_, 0}, {v2, 0}, {1, 1, 0, 0.7f});
+		v2 = c->position_;
+		v2.x += cosf(c->division_angle_ + c->angle_) * c->radius() * 1.2f;
+		v2.y += sinf(c->division_angle_ + c->angle_) * c->radius() * 1.2f;
+		glm::vec2 v1 = 2.f * c->position_ - v2;
+		Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {1, 0, 0, 0.5f});
+
+		for (auto l : c->neighbours_) {
+			glm::vec2 v1 = c->position_;
+			glm::vec2 v2 = v1;
+			v2.x += cosf(l.angle + c->angle_) * c->radius();
+			v2.y += sinf(l.angle + c->angle_) * c->radius();
+			v1 += (v2-v1) * 0.9f;
+			Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 0, 1});
+		}
 	}
 }
 
@@ -104,7 +138,7 @@ void Prototype::update(float dt) {
 
 	if (cells.size() == 0) {
 		// create initial cell
-		cells.push_back(new cell(5.f, {0, 0}, randf() * 2*PI));
+		cells.push_back(new cell(5.f, {0, 0}, randf() * 2*PI, false));
 	}
 }
 
@@ -117,9 +151,17 @@ void Prototype::onKeyDown(int key) {
 		selected = (selected+1) % cells.size();
 		break;
 	case GLFW_KEY_1:
-		cells[selected]->divide(false);
+		cells[selected]->divide(cells, 1.f, false, false);
+		break;
 	case GLFW_KEY_2:
-		cells[selected]->divide(true);
+		cells[selected]->divide(cells, 1.f, true, false);
+		break;
+	case GLFW_KEY_3:
+		cells[selected]->divide(cells, 1.f, false, true);
+		break;
+	case GLFW_KEY_4:
+		cells[selected]->divide(cells, 1.f, true, true);
+		break;
 	}
 }
 

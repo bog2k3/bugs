@@ -61,6 +61,8 @@
 #include <dmalloc.h>
 #endif
 
+#define ENABLE_PROTOTYPING true
+
 bool skipRendering = true;
 bool updatePaused = false;
 bool slowMo = false;
@@ -350,7 +352,7 @@ int main(int argc, char* argv[]) {
 		updateList.add(&debugValues_update);
 	#endif
 
-		prototype.enable(true);
+		prototype.enable(ENABLE_PROTOTYPING);
 
 		// initial update:
 		updateList.update(0);

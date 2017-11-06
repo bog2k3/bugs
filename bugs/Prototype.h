@@ -25,7 +25,7 @@ public:
 	void onKeyUp(int key);
 
 private:
-	bool enabled_;
+	bool enabled_ = false;
 };
 
 #endif /* PROTOTYPE_H_ */
