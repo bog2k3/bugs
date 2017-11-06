@@ -20,8 +20,6 @@
 // ------------------------------------------------------------------------------
 
 struct cell {
-	static constexpr float density = 0.1f;
-
 	glm::vec2 position_;
 	float angle_;
 	float size_; // area
@@ -48,6 +46,18 @@ struct cell {
 	// computes a world angle from a cell-relative angle, taking into account mirroring and cell orientation
 	float wangle(float angle) {
 		return angle_ + angle * (mirror_ ? -1 : 1);
+	}
+
+	// computes a relative angle (to cell orientation) from a world angle, taking into account mirroring and cell orientation
+	float rangle(float angle) {
+		return angleDiff(angle_, angle) * (mirror_ ? -1 : 1);
+	}
+
+	void bond(cell* other) {
+		float angle = rangle(limitAngle(pointDirection(other->position_ - position_), 2*PI));
+		neighbours_.push_back({angle, other});
+		float oAngle = other->rangle(limitAngle(pointDirection(position_ - other->position_), 2*PI));
+		other->neighbours_.push_back({oAngle, this});
 	}
 
 	void fixOverlap(std::set<cell*> &overlapping) {
@@ -79,6 +89,29 @@ struct cell {
 		float rba = reorientate ? (mirror ? -PI/2 : PI/2) : (mirror ? -PI/2 + division_angle_ : PI/2 + division_angle_);
 		cl->neighbours_.push_back({lba, cr});
 		cr->neighbours_.push_back({rba, cl});
+
+		// inherit parent's bonds:
+		for (auto &n : neighbours_) {
+			// 1. remove old bond
+			cell* other = n.other;
+			other->neighbours_.erase(std::find_if(other->neighbours_.begin(), other->neighbours_.end(), [this](link& l) {
+				return l.other == this;
+			}));
+			constexpr float maxTolerrance = PI/16;
+			float diff = angleDiff(division_angle_, n.angle);
+			if ( abs(diff) <= maxTolerrance || PI - abs(diff) <= maxTolerrance) {
+				// bond will be split
+				other->bond(cl);
+				other->bond(cr);
+
+				continue;
+			}
+			// bond will be inherited by only one side
+			if ((diff > 0) != mirror_)
+				other->bond(cl);
+			else
+				other->bond(cr);
+		}
 
 		auto it = std::find(cells.begin(), cells.end(), this);
 		*it = cl;
@@ -116,18 +149,18 @@ void Prototype::draw(RenderContext const& ctx) {
 		v2.y += sinf(c->angle_) * c->radius();
 		Shape3D::get()->drawLine({c->position_, 0}, {v2, 0}, {1, 1, 0, 0.7f});
 		v2 = c->position_;
-		v2.x += cosf(c->division_angle_ + c->angle_) * c->radius() * 1.2f;
-		v2.y += sinf(c->division_angle_ + c->angle_) * c->radius() * 1.2f;
-		glm::vec2 v1 = 2.f * c->position_ - v2;
+		v2.x += cosf(c->wangle(c->division_angle_)) * c->radius() * 1.2f;
+		v2.y += sinf(c->wangle(c->division_angle_)) * c->radius() * 1.2f;
+		glm::vec2 v1 = c->position_ - (v2 - c->position_) * 0.7f;
 		Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {1, 0, 0, 0.5f});
 
 		for (auto l : c->neighbours_) {
 			glm::vec2 v1 = c->position_;
 			glm::vec2 v2 = v1;
-			v2.x += cosf(l.angle + c->angle_) * c->radius();
-			v2.y += sinf(l.angle + c->angle_) * c->radius();
+			v2.x += cosf(c->wangle(l.angle)) * c->radius();
+			v2.y += sinf(c->wangle(l.angle)) * c->radius();
 			v1 += (v2-v1) * 0.9f;
-			Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 0, 1});
+			Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 1, 1});
 		}
 	}
 }
