@@ -8,6 +8,9 @@
 #include "Prototype.h"
 #include "renderOpenGL/RenderContext.h"
 #include "renderOpenGL/Shape3D.h"
+#include "renderOpenGL/GLText.h"
+#include "renderOpenGL/Viewport.h"
+#include "renderOpenGL/ViewportCoord.h"
 #include "math/constants.h"
 #include "utils/rand.h"
 #include "World.h"
@@ -25,6 +28,7 @@ struct cell {
 	float size_; // area
 	float division_angle_;	// relative to cell orientation angle
 	bool mirror_ = false;
+	bool rightSide_ = false;
 
 	struct link {
 		float angle;	// relative to cell orientation angle
@@ -34,8 +38,10 @@ struct cell {
 
 	float radius() { return sqrtf(size_ / PI); }
 
-	cell(float size, glm::vec2 position, float rotation, bool mirror)
-		: position_(position), angle_(rotation), size_(size), division_angle_(randf() * 2*PI), mirror_(mirror)
+	cell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide)
+		: position_(position)
+		, angle_(limitAngle(rotation, 2*PI))
+		, size_(size), division_angle_(randf() * 2*PI), mirror_(mirror), rightSide_(rightSide)
 	{
 	}
 
@@ -76,10 +82,11 @@ struct cell {
 					float overlap = (c->radius() + n.other->radius()) - dist;
 					if (abs(overlap) <= tolerance)
 						continue;
-					glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap * 0.5f;
+					glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap;
+					float ratio = c->size_ / (c->size_ + n.other->size_);
 
-					c->position_ -= offset;
-					n.other->position_ += offset;
+					c->position_ -= offset * (1-ratio);
+					n.other->position_ += offset * ratio;
 
 					newMarked.insert(c);
 					newMarked.insert(n.other);
@@ -113,14 +120,11 @@ struct cell {
 		float la = reorientate ? wangle(division_angle_) : angle_;
 		float ra = reorientate ? wangle(division_angle_) : (mirror ? angle_ + 2*division_angle_ : angle_);
 
-		cell* cl = new cell(ls, lC, la, false);
-		cell* cr = new cell(rs, rC, ra, mirror);
+		cell* cl = new cell(ls, lC, la, mirror_, false);
+		cell* cr = new cell(rs, rC, ra, mirror != mirror_, true);
 
 		// create bond between siblings:
-		float lba = reorientate ? -PI/2 : -PI/2 + division_angle_;
-		float rba = reorientate ? (mirror ? -PI/2 : PI/2) : (mirror ? -PI/2 + division_angle_ : PI/2 + division_angle_);
-		cl->neighbours_.push_back({lba, cr});
-		cr->neighbours_.push_back({rba, cl});
+		cl->bond(cr);
 
 		// inherit parent's bonds:
 		for (auto &n : neighbours_) {
@@ -139,7 +143,7 @@ struct cell {
 				continue;
 			}
 			// bond will be inherited by only one side
-			if ((diff > 0) != mirror_)
+			if (diff > 0)
 				other->bond(cl);
 			else
 				other->bond(cr);
@@ -177,17 +181,31 @@ void Prototype::draw(RenderContext const& ctx) {
 		Shape3D::get()->drawRectangleXOYCentered(pos, {2*rad, 2*rad}, 0.f, {0, 1, 0});
 	}
 	for (auto c : cells) {
+		// outline
 		Shape3D::get()->drawCircleXOY(c->position_, c->radius(), 12, {0.8f, 0.8f, 0.8f});
+		// properties
+		auto xc = [c] (Viewport* viewp) -> float {
+			return viewp->project({c->position_, 0}).x;
+		};
+		auto yc = [c] (Viewport* viewp) -> float {
+			return viewp->project({c->position_, 0}).y;
+		};
+		GLText::get()->print(c->rightSide_ ? "R" : "L", {xc, yc}, 0, 22, {0, 1, 1});
+		if (c->mirror_)
+			GLText::get()->print("M", ViewportCoord{xc, yc} + ViewportCoord{10, 10}, 0, 22, {0, 1, 1});
+		// orientation
 		glm::vec2 v2 = c->position_;
 		v2.x += cosf(c->angle_) * c->radius();
 		v2.y += sinf(c->angle_) * c->radius();
 		Shape3D::get()->drawLine({c->position_, 0}, {v2, 0}, {1, 1, 0, 0.7f});
+		// division axis
 		v2 = c->position_;
 		v2.x += cosf(c->wangle(c->division_angle_)) * c->radius() * 1.2f;
 		v2.y += sinf(c->wangle(c->division_angle_)) * c->radius() * 1.2f;
 		glm::vec2 v1 = c->position_ - (v2 - c->position_) * 0.7f;
 		Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {1, 0, 0, 0.5f});
 
+		// bonds
 		for (auto l : c->neighbours_) {
 			glm::vec2 v1 = c->position_;
 			glm::vec2 v2 = v1;
@@ -205,7 +223,7 @@ void Prototype::update(float dt) {
 
 	if (cells.size() == 0) {
 		// create initial cell
-		cells.push_back(new cell(5.f, {0, 0}, randf() * 2*PI, false));
+		cells.push_back(new cell(5.f, {0, 0}, randf() * 2*PI, false, false));
 	}
 }
 
