@@ -61,7 +61,7 @@
 #include <dmalloc.h>
 #endif
 
-#define ENABLE_PROTOTYPING true
+#define ENABLE_PROTOTYPING false
 
 bool skipRendering = true;
 bool updatePaused = false;
