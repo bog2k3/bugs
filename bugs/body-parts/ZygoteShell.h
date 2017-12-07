@@ -24,7 +24,7 @@ public:
 	void updateCachedDynamicPropsFromBody();
 
 	float getMass() { return mass_; }
-	int getDepth() override { return -1; }
+	//int getDepth() override { return -1; }
 
 protected:
 	void commit() override;

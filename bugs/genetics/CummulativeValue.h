@@ -8,9 +8,10 @@
 #ifndef GENETICS_CUMMULATIVEVALUE_H_
 #define GENETICS_CUMMULATIVEVALUE_H_
 
+#include <boglfw/utils/assert.h>
+
 #include <cassert>
 #include <cmath>
-#include "../utils/assert.h"
 
 struct CummulativeValue {
 	CummulativeValue() {}

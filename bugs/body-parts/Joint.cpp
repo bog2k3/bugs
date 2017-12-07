@@ -7,17 +7,16 @@
 
 #include "Joint.h"
 #include "BodyConst.h"
-#include "../World.h"
-#include "../math/box2glm.h"
-#include "../math/math3D.h"
-#include "../renderOpenGL/Shape3D.h"
-#include "../physics/PhysDestroyListener.h"
 
-#include "../utils/log.h"
-#include "../utils/assert.h"
-#include "../utils/UpdateList.h"
-
-#include "../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/math/box2glm.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/physics/PhysDestroyListener.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/assert.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/perf/marker.h>
 
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
@@ -61,26 +60,26 @@ Joint::~Joint() {
 	if (committed_ && physJoint_) {
 		destroyPhysJoint();
 	}
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 }
 
-void Joint::onAddedToParent() {
+/*void Joint::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}
+}*/
 
 void Joint::commit() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	assertDbg(nChildren_ <= 1);
+	//assertDbg(nChildren_ <= 1);
 
 	if (committed_) {
 		destroyPhysJoint();
 	}
 
-	if (nChildren_ == 0) {
+	/*if (nChildren_ == 0) {
 		detach(true);
 		return;
 	}
@@ -96,12 +95,12 @@ void Joint::commit() {
 	def.referenceAngle = getDefaultAngle() + children_[0]->getDefaultAngle();
 
 	float radius = sqrtf(size_*PI_INV);
-	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
+	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
 	float parentAnchorLength = glm::length(parentAnchor);
 	parentAnchor *= 1 + radius/parentAnchorLength;	// move away from the edge by joint radius
 	def.localAnchorA = g2b(parentAnchor);
 
-	glm::vec2 childAnchor = children_[0]->getChildAttachmentPoint(PI - children_[0]->getLocalRotation());
+	glm::vec2 childAnchor = children_[0]->getAttachmentPoint(PI - children_[0]->getLocalRotation());
 	float childAnchorLength = glm::length(childAnchor);
 	childAnchor *= 1 + radius/childAnchorLength;
 	def.localAnchorB = g2b(childAnchor);
@@ -110,7 +109,7 @@ void Joint::commit() {
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
 	jointListenerHandle_ = World::getInstance()->getDestroyListener()->addCallback(physJoint_,
-			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));
+			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));*/
 }
 
 void Joint::destroyPhysJoint() {
@@ -155,7 +154,7 @@ void Joint::draw(RenderContext const& ctx) {
 	}
 }
 
-glm::vec2 Joint::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Joint::getAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
 #ifdef DEBUG
@@ -209,7 +208,7 @@ void Joint::update(float dt) {
 	if (jointIsFUBAR || excessForce || excessMTorque || excessRTorque) {
 		// this joint is toast - must break free the downstream body parts
 #ifdef DEBUG
-		LOG("JOINT BREAK: " << getDebugName() << " (");
+		LOG("JOINT BREAK: " << /*getDebugName() <<*/ " (");
 		std::stringstream reason;
 		if (jointIsFUBAR)
 			reason << "FUBAR";
@@ -223,10 +222,10 @@ void Joint::update(float dt) {
 
 #endif
 		World::getInstance()->queueDeferredAction([this] () {
-			BodyPart* downStream = children_[0];
+			/*BodyPart* downStream = children_[0];
 			downStream->detach(true); // this will be taken over by bug entity
 			detach(true);
-			destroyPhysJoint();
+			destroyPhysJoint();*/
 		});
 		return;
 	}
@@ -271,12 +270,12 @@ void Joint::die() {
 		physJoint_->EnableMotor(false);
 }
 
-void Joint::onDetachedFromParent() {
-	/*if (physJoint_) {
+/*void Joint::onDetachedFromParent() {
+	if (physJoint_) {
 		World::getInstance()->getPhysics()->DestroyJoint(physJoint_);
 		physJoint_ = nullptr;
-	}*/
-}
+	}
+}*/
 
 void Joint::onPhysJointDestroyed(b2Joint* joint) {
 	physJoint_ = nullptr;

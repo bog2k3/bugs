@@ -6,16 +6,17 @@
  */
 
 #include "SessionManager.h"
-#include "../World.h"
-#include "../entities/Entity.h"
 #include "../entities/Bug.h"
 #include "../entities/food/FoodDispenser.h"
 #include "../entities/food/FoodChunk.h"
 #include "../entities/Gamete.h"
 #include "../entities/Wall.h"
-#include "../serialization/Serializer.h"
-#include "../utils/rand.h"
-#include "../utils/log.h"
+
+#include <boglfw/World.h>
+#include <boglfw/entities/Entity.h>
+#include <boglfw/serialization/Serializer.h>
+#include <boglfw/utils/rand.h>
+#include <boglfw/utils/log.h>
 #include <glm/vec2.hpp>
 
 #ifdef DEBUG_DMALLOC

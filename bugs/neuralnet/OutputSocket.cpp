@@ -1,6 +1,8 @@
-#include "../utils/log.h"
 #include "OutputSocket.h"
 #include "InputSocket.h"
+
+#include <boglfw/utils/log.h>
+
 #include <algorithm>
 
 #ifdef DEBUG_DMALLOC

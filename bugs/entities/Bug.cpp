@@ -12,26 +12,26 @@
 #include "../genetics/constants.h"
 #include "../genetics/Ribosome.h"
 #include "../neuralnet/functions.h"
-#include "../math/math3D.h"
-#include "../math/aabb.h"
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Torso.h"
 #include "../body-parts/BodyConst.h"
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/BodyPart.h"
 #include "../body-parts/Joint.h"
-#include "../World.h"
-#include "../serialization/BinaryStream.h"
 #include "../serialization/GenomeSerialization.h"
-#include "../renderOpenGL/Viewport.h"
-#include "../renderOpenGL/GLText.h"
-#include "../renderOpenGL/ViewportCoord.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
 #include "Gamete.h"
 
-#include "../utils/log.h"
-#include "../perf/marker.h"
+#include <boglfw/math/math3D.h>
+#include <boglfw/math/aabb.h>
+#include <boglfw/World.h>
+#include <boglfw/serialization/BinaryStream.h>
+#include <boglfw/renderOpenGL/Viewport.h>
+#include <boglfw/renderOpenGL/GLText.h>
+#include <boglfw/renderOpenGL/ViewportCoord.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/perf/marker.h>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -75,13 +75,14 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	LOGLN("new embryo [id="<<id<<"]; printing chromosomes:");
 	LOGLN("C1: " << genome.first.stringify());
 	LOGLN("C2: " << genome.second.stringify());
+#warning "here create a BodyPartContext and pass it to the zygote / torso"
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(position, velocity, zygoteMass);
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
-	zygoteShell_->setUpdateList(bodyPartsUpdateList_);
+	//zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
 	body_ = new Torso();
-	zygoteShell_->add(body_, 0);
+	//zygoteShell_->add(body_, 0);
 	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
 	body_->onMotorLinesDetached.add(std::bind(&Bug::onMotorLinesDetached, this, std::placeholders::_1));
 	body_->onBodyMassChanged.add([this] { cachedMassDirty_ = true; });
@@ -132,7 +133,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				// embryo not viable, discarded.
 				LOGLN("Embryo not viable. DISCARDED.");
 				World::getInstance()->queueDeferredAction([this] {
-					zygoteShell_->die_tree();
+					//zygoteShell_->die_tree();
 					body_->detach(false);
 					body_->destroy();
 					body_ = nullptr;
@@ -143,7 +144,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			population++; // new member of the bug population
 
-			float currentMass = body_->getMass_tree();
+			float currentMass = 1.f;//body_->getMass_tree();
 			float zygMass = zygoteShell_->getMass();
 
 			fixAllGeneValues();
@@ -155,7 +156,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			zygoteShell_->updateCachedDynamicPropsFromBody();
 			// commit all changes and create the physics bodys and fixtures:
-			body_->commit_tree(cachedLeanMass_/currentMass);
+			//body_->commit_tree(cachedLeanMass_/currentMass);
 
 			// delete embryo shell
 			World::getInstance()->queueDeferredAction([this] {
@@ -167,7 +168,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			delete ribosome_;
 			ribosome_ = nullptr;
 
-			body_->applyRecursive([this](BodyPart* part) {
+			/*body_->applyRecursive([this](BodyPart* part) {
 				part->onDied.add([this](BodyPart *dying) {
 					World::getInstance()->queueDeferredAction([this, dying] {
 						dying->removeAllLinks();
@@ -179,7 +180,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 					}
 				});
 				return false;
-			});
+			});*/
 		}
 	}
 }
@@ -216,7 +217,7 @@ void Bug::kill() {
 			LOGLN("bug DIED");
 			--population; // one less bug
 			isAlive_ = false;
-			body_->die_tree();
+			//body_->die_tree();
 			body_ = nullptr;
 		}
 	});
@@ -257,7 +258,7 @@ void Bug::update(float dt) {
 		float oldLeanMass = cachedLeanMass_;
 		body_->resetCachedMass();
 #warning "getMass_tree() includes fat too after purging initialization data"
-		cachedLeanMass_ = body_->getMass_tree();
+		cachedLeanMass_ = 1.f;//body_->getMass_tree();
 		adultLeanMass_.changeRel(cachedLeanMass_ / oldLeanMass);
 		cachedMassDirty_ = false;
 	}
@@ -269,17 +270,17 @@ void Bug::update(float dt) {
 			massToGrow = growthMassBuffer_;
 		growthMassBuffer_ -= massToGrow;
 		cachedLeanMass_ += massToGrow;
-		body_->applyScale_tree(cachedLeanMass_ / body_->getMass_tree());
+		//body_->applyScale_tree(cachedLeanMass_ / body_->getMass_tree());
 	} else {
 		// adult life
 	}
 }
 
 void Bug::draw(RenderContext const &ctx) {
-	if (zygoteShell_)
+	/*if (zygoteShell_)
 		zygoteShell_->draw_tree(ctx);
 	else if (body_)
-		body_->draw_tree(ctx);
+		body_->draw_tree(ctx);*/
 	for (auto bp : deadBodyParts_)
 		if (bp)
 			bp->draw(ctx);
@@ -390,7 +391,7 @@ glm::vec2 Bug::getVelocity() {
 }
 
 float Bug::getMass() {
-	return zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
+	return 1.f;//zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
 }
 
 void Bug::serialize(BinaryStream &stream) {
@@ -439,10 +440,10 @@ aabb Bug::getAABB() const {
 			|| vec2lenSq(vec3xy(cachedWorldTransform_ - tr)) > maxSqDeviation
 			|| abs(tr.z - cachedWorldTransform_.z) > maxAngleDeviation ) {
 		// update cached
-		if (zygoteShell_)
+		/*if (zygoteShell_)
 			cachedAABB_ = zygoteShell_->getAABBRecursive();
 		else
-			cachedAABB_ = body_ ? body_->getAABBRecursive() : aabb();
+			cachedAABB_ = body_ ? body_->getAABBRecursive() : aabb();*/
 		cachedWorldTransform_ = tr;
 	}
 	return cachedAABB_;

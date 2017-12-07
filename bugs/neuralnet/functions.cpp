@@ -1,6 +1,7 @@
 #include "functions.h"
-#include "../math/math3D.h"
-#include "../utils/rand.h"
+
+#include <boglfw/math/math3D.h>
+#include <boglfw/utils/rand.h>
 
 #include <math.h>
 

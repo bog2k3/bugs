@@ -8,10 +8,12 @@
 #ifndef ENTITIES_WALL_H_
 #define ENTITIES_WALL_H_
 
-#include "Entity.h"
 #include "enttypes.h"
-#include "../physics/PhysicsBody.h"
 #include "../serialization/objectTypes.h"
+
+#include <boglfw/entities/Entity.h>
+#include <boglfw/physics/PhysicsBody.h>
+
 #include <glm/vec2.hpp>
 
 class Wall : public Entity {
@@ -28,7 +30,7 @@ public:
 	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
-	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::WALL; }
+	int getSerializationType() override { return SerializationObjectTypes::WALL; }
 	// deserialize a Wall from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
 	void serialize(BinaryStream &stream) override;

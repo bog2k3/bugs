@@ -8,12 +8,13 @@
 #include "FoodDispenser.h"
 #include "FoodChunk.h"
 #include "../WorldConst.h"
-#include "../../World.h"
-#include "../../serialization/BinaryStream.h"
-#include "../../math/aabb.h"
+#include "../../ObjectTypesAndFlags.h"
 
-#include "../../utils/rand.h"
-#include "../../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/serialization/BinaryStream.h>
+#include <boglfw/math/aabb.h>
+#include <boglfw/utils/rand.h>
+#include <boglfw/perf/marker.h>
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>

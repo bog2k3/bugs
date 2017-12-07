@@ -21,10 +21,11 @@
 #include "Genome.h"
 #include "GeneDefinitions.h"
 #include "CummulativeValue.h"
-#include "../utils/log.h"
-#include "../math/math3D.h"
-#include "../utils/rand.h"
-#include "../utils/log.h"
+
+#include <boglfw/math/math3D.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/rand.h>
+#include <boglfw/utils/log.h>
 
 #include <utility>
 #include <algorithm>
@@ -129,7 +130,7 @@ bool Ribosome::step() {
 
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
-		bug_->body_->applyRecursive([&hasMouth, &hasEggLayer, this] (BodyPart* p) {
+		/*bug_->body_->applyRecursive([&hasMouth, &hasEggLayer, this] (BodyPart* p) {
 			if (p->getType() == BodyPartType::MOUTH)
 				hasMouth = true;
 			if (p->getType() == BodyPartType::EGGLAYER) {
@@ -137,7 +138,7 @@ bool Ribosome::step() {
 				((EggLayer*)p)->setTargetEggMass(bug_->eggMass_);
 			}
 			return hasMouth && hasEggLayer;
-		});
+		});*/
 		if (!hasMouth || !hasEggLayer) {
 			// here mark the embryo as dead and return
 			bug_->isAlive_ = false;
@@ -192,9 +193,9 @@ bool Ribosome::step() {
 				|| (g2 && g2->type == gene_type::STOP)) {
 			// so much for this development path;
 			// grow body parts from all segments now
-			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
-				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
-						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);
+//			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
+//				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
+//						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);
 			// decode joint genes if such is the case:
 			auto it = mapJointOffsets_.find(p);
 			if (it != mapJointOffsets_.end()) {
@@ -286,7 +287,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 
 	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 
-	float angle = attachmentSegment * 2*PI / BodyPart::MAX_CHILDREN;
+//	float angle = attachmentSegment * 2*PI / BodyPart::MAX_CHILDREN;
 
 	// The child's attachment point relative to the parent's center is computed from the angle of the current segment,
 	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
@@ -297,12 +298,12 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	if (useUpstreamJoint) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
 		upstreamJoint = new Joint();
-		parent->add(upstreamJoint, angle);
+//		parent->add(upstreamJoint, angle);
 
 		// set part to point to the joint's node, since that's where the actual part will be attached:
 		parent = upstreamJoint;
 		// recompute coordinates in joint's space:
-		angle = 0;
+		//angle = 0;
 	}
 
 	BodyPart* bp = nullptr;
@@ -313,7 +314,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		bp = new Bone();
 		break;
 	case BodyPartType::GRIPPER: {
-		Gripper* gr = new Gripper();
+		Gripper* gr = nullptr;//new Gripper();
 		pMotor = gr;
 		bp = gr;
 		break;
@@ -321,7 +322,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	case BodyPartType::MUSCLE: {
 		// muscle must be linked to the nearest joint - or one towards which it's oriented if equidistant
 		// linkage is postponed until before commit when all parts are in place (muscle may be created before joint)
-		Muscle* m = new Muscle();
+		Muscle* m = nullptr;//new Muscle();
 		muscles_.push_back(m);
 		pMotor = m;
 		bp = m;
@@ -348,7 +349,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
 		break;
 	case BodyPartType::EGGLAYER: {
-		EggLayer* e = new EggLayer();
+		EggLayer* e = nullptr;//new EggLayer();
 		pMotor = e;
 		bug_->eggLayers_.push_back(e);
 		bp = e;
@@ -366,7 +367,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, CummulativeValue());
 	}
 
-	parent->add(bp, angle);
+	//parent->add(bp, angle);
 
 	// this must happen AFTER the part is added to its parent:
 	if (pMotor)
@@ -422,8 +423,8 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 	case gene_type::OFFSET:
 		decodeOffset(g.data.gene_offset, part, growthData);
 		break;
-	case gene_type::JOINT_OFFSET:
-		decodeJointOffset(g.data.gene_joint_offset, part);
+	/*case gene_type::JOINT_OFFSET:
+		decodeJointOffset(g.data.gene_joint_offset, part);*/
 		break;
 	case gene_type::PART_ATTRIBUTE:
 		decodePartAttrib(g.data.gene_attribute, part);
@@ -496,8 +497,8 @@ void Ribosome::decodeProtein(GeneProtein const& g, BodyPart* part, GrowthData *g
 	int crtDepth = part->getDepth();
 	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
 		return;
-	uint segment = clamp<int>(g.targetSegment, 0, BodyPart::MAX_CHILDREN-1);
-	glm::vec4 &pos = growthData->hyperPositions[segment];
+	//uint segment = clamp<int>(g.targetSegment, 0, BodyPart::MAX_CHILDREN-1);
+	glm::vec4 &pos = growthData->hyperPosition;
 	switch (g.protein) {
 	case GENE_PROT_A:
 		pos.x--;
@@ -530,17 +531,17 @@ void Ribosome::decodeOffset(GeneOffset const& g, BodyPart *part, GrowthData *gro
 	int crtDepth = part->getDepth();
 	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
 		return;
-	uint segment = clamp<int>(g.targetSegment, 0, BodyPart::MAX_CHILDREN-1);
-	growthData->offsets[segment].changeAbs(g.offset);
+	float side = clamp<float>(g.side, -1, +1);
+	//growthData->offsets[segment].changeAbs(g.offset);
 }
 
-void Ribosome::decodeJointOffset(GeneJointOffset const& g, BodyPart* part) {
+/*void Ribosome::decodeJointOffset(GeneJointOffset const& g, BodyPart* part) {
 	int crtDepth = part->getDepth();
 	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
 		return;
 	if (mapJointOffsets_.find(part) != mapJointOffsets_.end())
 		mapJointOffsets_[part].second.changeAbs(g.offset);
-}
+}*/
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	int depth = part->getDepth();
@@ -774,7 +775,7 @@ void Ribosome::commitNeurons() {
 }
 
 Joint* Ribosome::findNearestJoint(Muscle* m, int dir) {
-	assertDbg(m->getParent() && "muscle should have a parent!");
+	/*assertDbg(m->getParent() && "muscle should have a parent!");
 	int nChildren = m->getParent()->getChildrenCount();
 	std::vector<BodyPart*> bp;
 	bp.reserve(nChildren);
@@ -801,7 +802,7 @@ Joint* Ribosome::findNearestJoint(Muscle* m, int dir) {
 
 		if (m->getParent()->getChild(index)->getType() == BodyPartType::JOINT)
 			return dynamic_cast<Joint*>(m->getParent()->getChild(index));
-	} while (index != mIndex);
+	} while (index != mIndex);*/
 	return nullptr;
 }
 

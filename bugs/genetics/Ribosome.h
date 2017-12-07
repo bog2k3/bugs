@@ -9,6 +9,7 @@
 #include "Gene.h"
 #include "CummulativeValue.h"
 #include "../body-parts/BodyPart.h"
+
 #include <glm/vec4.hpp>
 #include <vector>
 #include <set>
@@ -51,8 +52,8 @@ struct SynapseInfo {
 struct GrowthData {
 	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this part
-	glm::vec4 hyperPositions[BodyPart::MAX_CHILDREN] { glm::vec4() };	// holds hyper-space positions for each segment in a body part
-	CummulativeValue offsets[BodyPart::MAX_CHILDREN]; // holds relative genome offsets for each segment in a body part
+	glm::vec4 hyperPosition { 0 };	// protein hyper-space position for current cell
+	CummulativeValue offsets[2]; // holds relative genome offsets for each segment in a body part
 
 	GrowthData(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
@@ -104,7 +105,7 @@ private:
 	void decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural);
 	void decodeProtein(GeneProtein const& g, BodyPart* part, GrowthData *growthData);
 	void decodeOffset(GeneOffset const& g, BodyPart* part, GrowthData *growthData);
-	void decodeJointOffset(GeneJointOffset const& g, BodyPart* part);
+	//void decodeJointOffset(GeneJointOffset const& g, BodyPart* part);
 	void decodePartAttrib(GeneAttribute const& g, BodyPart* part);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);

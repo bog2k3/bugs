@@ -6,14 +6,15 @@
  */
 
 #include "Prototype.h"
-#include "renderOpenGL/RenderContext.h"
-#include "renderOpenGL/Shape3D.h"
-#include "renderOpenGL/GLText.h"
-#include "renderOpenGL/Viewport.h"
-#include "renderOpenGL/ViewportCoord.h"
-#include "math/constants.h"
-#include "utils/rand.h"
-#include "World.h"
+
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/renderOpenGL/GLText.h>
+#include <boglfw/renderOpenGL/Viewport.h>
+#include <boglfw/renderOpenGL/ViewportCoord.h>
+#include <boglfw/math/constants.h>
+#include <boglfw/utils/rand.h>
+#include <boglfw/World.h>
 
 #include <GLFW/glfw3.h>
 

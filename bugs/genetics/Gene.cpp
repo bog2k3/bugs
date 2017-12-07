@@ -1,9 +1,10 @@
 #include "Gene.h"
-#include "../utils/log.h"
 #include "../body-parts/BodyConst.h"
-#include "../body-parts/BodyPart.h"
+//#include "../body-parts/BodyPart.h"
 #include "../neuralnet/functions.h"
-#include "../math/math3D.h"
+
+#include <boglfw/utils/log.h>
+#include <boglfw/math/math3D.h>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -23,8 +24,8 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_protein.minDepth.changeAmount);
 		metaGenes.push_back(&data.gene_protein.protein.chanceToMutate);
 		metaGenes.push_back(&data.gene_protein.protein.changeAmount);
-		metaGenes.push_back(&data.gene_protein.targetSegment.chanceToMutate);
-		metaGenes.push_back(&data.gene_protein.targetSegment.changeAmount);
+		metaGenes.push_back(&data.gene_protein.weight.chanceToMutate);
+		metaGenes.push_back(&data.gene_protein.weight.changeAmount);
 		break;
 	case gene_type::OFFSET:
 		metaGenes.push_back(&data.gene_offset.maxDepth.chanceToMutate);
@@ -33,17 +34,17 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_offset.minDepth.changeAmount);
 		metaGenes.push_back(&data.gene_offset.offset.chanceToMutate);
 		metaGenes.push_back(&data.gene_offset.offset.changeAmount);
-		metaGenes.push_back(&data.gene_offset.targetSegment.chanceToMutate);
-		metaGenes.push_back(&data.gene_offset.targetSegment.changeAmount);
+		metaGenes.push_back(&data.gene_offset.side.chanceToMutate);
+		metaGenes.push_back(&data.gene_offset.side.changeAmount);
 		break;
-	case gene_type::JOINT_OFFSET:
+	/*case gene_type::JOINT_OFFSET:
 		metaGenes.push_back(&data.gene_joint_offset.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_joint_offset.maxDepth.changeAmount);
 		metaGenes.push_back(&data.gene_joint_offset.minDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_joint_offset.minDepth.changeAmount);
 		metaGenes.push_back(&data.gene_joint_offset.offset.chanceToMutate);
 		metaGenes.push_back(&data.gene_joint_offset.offset.changeAmount);
-		break;
+		break;*/
 	case gene_type::PART_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_attribute.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_attribute.maxDepth.changeAmount);
@@ -134,7 +135,7 @@ Gene Gene::createRandomProteinGene() {
 	g.maxDepth.set(randi(8));
 	g.minDepth.set(0);
 	g.protein.set((gene_protein_type)randi(GENE_PROT_NONE+1, GENE_PROT_END-1));
-	g.targetSegment.set(randi(BodyPart::MAX_CHILDREN));
+	g.weight.set(randf());
 	return g;
 }
 
@@ -142,18 +143,18 @@ Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
 	GeneOffset g;
 	g.maxDepth.set(randi(5));
 	g.minDepth.set(0);
-	g.targetSegment.set(randi(BodyPart::MAX_CHILDREN));
+	g.side.set(srandf());
 	g.offset.set(randi(spaceLeftAfter));
 	return g;
 }
 
-Gene Gene::createRandomJointOffsetGene(int spaceLeftAfter) {
+/*Gene Gene::createRandomJointOffsetGene(int spaceLeftAfter) {
 	GeneJointOffset g;
 	g.maxDepth.set(randi(5));
 	g.minDepth.set(0);
 	g.offset.set(randi(spaceLeftAfter));
 	return g;
-}
+}*/
 
 Gene Gene::createRandomSynapseGene(int nNeurons) {
 	GeneSynapse g;
@@ -223,7 +224,7 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		{gene_type::PROTEIN, 1.5},
 		{gene_type::PART_ATTRIBUTE, 2.1},
 		{gene_type::OFFSET, 0.3},
-		{gene_type::JOINT_OFFSET, 0.3},
+		//{gene_type::JOINT_OFFSET, 0.3},
 		{gene_type::NEURAL_BIAS, 1.0},
 		{gene_type::NEURAL_PARAM, 0.8},
 		{gene_type::TRANSFER_FUNC, 0.5},
@@ -260,8 +261,8 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return createRandomProteinGene();
 	case gene_type::OFFSET:
 		return createRandomOffsetGene(spaceLeftAfter);
-	case gene_type::JOINT_OFFSET:
-		return createRandomJointOffsetGene(spaceLeftAfter);
+	/*case gene_type::JOINT_OFFSET:
+		return createRandomJointOffsetGene(spaceLeftAfter);*/
 	case gene_type::NEURON_INPUT_COORD:
 		return createRandomNeuronInputCoordGene(nNeurons);
 	case gene_type::NEURON_OUTPUT_COORD:
@@ -294,8 +295,8 @@ char Gene::getSymbol() const {
 	switch (type) {
 	case gene_type::BODY_ATTRIBUTE:
 		return 'B';
-	case gene_type::JOINT_OFFSET:
-		return 'J';
+	/*case gene_type::JOINT_OFFSET:
+		return 'J';*/
 	case gene_type::NEURAL_BIAS:
 		return 'C';
 	case gene_type::NEURON_INPUT_COORD:

@@ -7,18 +7,18 @@
 
 #include "Nose.h"
 #include "../BodyConst.h"
+#include "../../ObjectTypesAndFlags.h"
 #include "../../entities/Bug.h"
-#include "../../World.h"
 #include "../../neuralnet/OutputSocket.h"
-#include "../../math/math3D.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../renderOpenGL/Shape3D.h"
-#include "../../OSD/EntityLabeler.h"
 
-#include "../../utils/UpdateList.h"
-#include "../../utils/rand.h"
-
-#include "../../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/OSD/EntityLabeler.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/rand.h>
+#include <boglfw/perf/marker.h>
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
@@ -74,7 +74,7 @@ void Nose::draw(RenderContext const& ctx) {
 }
 
 
-glm::vec2 Nose::getChildAttachmentPoint(float relativeAngle) {
+glm::vec2 Nose::getAttachmentPoint(float relativeAngle) {
 	if (!geneValuesCached_) {
 		cacheInitializationData();
 	}
@@ -131,7 +131,7 @@ void Nose::update(float dt) {
 		glm::vec2 pos = vec3xy(posRot);
 		static thread_local std::vector<Entity*> ents;
 		ents.clear();
-//TODO optimize here - restrict box to area in fron of the nose
+//TODO optimize here - restrict box to area in front of the nose
 		World::getInstance()->getEntitiesInBox(ents, NoseDetectableFlavours[i], Entity::FunctionalityFlags::DONT_CARE, pos, maxDist * 1.1f, true);
 
 		// use all entities in the visibility cone (where cos(phi)>0)
@@ -219,25 +219,25 @@ void Nose::commit() {
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
 
-	b2WeldJointDef jdef;
+	/*b2WeldJointDef jdef;
 	jdef.bodyA = parent_->getBody().b2Body_;
 	jdef.bodyB = physBody_.b2Body_;
-	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
+	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
 	jdef.localAnchorA = g2b(parentAnchor);
-	glm::vec2 childAnchor = getChildAttachmentPoint(PI - localRotation_);
+	glm::vec2 childAnchor = getAttachmentPoint(PI - localRotation_);
 	jdef.localAnchorB = g2b(childAnchor);
-	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
+	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);*/
 }
 
 
 void Nose::die() {
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 }
 
 
-void Nose::onAddedToParent() {
+/*void Nose::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}
+}*/
 

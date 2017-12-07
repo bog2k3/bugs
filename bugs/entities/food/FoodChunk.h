@@ -8,11 +8,12 @@
 #ifndef OBJECTS_FOOD_FOODCHUNK_H_
 #define OBJECTS_FOOD_FOODCHUNK_H_
 
-#include "../Entity.h"
 #include "../enttypes.h"
-#include "../../physics/PhysicsBody.h"
-#include "../../utils/Event.h"
-#include "../../utils/bitFlags.h"
+
+#include <boglfw/entities/Entity.h>
+#include <boglfw/physics/PhysicsBody.h>
+#include <boglfw/utils/Event.h>
+#include <boglfw/utils/bitFlags.h>
 
 #include <atomic>
 

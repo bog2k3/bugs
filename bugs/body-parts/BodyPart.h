@@ -10,7 +10,10 @@
 
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
-#include "../physics/PhysicsBody.h"
+#include "BodyPartContext.h"
+
+#include <boglfw/physics/PhysicsBody.h>
+
 #include <vector>
 #include <map>
 #include <memory>
@@ -44,41 +47,36 @@ class Entity;
 
 class BodyPart {
 public:
-	static constexpr unsigned MAX_CHILDREN = 16;
-
 	BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData> initialData);
 	virtual ~BodyPart();
 
 	// call this to destroy and delete the object. Never delete directly
 	void destroy();
 
+	// this will return the division-depth of the body-part
+	int getDepth() const { return 0; }
+
 	virtual void draw(RenderContext const& ctx);
 
 	inline BodyPartType getType() const { return type_; }
-	inline BodyPart* getParent() const { return parent_; }
-	std::string getDebugName() const;
 
 	// detaches this body part along with all its children from the parent part, breaking all neural connections.
 	// this part and its children may die as a result of this operation if the parameter is true
 	virtual void detach(bool die);
 
 	/**
-	 * return the attachment point for a child of the current part, in the specified direction
+	 * return the attachment point for a neighbour of the current part, in the specified direction
 	 * (in current's part coordinate frame).
 	 * This is usually the point where the ray from the center intersects the edge of the body part.
 	 */
-	virtual glm::vec2 getChildAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
+	virtual glm::vec2 getAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
 
 	virtual glm::vec3 getWorldTransformation();
 
-	aabb getAABBRecursive();
-
 	// must return the actual amount deduced from mass argument
-	virtual float addFood(float mass) { if (parent_) return parent_->addFood(mass); else return 0; }
+	virtual float addFood(float mass) { throw std::runtime_error("not implemented"); /*if (parent_) return parent_->addFood(mass); else return 0;*/ }
 
-	virtual int getDepth() { if (parent_) return 1 + parent_->getDepth(); return 0; }
-
-	virtual Bug* getOwner() { if (parent_) return parent_->getOwner(); return nullptr; }
+	Bug* getOwner() { return context_ ? &context_->owner : nullptr; }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
@@ -96,34 +94,34 @@ public:
 	/*
 	 * this will commit recursively in the entire body tree
 	 */
-	void commit_tree(float initialScale);
+	//void commit_tree(float initialScale);
 
 	/* returns the mass of the part and its entire subtree */
-	virtual float getMass_tree();
+	//virtual float getMass_tree();
 
 	/* scale the part and all its children by a given amount */
-	virtual void applyScale_tree(float scale);
+	//virtual void applyScale_tree(float scale);
 
 	// tells the entire hierarchy that the body died
-	void die_tree();
+	//void die_tree();
 
 	// draws the whole tree of body-parts
-	void draw_tree(RenderContext const& ctx);
+	//void draw_tree(RenderContext const& ctx);
 
-	inline int getChildrenCount() const { return nChildren_; }
-	inline BodyPart* getChild(int i) const { assertDbg(i<nChildren_); return children_[i]; }
+	//inline int getChildrenCount() const { return nChildren_; }
+	//inline BodyPart* getChild(int i) const { assertDbg(i<nChildren_); return children_[i]; }
 	inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
-	void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
+	//void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
 	PhysicsBody const& getBody() { return physBody_; }
 
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
-	inline float getDefaultAngle() const { return attachmentDirectionParent_ + localRotation_; }
+	inline float getDefaultAngle() const { return /*attachmentDirectionParent_ +*/ localRotation_; }
 	inline float getLocalRotation() const { return localRotation_; }
-	inline float getAttachmentAngle() const { return attachmentDirectionParent_; }
+	inline float getAttachmentAngle() const { return 0/*attachmentDirectionParent_*/; }
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
-	bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
+	//bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
 
 	// adds the motor line id into this node and all nodes above it recursively
 	// this id is the index of the nerve line from the neural network down to one of this motor's inputs
@@ -134,7 +132,7 @@ public:
 	 * The part's angle may be slightly changed if it overlaps other siblings.
 	 * returns the actual angle at which the part was inserted.
 	 */
-	virtual float add(BodyPart* part, float angle);
+	//virtual float add(BodyPart* part, float angle);
 	/*
 	 * remove all links, to parent and children. Calling this makes you responsible for the children, make sure
 	 * they don't get leaked.
@@ -151,15 +149,14 @@ public:
 	static Entity* getEntityFromBodyPartPhysBody(PhysicsBody const& body);
 
 protected:
+	BodyPartContext* context_ = nullptr;
 	// these are used when initializing the body and whenever a new commit is called.
 	// they contain world-space values that are updated only prior to committing
 	PhysicsProperties cachedProps_;
 	PhysicsBody physBody_;
 	BodyPartType type_;
-	BodyPart* parent_;
 
-	BodyPart* children_[MAX_CHILDREN];
-	int nChildren_;
+	std::vector<BodyPart*> neighbours_;
 
 	bool committed_;
 	bool noFixtures_ = false;
@@ -172,9 +169,8 @@ protected:
 	bool geneValuesCached_;
 
 	// final positioning and physical values:
-	float attachmentDirectionParent_;
+	//float attachmentDirectionParent_;
 	float localRotation_;
-	float lateralOffset_;
 	float size_;
 	float density_;
 
@@ -187,8 +183,11 @@ protected:
 	std::vector<unsigned> motorLines_;
 
 	/**
-	 * called after genome decoding finished, just before initializationData will be destroyed.
+	 * called after genome decoding finished, at the start of commit(), just before initializationData will be destroyed.
 	 * Here you get the chance to cache and sanitize the initialization values into your member variables.
+	 * it's important to do this because some values may be broken (ex zero or negative for size, or other values that
+	 * don't make sense).
+	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
 	 *
 	 * SANITIZE all values, don't trust genes !!!
 	 */
@@ -203,34 +202,34 @@ protected:
 	virtual void commit() = 0;
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
-	virtual void onAddedToParent() {}
-	virtual void onDetachedFromParent() {}
+	//virtual void onAddedToParent() {}
+	//virtual void onDetachedFromParent() {}
 
 
 	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
 	void registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value);
 	// returns the attachment point for the current part in its parent's coordinate space.
-	glm::vec2 getUpstreamAttachmentPoint();
-	UpdateList* getUpdateList();
+	//glm::vec2 getUpstreamAttachmentPoint();
+	//UpdateList* getUpdateList();
 	// call this if the fixture changed for any reason:
-	void reattachChildren();
+	//void reattachChildren();
 	void computeBodyPhysProps();
 
 	friend class Joint;
 
 	virtual void detachMotorLines(std::vector<unsigned> const& lines);
-	virtual void hierarchyMassChanged();
+	//virtual void hierarchyMassChanged();
 
 	void buildDebugName(std::stringstream &out_stream) const;
 
 private:
 	void reverseUpdateCachedProps();
-	glm::vec2 getParentSpacePosition();
-	bool applyScale_treeImpl(float scale, bool parentChanged);
+	//glm::vec2 getParentSpacePosition();
+	//bool applyScale_treeImpl(float scale, bool parentChanged);
 	void purge_initializationData();
 	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
-	inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
-	void remove(BodyPart* part);
+	//inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
+	//void remove(BodyPart* part);
 
 	std::map<gene_part_attribute_type, std::vector<CummulativeValue*>> mapAttributes_;
 	std::shared_ptr<BodyPartInitializationData> initialData_;
@@ -247,14 +246,8 @@ private:
 struct BodyPartInitializationData {
 	virtual ~BodyPartInitializationData() = default;
 	BodyPartInitializationData();
-	/* this is called before commit() in order to sanitize all the initialData members that are set up by genes.
-	 * it's important to do this because some values may be broken (ex zero or negative for size, or other values that
-	 * don't make sense).
-	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
-	 */
 
 	CummulativeValue localRotation;					// rotation offset from the original attachment angle
-	CummulativeValue lateralOffset;					// lateral (local OY axis) offset from the attachment point
 	CummulativeValue size;							// surface area
 	CummulativeValue density;
 };

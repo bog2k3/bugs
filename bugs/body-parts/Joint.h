@@ -31,7 +31,7 @@ public:
 	virtual ~Joint() override;
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	glm::vec3 getWorldTransformation() override;
 
 	void update(float dt);
@@ -54,8 +54,8 @@ protected:
 	void commit() override;
 	void cacheInitializationData() override;
 	void die() override;
-	void onAddedToParent() override;
-	void onDetachedFromParent() override;
+	//void onAddedToParent() override;
+	//void onDetachedFromParent() override;
 	void onPhysJointDestroyed(b2Joint* joint);
 	void destroyPhysJoint();
 

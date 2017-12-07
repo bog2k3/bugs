@@ -8,25 +8,15 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include utils/subdir.mk
 -include session/subdir.mk
 -include serialization/subdir.mk
--include renderOpenGL/subdir.mk
--include physics/subdir.mk
--include perf/subdir.mk
 -include neuralnet/subdir.mk
--include math/subdir.mk
--include input/operations/subdir.mk
--include input/subdir.mk
 -include genetics/subdir.mk
 -include entities/food/subdir.mk
 -include entities/Bug/subdir.mk
 -include entities/subdir.mk
 -include body-parts/sensors/subdir.mk
 -include body-parts/subdir.mk
--include OSD/subdir.mk
--include GUI/controls/subdir.mk
--include GUI/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -62,7 +52,7 @@ all: bugs
 bugs: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	g++ -L../../3rdparty/easyunit -o "bugs" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L../../3rdparty/easyunit -L/home/bog/work/boglfw/build/dist/lib -o "bugs" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

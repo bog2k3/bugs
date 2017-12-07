@@ -8,18 +8,18 @@
 #include "EggLayer.h"
 #include "BodyConst.h"
 #include "../entities/Bug.h"
-#include "../math/box2glm.h"
-#include "../math/math3D.h"
-#include "../renderOpenGL/Shape3D.h"
-#include "../renderOpenGL/RenderContext.h"
 #include "../entities/Gamete.h"
-#include "../World.h"
 #include "../neuralnet/InputSocket.h"
+#include "../ObjectTypesAndFlags.h"
 
-#include "../utils/UpdateList.h"
-#include "../utils/log.h"
-
-#include "../perf/marker.h"
+#include <boglfw/math/box2glm.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/World.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/perf/marker.h>
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
@@ -78,13 +78,13 @@ EggLayer::~EggLayer() {
 }
 
 void EggLayer::die() {
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 }
 
-float EggLayer::getMass_tree() {
+/*float EggLayer::getMass_tree() {
 	return initialSize_ * density_;
-}
+}*/
 
 void EggLayer::draw(RenderContext const& ctx) {
 	glm::vec3 transform = getWorldTransformation();
@@ -115,7 +115,7 @@ void EggLayer::draw(RenderContext const& ctx) {
 	}
 }
 
-glm::vec2 EggLayer::getChildAttachmentPoint(float relativeAngle) {
+glm::vec2 EggLayer::getAttachmentPoint(float relativeAngle) {
 	if (!geneValuesCached_) {
 #ifdef DEBUG
 		World::assertOnMainThread();
@@ -158,7 +158,7 @@ void EggLayer::useFood(float food) {
 	if (!suppressGrowth_) {
 		eggMassBuffer_ += food;
 		size_ = initialSize_ + eggMassBuffer_ * BodyConst::ZygoteDensityInv;
-		applyScale_tree(1.f);
+		//applyScale_tree(1.f);
 	}
 }
 
@@ -186,17 +186,17 @@ void EggLayer::commit() {
 	fdef.shape = &shape;
 	physBody_.b2Body_->CreateFixture(&fdef);
 
-	b2WeldJointDef jdef;
+	/*b2WeldJointDef jdef;
 	jdef.bodyA = parent_->getBody().b2Body_;
 	jdef.bodyB = physBody_.b2Body_;
-	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
+	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
 	jdef.localAnchorA = g2b(parentAnchor);
-	glm::vec2 childAnchor = getChildAttachmentPoint(PI - localRotation_);
+	glm::vec2 childAnchor = getAttachmentPoint(PI - localRotation_);
 	jdef.localAnchorB = g2b(childAnchor);
-	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
+	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);*/
 }
 
-void EggLayer::onAddedToParent() {
+/*void EggLayer::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}
+}*/

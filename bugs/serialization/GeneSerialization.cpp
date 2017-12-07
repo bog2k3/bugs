@@ -5,8 +5,9 @@
  *      Author: bog
  */
 
-#include "BinaryStream.h"
 #include "../genetics/Gene.h"
+
+#include <boglfw/serialization/BinaryStream.h>
 
 BinaryStream& operator << (BinaryStream &stream, MetaGene const& mg) {
 	stream << mg.dynamic_variation << mg.value;
@@ -57,13 +58,13 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_protein.maxDepth;
 		stream << gene.data.gene_protein.minDepth;
 		stream << gene.data.gene_protein.protein;
-		stream << gene.data.gene_protein.targetSegment;
+		stream << gene.data.gene_protein.weight;
 		break;
 	case gene_type::OFFSET:
 		stream << gene.data.gene_offset.maxDepth;
 		stream << gene.data.gene_offset.minDepth;
 		stream << gene.data.gene_offset.offset;
-		stream << gene.data.gene_offset.targetSegment;
+		stream << gene.data.gene_offset.side;
 		break;
 	case gene_type::NEURON_INPUT_COORD:
 		stream << gene.data.gene_neuron_input.destNeuronVirtIndex;
@@ -99,11 +100,11 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_transfer_function.functionID;
 		stream << gene.data.gene_transfer_function.targetNeuron;
 		break;
-	case gene_type::JOINT_OFFSET:
+	/*case gene_type::JOINT_OFFSET:
 		stream << gene.data.gene_joint_offset.maxDepth;
 		stream << gene.data.gene_joint_offset.minDepth;
 		stream << gene.data.gene_joint_offset.offset;
-		break;
+		break;*/
 	case gene_type::NO_OP:
 		break;
 	case gene_type::STOP:
@@ -129,13 +130,13 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_protein.maxDepth;
 		stream >> gene.data.gene_protein.minDepth;
 		stream >> gene.data.gene_protein.protein;
-		stream >> gene.data.gene_protein.targetSegment;
+		stream >> gene.data.gene_protein.weight;
 		break;
 	case gene_type::OFFSET:
 		stream >> gene.data.gene_offset.maxDepth;
 		stream >> gene.data.gene_offset.minDepth;
 		stream >> gene.data.gene_offset.offset;
-		stream >> gene.data.gene_offset.targetSegment;
+		stream >> gene.data.gene_offset.side;
 		break;
 	case gene_type::NEURON_INPUT_COORD:
 		stream >> gene.data.gene_neuron_input.destNeuronVirtIndex;
@@ -171,11 +172,11 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_transfer_function.functionID;
 		stream >> gene.data.gene_transfer_function.targetNeuron;
 		break;
-	case gene_type::JOINT_OFFSET:
+	/*case gene_type::JOINT_OFFSET:
 		stream >> gene.data.gene_joint_offset.maxDepth;
 		stream >> gene.data.gene_joint_offset.minDepth;
 		stream >> gene.data.gene_joint_offset.offset;
-		break;
+		break;*/
 	case gene_type::NO_OP:
 		break;
 	case gene_type::STOP:

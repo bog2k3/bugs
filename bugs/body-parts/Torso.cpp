@@ -8,16 +8,16 @@
 #include "Torso.h"
 #include "BodyConst.h"
 #include "Mouth.h"
-#include "../World.h"
-#include "../math/math3D.h"
-#include "../renderOpenGL/Shape3D.h"
-#include "../renderOpenGL/RenderContext.h"
+#include "../ObjectTypesAndFlags.h"
 
-#include "../utils/UpdateList.h"
-#include "../utils/log.h"
-#include "../utils/assert.h"
-
-#include "../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/assert.h>
+#include <boglfw/perf/marker.h>
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Box2D.h>
@@ -47,10 +47,10 @@ Torso::Torso()
 Torso::~Torso() {
 }
 
-void Torso::onAddedToParent() {
+/*void Torso::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}
+}*/
 
 void Torso::commit() {
 #ifdef DEBUG
@@ -83,7 +83,7 @@ void Torso::commit() {
 	foodBufferSize_ = foodProcessingSpeed_; // enough for 1 second
 
 #warning "gresit, copiii inca nu sunt scalati"
-	cachedMassTree_ = BodyPart::getMass_tree();
+	cachedMassTree_ = 1.f; //BodyPart::getMass_tree();
 }
 
 void Torso::draw(RenderContext const& ctx) {
@@ -113,7 +113,7 @@ void Torso::draw(RenderContext const& ctx) {
 	}
 }
 
-glm::vec2 Torso::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Torso::getAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
 #ifdef DEBUG
@@ -156,7 +156,7 @@ void Torso::update(float dt) {
 				|| crtSize * lastCommittedTotalSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
 			World::getInstance()->queueDeferredAction([this] {
 				commit();
-				reattachChildren();
+				//reattachChildren();
 			});
 		}
 	}
@@ -175,8 +175,8 @@ void Torso::die() {
 			commit();
 		});
 	}
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 }
 
 float Torso::addFood(float mass) {
@@ -208,6 +208,6 @@ void Torso::detach(bool die) {
 	BodyPart::detach(die);
 }
 
-void Torso::hierarchyMassChanged() {
+/*void Torso::hierarchyMassChanged() {
 	onBodyMassChanged.trigger();
-}
+}*/

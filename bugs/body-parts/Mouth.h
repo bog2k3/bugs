@@ -24,7 +24,7 @@ public:
 	Mouth();
 	virtual ~Mouth() override;
 
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void draw(RenderContext const& ctx) override;
 	void update(float dt);
 
@@ -39,7 +39,7 @@ protected:
 	void cacheInitializationData() override;
 	void commit() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
-	void onAddedToParent() override;
+	//void onAddedToParent() override;
 	void die() override;
 };
 

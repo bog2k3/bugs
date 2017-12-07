@@ -7,6 +7,7 @@
 
 #include "functions.h"
 #include "OutputSocket.h"
+
 #include <vector>
 #include <memory>
 

@@ -30,7 +30,7 @@ public:
 	~Gripper() override;
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 
 	void update(float dt);
 
@@ -39,7 +39,7 @@ public:
 	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : 0; }
 	float getInputVMSCoord(unsigned index) const override;
 #ifdef DEBUG
-	std::string getMotorDebugName() const override { return getDebugName(); }
+	//std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
 
 protected:
@@ -50,7 +50,7 @@ protected:
 	void setActive(bool active);
 	void commit() override;
 	void die() override;
-	void onAddedToParent() override;
+	//void onAddedToParent() override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_GRIPPER_H_ */

@@ -6,10 +6,13 @@
  */
 
 #include "Wall.h"
-#include "../math/math3D.h"
-#include "../math/aabb.h"
-#include "../World.h"
-#include "../serialization/BinaryStream.h"
+#include "../ObjectTypesAndFlags.h"
+
+#include <boglfw/math/math3D.h>
+#include <boglfw/math/aabb.h>
+#include <boglfw/World.h>
+#include <boglfw/serialization/BinaryStream.h>
+
 #include <Box2D/Box2D.h>
 
 #ifdef DEBUG_DMALLOC

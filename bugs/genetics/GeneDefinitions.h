@@ -25,7 +25,7 @@ enum class gene_type : uint8_t {
 	SKIP = 4,					// control gene -> skip next N genes if all conditions are met
 	PROTEIN = 5,				// protein gene -> produces a specific protein type in a body-part's segment
 	OFFSET = 6,					// controls the relative genome offset of a child part
-	JOINT_OFFSET = 7,			// controls the relative genome offset of this part's upstream Joint relative to this one
+	//JOINT_OFFSET = 7,			// controls the relative genome offset of this part's upstream Joint relative to this one
 	PART_ATTRIBUTE = 8,			// body part attribute - establishes characteristics of certain body parts
 	BODY_ATTRIBUTE = 9,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
@@ -65,7 +65,7 @@ typedef uint8_t gene_part_attribute_type;
 
 constexpr gene_part_attribute_type GENE_ATTRIB_INVALID = 0;
 constexpr gene_part_attribute_type GENE_ATTRIB_LOCAL_ROTATION = 1;		// rotates the part around its own center
-constexpr gene_part_attribute_type GENE_ATTRIB_ATTACHMENT_OFFSET = 2;	// sideways offset from parent joint, in % of current's part's width (default=0%)
+//constexpr gene_part_attribute_type GENE_ATTRIB_ATTACHMENT_OFFSET = 2;	// sideways offset from parent joint, in % of current's part's width (default=0%)
 constexpr gene_part_attribute_type GENE_ATTRIB_SIZE = 3;				// represents the surface area of the part
 constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 4;		// aspect_ratio = length / width
 constexpr gene_part_attribute_type GENE_ATTRIB_DENSITY = 5;				// density - for bones

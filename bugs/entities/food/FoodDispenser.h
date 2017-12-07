@@ -8,11 +8,12 @@
 #ifndef OBJECTS_FOOD_FOODDISPENSER_H_
 #define OBJECTS_FOOD_FOODDISPENSER_H_
 
-#include "../Entity.h"
 #include "../enttypes.h"
-#include "../../physics/PhysicsBody.h"
 #include "../../serialization/objectTypes.h"
-#include "../../utils/bitFlags.h"
+
+#include <boglfw/entities/Entity.h>
+#include <boglfw/physics/PhysicsBody.h>
+#include <boglfw/utils/bitFlags.h>
 
 class FoodDispenser: public Entity {
 public:
@@ -29,7 +30,7 @@ public:
 			FunctionalityFlags::SERIALIZABLE;
 	}
 
-	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::FOOD_DISPENSER; }
+	int getSerializationType() override { return SerializationObjectTypes::FOOD_DISPENSER; }
 	// deserialize a dispenser from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
 	void serialize(BinaryStream &stream) override;

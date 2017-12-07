@@ -34,7 +34,7 @@ public:
 	~Nose() override;
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 
 	void update(float dt);
 
@@ -49,7 +49,7 @@ protected:
 
 	void commit() override;
 	void die() override;
-	void onAddedToParent() override;
+	//void onAddedToParent() override;
 };
 
 

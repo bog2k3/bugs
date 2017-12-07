@@ -6,9 +6,11 @@
 #ifndef __gene_h__
 #define __gene_h__
 
-#include "../utils/rand.h"
 #include "constants.h"
 #include "GeneDefinitions.h"
+
+#include <boglfw/utils/rand.h>
+
 #include <stdint.h>
 #include <map>
 #include <vector>
@@ -72,26 +74,26 @@ struct GeneSkip {
 	}
 };
 
-// this gene controls the genome offset (relative to the current part's) of the child spawned from a given target segment
+// this gene controls the genome offset (relative to the current part's) of the child cell in the given side
 struct GeneOffset {
 	Atom<int> minDepth;
 	Atom<int> maxDepth;
 	Atom<int> offset;
-	Atom<int> targetSegment;
+	Atom<float> side;	// negative is right, positive is left
 };
 
 // this gene controls the genome offset (relative to the current part's) of the upstream Joint of this part, if it exists
-struct GeneJointOffset {
+/*struct GeneJointOffset {
 	Atom<int> minDepth;
 	Atom<int> maxDepth;
 	Atom<int> offset;
-};
+};*/
 
 struct GeneProtein {
 	Atom<gene_protein_type> protein;				// the type of protein this gene produces
-	Atom<int> targetSegment;						// target segment of current part which protein affects
 	Atom<int> minDepth;								// min hierarchical level where gene activates
 	Atom<int> maxDepth;								// max hierarchical level where gene activates
+	Atom<float> weight;								// abs() is used
 };
 
 struct GeneAttribute {
@@ -153,7 +155,7 @@ public:
 		GeneSkip gene_skip;
 		GeneProtein gene_protein;
 		GeneOffset gene_offset;
-		GeneJointOffset gene_joint_offset;
+		//GeneJointOffset gene_joint_offset;
 		GeneAttribute gene_attribute;
 		GeneSynapse gene_synapse;
 		GeneNeuronOutputCoord gene_neuron_output;
@@ -169,7 +171,7 @@ public:
 		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
 		GeneData(GeneProtein const &gp) : gene_protein(gp) {}
 		GeneData(GeneOffset const &go) : gene_offset(go) {}
-		GeneData(GeneJointOffset const& gjo) : gene_joint_offset(gjo) {}
+		//GeneData(GeneJointOffset const& gjo) : gene_joint_offset(gjo) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
@@ -197,7 +199,7 @@ public:
 	Gene(GeneSkip const &gs) : Gene(gene_type::SKIP, gs) {}
 	Gene(GeneProtein const &gp) : Gene(gene_type::PROTEIN, gp) {}
 	Gene(GeneOffset const &go) : Gene(gene_type::OFFSET, go) {}
-	Gene(GeneJointOffset const& gjo) : Gene(gene_type::JOINT_OFFSET, gjo) {}
+	//Gene(GeneJointOffset const& gjo) : Gene(gene_type::JOINT_OFFSET, gjo) {}
 	Gene(GeneAttribute const &gla) : Gene(gene_type::PART_ATTRIBUTE, gla) {}
 	Gene(GeneSynapse const &gs) : Gene(gene_type::SYNAPSE, gs) {}
 	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(gene_type::NEURON_OUTPUT_COORD, gnoc) {}
@@ -244,7 +246,7 @@ private:
 	static Gene createRandomSkipGene(int spaceLeftAfter);
 	static Gene createRandomProteinGene();
 	static Gene createRandomOffsetGene(int spaceLeftAfter);
-	static Gene createRandomJointOffsetGene(int spaceLeftAfter);
+	//static Gene createRandomJointOffsetGene(int spaceLeftAfter);
 	static Gene createRandomAttribGene();
 	static Gene createRandomSynapseGene(int nNeurons);
 	static Gene createRandomNeuronInputCoordGene(int nNeurons);

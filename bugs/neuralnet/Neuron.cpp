@@ -1,8 +1,10 @@
 #include "Neuron.h"
 #include "InputSocket.h"
-#include "../utils/rand.h"
-#include "../utils/assert.h"
-#include "../math/math3D.h"
+
+#include <boglfw/utils/rand.h>
+#include <boglfw/utils/assert.h>
+#include <boglfw/math/math3D.h>
+
 #include <cassert>
 #include <cmath>
 

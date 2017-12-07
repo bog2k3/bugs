@@ -6,9 +6,11 @@
  */
 
 #include "Genome.h"
-#include "../utils/rand.h"
-#include "../utils/log.h"
-#include "../math/math3D.h"
+
+#include <boglfw/utils/rand.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/math/math3D.h>
+
 #include <set>
 
 #ifdef DEBUG_DMALLOC
@@ -357,11 +359,11 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered += alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
 		break;
-	case gene_type::JOINT_OFFSET:
+	/*case gene_type::JOINT_OFFSET:
 		altered += alterAtom(g.data.gene_joint_offset.offset, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_joint_offset.minDepth, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_joint_offset.maxDepth, mutationChanceFactor);
-		break;
+		break;*/
 	default:
 		ERROR("unhandled gene type (alterGene): "<<(uint)g.type);
 		break;
@@ -429,11 +431,11 @@ void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, f
 		mutationCh += g.data.gene_transfer_function.functionID.chanceToMutate.value;
 		mutationCh += g.data.gene_transfer_function.targetNeuron.chanceToMutate.value;
 		break;
-	case gene_type::JOINT_OFFSET:
+	/*case gene_type::JOINT_OFFSET:
 		mutationCh += g.data.gene_joint_offset.offset.chanceToMutate.value;
 		mutationCh += g.data.gene_joint_offset.minDepth.chanceToMutate.value;
 		mutationCh += g.data.gene_joint_offset.maxDepth.chanceToMutate.value;
-		break;
+		break;*/
 	default:
 		ERROR("unhandled gene type (getAlterationChances): "<<(uint)g.type);
 		break;

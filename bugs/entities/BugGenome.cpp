@@ -11,7 +11,8 @@
 #include "../genetics/constants.h"
 #include "../neuralnet/functions.h"
 #include "../body-parts/BodyConst.h"
-#include "../utils/log.h"
+
+#include <boglfw/utils/log.h>
 
 #include <map>
 
@@ -53,7 +54,7 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float gripper_signal_phase_offset = 1.0f * PI;
 
 	GeneOffset go;
-	GeneJointOffset gjo;
+	//GeneJointOffset gjo;
 
 	PART_MARKER(TORSO)
 
@@ -477,7 +478,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	// grow Mouth:
 	GeneProtein gp;
-	gp.targetSegment.set(0);
+//	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_B);	// X+
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -487,12 +488,12 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(0);
+//	go.targetSegment.set(0);
 	INSERT_OFFSET(MOUTH)
 	c.genes.push_back(go);
 
 	// grow left nose:
-	gp.targetSegment.set(1);
+//	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -502,12 +503,12 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_H);	// W+
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(1);
+//	go.targetSegment.set(1);
 	INSERT_OFFSET(LEFT_NOSE)
 	c.genes.push_back(go);
 
 	// grow right nose:
-	gp.targetSegment.set(15);
+//	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -517,12 +518,12 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_H);	// W+
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(15);
+//	go.targetSegment.set(15);
 	INSERT_OFFSET(RIGHT_NOSE)
 	c.genes.push_back(go);
 
 	// grow Bone(8):
-	gp.targetSegment.set(8);
+//	gp.targetSegment.set(8);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_C);	// Y-
@@ -532,7 +533,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(8);
+//	go.targetSegment.set(8);
 	INSERT_OFFSET(TORSO_BONE8)
 	c.genes.push_back(go);
 
@@ -556,9 +557,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(BodyConst::initialMouthAspectRatio);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	ga.value.set(0);
@@ -626,9 +627,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	ga.value.set(0);
@@ -644,10 +645,10 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(gsm);
 #endif
 
-	gjo.minDepth.set(2);
-	gjo.maxDepth.set(4);
-	INSERT_JOFFSET(TORSO_JOINT8)
-	c.genes.push_back(gjo);
+//	gjo.minDepth.set(2);
+//	gjo.maxDepth.set(4);
+//	INSERT_JOFFSET(TORSO_JOINT8)
+//	c.genes.push_back(gjo);
 
 	ga.minDepth.set(2);
 	ga.maxDepth.set(4);
@@ -676,7 +677,7 @@ Chromosome Bug::createBasicChromosome() {
 	// grow second bone:
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
-	gp.targetSegment.set(0);
+//	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_C);	// Y-
@@ -688,14 +689,14 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(2);
 	go.maxDepth.set(2);
-	go.targetSegment.set(0);
+//	go.targetSegment.set(0);
 	INSERT_OFFSET(TORSO_BONE8);
 	c.genes.push_back(go);
 
 	// grow Egg Layer (on second bone):
 	gp.minDepth.set(4);
 	gp.maxDepth.set(4);
-	gp.targetSegment.set(0);
+//	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_B);	// X+
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -707,14 +708,14 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(4);
 	go.maxDepth.set(4);
-	go.targetSegment.set(0);
+//	go.targetSegment.set(0);
 	INSERT_OFFSET(EGGLAYER)
 	c.genes.push_back(go);
 
 	// grow right leg (2):
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
-	gp.targetSegment.set(2);
+//	gp.targetSegment.set(2);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_C);	// Y-
@@ -726,14 +727,14 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(2);
 	go.maxDepth.set(2);
-	go.targetSegment.set(2);
+//	go.targetSegment.set(2);
 	INSERT_OFFSET(RIGHT_LEG)
 	c.genes.push_back(go);
 
 	// grow right leg pull Muscle(3):
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
-	gp.targetSegment.set(3);
+//	gp.targetSegment.set(3);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -743,7 +744,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(3);
+//	go.targetSegment.set(3);
 	go.minDepth.set(2);
 	go.maxDepth.set(2);
 	INSERT_OFFSET(RIGHT_MUSCLE_PULL)
@@ -752,7 +753,7 @@ Chromosome Bug::createBasicChromosome() {
 	// grow right leg push Muscle (1):
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
-	gp.targetSegment.set(1);
+//	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -762,7 +763,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(1);
+//	go.targetSegment.set(1);
 	go.minDepth.set(2);
 	go.maxDepth.set(2);
 	INSERT_OFFSET(RIGHT_MUSCLE_PUSH)
@@ -771,7 +772,7 @@ Chromosome Bug::createBasicChromosome() {
 	// grow left leg (14):
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
-	gp.targetSegment.set(14);
+//	gp.targetSegment.set(14);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_C);	// Y-
@@ -781,7 +782,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(14);
+//	go.targetSegment.set(14);
 	go.minDepth.set(2);
 	go.maxDepth.set(2);
 	INSERT_OFFSET(LEFT_LEG)
@@ -790,7 +791,7 @@ Chromosome Bug::createBasicChromosome() {
 	// grow left leg pull Muscle(13):
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
-	gp.targetSegment.set(13);
+//	gp.targetSegment.set(13);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -800,7 +801,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(13);
+//	go.targetSegment.set(13);
 	go.minDepth.set(2);
 	go.maxDepth.set(2);
 	INSERT_OFFSET(LEFT_MUSCLE_PULL)
@@ -809,7 +810,7 @@ Chromosome Bug::createBasicChromosome() {
 	// grow left leg push Muscle (15):
 	gp.minDepth.set(2);
 	gp.maxDepth.set(2);
-	gp.targetSegment.set(15);
+//	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -819,7 +820,7 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein.set(GENE_PROT_G);	// W-
 	c.genes.push_back(gp);
 
-	go.targetSegment.set(15);
+//	go.targetSegment.set(15);
 	go.minDepth.set(2);
 	go.maxDepth.set(2);
 	INSERT_OFFSET(LEFT_MUSCLE_PUSH)
@@ -836,10 +837,10 @@ Chromosome Bug::createBasicChromosome() {
 #endif
 
 	// attribs for first bone:
-	gjo.minDepth.set(4);
-	gjo.maxDepth.set(4);
-	INSERT_JOFFSET(LEFT_LEG_JOINTS)
-	c.genes.push_back(gjo);
+//	gjo.minDepth.set(4);
+//	gjo.maxDepth.set(4);
+//	INSERT_JOFFSET(LEFT_LEG_JOINTS)
+//	c.genes.push_back(gjo);
 
 	ga.minDepth.set(4);
 	ga.maxDepth.set(4);
@@ -852,10 +853,10 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// attribs for second bone:
-	gjo.minDepth.set(6);
-	gjo.maxDepth.set(6);
-	INSERT_JOFFSET(LEFT_LEG_JOINTS)
-	c.genes.push_back(gjo);
+//	gjo.minDepth.set(6);
+//	gjo.maxDepth.set(6);
+//	INSERT_JOFFSET(LEFT_LEG_JOINTS)
+//	c.genes.push_back(gjo);
 
 	ga.maxDepth.set(6);
 	ga.minDepth.set(6);
@@ -875,9 +876,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(4);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_DENSITY;
 	ga.value.set(BodyConst::initialBoneDensity);
@@ -886,7 +887,7 @@ Chromosome Bug::createBasicChromosome() {
 	// (on 2nd bone) grow Gripper(0):
 	gp.minDepth.set(6);
 	gp.maxDepth.set(6);
-	gp.targetSegment.set(0);
+//	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -898,14 +899,14 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(6);
 	go.maxDepth.set(6);
-	go.targetSegment.set(0);
+//	go.targetSegment.set(0);
 	INSERT_OFFSET(LEFT_GRIPPER)
 	c.genes.push_back(go);
 
 	// (on 1st bone) grow 2nd Bone(0);
 	gp.minDepth.set(4);
 	gp.maxDepth.set(4);
-	gp.targetSegment.set(0);
+//	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_C);	// Y-
@@ -917,14 +918,14 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(4);
 	go.maxDepth.set(4);
-	go.targetSegment.set(0);
+//	go.targetSegment.set(0);
 	INSERT_OFFSET(LEFT_LEG)	// loop
 	c.genes.push_back(go);
 
 	// (on both bones) grow push Muscles (1):
 	gp.minDepth.set(4);
 	gp.maxDepth.set(6);
-	gp.targetSegment.set(1);
+//	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -936,12 +937,12 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(4);
 	go.maxDepth.set(6);
-	go.targetSegment.set(1);
+//	go.targetSegment.set(1);
 	INSERT_OFFSET(LEFT_MUSCLE_PUSH)
 	c.genes.push_back(go);
 
 	// (on both bones) grow pull Muscles (15):
-	gp.targetSegment.set(15);
+//	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -953,7 +954,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(4);
 	go.maxDepth.set(6);
-	go.targetSegment.set(15);
+//	go.targetSegment.set(15);
 	INSERT_OFFSET(LEFT_MUSCLE_PULL)
 	c.genes.push_back(go);
 
@@ -968,10 +969,10 @@ Chromosome Bug::createBasicChromosome() {
 #endif
 
 	// attribs for first bone:
-	gjo.minDepth.set(4);
-	gjo.maxDepth.set(4);
-	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
-	c.genes.push_back(gjo);
+//	gjo.minDepth.set(4);
+//	gjo.maxDepth.set(4);
+//	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
+//	c.genes.push_back(gjo);
 
 	ga.minDepth.set(4);
 	ga.maxDepth.set(4);
@@ -984,10 +985,10 @@ Chromosome Bug::createBasicChromosome() {
 	c.genes.push_back(ga);
 
 	// attribs for second bone:
-	gjo.minDepth.set(6);
-	gjo.maxDepth.set(6);
-	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
-	c.genes.push_back(gjo);
+//	gjo.minDepth.set(6);
+//	gjo.maxDepth.set(6);
+//	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
+//	c.genes.push_back(gjo);
 
 	ga.maxDepth.set(6);
 	ga.minDepth.set(6);
@@ -1007,9 +1008,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(4);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	ga.attribute = GENE_ATTRIB_DENSITY;
 	ga.value.set(BodyConst::initialBoneDensity);
@@ -1018,7 +1019,7 @@ Chromosome Bug::createBasicChromosome() {
 	// (on 2nd bone) grow Gripper(0):
 	gp.minDepth.set(6);
 	gp.maxDepth.set(6);
-	gp.targetSegment.set(0);
+//	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -1030,14 +1031,14 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(6);
 	go.maxDepth.set(6);
-	go.targetSegment.set(0);
+//	go.targetSegment.set(0);
 	INSERT_OFFSET(RIGHT_GRIPPER)
 	c.genes.push_back(go);
 
 	// (on 1st bone) grow 2nd Bone(0);
 	gp.minDepth.set(4);
 	gp.maxDepth.set(4);
-	gp.targetSegment.set(0);
+//	gp.targetSegment.set(0);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_C);	// Y-
@@ -1049,14 +1050,14 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(4);
 	go.maxDepth.set(4);
-	go.targetSegment.set(0);
+//	go.targetSegment.set(0);
 	INSERT_OFFSET(RIGHT_LEG)	// loop
 	c.genes.push_back(go);
 
 	// (on both bones) grow push Muscles (15):
 	gp.minDepth.set(4);
 	gp.maxDepth.set(6);
-	gp.targetSegment.set(15);
+//	gp.targetSegment.set(15);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -1068,12 +1069,12 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(4);
 	go.maxDepth.set(6);
-	go.targetSegment.set(15);
+//	go.targetSegment.set(15);
 	INSERT_OFFSET(RIGHT_MUSCLE_PUSH)
 	c.genes.push_back(go);
 
 	// (on both bones) grow pull Muscles (1):
-	gp.targetSegment.set(1);
+//	gp.targetSegment.set(1);
 	gp.protein.set(GENE_PROT_A);	// X-
 	c.genes.push_back(gp);
 	gp.protein.set(GENE_PROT_D);	// Y+
@@ -1085,7 +1086,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	go.minDepth.set(4);
 	go.maxDepth.set(6);
-	go.targetSegment.set(1);
+//	go.targetSegment.set(1);
 	INSERT_OFFSET(RIGHT_MUSCLE_PULL)
 	c.genes.push_back(go);
 
@@ -1237,14 +1238,14 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
-	gjo.minDepth.set(8);
-	gjo.maxDepth.set(8);
-	INSERT_JOFFSET(LEFT_LEG_JOINTS)
-	c.genes.push_back(gjo);
+//	gjo.minDepth.set(8);
+//	gjo.maxDepth.set(8);
+//	INSERT_JOFFSET(LEFT_LEG_JOINTS)
+//	c.genes.push_back(gjo);
 
 	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
 	ga.attribIndex.set(0);
@@ -1267,14 +1268,14 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(2 * BodyConst::initialBodyPartSize);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
-	gjo.minDepth.set(8);
-	gjo.maxDepth.set(8);
-	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
-	c.genes.push_back(gjo);
+//	gjo.minDepth.set(8);
+//	gjo.maxDepth.set(8);
+//	INSERT_JOFFSET(RIGHT_LEG_JOINTS)
+//	c.genes.push_back(gjo);
 
 	ga.attribute = GENE_ATTRIB_MOTOR_INPUT_COORD;
 	ga.attribIndex.set(0);
@@ -1331,9 +1332,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
@@ -1385,9 +1386,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
@@ -1439,9 +1440,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
@@ -1493,9 +1494,9 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(0);
 	c.genes.push_back(ga);
 
-	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
-	ga.value.set(0);
-	c.genes.push_back(ga);
+//	ga.attribute = GENE_ATTRIB_ATTACHMENT_OFFSET;
+//	ga.value.set(0);
+//	c.genes.push_back(ga);
 
 	c.genes.push_back(GeneStop());
 	c.genes.push_back(GeneStop());
@@ -1509,8 +1510,8 @@ Chromosome Bug::createBasicChromosome() {
 //		LOGLN("Marker offset [" << i.markerName << "] = " << partMarkers[i.markerName]);
 #endif
 		Atom<int> *pVal = &c.genes[i.geneIndex].data.gene_offset.offset;
-		if (i.jointOffs)
-			pVal = &c.genes[i.geneIndex].data.gene_joint_offset.offset;
+//		if (i.jointOffs)
+//			pVal = &c.genes[i.geneIndex].data.gene_joint_offset.offset;
 		pVal->set(partMarkers[i.markerName] - i.partOffset);
 	}
 
@@ -1526,9 +1527,9 @@ Chromosome Bug::createBasicChromosome() {
 			if (c.genes[i].type == gene_type::OFFSET) {
 				c.genes[i].data.gene_offset.offset.set(c.genes[i].data.gene_offset.offset * (padding+1));
 			}
-			if (c.genes[i].type == gene_type::JOINT_OFFSET) {
-				c.genes[i].data.gene_joint_offset.offset.set(c.genes[i].data.gene_joint_offset.offset * (padding+1));
-			}
+//			if (c.genes[i].type == gene_type::JOINT_OFFSET) {
+//				c.genes[i].data.gene_joint_offset.offset.set(c.genes[i].data.gene_joint_offset.offset * (padding+1));
+//			}
 		}
 	}
 

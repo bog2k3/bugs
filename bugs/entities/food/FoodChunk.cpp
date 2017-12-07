@@ -7,13 +7,14 @@
 
 #include "FoodChunk.h"
 #include "../WorldConst.h"
-#include "../../World.h"
-#include "../../math/math3D.h"
-#include "../../math/aabb.h"
-#include "../../renderOpenGL/RenderContext.h"
-#include "../../renderOpenGL/Shape3D.h"
+#include "../../ObjectTypesAndFlags.h"
 
-#include "../../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/math/aabb.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/perf/marker.h>
 
 #include <Box2D/Box2D.h>
 

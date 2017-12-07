@@ -5,9 +5,10 @@
  *      Author: bog
  */
 
-#include "BinaryStream.h"
 #include "GeneSerialization.h"
 #include "../genetics/Genome.h"
+
+#include <boglfw/serialization/BinaryStream.h>
 
 BinaryStream& operator << (BinaryStream &stream, Chromosome::insertion const& ins) {
 	stream << ins.age << ins.index;

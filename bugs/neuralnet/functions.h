@@ -60,7 +60,7 @@ float transfer_fn_rand(float biasedValue, float neuralParam, float input0, float
 // param: sigmoid steepness
 // input0:  command signal
 // bias: command signal threshold
-// lets value pass through if command signal is greater than command signal bias.
+// lets value pass through if command signal is greater than command signal threshold.
 float transfer_fn_gate(float biasedValue, float neuralParam, float input0, float bias);
 
 // input0: command signal (input #0)

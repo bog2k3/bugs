@@ -8,12 +8,13 @@
 #ifndef ENTITIES_GAMETE_H_
 #define ENTITIES_GAMETE_H_
 
-#include "Entity.h"
 #include "enttypes.h"
 #include "../genetics/Genome.h"
-#include "../physics/PhysicsBody.h"
 #include "../serialization/objectTypes.h"
-#include "../utils/bitFlags.h"
+
+#include <boglfw/entities/Entity.h>
+#include <boglfw/physics/PhysicsBody.h>
+#include <boglfw/utils/bitFlags.h>
 
 #define DEBUG_DRAW_GAMETE
 
@@ -43,7 +44,7 @@ public:
 #endif
 
 	void serialize(BinaryStream &stream) override;
-	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::GAMETE; }
+	int getSerializationType() override { return SerializationObjectTypes::GAMETE; }
 
 	const Chromosome& getChromosome() const { return chromosome_; }
 

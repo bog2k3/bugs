@@ -8,7 +8,7 @@
 #ifndef OBJECTS_WORLDCONST_H_
 #define OBJECTS_WORLDCONST_H_
 
-#include "../math/constants.h"
+#include <boglfw/math/constants.h>
 #include <glm/vec2.hpp>
 
 class WorldConst {

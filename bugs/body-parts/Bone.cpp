@@ -7,12 +7,14 @@
 
 #include "Bone.h"
 #include "BodyConst.h"
-#include "../World.h"
-#include "../math/math3D.h"
-#include "../renderOpenGL/Shape3D.h"
-#include "../renderOpenGL/RenderContext.h"
-#include "../utils/log.h"
-#include "../utils/assert.h"
+#include "../ObjectTypesAndFlags.h"
+
+#include <boglfw/World.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/assert.h>
 
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
@@ -79,7 +81,7 @@ void Bone::commit() {
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
-glm::vec2 Bone::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Bone::getAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
 		cacheInitializationData();
@@ -107,7 +109,7 @@ void Bone::draw(RenderContext const& ctx) {
 				glm::vec2(length_, width_), worldTransform.z, debug_color);
 		Shape3D::get()->drawLine(
 				{vec3xy(worldTransform), 0},
-				{vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z), 0},
+				{vec3xy(worldTransform) + glm::rotate(getAttachmentPoint(0), worldTransform.z), 0},
 				debug_color);
 	}
 }

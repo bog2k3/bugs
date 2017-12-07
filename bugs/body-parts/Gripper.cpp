@@ -5,18 +5,18 @@
  *      Author: bog
  */
 
+#include "../neuralnet/InputSocket.h"
+#include "../ObjectTypesAndFlags.h"
 #include "Gripper.h"
 #include "BodyConst.h"
-#include "../World.h"
-#include "../renderOpenGL/Shape3D.h"
-#include "../math/math3D.h"
-#include "../neuralnet/InputSocket.h"
 
-#include "../utils/log.h"
-#include "../utils/UpdateList.h"
-#include "../utils/assert.h"
-
-#include "../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/assert.h>
+#include <boglfw/perf/marker.h>
 
 #include <Box2D/Box2D.h>
 #include <glm/glm.hpp>
@@ -55,10 +55,10 @@ float Gripper::getInputVMSCoord(unsigned index) const {
 		return 0;
 }
 
-void Gripper::onAddedToParent() {
+/*void Gripper::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}
+}*/
 
 Gripper::~Gripper() {
 	delete inputSocket_;
@@ -136,7 +136,7 @@ void Gripper::draw(RenderContext const& ctx) {
 	}
 }
 
-glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
+glm::vec2 Gripper::getAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
 #ifdef DEBUG
@@ -151,6 +151,6 @@ glm::vec2 Gripper::getChildAttachmentPoint(float relativeAngle)
 
 void Gripper::die() {
 	setActive(false);
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 }

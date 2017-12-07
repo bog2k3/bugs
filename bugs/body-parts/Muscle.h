@@ -33,7 +33,7 @@ public:
 	void setJoint(Joint* joint, int motorDirSign);
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getChildAttachmentPoint(float relativeAngle) override;
+	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 
 	// IMotor::
@@ -41,7 +41,7 @@ public:
 	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : nullptr; }
 	float getInputVMSCoord(unsigned index) const override;
 #ifdef DEBUG
-	std::string getMotorDebugName() const override { return getDebugName(); }
+	//std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
 
 protected:
@@ -69,7 +69,7 @@ protected:
 	float getCurrentPhiSlice();
 	void cacheInitializationData() override;
 	void commit() override;
-	void onAddedToParent() override;
+	//void onAddedToParent() override;
 	void die() override;
 
 private:

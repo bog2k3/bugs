@@ -7,18 +7,18 @@
 
 #include "Mouth.h"
 #include "BodyConst.h"
-#include "../World.h"
 #include "../entities/food/FoodChunk.h"
-#include "../math/math3D.h"
-#include "../math/box2glm.h"
-#include "../renderOpenGL/RenderContext.h"
-#include "../renderOpenGL/Shape3D.h"
+#include "../ObjectTypesAndFlags.h"
 
-#include "../utils/log.h"
-#include "../utils/UpdateList.h"
-#include "../utils/assert.h"
-
-#include "../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/math/box2glm.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/assert.h>
+#include <boglfw/perf/marker.h>
 
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
@@ -62,18 +62,18 @@ Mouth::~Mouth() {
 }
 
 void Mouth::die() {
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 	physBody_.onCollision.remove(onCollisionEventHandle);
 	physBody_.collisionEventMask_ = 0;
 }
 
-void Mouth::onAddedToParent() {
+/*void Mouth::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}
+}*/
 
-glm::vec2 Mouth::getChildAttachmentPoint(float relativeAngle) {
+glm::vec2 Mouth::getAttachmentPoint(float relativeAngle) {
 	if (!geneValuesCached_) {
 #ifdef DEBUG
 		World::getInstance()->assertOnMainThread();
@@ -109,14 +109,14 @@ void Mouth::commit() {
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
 
-	b2WeldJointDef jdef;
+	/*b2WeldJointDef jdef;
 	jdef.bodyA = parent_->getBody().b2Body_;
 	jdef.bodyB = physBody_.b2Body_;
-	glm::vec2 parentAnchor = parent_->getChildAttachmentPoint(attachmentDirectionParent_);
+	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
 	jdef.localAnchorA = g2b(parentAnchor);
-	glm::vec2 childAnchor = getChildAttachmentPoint(PI - localRotation_);
+	glm::vec2 childAnchor = getAttachmentPoint(PI - localRotation_);
 	jdef.localAnchorB = g2b(childAnchor);
-	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);
+	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);*/
 }
 
 void Mouth::draw(RenderContext const& ctx) {
@@ -133,7 +133,7 @@ void Mouth::draw(RenderContext const& ctx) {
 		glm::vec3 worldTransform = getWorldTransformation();
 		Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(length_, width_), worldTransform.z, debug_color);
 		Shape3D::get()->drawLine(glm::vec3(vec3xy(worldTransform), 0),
-				glm::vec3(vec3xy(worldTransform), 0) + glm::vec3(glm::rotate(getChildAttachmentPoint(0), worldTransform.z), 0),
+				glm::vec3(vec3xy(worldTransform), 0) + glm::vec3(glm::rotate(getAttachmentPoint(0), worldTransform.z), 0),
 				debug_color);
 	}
 }
@@ -205,6 +205,6 @@ void Mouth::update(float dt) {
 	PERF_MARKER_FUNC;
 	if (isDead())
 		return;
-	if (usedBuffer_ > 0)
-		usedBuffer_ -= parent_->addFood(usedBuffer_);
+	/*if (usedBuffer_ > 0)
+		usedBuffer_ -= parent_->addFood(usedBuffer_);*/
 }

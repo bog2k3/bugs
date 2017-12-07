@@ -37,17 +37,16 @@
 #include "Joint.h"
 #include "Bone.h"
 #include "BodyConst.h"
-#include "../World.h"
-#include "../math/math3D.h"
-#include "../renderOpenGL/Shape3D.h"
-#include "../renderOpenGL/RenderContext.h"
 #include "../neuralnet/InputSocket.h"
 
-#include "../utils/UpdateList.h"
-#include "../utils/assert.h"
-#include "../utils/log.h"
-
-#include "../perf/marker.h"
+#include <boglfw/World.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/assert.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/perf/marker.h>
 
 #include <glm/vec3.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -114,21 +113,21 @@ void Muscle::setJoint(Joint* joint, int motorDirSign) {
 }
 
 void Muscle::die() {
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 }
 
 void Muscle::onJointDied(BodyPart* joint) {
 	assertDbg(joint == joint_);
 	joint_ = nullptr;
-	if (getUpdateList())
-		getUpdateList()->remove(this);
+	if (context_)
+		context_->updateList.remove(this);
 }
 
-void Muscle::onAddedToParent() {
+/*void Muscle::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}
+}*/
 
 void Muscle::commit() {
 #ifdef DEBUG
@@ -172,7 +171,7 @@ void Muscle::commit() {
 		 */
 
 		// compute insertion axis (phi0):
-		BodyPart* targetPart = joint_->getChild(0);
+		BodyPart* targetPart = nullptr; //joint_->getChild(0);
 		bool useOY = false;
 		if (targetPart->getType() == BodyPartType::BONE) {
 			Bone* bone = dynamic_cast<Bone*>(targetPart);
@@ -246,7 +245,7 @@ void Muscle::commit() {
 	}
 }
 
-glm::vec2 Muscle::getChildAttachmentPoint(float relativeAngle) {
+glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
 	if (!geneValuesCached_) {
 #ifdef DEBUG
 		World::getInstance()->assertOnMainThread();
@@ -282,7 +281,7 @@ void Muscle::draw(RenderContext const& ctx) {
 			glm::vec2(l, w), worldTransform.z, debug_color);
 	Shape3D::get()->drawLine(
 			{vec3xy(worldTransform), 0},
-			{vec3xy(worldTransform) + glm::rotate(getChildAttachmentPoint(0), worldTransform.z), 0},
+			{vec3xy(worldTransform) + glm::rotate(getAttachmentPoint(0), worldTransform.z), 0},
 			debug_color);
 #ifdef DEBUG_DRAW_MUSCLE
 	if (inputSocket_->value > 0)

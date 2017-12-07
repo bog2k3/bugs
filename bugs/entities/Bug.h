@@ -8,16 +8,17 @@
 #ifndef ENTITIES_BUG_H_
 #define ENTITIES_BUG_H_
 
-#include "Entity.h"
 #include "enttypes.h"
 #include "Bug/LifetimeSensor.h"
 #include "../genetics/Genome.h"
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
 #include "../serialization/objectTypes.h"
-#include "../utils/UpdateList.h"
-#include "../utils/bitFlags.h"
-#include "../math/aabb.h"
+
+#include <boglfw/entities/Entity.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/bitFlags.h>
+#include <boglfw/math/aabb.h>
 
 #include <glm/fwd.hpp>
 
@@ -59,7 +60,7 @@ public:
 
 	void update(float dt) override;
 	void draw(RenderContext const &ctx) override;
-	SerializationObjectTypes getSerializationType() override { return SerializationObjectTypes::BUG; }
+	int getSerializationType() override { return SerializationObjectTypes::BUG; }
 
 	const Genome& getGenome() { return genome_; }
 	glm::vec2 getVelocity();

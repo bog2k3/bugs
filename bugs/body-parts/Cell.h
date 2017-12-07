@@ -8,10 +8,10 @@
 #ifndef BODY_PARTS_CELL_H_
 #define BODY_PARTS_CELL_H_
 
+#include <glm/vec2.hpp>
+
 #include <vector>
 #include <set>
-
-#include <glm/vec2.hpp>
 
 class Cell {
 public:

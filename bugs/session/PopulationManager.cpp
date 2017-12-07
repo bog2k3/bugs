@@ -7,11 +7,11 @@
 
 #include "PopulationManager.h"
 #include "../entities/Bug.h"
-#include "../World.h"
 
-#include "../perf/marker.h"
-#include "../utils/log.h"
-#include "../utils/rand.h"
+#include <boglfw/World.h>
+#include <boglfw/perf/marker.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/rand.h>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>

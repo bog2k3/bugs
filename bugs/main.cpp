@@ -1,43 +1,9 @@
 #include <iostream>
 
-#include "renderOpenGL/glToolkit.h"
-#include "renderOpenGL/Renderer.h"
-#include "renderOpenGL/Viewport.h"
-#include "renderOpenGL/GLText.h"
-#include "input/GLFWInput.h"
-#include "input/InputEvent.h"
-#include "input/operations/OperationsStack.h"
-#include "input/operations/OperationPan.h"
-#include "input/operations/OperationSpring.h"
-#include "input/operations/OperationGui.h"
-#include "World.h"
-#include "physics/PhysContactListener.h"
-#include "physics/PhysDestroyListener.h"
-#include "physics/PhysicsDebugDraw.h"
-#include "math/math3D.h"
-#include "OSD/ScaleDisplay.h"
-#include "OSD/SignalViewer.h"
-#include "OSD/EntityLabeler.h"
-#include "GUI/GuiSystem.h"
-#include "GUI/Window.h"
-#include "GUI/controls/Button.h"
-#include "GUI/controls/TextField.h"
-#include "serialization/Serializer.h"
 #include "serialization/objectTypes.h"
 #include "session/SessionManager.h"
 #include "session/PopulationManager.h"
-#include "Infrastructure.h"
-
 #include "Prototype.h"
-
-#include "utils/log.h"
-#include "utils/DrawList.h"
-#include "utils/UpdateList.h"
-#include "utils/rand.h"
-
-#include "perf/marker.h"
-#include "perf/results.h"
-#include "perf/frameCapture.h"
 
 #ifdef DEBUG
 #include "entities/Bug.h"
@@ -45,6 +11,39 @@
 #include "body-parts/sensors/Nose.h"
 #include "neuralnet/OutputSocket.h"
 #endif
+
+#include <boglfw/renderOpenGL/glToolkit.h>
+#include <boglfw/renderOpenGL/Renderer.h>
+#include <boglfw/renderOpenGL/Viewport.h>
+#include <boglfw/renderOpenGL/GLText.h>
+#include <boglfw/input/GLFWInput.h>
+#include <boglfw/input/InputEvent.h>
+#include <boglfw/input/operations/OperationsStack.h>
+#include <boglfw/input/operations/OperationPan.h>
+#include <boglfw/input/operations/OperationSpring.h>
+#include <boglfw/input/operations/OperationGui.h>
+#include <boglfw/World.h>
+#include <boglfw/physics/PhysContactListener.h>
+#include <boglfw/physics/PhysDestroyListener.h>
+#include <boglfw/physics/PhysicsDebugDraw.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/OSD/ScaleDisplay.h>
+#include <boglfw/OSD/SignalViewer.h>
+#include <boglfw/OSD/EntityLabeler.h>
+#include <boglfw/GUI/GuiSystem.h>
+#include <boglfw/GUI/Window.h>
+#include <boglfw/GUI/controls/Button.h>
+#include <boglfw/GUI/controls/TextField.h>
+#include <boglfw/serialization/Serializer.h>
+#include <boglfw/Infrastructure.h>
+#include <boglfw/utils/log.h>
+#include <boglfw/utils/DrawList.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/utils/rand.h>
+#include <boglfw/perf/marker.h>
+#include <boglfw/perf/results.h>
+#include <boglfw/perf/frameCapture.h>
+
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>

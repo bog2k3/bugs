@@ -7,12 +7,15 @@
 
 #include "ZygoteShell.h"
 #include "BodyConst.h"
-#include "../World.h"
-#include "../math/math3D.h"
-#include "../math/box2glm.h"
-#include "../utils/rand.h"
-#include "../renderOpenGL/Shape3D.h"
-#include "../renderOpenGL/RenderContext.h"
+#include "../ObjectTypesAndFlags.h"
+
+#include <boglfw/World.h>
+#include <boglfw/math/math3D.h>
+#include <boglfw/math/box2glm.h>
+#include <boglfw/utils/rand.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

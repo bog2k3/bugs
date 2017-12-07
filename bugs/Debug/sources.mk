@@ -23,24 +23,14 @@ CPP_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-GUI \
-GUI/controls \
 . \
-OSD \
 body-parts \
 body-parts/sensors \
-entities \
 entities/Bug \
+entities \
 entities/food \
 genetics \
-input \
-input/operations \
-math \
 neuralnet \
-perf \
-physics \
-renderOpenGL \
 serialization \
 session \
-utils \
 

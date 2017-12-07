@@ -8,7 +8,8 @@
 #ifndef SERIALIZATION_OBJECTTYPES_H_
 #define SERIALIZATION_OBJECTTYPES_H_
 
-enum class SerializationObjectTypes {
+namespace SerializationObjectTypes {
+enum values {
 	UNDEFINED = 0,
 	BUG,
 	GENOME,
@@ -16,5 +17,6 @@ enum class SerializationObjectTypes {
 	FOOD_DISPENSER,
 	WALL,
 };
+}
 
 #endif /* SERIALIZATION_OBJECTTYPES_H_ */

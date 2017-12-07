@@ -12,7 +12,8 @@
 #include <cstdint>
 
 // all the objects that have a PhysicsBody should have an entry here:
-enum class ObjectTypes : uint32_t {
+namespace ObjectTypes {
+enum values : uint32_t {
 	UNDEFINED		= 0,
 	BPART_BONE,
 	BPART_GRIPPER,
@@ -26,7 +27,7 @@ enum class ObjectTypes : uint32_t {
 	WALL,
 	GAMETE,
 	PROTOTYPE,
-};
+};}
 
 /*
  * Use these values to tell PhysicsBody whether to generate collision events or not
