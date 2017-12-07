@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-#define ENABLE_START_MARKER_GENES
+//#define ENABLE_START_MARKER_GENES
 
 // ----------------------------------- gene_type -------------------------------//
 
@@ -29,35 +29,32 @@ enum class gene_type : uint8_t {
 	PART_ATTRIBUTE = 8,			// body part attribute - establishes characteristics of certain body parts
 	BODY_ATTRIBUTE = 9,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
-	SYNAPSE = 10,				// creates or alters a synapse between neurons (cummulative weight)
-	TRANSFER_FUNC = 11,			// controls the transfer function of a neuron (cummulative)
-	NEURAL_BIAS = 12,			// neural bias (cummulative) - is added to the weighted sum of the inputs
-	NEURON_OUTPUT_COORD = 13,	// output coord (in MVMS) from a neuron
-	NEURON_INPUT_COORD = 14,	// input coord (in SVMS) to a neuron
-	NEURAL_PARAM = 15,			// neural parameter - used by some types of neurons for specific purposes
+	NEURON = 10,				// creates a new neuron at the specified location (neuron will belong the the current cell)
+	SYNAPSE = 11,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
+	TRANSFER_FUNC = 12,			// controls the transfer function of a neuron (cummulative)
+	NEURAL_BIAS = 13,			// neural bias (cummulative) - is added to the weighted sum of the inputs
+	NEURON_OUTPUT_COORD = 14,	// output coord (in VMS) from a neuron - where the axon lies
+	NEURON_INPUT_COORD = 15,	// input coord (in VMS) to a neuron - where the dendrites lie
+	NEURAL_PARAM = 16,			// neural parameter - used by some types of neurons for specific purposes
 
-	END = 15
+	END = 17
 };
 
 // ----------------------------------- gene_protein_type -------------------------------//
 
 // proteins move the target point in potential body-part hyper-space along different axes.
-// The position of the target point relative to each axis determines what kind of body part a given segment will grow
+// The position of the target point relative to each axis determines what kind of body part a given cell will specialize into
 // There are 4 axes (X, Y, Z, W) of the 4-dimensional hyper-space which is split into 16 distinct regions joining at the origin.
 // Each of these regions (they are the equivalent of quadrants in a 2-dimensional plane) correspond to a body part type or to nothing.
 
 typedef uint8_t gene_protein_type;
 
 constexpr gene_protein_type GENE_PROT_NONE = 0;
-constexpr gene_protein_type GENE_PROT_A = 2;		// X-
-constexpr gene_protein_type GENE_PROT_B = 3;		// X+
-constexpr gene_protein_type GENE_PROT_C = 4;		// Y-
-constexpr gene_protein_type GENE_PROT_D = 5;		// Y+
-constexpr gene_protein_type GENE_PROT_E = 6;		// Z-
-constexpr gene_protein_type GENE_PROT_F = 7;		// Z+
-constexpr gene_protein_type GENE_PROT_G = 8;		// W-
-constexpr gene_protein_type GENE_PROT_H = 9;		// W+
-constexpr gene_protein_type GENE_PROT_END = 10;
+constexpr gene_protein_type GENE_PROT_X = 1;
+constexpr gene_protein_type GENE_PROT_Y = 2;
+constexpr gene_protein_type GENE_PROT_Z = 3;
+constexpr gene_protein_type GENE_PROT_W = 4;
+constexpr gene_protein_type GENE_PROT_END = 5;
 
 // ----------------------------------- gene_part_attribute_type -------------------------------//
 

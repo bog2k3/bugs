@@ -33,8 +33,9 @@ Chromosome Bug::createBasicChromosome() {
 	std::vector<offsetInsertion> insertions;
 
 #define PART_MARKER(name) { crtOffset = c.genes.size(); partMarkers[#name] = crtOffset; }
-#define INSERT_OFFSET(targetMarker) { insertions.push_back(offsetInsertion(crtOffset, c.genes.size(), #targetMarker, false)); }
-#define INSERT_JOFFSET(targetMarker) { insertions.push_back(offsetInsertion(crtOffset, c.genes.size(), #targetMarker, true)); }
+#define INSERT_OFFSET_IMPL(targetMarker, isJoint) { insertions.push_back(offsetInsertion(crtOffset, c.genes.size(), targetMarker, isJoint)); }
+#define INSERT_OFFSET(targetMarker) INSERT_OFFSET_IMPL(#targetMarker, false)
+#define INSERT_JOFFSET(targetMarker) INSERT_OFFSET_IMPL(#targetMarker, true)
 
 	constexpr float body_size = 0.1f * 0.1f; // sq meters
 	constexpr float body_init_fat_ratio = 0.5f;

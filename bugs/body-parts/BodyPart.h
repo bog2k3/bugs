@@ -11,6 +11,7 @@
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
 #include "BodyPartContext.h"
+#include "BodyPartTypes.h"
 
 #include <boglfw/physics/PhysicsBody.h>
 
@@ -18,26 +19,6 @@
 #include <map>
 #include <memory>
 #include <ostream>
-
-enum class BodyPartType {
-	INVALID = 0,
-
-	TORSO,
-	BONE,
-	JOINT,
-	MUSCLE,
-	GRIPPER,
-	ZYGOTE_SHELL,
-	SENSOR_PROXIMITY,		// many outputs for multiple types of entities
-	SENSOR_COMPASS,			// 1 output - absolute orientation in world
-	SENSOR_SIGHT,			// array of outputs for pixels (multiple channels maybe?)
-	MOUTH,
-	EGGLAYER,
-};
-
-inline std::ostream& operator << (std::ostream& str, BodyPartType const& type) {
-	return str << (unsigned)type;
-}
 
 class UpdateList;
 class RenderContext;

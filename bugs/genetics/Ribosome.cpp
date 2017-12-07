@@ -240,48 +240,11 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	if (parent->getType() != BodyPartType::BONE && parent->getType() != BodyPartType::TORSO)
 		return;
 	// determine the body part type to grow from the hyperPosition
-	BodyPartType partTypes[2][2][2][2] = {
-		/* W- */ {
-			/* Z- */ {
-				/* Y- */ {
-					/* X- */ BodyPartType::BONE, /* X+ */ BodyPartType::INVALID
-				},
-				/* Y+ */ {
-					/* X- */ BodyPartType::GRIPPER, /* X+ */ BodyPartType::MOUTH
-				},
-			},
-			/* Z+ */ {
-				/* Y- */ {
-					/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
-				},
-				/* Y+ */ {
-					/* X- */ BodyPartType::MUSCLE, /* X+ */ BodyPartType::EGGLAYER
-				},
-			},
-		},
-		/* W+ */ {
-			/* Z- */ {
-				/* Y- */ {
-					/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
-				},
-				/* Y+ */ {
-					/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::INVALID
-				},
-			},
-			/* Z+ */ {
-				/* Y- */ {
-					/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
-				},
-				/* Y+ */ {
-					/* X- */ BodyPartType::SENSOR_COMPASS, /* X+ */ BodyPartType::SENSOR_SIGHT
-				},
-			},
-		}
-	};
+
 	// if any one axis is zero, we cannot determine the part type and none is grown
 	if (hyperPosition.x * hyperPosition.y * hyperPosition.z * hyperPosition.w == 0)
 		return;
-	BodyPartType newBodyPartType = partTypes[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y > 0][hyperPosition.x > 0];
+	BodyPartType newBodyPartType = proteinHyperspace[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y > 0][hyperPosition.x > 0];
 	if (newBodyPartType == BodyPartType::INVALID)
 		return;
 

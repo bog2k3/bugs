@@ -93,6 +93,7 @@ struct GeneProtein {
 	Atom<gene_protein_type> protein;				// the type of protein this gene produces
 	Atom<int> minDepth;								// min hierarchical level where gene activates
 	Atom<int> maxDepth;								// max hierarchical level where gene activates
+	Atom<float> side;								// negative is right, positive is left
 	Atom<float> weight;								// abs() is used
 };
 
@@ -107,34 +108,38 @@ struct GeneAttribute {
 };
 
 struct GeneSynapse {
-	Atom<int> from;		// virtual neuron index
-	Atom<int> to;		// virtual neuron index
-	Atom<float> weight;	// absolute weight of the synapse (cummulative)
-	Atom<float> priority; // synapse priority - inputs synapses in a neuron are ordered by highest priority first
+	Atom<float> srcLocation;		// VMS coordinate of source (neuron output or sensor output)
+	Atom<float> destLocation;		// VMS coordinate of destination (neuron input or motor input)
+	Atom<float> weight;				// absolute weight of the synapse (cummulative)
+	Atom<float> priority; 			// synapse priority - inputs synapses in a neuron are ordered by highest priority first
+};
+
+struct GeneNeuron {
+	Atom<float> neuronLocation;		// neuron location
 };
 
 struct GeneNeuronOutputCoord {
-	Atom<int> srcNeuronVirtIndex;		// virtual index of neuron in neural network that will output to a motor
-	Atom<float> outCoord;				// coordinate in motor virtual matching space
+	Atom<float> neuronLocation;		// neuron location
+	Atom<float> coordinate;			// VMS output coordinate for neuron
 };
 
 struct GeneNeuronInputCoord {
-	Atom<int> destNeuronVirtIndex;		// virtual index of neuron in neural network that will receive the input from sensors
-	Atom<float> inCoord;				// coordinate in sensor virtual matching space
+	Atom<float> neuronLocation;		// neuron location
+	Atom<float> coordinate;			// VMS input coordinate for neuron
 };
 
 struct GeneTransferFunction {
-	Atom<int> targetNeuron;
+	Atom<float> neuronLocation;		// neuron location
 	Atom<int> functionID;
 };
 
 struct GeneNeuralBias {
-	Atom<int> targetNeuron;
+	Atom<float> neuronLocation;		// neuron location
 	Atom<float> value;
 };
 
 struct GeneNeuralParam {
-	Atom<int> targetNeuron;
+	Atom<float> neuronLocation;		// neuron location
 	Atom<float> value;
 };
 

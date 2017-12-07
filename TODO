@@ -7,18 +7,20 @@
 * !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
 	- a small change by itself must be able to benefit the bug - current model is not good at this
 	- new cell division based system
-	- new division gene: angle, ratio, mirror?, reorientate?, priority (if multiple), level restrictions, 
+	- new division gene: angle, ratio, mirror?, reorientate?, weight (to compute aggregate values from multiple genes), level restrictions, 
+	-	^ these boolean values are encoded in floats +/-
 	- cell divides at an angle but its children keep the same orientation, unless reorientate is specified in the division, in which case the children will be reoriented by this angle
 	- proteins accumulate per cell, not per segment - no more segments 
 	- if proteins yield x*y*z*w = 0, the cell remains unspecialized - may store fat
 	- proteins should have a float weight instead of current int 1 (the float weight modulus is used for hyperspace)
 	- division creates weld joint between child cells
+	- division happens when gene decoding reaches the end, so all genes have a chance of being read
 	- each cell either specializes into a body part or remains unspecialized
 	- joint is an explicit cell type in hyperspace
 	- must rething muscle linkange and body part hierarchies
 	- must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
-	- perpendicular division of two adjacent cell problem - square of cells
-	- proteins are not inherited
+			- (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
+	- !!! proteins are NOT inherited !!!
 	- default child cell genome offset is 0 - same genes as parent
 	- new gene child offset left/right which changes the default offset of the child cells once the division takes place
 	- each cell knows if it's left or right
@@ -29,6 +31,22 @@
 		-- if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
 		-- otherwise each side inherits bonds on its side of the division axis
 	- result is a graph of cells - use it to find shortest path to route sensor/motor nerves
+	- no more start marker genes in order to allow for easy variation in offsets
+	- if decoding starts on a STOP gene, it moves forward until the 1st valid gene
+	- body attribute genes are read at any depth but only interpreted once - see below
+	- neural genes are read at all depths (from all cells) but are added into a set (via pointers) and only interpreted once
+	- new Neuron gene creates a neuron in VMS at specified location
+	- neurons are only created by the new Neuron gene and will be housed inside the current cell
+	- all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
+		- thus no more neuron indexes
+	- all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
+	- VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
+	- when a joint between cells breaks, all synapses, motor lines and sensor lines passing through it are disconnected
+		- also if some of the cells become isolated from energy sources they die
+		- after a split, each of the two parts may live on if they have energy
+		- must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
+	- when a cell splits, neurons from the cell are randomly distributed between its children
+	- !!! No more need for a Torso, it'll just be an unspecialized cell 
 
 * World must also be serializable and save the general world properties (extents and other things)
 	- create spatial cache (call setExtents) also when loading
