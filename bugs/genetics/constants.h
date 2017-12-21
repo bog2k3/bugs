@@ -19,7 +19,7 @@ namespace constants {
 	constexpr float change_gene_swap					=	0.002f;
 	constexpr float change_gene_mutation_value			=	0.005f;
 
-	constexpr unsigned MAX_GROWTH_DEPTH					=	12;
+	constexpr unsigned MAX_DIVISION_DEPTH				=	16;			// maximum times a cell can divide
 	constexpr int MAX_ATTRIB_INDEX_COUNT				=	8;			// how many elements can an index attribute have?
 
 }

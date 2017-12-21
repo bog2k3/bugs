@@ -48,9 +48,51 @@ struct Atom {
 		this->changeAmount.dynamic_variation = constants::change_gene_mutation_value;
 	}
 
-	Atom() : value(), chanceToMutate(), changeAmount() {}
-
+	Atom() = default;
 	Atom(Atom const& a) = default;
+};
+
+/*
+ * This holds a sequence of values indicating the branch-and-depth based restrictions for another gene.
+ * activeLevels holds the number of levels from levels[] that are to be used. Any level that is unused is considered by default '*' (always passes)
+ * the value of activeLevels should be considered modulo MAX_DIVISION_DEPTH in order to avoid overflow
+ * levels hold numbers that modulo 4 yield a value from 0 to 3. This value means:
+ * 		0 - '*' any (all pass)
+ * 		1 - 'L' left (pass only if current division level is left-side)
+ * 		2 - 'R' right (same ~ right-side)
+ * 		3 - '0' this level does not pass - the gene is not applicable at this level
+ */
+struct BranchRestriction {
+	Atom<unsigned> levels[MAX_DIVISION_DEPTH];
+	Atom<unsigned> activeLevels;
+
+	BranchRestriction()
+		: activeLevels (1) {
+		memset(levels, sizeof(levels), 0);
+	}
+
+	BranchRestriction(const char* code) {
+		activeLevels = strlen(code);
+		memset(levels, sizeof(levels), 0);
+		for (uint i=0; i<activeLevels; i++) {
+			switch (code[i]) {
+			case '*':
+				levels[i] = 0;
+				break;
+			case 'L':
+				levels[i] = 1;
+				break;
+			case 'R':
+				levels[i] = 2;
+				break;
+			case '0':
+				levels[i] = 3;
+				break;
+			default:
+				throw std::runtime_error("Unknown symbol in restriction code: " + code[i]);
+			}
+		}
+	}
 };
 
 struct GeneStartMarker {
@@ -63,59 +105,55 @@ struct GeneNoOp {
 };
 
 struct GeneSkip {
-	Atom<int> minDepth;
-	Atom<int> maxDepth;
+	BranchRestriction restriction;
 	Atom<int> count;
 
 	GeneSkip() {
-		minDepth.set(1);
-		maxDepth.set(1);
+		restriction = BranchRestriction("*");
 		count.set(2);
 	}
 };
 
+struct GeneDivisionParam {
+	BranchRestriction restriction;
+	gene_division_param_type param = GENE_DIVISION_INVALID;
+	Atom<float> value;
+
+	GeneDivisionParam() = default;
+};
+
+struct GeneJointAttribute {
+	BranchRestriction restriction;
+	gene_joint_attribute param = GENE_JOINT_ATTR_INVALID;
+	Atom<float> value;
+
+	GeneJointAttribute() = default;
+};
+
 // this gene controls the genome offset (relative to the current part's) of the child cell in the given side
 struct GeneOffset {
-	Atom<int> minDepth;
-	Atom<int> maxDepth;
+	BranchRestriction restriction;
 	Atom<int> offset;
 	Atom<float> side;	// negative is right, positive is left
 };
 
-// this gene controls the genome offset (relative to the current part's) of the upstream Joint of this part, if it exists
-/*struct GeneJointOffset {
-	Atom<int> minDepth;
-	Atom<int> maxDepth;
-	Atom<int> offset;
-};*/
-
 struct GeneProtein {
+	BranchRestriction restriction;
 	Atom<gene_protein_type> protein;				// the type of protein this gene produces
-	Atom<int> minDepth;								// min hierarchical level where gene activates
-	Atom<int> maxDepth;								// max hierarchical level where gene activates
-	Atom<float> side;								// negative is right, positive is left
 	Atom<float> weight;								// abs() is used
 };
 
 struct GeneAttribute {
-	Atom<float> value;
-	Atom<int> minDepth;
-	Atom<int> maxDepth;
-	Atom<int> attribIndex;							// some attributes are indexed (like VMS coords for inputs/outputs)
+	BranchRestriction restriction;
 	gene_part_attribute_type attribute = GENE_ATTRIB_INVALID;
+	Atom<int> attribIndex;							// some attributes are indexed (like VMS coords for inputs/outputs)
+	Atom<float> value;
 
 	GeneAttribute() = default;
 };
 
-struct GeneSynapse {
-	Atom<float> srcLocation;		// VMS coordinate of source (neuron output or sensor output)
-	Atom<float> destLocation;		// VMS coordinate of destination (neuron input or motor input)
-	Atom<float> weight;				// absolute weight of the synapse (cummulative)
-	Atom<float> priority; 			// synapse priority - inputs synapses in a neuron are ordered by highest priority first
-};
-
 struct GeneNeuron {
-	Atom<float> neuronLocation;		// neuron location
+	Atom<float> neuronLocation;		// neuron location in VMS
 };
 
 struct GeneNeuronOutputCoord {
@@ -143,6 +181,13 @@ struct GeneNeuralParam {
 	Atom<float> value;
 };
 
+struct GeneSynapse {
+	Atom<float> srcLocation;		// VMS coordinate of source (neuron output or sensor output)
+	Atom<float> destLocation;		// VMS coordinate of destination (neuron input or motor input)
+	Atom<float> weight;				// absolute weight of the synapse (cummulative)
+	Atom<float> priority; 			// synapse priority - inputs synapses in a neuron are ordered by highest priority first
+};
+
 struct GeneBodyAttribute {
 	gene_body_attribute_type attribute = GENE_BODY_ATTRIB_INVALID;
 	Atom<float> value;
@@ -158,10 +203,12 @@ public:
 		GeneStop gene_stop;
 		GeneNoOp gene_no_op;
 		GeneSkip gene_skip;
+		GeneDivisionParam gene_division_param;
 		GeneProtein gene_protein;
 		GeneOffset gene_offset;
-		//GeneJointOffset gene_joint_offset;
 		GeneAttribute gene_attribute;
+		GeneJointAttribute gene_joint_attrib;
+		GeneNeuron gene_neuron;
 		GeneSynapse gene_synapse;
 		GeneNeuronOutputCoord gene_neuron_output;
 		GeneNeuronInputCoord gene_neuron_input;
@@ -174,10 +221,12 @@ public:
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
 		GeneData(GeneNoOp const &gnop) : gene_no_op(gnop) {}
 		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
+		GeneData(GeneDivisionParam const &gdp) : gene_division_param(gdp) {}
 		GeneData(GeneProtein const &gp) : gene_protein(gp) {}
 		GeneData(GeneOffset const &go) : gene_offset(go) {}
-		//GeneData(GeneJointOffset const& gjo) : gene_joint_offset(gjo) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
+		GeneData(GeneJointAttribute const &gja) : gene_joint_attrib(gja) {}
+		GeneData(GeneNeuron const& gn) : gene_neuron(gn) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
 		GeneData(GeneNeuronInputCoord const& gni) : gene_neuron_input(gni) {}
@@ -202,10 +251,12 @@ public:
 	Gene(GeneStop const &gs) : Gene(gene_type::STOP, gs) {}
 	Gene(GeneNoOp const &gnop) : Gene(gene_type::NO_OP, gnop) {}
 	Gene(GeneSkip const &gs) : Gene(gene_type::SKIP, gs) {}
+	Gene(GeneDivisionParam const &gdp) : Gene(gene_type::DIVISION_PARAM, gdp) {}
 	Gene(GeneProtein const &gp) : Gene(gene_type::PROTEIN, gp) {}
 	Gene(GeneOffset const &go) : Gene(gene_type::OFFSET, go) {}
-	//Gene(GeneJointOffset const& gjo) : Gene(gene_type::JOINT_OFFSET, gjo) {}
 	Gene(GeneAttribute const &gla) : Gene(gene_type::PART_ATTRIBUTE, gla) {}
+	Gene(GeneJointAttribute const &gja) : Gene(gene_type::JOINT_ATTRIBUTE, gja) {}
+	Gene(GeneNeuron const& gn) : Gene(gene_type::NEURON, gn) {}
 	Gene(GeneSynapse const &gs) : Gene(gene_type::SYNAPSE, gs) {}
 	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(gene_type::NEURON_OUTPUT_COORD, gnoc) {}
 	Gene(GeneNeuronInputCoord const& gnic) : Gene(gene_type::NEURON_INPUT_COORD, gnic) {}
@@ -251,8 +302,8 @@ private:
 	static Gene createRandomSkipGene(int spaceLeftAfter);
 	static Gene createRandomProteinGene();
 	static Gene createRandomOffsetGene(int spaceLeftAfter);
-	//static Gene createRandomJointOffsetGene(int spaceLeftAfter);
 	static Gene createRandomAttribGene();
+	static Gene createRandomNeuronGene();
 	static Gene createRandomSynapseGene(int nNeurons);
 	static Gene createRandomNeuronInputCoordGene(int nNeurons);
 	static Gene createRandomNeuronOutputCoordGene(int nNeurons);

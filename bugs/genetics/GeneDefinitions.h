@@ -25,19 +25,20 @@ enum class gene_type : uint8_t {
 	SKIP = 4,					// control gene -> skip next N genes if all conditions are met
 	PROTEIN = 5,				// protein gene -> produces a specific protein type in a body-part's segment
 	OFFSET = 6,					// controls the relative genome offset of a child part
-	//JOINT_OFFSET = 7,			// controls the relative genome offset of this part's upstream Joint relative to this one
-	PART_ATTRIBUTE = 8,			// body part attribute - establishes characteristics of certain body parts
-	BODY_ATTRIBUTE = 9,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+	DIVISION_PARAM = 7,			// controls the parameters of division in this cell like affinity, ratio, angle etc
+	JOINT_ATTRIBUTE = 8,		// controls attributes of the joint that would be created between children of this cell during division
+	PART_ATTRIBUTE = 9,			// body part attribute - establishes characteristics of certain body parts
+	BODY_ATTRIBUTE = 10,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
-	NEURON = 10,				// creates a new neuron at the specified location (neuron will belong the the current cell)
-	SYNAPSE = 11,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
-	TRANSFER_FUNC = 12,			// controls the transfer function of a neuron (cummulative)
-	NEURAL_BIAS = 13,			// neural bias (cummulative) - is added to the weighted sum of the inputs
-	NEURON_OUTPUT_COORD = 14,	// output coord (in VMS) from a neuron - where the axon lies
-	NEURON_INPUT_COORD = 15,	// input coord (in VMS) to a neuron - where the dendrites lie
-	NEURAL_PARAM = 16,			// neural parameter - used by some types of neurons for specific purposes
+	NEURON = 11,				// creates a new neuron at the specified location (neuron will belong the the current cell)
+	SYNAPSE = 12,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
+	TRANSFER_FUNC = 13,			// controls the transfer function of a neuron (cummulative)
+	NEURAL_BIAS = 14,			// neural bias (cummulative) - is added to the weighted sum of the inputs
+	NEURON_OUTPUT_COORD = 15,	// output coord (in VMS) from a neuron - where the axon lies
+	NEURON_INPUT_COORD = 16,	// input coord (in VMS) to a neuron - where the dendrites lie
+	NEURAL_PARAM = 17,			// neural parameter - used by some types of neurons for specific purposes
 
-	END = 17
+	END = 18
 };
 
 // ----------------------------------- gene_protein_type -------------------------------//
@@ -56,6 +57,30 @@ constexpr gene_protein_type GENE_PROT_Z = 3;
 constexpr gene_protein_type GENE_PROT_W = 4;
 constexpr gene_protein_type GENE_PROT_END = 5;
 
+// ----------------------------------- gene_division_param_type -------------------------------//
+
+typedef uint8_t gene_division_param_type;
+
+constexpr gene_division_param_type GENE_DIVISION_INVALID = 0;
+constexpr gene_division_param_type GENE_DIVISION_AFFINITY = 1;			// if >0 cell will divide
+constexpr gene_division_param_type GENE_DIVISION_ANGLE = 2;				// relative (to cell orientation) division angle
+constexpr gene_division_param_type GENE_DIVISION_RATIO = 3;				// division ratio (left / right); absolute value is used
+constexpr gene_division_param_type GENE_DIVISION_MIRROR = 4;			// if >0 right side will be mirrored
+constexpr gene_division_param_type GENE_DIVISION_REORIENT = 5;			// if >0 children will be reoriented by the division axis
+constexpr gene_division_param_type GENE_DIVISION_SEPARATE = 6;			// if >0 children will be separated (not connected by a joint), otherwise a joint is created
+constexpr gene_division_param_type GENE_DIVISION_END = 7;
+
+// ----------------------------------- gene_joint_attribute_type -------------------------------//
+
+typedef uint8_t gene_joint_attribute;
+
+constexpr gene_joint_attribute GENE_JOINT_ATTR_INVALID = 0;
+constexpr gene_joint_attribute GENE_JOINT_ATTR_TYPE = 1;				// if >0 type is pivot joint, else weld joint
+constexpr gene_joint_attribute GENE_JOINT_ATTR_LOW_LIMIT = 2;			// low angle limit for joint
+constexpr gene_joint_attribute GENE_JOINT_ATTR_HIGH_LIMIT = 3;			// high angle limit for joint
+constexpr gene_joint_attribute GENE_JOINT_ATTR_RESET_TORQUE = 4;		// torque that moves the joint back into rest position when no forces act on it
+constexpr gene_joint_attribute GENE_JOINT_ATTR_END = 5;
+
 // ----------------------------------- gene_part_attribute_type -------------------------------//
 
 typedef uint8_t gene_part_attribute_type;
@@ -66,13 +91,10 @@ constexpr gene_part_attribute_type GENE_ATTRIB_LOCAL_ROTATION = 1;		// rotates t
 constexpr gene_part_attribute_type GENE_ATTRIB_SIZE = 3;				// represents the surface area of the part
 constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 4;		// aspect_ratio = length / width
 constexpr gene_part_attribute_type GENE_ATTRIB_DENSITY = 5;				// density - for bones
-constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_LOW_LIMIT = 6;		// low angle limit for up-stream joint
-constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_HIGH_LIMIT = 7;	// high angle limit for up-stream joint
-constexpr gene_part_attribute_type GENE_ATTRIB_JOINT_RESET_TORQUE = 8;	// torque that moves the up-stream joint back into rest position when no forces act on it
-constexpr gene_part_attribute_type GENE_ATTRIB_EGG_EJECT_SPEED = 9;		// speed with which eggs are ejected from egg-layers
-constexpr gene_part_attribute_type GENE_ATTRIB_MOTOR_INPUT_COORD = 10;	// input coord in VMS; uses attrib index
-constexpr gene_part_attribute_type GENE_ATTRIB_SENSOR_OUTPUT_COORD = 11;	// output coord in VMS; uses attrib index
-constexpr gene_part_attribute_type GENE_ATTRIB_END = 12;
+constexpr gene_part_attribute_type GENE_ATTRIB_EGG_EJECT_SPEED = 6;		// speed with which eggs are ejected from egg-layers
+constexpr gene_part_attribute_type GENE_ATTRIB_MOTOR_INPUT_COORD = 7;	// input coord in VMS; uses attrib index
+constexpr gene_part_attribute_type GENE_ATTRIB_SENSOR_OUTPUT_COORD = 8;	// output coord in VMS; uses attrib index
+constexpr gene_part_attribute_type GENE_ATTRIB_END = 9;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//
 

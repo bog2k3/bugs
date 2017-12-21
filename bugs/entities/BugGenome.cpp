@@ -23,19 +23,17 @@ Chromosome Bug::createBasicChromosome() {
 		unsigned partOffset;
 		unsigned geneIndex;
 		std::string markerName;
-		bool jointOffs;
-		offsetInsertion(unsigned partOffs, unsigned geneIndex, std::string const& markerName, bool jointOffs)
-			: partOffset(partOffs), geneIndex(geneIndex), markerName(markerName), jointOffs(jointOffs) {
+		offsetInsertion(unsigned partOffs, unsigned geneIndex, std::string const& markerName)
+			: partOffset(partOffs), geneIndex(geneIndex), markerName(markerName) {
 		}
 	};
+
 	unsigned crtOffset;
 	std::map<std::string, unsigned> partMarkers;
 	std::vector<offsetInsertion> insertions;
 
 #define PART_MARKER(name) { crtOffset = c.genes.size(); partMarkers[#name] = crtOffset; }
-#define INSERT_OFFSET_IMPL(targetMarker, isJoint) { insertions.push_back(offsetInsertion(crtOffset, c.genes.size(), targetMarker, isJoint)); }
-#define INSERT_OFFSET(targetMarker) INSERT_OFFSET_IMPL(#targetMarker, false)
-#define INSERT_JOFFSET(targetMarker) INSERT_OFFSET_IMPL(#targetMarker, true)
+#define INSERT_OFFSET(targetMarker) { insertions.push_back(offsetInsertion(crtOffset, c.genes.size(), #targetMarker)); }
 
 	constexpr float body_size = 0.1f * 0.1f; // sq meters
 	constexpr float body_init_fat_ratio = 0.5f;
