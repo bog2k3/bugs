@@ -27,18 +27,19 @@ enum class gene_type : uint8_t {
 	OFFSET = 6,					// controls the relative genome offset of a child part
 	DIVISION_PARAM = 7,			// controls the parameters of division in this cell like affinity, ratio, angle etc
 	JOINT_ATTRIBUTE = 8,		// controls attributes of the joint that would be created between children of this cell during division
-	PART_ATTRIBUTE = 9,			// body part attribute - establishes characteristics of certain body parts
-	BODY_ATTRIBUTE = 10,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+	MUSCLE_ATTRIBUTE = 9,		// controls attributes of the muscles (left/right) around the joint created by division
+	PART_ATTRIBUTE = 10,			// body part attribute - establishes characteristics of certain body parts
+	BODY_ATTRIBUTE = 12,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
-	NEURON = 11,				// creates a new neuron at the specified location (neuron will belong the the current cell)
-	SYNAPSE = 12,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
-	TRANSFER_FUNC = 13,			// controls the transfer function of a neuron (cummulative)
-	NEURAL_BIAS = 14,			// neural bias (cummulative) - is added to the weighted sum of the inputs
-	NEURON_OUTPUT_COORD = 15,	// output coord (in VMS) from a neuron - where the axon lies
-	NEURON_INPUT_COORD = 16,	// input coord (in VMS) to a neuron - where the dendrites lie
-	NEURAL_PARAM = 17,			// neural parameter - used by some types of neurons for specific purposes
+	NEURON = 12,				// creates a new neuron at the specified location (neuron will belong the the current cell)
+	SYNAPSE = 13,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
+	TRANSFER_FUNC = 14,			// controls the transfer function of a neuron (cummulative)
+	NEURAL_BIAS = 15,			// neural bias (cummulative) - is added to the weighted sum of the inputs
+	NEURON_OUTPUT_COORD = 16,	// output coord (in VMS) from a neuron - where the axon lies
+	NEURON_INPUT_COORD = 17,	// input coord (in VMS) to a neuron - where the dendrites lie
+	NEURAL_PARAM = 18,			// neural parameter - used by some types of neurons for specific purposes
 
-	END = 18
+	END = 19
 };
 
 // ----------------------------------- gene_protein_type -------------------------------//
@@ -80,6 +81,18 @@ constexpr gene_joint_attribute GENE_JOINT_ATTR_LOW_LIMIT = 2;			// low angle lim
 constexpr gene_joint_attribute GENE_JOINT_ATTR_HIGH_LIMIT = 3;			// high angle limit for joint
 constexpr gene_joint_attribute GENE_JOINT_ATTR_RESET_TORQUE = 4;		// torque that moves the joint back into rest position when no forces act on it
 constexpr gene_joint_attribute GENE_JOINT_ATTR_END = 5;
+
+// ----------------------------------- gene_muscle_attribute_type -------------------------------//
+
+typedef uint8_t gene_muscle_attribute;
+
+constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INVALID = 0;
+constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_SIZE = 1;				// surface area
+constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_ASPECT_RATIO = 2;		// length / width
+constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INPUT_COORD = 3;		// VMS input coordinate for muscle
+constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INSERT_OFFSET = 4;		// lateral insertion offset from joint (need to establish units!)
+constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_END = 5;
+
 
 // ----------------------------------- gene_part_attribute_type -------------------------------//
 

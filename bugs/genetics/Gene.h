@@ -124,10 +124,19 @@ struct GeneDivisionParam {
 
 struct GeneJointAttribute {
 	BranchRestriction restriction;
-	gene_joint_attribute param = GENE_JOINT_ATTR_INVALID;
+	gene_joint_attribute attrib = GENE_JOINT_ATTR_INVALID;
 	Atom<float> value;
 
 	GeneJointAttribute() = default;
+};
+
+struct GeneMuscleAttribute {
+	BranchRestriction restriction;
+	Atom<float> side;				// distinguish between the two muscles: negative is left, positive is right
+	gene_muscle_attribute attrib = GENE_MUSCLE_ATTR_INVALID;
+	Atom<float> value;
+
+	GeneMuscleAttribute() = default;
 };
 
 // this gene controls the genome offset (relative to the current part's) of the child cell in the given side
@@ -208,6 +217,7 @@ public:
 		GeneOffset gene_offset;
 		GeneAttribute gene_attribute;
 		GeneJointAttribute gene_joint_attrib;
+		GeneMuscleAttribute gene_muscle_attrib;
 		GeneNeuron gene_neuron;
 		GeneSynapse gene_synapse;
 		GeneNeuronOutputCoord gene_neuron_output;
@@ -226,6 +236,7 @@ public:
 		GeneData(GeneOffset const &go) : gene_offset(go) {}
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneJointAttribute const &gja) : gene_joint_attrib(gja) {}
+		GeneData(GeneMuscleAttribute const& gma) : gene_muscle_attrib(gma) {}
 		GeneData(GeneNeuron const& gn) : gene_neuron(gn) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
@@ -256,6 +267,7 @@ public:
 	Gene(GeneOffset const &go) : Gene(gene_type::OFFSET, go) {}
 	Gene(GeneAttribute const &gla) : Gene(gene_type::PART_ATTRIBUTE, gla) {}
 	Gene(GeneJointAttribute const &gja) : Gene(gene_type::JOINT_ATTRIBUTE, gja) {}
+	Gene(GeneMuscleAttribute const &gma) : Gene(gene_type::MUSCLE_ATTRIBUTE, gma) {}
 	Gene(GeneNeuron const& gn) : Gene(gene_type::NEURON, gn) {}
 	Gene(GeneSynapse const &gs) : Gene(gene_type::SYNAPSE, gs) {}
 	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(gene_type::NEURON_OUTPUT_COORD, gnoc) {}
