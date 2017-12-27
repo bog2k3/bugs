@@ -97,7 +97,7 @@ Muscle::Muscle()
 
 	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
-	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, initData->inputVMSCoord);
+	registerAttribute(GENE_ATTRIB_VMS_COORD, initData->inputVMSCoord);
 }
 
 Muscle::~Muscle() {

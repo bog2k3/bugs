@@ -47,7 +47,7 @@ Bone::Bone()
 {
 	auto initData = std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData());
 	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
-	registerAttribute(GENE_ATTRIB_DENSITY, initData->density);
+	registerAttribute(GENE_ATTRIB_GENERIC1, initData->density);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_BONE;
 	physBody_.userPointer_ = this;

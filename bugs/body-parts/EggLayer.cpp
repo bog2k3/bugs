@@ -63,9 +63,9 @@ EggLayer::EggLayer()
 	inputs_.push_back(new InputSocket(nullptr, 1)); // [1] - suppress release
 
 	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
-	registerAttribute(GENE_ATTRIB_EGG_EJECT_SPEED, data->ejectSpeed);
-	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, 0, data->inputVMSCoord[0]);
-	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, 1, data->inputVMSCoord[1]);
+	registerAttribute(GENE_ATTRIB_GENERIC1, data->ejectSpeed);
+	registerAttribute(GENE_ATTRIB_VMS_COORD, 0, data->inputVMSCoord[0]);
+	registerAttribute(GENE_ATTRIB_VMS_COORD, 1, data->inputVMSCoord[1]);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_EGGLAYER;
 	physBody_.userPointer_ = this;

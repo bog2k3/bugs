@@ -42,7 +42,7 @@ Nose::Nose()
 
 	auto data = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
 	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
-		registerAttribute(GENE_ATTRIB_SENSOR_OUTPUT_COORD, i, data->outputVMSCoord[i]);
+		registerAttribute(GENE_ATTRIB_VMS_COORD, i, data->outputVMSCoord[i]);
 }
 
 Nose::~Nose() {

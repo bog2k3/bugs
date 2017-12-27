@@ -90,7 +90,7 @@ constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INVALID = 0;
 constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_SIZE = 1;				// surface area
 constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_ASPECT_RATIO = 2;		// length / width
 constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INPUT_COORD = 3;		// VMS input coordinate for muscle
-constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INSERT_OFFSET = 4;		// lateral insertion offset from joint (need to establish units!)
+constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INSERT_OFFSET = 4;		// lateral insertion offset from joint in radians - clamped to [0, PI/2]
 constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_END = 5;
 
 
@@ -100,14 +100,12 @@ typedef uint8_t gene_part_attribute_type;
 
 constexpr gene_part_attribute_type GENE_ATTRIB_INVALID = 0;
 constexpr gene_part_attribute_type GENE_ATTRIB_LOCAL_ROTATION = 1;		// rotates the part around its own center
-//constexpr gene_part_attribute_type GENE_ATTRIB_ATTACHMENT_OFFSET = 2;	// sideways offset from parent joint, in % of current's part's width (default=0%)
-constexpr gene_part_attribute_type GENE_ATTRIB_SIZE = 3;				// represents the surface area of the part
-constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 4;		// aspect_ratio = length / width
-constexpr gene_part_attribute_type GENE_ATTRIB_DENSITY = 5;				// density - for bones
-constexpr gene_part_attribute_type GENE_ATTRIB_EGG_EJECT_SPEED = 6;		// speed with which eggs are ejected from egg-layers
-constexpr gene_part_attribute_type GENE_ATTRIB_MOTOR_INPUT_COORD = 7;	// input coord in VMS; uses attrib index
-constexpr gene_part_attribute_type GENE_ATTRIB_SENSOR_OUTPUT_COORD = 8;	// output coord in VMS; uses attrib index
-constexpr gene_part_attribute_type GENE_ATTRIB_END = 9;
+constexpr gene_part_attribute_type GENE_ATTRIB_SIZE = 2;				// represents the surface area of the part
+constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 3;		// aspect_ratio = length / width
+constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC1 = 4;			// generic attribute - meaning depends on specific type of body part
+constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC2 = 5;			// generic attribute - meaning depends on specific type of body part
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD = 6;			// input/output (depends on motor/sensor) coord in VMS; uses attrib index
+constexpr gene_part_attribute_type GENE_ATTRIB_END = 7;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//
 
