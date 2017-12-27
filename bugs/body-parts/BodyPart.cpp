@@ -53,7 +53,6 @@ BodyPart::BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData
 	assertDbg (initialData != nullptr);
 
 	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->localRotation);
-	//registerAttribute(GENE_ATTRIB_ATTACHMENT_OFFSET, initialData_->lateralOffset);
 	registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
 
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;

@@ -17,6 +17,7 @@
 	- new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
 	- if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
 	- division happens when gene decoding reaches the end, so all genes have a chance of being read
+		- !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
 	- each cell either specializes into a body part or remains unspecialized
 	- joints and muscles are not created explicitly any more - remove them from hyperspace
 	- must rething muscle linkange and body part hierarchies

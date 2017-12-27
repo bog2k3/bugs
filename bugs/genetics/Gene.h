@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <map>
 #include <vector>
+#include <cstring>
 
 class MetaGene {
 public:
@@ -63,30 +64,30 @@ struct Atom {
  * 		3 - '0' this level does not pass - the gene is not applicable at this level
  */
 struct BranchRestriction {
-	Atom<unsigned> levels[MAX_DIVISION_DEPTH];
+	Atom<unsigned> levels[constants::MAX_DIVISION_DEPTH];
 	Atom<unsigned> activeLevels;
 
-	BranchRestriction()
-		: activeLevels (1) {
-		memset(levels, sizeof(levels), 0);
+	BranchRestriction() {
+		activeLevels .set(1u);
+		memset(levels, 0, sizeof(levels));
 	}
 
 	BranchRestriction(const char* code) {
-		activeLevels = strlen(code);
-		memset(levels, sizeof(levels), 0);
+		activeLevels.set(strlen(code));
+		memset(levels, 0, sizeof(levels));
 		for (uint i=0; i<activeLevels; i++) {
 			switch (code[i]) {
 			case '*':
-				levels[i] = 0;
+				levels[i].set(0);
 				break;
 			case 'L':
-				levels[i] = 1;
+				levels[i].set(1);
 				break;
 			case 'R':
-				levels[i] = 2;
+				levels[i].set(2);
 				break;
 			case '0':
-				levels[i] = 3;
+				levels[i].set(3);
 				break;
 			default:
 				throw std::runtime_error("Unknown symbol in restriction code: " + code[i]);
