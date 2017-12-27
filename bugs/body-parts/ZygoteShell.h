@@ -27,7 +27,7 @@ public:
 	//int getDepth() override { return -1; }
 
 protected:
-	void commit() override;
+	void updateFixtures() override;
 	void die() override;
 
 private:

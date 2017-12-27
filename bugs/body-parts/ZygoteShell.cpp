@@ -54,7 +54,7 @@ ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
 ZygoteShell::~ZygoteShell() {
 }
 
-void ZygoteShell::commit() {
+void ZygoteShell::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif

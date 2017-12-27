@@ -61,7 +61,7 @@ protected:
 	float foodBuffer_;
 	Bug* owner_ = nullptr;
 
-	void commit() override;
+	void updateFixtures() override;
 	void die() override;
 	//void onAddedToParent() override;
 	void detachMotorLines(std::vector<unsigned> const& lines) override;

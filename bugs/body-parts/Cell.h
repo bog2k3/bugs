@@ -36,6 +36,9 @@ public:
 
 	const glm::vec2& position() const { return position_; }
 
+	unsigned neighbourCount() const { return neighbours_.size(); }
+	link neighbour(unsigned index) const { return neighbours_[index]; }
+
 	void bond(Cell* other);
 	void updateBonds();
 	/*

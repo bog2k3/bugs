@@ -199,17 +199,18 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		totalChanceToSwap += swapCh;
 		totalChanceToDelete += deleteCh;
 
+		throw std::runtime_error("Implement!");
 		// count
-		switch (c.genes[i].type) {
-		case gene_type::SYNAPSE:
-			if (c.genes[i].data.gene_synapse.from >= 0)
-				mapNeuronsExist[c.genes[i].data.gene_synapse.from] = true;
-			if (c.genes[i].data.gene_synapse.to >= 0)
-				mapNeuronsExist[c.genes[i].data.gene_synapse.to] = true;
-			break;
-		default:
-			break;
-		}
+//		switch (c.genes[i].type) {
+//		case gene_type::SYNAPSE:
+//			if (c.genes[i].data.gene_synapse.from >= 0)
+//				mapNeuronsExist[c.genes[i].data.gene_synapse.from] = true;
+//			if (c.genes[i].data.gene_synapse.to >= 0)
+//				mapNeuronsExist[c.genes[i].data.gene_synapse.to] = true;
+//			break;
+//		default:
+//			break;
+//		}
 	}
 	int nNeurons = mapNeuronsExist.size();
 
@@ -305,6 +306,7 @@ bool alterAtom(Atom<T> &a, float mutationChanceFactor) {
 }
 
 int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
+	throw std::runtime_error("Implement!");
 	int altered = 0;
 	switch (g.type) {
 #ifdef ENABLE_START_MARKER_GENES
@@ -313,52 +315,52 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	case gene_type::STOP:
 	case gene_type::NO_OP:
 		break;
-	case gene_type::SKIP:
-		altered += alterAtom(g.data.gene_skip.count, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_skip.maxDepth, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_skip.minDepth, mutationChanceFactor);
-		break;
-	case gene_type::BODY_ATTRIBUTE:
-		altered += alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
-		break;
-	case gene_type::PROTEIN:
-		altered += alterAtom(g.data.gene_protein.maxDepth, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_protein.minDepth, mutationChanceFactor);
-//		altered += alterAtom(g.data.gene_protein.protein, mutationChanceFactor);
-//		altered += alterAtom(g.data.gene_protein.targetSegment, mutationChanceFactor);
-		break;
-	case gene_type::OFFSET:
-		altered += alterAtom(g.data.gene_offset.maxDepth, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_offset.minDepth, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_offset.offset, mutationChanceFactor);
-//		altered += alterAtom(g.data.gene_offset.targetSegment, mutationChanceFactor);
-		break;
-	case gene_type::NEURON_INPUT_COORD:
-		altered += alterAtom(g.data.gene_neuron_input.destNeuronVirtIndex, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_neuron_input.inCoord, mutationChanceFactor);
-		break;
-	case gene_type::NEURON_OUTPUT_COORD:
-		altered += alterAtom(g.data.gene_neuron_output.srcNeuronVirtIndex, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_neuron_output.outCoord, mutationChanceFactor);
-		break;
-	case gene_type::NEURAL_BIAS:
-		altered += alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
-		break;
-	case gene_type::PART_ATTRIBUTE:
-		altered += alterAtom(g.data.gene_attribute.value, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_attribute.minDepth, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_attribute.maxDepth, mutationChanceFactor);
-		break;
-	case gene_type::SYNAPSE:
-		altered += alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_synapse.to, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_synapse.weight, mutationChanceFactor);
-		break;
-	case gene_type::TRANSFER_FUNC:
-		altered += alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
-		altered += alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
-		break;
+//	case gene_type::SKIP:
+//		altered += alterAtom(g.data.gene_skip.count, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_skip.maxDepth, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_skip.minDepth, mutationChanceFactor);
+//		break;
+//	case gene_type::BODY_ATTRIBUTE:
+//		altered += alterAtom(g.data.gene_body_attribute.value, mutationChanceFactor);
+//		break;
+//	case gene_type::PROTEIN:
+//		altered += alterAtom(g.data.gene_protein.maxDepth, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_protein.minDepth, mutationChanceFactor);
+////		altered += alterAtom(g.data.gene_protein.protein, mutationChanceFactor);
+////		altered += alterAtom(g.data.gene_protein.targetSegment, mutationChanceFactor);
+//		break;
+//	case gene_type::OFFSET:
+//		altered += alterAtom(g.data.gene_offset.maxDepth, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_offset.minDepth, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_offset.offset, mutationChanceFactor);
+////		altered += alterAtom(g.data.gene_offset.targetSegment, mutationChanceFactor);
+//		break;
+//	case gene_type::NEURON_INPUT_COORD:
+//		altered += alterAtom(g.data.gene_neuron_input.destNeuronVirtIndex, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_neuron_input.inCoord, mutationChanceFactor);
+//		break;
+//	case gene_type::NEURON_OUTPUT_COORD:
+//		altered += alterAtom(g.data.gene_neuron_output.srcNeuronVirtIndex, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_neuron_output.outCoord, mutationChanceFactor);
+//		break;
+//	case gene_type::NEURAL_BIAS:
+//		altered += alterAtom(g.data.gene_neural_constant.targetNeuron, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_neural_constant.value, mutationChanceFactor);
+//		break;
+//	case gene_type::PART_ATTRIBUTE:
+//		altered += alterAtom(g.data.gene_attribute.value, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_attribute.minDepth, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_attribute.maxDepth, mutationChanceFactor);
+//		break;
+//	case gene_type::SYNAPSE:
+//		altered += alterAtom(g.data.gene_synapse.from, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_synapse.to, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_synapse.weight, mutationChanceFactor);
+//		break;
+//	case gene_type::TRANSFER_FUNC:
+//		altered += alterAtom(g.data.gene_transfer_function.functionID, mutationChanceFactor);
+//		altered += alterAtom(g.data.gene_transfer_function.targetNeuron, mutationChanceFactor);
+//		break;
 	/*case gene_type::JOINT_OFFSET:
 		altered += alterAtom(g.data.gene_joint_offset.offset, mutationChanceFactor);
 		altered += alterAtom(g.data.gene_joint_offset.minDepth, mutationChanceFactor);
@@ -377,6 +379,7 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 }
 
 void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, float& swapCh, float& deleteCh) {
+	throw std::runtime_error("Implement!");
 	deleteCh = g.chance_to_delete.value;
 	swapCh = g.chance_to_swap.value;
 	mutationCh = 0;
@@ -387,50 +390,50 @@ void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, f
 	case gene_type::STOP:
 	case gene_type::NO_OP:
 		break;
-	case gene_type::SKIP:
-		mutationCh += g.data.gene_skip.count.chanceToMutate.value;
-		mutationCh += g.data.gene_skip.maxDepth.chanceToMutate.value;
-		mutationCh += g.data.gene_skip.minDepth.chanceToMutate.value;
-		break;
-	case gene_type::BODY_ATTRIBUTE:
-		mutationCh += g.data.gene_body_attribute.value.chanceToMutate.value;
-		break;
-	case gene_type::PROTEIN:
-		mutationCh += g.data.gene_protein.maxDepth.chanceToMutate.value;
-		mutationCh += g.data.gene_protein.minDepth.chanceToMutate.value;
-//		mutationCh += g.data.gene_protein.protein.chanceToMutate.value;
-//		mutationCh += g.data.gene_protein.targetSegment.chanceToMutate.value;
-		break;
-	case gene_type::OFFSET:
-		mutationCh += g.data.gene_offset.maxDepth.chanceToMutate.value;
-		mutationCh += g.data.gene_offset.minDepth.chanceToMutate.value;
-		mutationCh += g.data.gene_offset.offset.chanceToMutate.value;
-//		mutationCh += g.data.gene_offset.targetSegment.chanceToMutate.value;
-		break;
-	case gene_type::NEURON_INPUT_COORD:
-		mutationCh += g.data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate.value;
-		mutationCh += g.data.gene_neuron_input.inCoord.chanceToMutate.value;
-		break;
-	case gene_type::NEURON_OUTPUT_COORD:
-		mutationCh += g.data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate.value;
-		mutationCh += g.data.gene_neuron_output.outCoord.chanceToMutate.value;
-		break;
-	case gene_type::NEURAL_BIAS:
-		mutationCh += g.data.gene_neural_constant.value.chanceToMutate.value;
-		mutationCh += g.data.gene_neural_constant.targetNeuron.chanceToMutate.value;
-		break;
-	case gene_type::PART_ATTRIBUTE:
-		mutationCh += g.data.gene_attribute.value.chanceToMutate.value;
-		break;
-	case gene_type::SYNAPSE:
-		mutationCh += g.data.gene_synapse.from.chanceToMutate.value;
-		mutationCh += g.data.gene_synapse.to.chanceToMutate.value;
-		mutationCh += g.data.gene_synapse.weight.chanceToMutate.value;
-		break;
-	case gene_type::TRANSFER_FUNC:
-		mutationCh += g.data.gene_transfer_function.functionID.chanceToMutate.value;
-		mutationCh += g.data.gene_transfer_function.targetNeuron.chanceToMutate.value;
-		break;
+//	case gene_type::SKIP:
+//		mutationCh += g.data.gene_skip.count.chanceToMutate.value;
+//		mutationCh += g.data.gene_skip.maxDepth.chanceToMutate.value;
+//		mutationCh += g.data.gene_skip.minDepth.chanceToMutate.value;
+//		break;
+//	case gene_type::BODY_ATTRIBUTE:
+//		mutationCh += g.data.gene_body_attribute.value.chanceToMutate.value;
+//		break;
+//	case gene_type::PROTEIN:
+//		mutationCh += g.data.gene_protein.maxDepth.chanceToMutate.value;
+//		mutationCh += g.data.gene_protein.minDepth.chanceToMutate.value;
+////		mutationCh += g.data.gene_protein.protein.chanceToMutate.value;
+////		mutationCh += g.data.gene_protein.targetSegment.chanceToMutate.value;
+//		break;
+//	case gene_type::OFFSET:
+//		mutationCh += g.data.gene_offset.maxDepth.chanceToMutate.value;
+//		mutationCh += g.data.gene_offset.minDepth.chanceToMutate.value;
+//		mutationCh += g.data.gene_offset.offset.chanceToMutate.value;
+////		mutationCh += g.data.gene_offset.targetSegment.chanceToMutate.value;
+//		break;
+//	case gene_type::NEURON_INPUT_COORD:
+//		mutationCh += g.data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate.value;
+//		mutationCh += g.data.gene_neuron_input.inCoord.chanceToMutate.value;
+//		break;
+//	case gene_type::NEURON_OUTPUT_COORD:
+//		mutationCh += g.data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate.value;
+//		mutationCh += g.data.gene_neuron_output.outCoord.chanceToMutate.value;
+//		break;
+//	case gene_type::NEURAL_BIAS:
+//		mutationCh += g.data.gene_neural_constant.value.chanceToMutate.value;
+//		mutationCh += g.data.gene_neural_constant.targetNeuron.chanceToMutate.value;
+//		break;
+//	case gene_type::PART_ATTRIBUTE:
+//		mutationCh += g.data.gene_attribute.value.chanceToMutate.value;
+//		break;
+//	case gene_type::SYNAPSE:
+//		mutationCh += g.data.gene_synapse.from.chanceToMutate.value;
+//		mutationCh += g.data.gene_synapse.to.chanceToMutate.value;
+//		mutationCh += g.data.gene_synapse.weight.chanceToMutate.value;
+//		break;
+//	case gene_type::TRANSFER_FUNC:
+//		mutationCh += g.data.gene_transfer_function.functionID.chanceToMutate.value;
+//		mutationCh += g.data.gene_transfer_function.targetNeuron.chanceToMutate.value;
+//		break;
 	/*case gene_type::JOINT_OFFSET:
 		mutationCh += g.data.gene_joint_offset.offset.chanceToMutate.value;
 		mutationCh += g.data.gene_joint_offset.minDepth.chanceToMutate.value;

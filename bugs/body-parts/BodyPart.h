@@ -16,19 +16,19 @@
 #include <boglfw/physics/PhysicsBody.h>
 
 #include <vector>
-#include <map>
+//#include <map>
 #include <memory>
-#include <ostream>
+//#include <ostream>
 
 class UpdateList;
 class RenderContext;
 class Bug;
-struct BodyPartInitializationData;
+struct BodyCell;
 class Entity;
 
 class BodyPart {
 public:
-	BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData> initialData);
+	BodyPart(BodyPartType type, BodyCell const& cell, glm::vec2 const& velocity, float angularVelocity);
 	virtual ~BodyPart();
 
 	// call this to destroy and delete the object. Never delete directly
@@ -57,12 +57,12 @@ public:
 	// must return the actual amount deduced from mass argument
 	virtual float addFood(float mass) { throw std::runtime_error("not implemented"); /*if (parent_) return parent_->addFood(mass); else return 0;*/ }
 
-	Bug* getOwner() { return context_ ? &context_->owner : nullptr; }
+	Bug* getOwner() const { return context_ ? &context_->owner : nullptr; }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
-	inline CummulativeValue* getAttribute(gene_part_attribute_type attrib, unsigned index=0) {
+	/*inline CummulativeValue* getAttribute(gene_part_attribute_type attrib, unsigned index=0) {
 		if (mapAttributes_.find(attrib) == mapAttributes_.end())
 			return nullptr;
 		auto &attrVec = mapAttributes_[attrib];
@@ -70,7 +70,7 @@ public:
 			return attrVec[index];
 		else
 			return attrVec[0];
-	}
+	}*/
 
 	/*
 	 * this will commit recursively in the entire body tree
@@ -91,15 +91,15 @@ public:
 
 	//inline int getChildrenCount() const { return nChildren_; }
 	//inline BodyPart* getChild(int i) const { assertDbg(i<nChildren_); return children_[i]; }
-	inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
+	//inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
 	//void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
 	PhysicsBody const& getBody() { return physBody_; }
 
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
-	inline float getDefaultAngle() const { return /*attachmentDirectionParent_ +*/ localRotation_; }
+	//inline float getDefaultAngle() const { return /*attachmentDirectionParent_ +*/ localRotation_; }
 	inline float getLocalRotation() const { return localRotation_; }
-	inline float getAttachmentAngle() const { return 0/*attachmentDirectionParent_*/; }
+	//inline float getAttachmentAngle() const { return 0/*attachmentDirectionParent_*/; }
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
 	//bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
@@ -120,9 +120,9 @@ public:
 	 */
 	void removeAllLinks();
 
-	inline bool isDead() { return dead_; }
+	inline bool isDead() const { return dead_; }
 
-	float getFoodValue() { return foodValueLeft_; }
+	float getFoodValue() const { return foodValueLeft_; }
 	void consumeFoodValue(float amount);
 
 	Event<void(BodyPart* part)> onDied;
@@ -133,13 +133,13 @@ protected:
 	BodyPartContext* context_ = nullptr;
 	// these are used when initializing the body and whenever a new commit is called.
 	// they contain world-space values that are updated only prior to committing
-	PhysicsProperties cachedProps_;
+	//PhysicsProperties cachedProps_;
 	PhysicsBody physBody_;
 	BodyPartType type_;
 
 	std::vector<BodyPart*> neighbours_;
 
-	bool committed_;
+	//bool committed_;
 	bool noFixtures_ = false;
 	// bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
 	bool dontCreateBody_;			// set to true to prevent creating an actual physics body
@@ -147,7 +147,7 @@ protected:
 	 * into the object's variables.
 	 * If not, one must sanitize and use directly the values from the initialData for whatever purposes.
 	 */
-	bool geneValuesCached_;
+	//bool geneValuesCached_;
 
 	// final positioning and physical values:
 	//float attachmentDirectionParent_;
@@ -163,38 +163,26 @@ protected:
 	 */
 	std::vector<unsigned> motorLines_;
 
-	/**
-	 * called after genome decoding finished, at the start of commit(), just before initializationData will be destroyed.
-	 * Here you get the chance to cache and sanitize the initialization values into your member variables.
-	 * it's important to do this because some values may be broken (ex zero or negative for size, or other values that
-	 * don't make sense).
-	 * The common members are sanitized by the base class's implementation, so call this as well from the overridden method
-	 *
-	 * SANITIZE all values, don't trust genes !!!
-	 */
-	virtual void cacheInitializationData();
-
 	/*
-	 * This is called after the body is completely developed and no more changes will occur on body parts
-	 * except in rare circumstances.
-	 * At this point the physics fixtures must be created and all temporary data purged.
-	 * The physicsProperties of the body are transform to world coordinates before this method is called;
+	 * This is called after the decoding is finished and body structure is fully defined.
+	 * At this point the physics fixtures must be created.
+	 * The physicsProperties of the body are in world coordinates at this time;
 	 */
-	virtual void commit() = 0;
+	virtual void updateFixtures();
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 	//virtual void onAddedToParent() {}
 	//virtual void onDetachedFromParent() {}
 
 
-	void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
-	void registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value);
+	//void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
+	//void registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value);
 	// returns the attachment point for the current part in its parent's coordinate space.
 	//glm::vec2 getUpstreamAttachmentPoint();
 	//UpdateList* getUpdateList();
 	// call this if the fixture changed for any reason:
 	//void reattachChildren();
-	void computeBodyPhysProps();
+	//void computeBodyPhysProps();
 
 	friend class Joint;
 
@@ -204,33 +192,21 @@ protected:
 	void buildDebugName(std::stringstream &out_stream) const;
 
 private:
-	void reverseUpdateCachedProps();
+	//void reverseUpdateCachedProps();
 	//glm::vec2 getParentSpacePosition();
 	//bool applyScale_treeImpl(float scale, bool parentChanged);
-	void purge_initializationData();
+	//void purge_initializationData();
 	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
 	//inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
 	//void remove(BodyPart* part);
 
-	std::map<gene_part_attribute_type, std::vector<CummulativeValue*>> mapAttributes_;
-	std::shared_ptr<BodyPartInitializationData> initialData_;
-	UpdateList* updateList_;
+	//std::map<gene_part_attribute_type, std::vector<CummulativeValue*>> mapAttributes_;
+	//std::shared_ptr<BodyPartInitializationData> initialData_;
+	//UpdateList* updateList_;
 	float lastCommitSize_inv_ = 0;
 	bool destroyCalled_ = false;
 	bool dead_ = false;
 	float foodValueLeft_ = 0;
-};
-
-
-// inherit this struct and put in it all the CummulativeValues that are changed by the genes.
-// after the genome is completely decoded, this data will be cached into real floats and this struct will be destroyed.
-struct BodyPartInitializationData {
-	virtual ~BodyPartInitializationData() = default;
-	BodyPartInitializationData();
-
-	CummulativeValue localRotation;					// rotation offset from the original attachment angle
-	CummulativeValue size;							// surface area
-	CummulativeValue density;
 };
 
 #endif /* OBJECTS_BODY_PARTS_BODYPART_H_ */

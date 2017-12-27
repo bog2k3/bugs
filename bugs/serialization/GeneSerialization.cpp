@@ -50,7 +50,7 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 	stream << gene.chance_to_delete;
 	stream << gene.chance_to_swap;
 	switch (gene.type) {
-	case gene_type::BODY_ATTRIBUTE:
+	/*case gene_type::BODY_ATTRIBUTE:
 		stream << gene.data.gene_body_attribute.attribute;
 		stream << gene.data.gene_body_attribute.value;
 		break;
@@ -104,13 +104,13 @@ BinaryStream& operator << (BinaryStream &stream, Gene const& gene) {
 		stream << gene.data.gene_joint_offset.maxDepth;
 		stream << gene.data.gene_joint_offset.minDepth;
 		stream << gene.data.gene_joint_offset.offset;
-		break;*/
+		break;* /
 	case gene_type::NO_OP:
 		break;
 	case gene_type::STOP:
 		break;
 	case gene_type::START_MARKER:
-		break;
+		break;*/
 	default:
 		assert(false); // unknown gene type
 	}
@@ -122,7 +122,7 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 	stream >> gene.chance_to_delete;
 	stream >> gene.chance_to_swap;
 	switch (gene.type) {
-	case gene_type::BODY_ATTRIBUTE:
+	/*case gene_type::BODY_ATTRIBUTE:
 		stream >> gene.data.gene_body_attribute.attribute;
 		stream >> gene.data.gene_body_attribute.value;
 		break;
@@ -176,13 +176,13 @@ BinaryStream& operator >> (BinaryStream &stream, Gene &gene) {
 		stream >> gene.data.gene_joint_offset.maxDepth;
 		stream >> gene.data.gene_joint_offset.minDepth;
 		stream >> gene.data.gene_joint_offset.offset;
-		break;*/
+		break;* /
 	case gene_type::NO_OP:
 		break;
 	case gene_type::STOP:
 		break;
 	case gene_type::START_MARKER:
-		break;
+		break;*/
 	default:
 		assert(false); // unknown gene type
 	}

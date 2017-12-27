@@ -16,8 +16,10 @@ void Gene::update_meta_genes_vec() {
 	metaGenes.push_back(&chance_to_delete);
 	metaGenes.push_back(&chance_to_swap);
 
+	throw std::runtime_error("Implement!");
+
 	switch (type) {
-	case gene_type::PROTEIN:
+	/*case gene_type::PROTEIN:
 		metaGenes.push_back(&data.gene_protein.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_protein.maxDepth.changeAmount);
 		metaGenes.push_back(&data.gene_protein.minDepth.chanceToMutate);
@@ -44,7 +46,7 @@ void Gene::update_meta_genes_vec() {
 		metaGenes.push_back(&data.gene_joint_offset.minDepth.changeAmount);
 		metaGenes.push_back(&data.gene_joint_offset.offset.chanceToMutate);
 		metaGenes.push_back(&data.gene_joint_offset.offset.changeAmount);
-		break;*/
+		break; * /
 	case gene_type::PART_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_attribute.maxDepth.chanceToMutate);
 		metaGenes.push_back(&data.gene_attribute.maxDepth.changeAmount);
@@ -96,7 +98,7 @@ void Gene::update_meta_genes_vec() {
 	case gene_type::BODY_ATTRIBUTE:
 		metaGenes.push_back(&data.gene_body_attribute.value.chanceToMutate);
 		metaGenes.push_back(&data.gene_body_attribute.value.changeAmount);
-		break;
+		break;*/
 	default:
 		break;
 	}
@@ -115,9 +117,9 @@ Gene Gene::createRandomBodyAttribGene() {
 	case GENE_BODY_ATTRIB_GROWTH_SPEED:
 		g.value.set(BodyConst::initialGrowthSpeed);
 		break;
-	case GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO:
-		g.value.set(BodyConst::initialFatMassRatio);
-		break;
+//	case GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO:
+//		g.value.set(BodyConst::initialFatMassRatio);
+//		break;
 	case GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO:
 		g.value.set(BodyConst::initialMinFatMassRatio);
 		break;
@@ -131,20 +133,22 @@ Gene Gene::createRandomBodyAttribGene() {
 }
 
 Gene Gene::createRandomProteinGene() {
+	throw std::runtime_error("Implement!");
 	GeneProtein g;
-	g.maxDepth.set(randi(8));
-	g.minDepth.set(0);
-	g.protein.set((gene_protein_type)randi(GENE_PROT_NONE+1, GENE_PROT_END-1));
-	g.weight.set(randf());
+//	g.maxDepth.set(randi(8));
+//	g.minDepth.set(0);
+//	g.protein.set((gene_protein_type)randi(GENE_PROT_NONE+1, GENE_PROT_END-1));
+//	g.weight.set(randf());
 	return g;
 }
 
 Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
+	throw std::runtime_error("Implement!");
 	GeneOffset g;
-	g.maxDepth.set(randi(5));
-	g.minDepth.set(0);
-	g.side.set(srandf());
-	g.offset.set(randi(spaceLeftAfter));
+//	g.maxDepth.set(randi(5));
+//	g.minDepth.set(0);
+//	g.side.set(srandf());
+//	g.offset.set(randi(spaceLeftAfter));
 	return g;
 }
 
@@ -157,46 +161,52 @@ Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
 }*/
 
 Gene Gene::createRandomSynapseGene(int nNeurons) {
+	throw std::runtime_error("Implement!");
 	GeneSynapse g;
-	g.from.set(randi(nNeurons-1));
-	g.to.set(randi(nNeurons-1));
-	g.weight.set(randf()*0.2f);
-	g.priority.set(randf()*10);
+//	g.from.set(randi(nNeurons-1));
+//	g.to.set(randi(nNeurons-1));
+//	g.weight.set(randf()*0.2f);
+//	g.priority.set(randf()*10);
 	return g;
 }
 
 Gene Gene::createRandomNeuronInputCoordGene(int nNeurons) {
+	throw std::runtime_error("Implement!");
 	GeneNeuronInputCoord g;
-	g.destNeuronVirtIndex.set(randi(nNeurons-1));
-	g.inCoord.set(randf() * BodyConst::MaxVMSCoordinateValue);
+//	g.destNeuronVirtIndex.set(randi(nNeurons-1));
+//	g.inCoord.set(randf() * BodyConst::MaxVMSCoordinateValue);
 	return g;
 }
 
 Gene Gene::createRandomNeuronOutputCoordGene(int nNeurons) {
+	throw std::runtime_error("Implement!");
 	GeneNeuronOutputCoord g;
-	g.srcNeuronVirtIndex.set(randi(nNeurons-1));
-	g.outCoord.set(randf() * BodyConst::MaxVMSCoordinateValue);
+//	g.srcNeuronVirtIndex.set(randi(nNeurons-1));
+//	g.outCoord.set(randf() * BodyConst::MaxVMSCoordinateValue);
 	return g;
 }
 
 Gene Gene::createRandomNeuralBiasGene(int nNeurons) {
+	throw std::runtime_error("Implement!");
 	GeneNeuralBias g;
-	g.targetNeuron.set(randi(nNeurons-1));
-	g.value.set(srandf());
+//	g.targetNeuron.set(randi(nNeurons-1));
+//	g.value.set(srandf());
 	return g;
 }
 
 Gene Gene::createRandomNeuralParamGene(int nNeurons) {
+	throw std::runtime_error("Implement!");
 	GeneNeuralParam g;
-	g.targetNeuron.set(randi(nNeurons-1));
-	g.value.set(srandf());
+//	g.targetNeuron.set(randi(nNeurons-1));
+//	g.value.set(srandf());
 	return g;
 }
 
 Gene Gene::createRandomTransferFuncGene(int nNeurons) {
+	throw std::runtime_error("Implement!");
 	GeneTransferFunction g;
-	g.functionID.set(randi((int)transferFuncNames::FN_MAXCOUNT-1));
-	g.targetNeuron.set(randi(nNeurons-1));
+//	g.functionID.set(randi((int)transferFuncNames::FN_MAXCOUNT-1));
+//	g.targetNeuron.set(randi(nNeurons-1));
 	return g;
 }
 
@@ -209,11 +219,12 @@ Gene Gene::createRandomAttribGene() {
 }
 
 Gene Gene::createRandomSkipGene(int spaceLeftAfter) {
+	throw std::runtime_error("Implement!");
 	GeneSkip g;
-	g.minDepth.set(randi(10));
-	g.maxDepth.set(g.minDepth + randi(10-g.minDepth));
+//	g.minDepth.set(randi(10));
+//	g.maxDepth.set(g.minDepth + randi(10-g.minDepth));
 	// use a random distribution that favors small values:
-	g.count.set(sqr(randd()) * spaceLeftAfter);
+//	g.count.set(sqr(randd()) * spaceLeftAfter);
 	return g;
 }
 

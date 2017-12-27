@@ -182,7 +182,7 @@ float Nose::getOutputVMSCoord(unsigned index) const {
 }
 
 
-void Nose::commit() {
+void Nose::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif

@@ -209,7 +209,7 @@ void BodyPart::purge_initializationData() {
 #warning "must take into account lateral offset"
 }*/
 
-void BodyPart::reverseUpdateCachedProps() {
+/*void BodyPart::reverseUpdateCachedProps() {
 	// reverse the magic here: get values from the physics engine and put them in our cached props
 	// in order to facilitate a recommit with changed data.
 	glm::vec3 worldTransform = getWorldTransformation();
@@ -221,14 +221,14 @@ void BodyPart::reverseUpdateCachedProps() {
 	} /*else if (parent_) {
 		cachedProps_.velocity = parent_->cachedProps_.velocity;
 		cachedProps_.angularVelocity = parent_->cachedProps_.angularVelocity;
-	}*/
-}
+	}* /
+}*/
 
-void BodyPart::computeBodyPhysProps() {
+/*void BodyPart::computeBodyPhysProps() {
 	// do the magic here and update cachedProps from other positioning fields
 	// cachedProps must be in world space
 	// parent's cachedProps are assumed to be updated and in world space at this time
-	PhysicsProperties parentProps = /*parent_ ? parent_->cachedProps_ :*/ PhysicsProperties();
+	PhysicsProperties parentProps = /*parent_ ? parent_->cachedProps_ :* / PhysicsProperties();
 	cachedProps_.velocity = parentProps.velocity;
 	cachedProps_.angularVelocity = parentProps.angularVelocity;
 	// compute parent space position:
@@ -239,9 +239,9 @@ void BodyPart::computeBodyPhysProps() {
 	assertDbg(!std::isnan(pos.x) && !std::isnan(pos.y));
 	cachedProps_.position = pos;
 	// compute world space angle:
-	cachedProps_.angle = parentProps.angle /*+ attachmentDirectionParent_*/ + localRotation_;
+	cachedProps_.angle = parentProps.angle /*+ attachmentDirectionParent_* / + localRotation_;
 	assertDbg(!std::isnan(cachedProps_.angle));
-}
+}*/
 
 glm::vec3 BodyPart::getWorldTransformation() {
 	if (physBody_.b2Body_ && !noFixtures_) {

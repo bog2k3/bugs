@@ -52,7 +52,7 @@ Torso::~Torso() {
 	getUpdateList()->add(this);
 }*/
 
-void Torso::commit() {
+void Torso::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif

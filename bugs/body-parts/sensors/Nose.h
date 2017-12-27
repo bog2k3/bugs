@@ -11,7 +11,6 @@
 #include "../BodyPart.h"
 #include "../../entities/Bug/ISensor.h"
 #include "../../entities/enttypes.h"
-#include <memory>
 
 static constexpr EntityType NoseDetectableFlavours[] {
 	EntityType::	FOOD_CHUNK,
@@ -19,14 +18,12 @@ static constexpr EntityType NoseDetectableFlavours[] {
 };
 static constexpr size_t NoseDetectableFlavoursCount = sizeof(NoseDetectableFlavours)/sizeof(NoseDetectableFlavours[0]);
 
-struct NoseInitializationData : public BodyPartInitializationData {
+/*struct NoseInitializationData : public BodyPartInitializationData {
 	virtual ~NoseInitializationData() noexcept = default;
 	NoseInitializationData() = default;
 
 	CummulativeValue outputVMSCoord[NoseDetectableFlavoursCount]; // output nerve VMS coordinate
-};
-
-class b2WeldJoint;
+};*/
 
 class Nose : public BodyPart, public ISensor {
 public:
@@ -45,9 +42,8 @@ public:
 
 protected:
 	OutputSocket* outputSocket_[NoseDetectableFlavoursCount];
-	b2WeldJoint* pJoint = nullptr;
 
-	void commit() override;
+	void updateFixtures() override;
 	void die() override;
 	//void onAddedToParent() override;
 };

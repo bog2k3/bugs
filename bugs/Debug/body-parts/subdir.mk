@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../body-parts/BodyCell.cpp \
 ../body-parts/BodyPart.cpp \
 ../body-parts/Bone.cpp \
 ../body-parts/Cell.cpp \
@@ -16,6 +17,7 @@ CPP_SRCS += \
 ../body-parts/ZygoteShell.cpp 
 
 OBJS += \
+./body-parts/BodyCell.o \
 ./body-parts/BodyPart.o \
 ./body-parts/Bone.o \
 ./body-parts/Cell.o \
@@ -28,6 +30,7 @@ OBJS += \
 ./body-parts/ZygoteShell.o 
 
 CPP_DEPS += \
+./body-parts/BodyCell.d \
 ./body-parts/BodyPart.d \
 ./body-parts/Bone.d \
 ./body-parts/Cell.d \

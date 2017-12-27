@@ -8,6 +8,7 @@
 #ifndef BODY_PARTS_BODYPARTTYPES_H_
 #define BODY_PARTS_BODYPARTTYPES_H_
 
+#include <ostream>
 
 enum class BodyPartType {
 	INVALID = 0,

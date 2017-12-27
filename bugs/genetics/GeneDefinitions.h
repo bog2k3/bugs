@@ -23,13 +23,13 @@ enum class gene_type : uint8_t {
 #endif
 	STOP = 3,					// signals the ribosome to stop reading genes after this one
 	SKIP = 4,					// control gene -> skip next N genes if all conditions are met
-	PROTEIN = 5,				// protein gene -> produces a specific protein type in a body-part's segment
-	OFFSET = 6,					// controls the relative genome offset of a child part
+	PROTEIN = 5,				// protein gene -> produces a specific protein type in the cell
+	OFFSET = 6,					// controls the relative genome offset of a child cell (left or right)
 	DIVISION_PARAM = 7,			// controls the parameters of division in this cell like affinity, ratio, angle etc
 	JOINT_ATTRIBUTE = 8,		// controls attributes of the joint that would be created between children of this cell during division
 	MUSCLE_ATTRIBUTE = 9,		// controls attributes of the muscles (left/right) around the joint created by division
-	PART_ATTRIBUTE = 10,			// body part attribute - establishes characteristics of certain body parts
-	BODY_ATTRIBUTE = 12,			// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+	PART_ATTRIBUTE = 10,		// body part attribute - establishes characteristics of certain body parts
+	BODY_ATTRIBUTE = 12,		// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
 	NEURON = 12,				// creates a new neuron at the specified location (neuron will belong the the current cell)
 	SYNAPSE = 13,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
@@ -51,7 +51,7 @@ enum class gene_type : uint8_t {
 
 typedef uint8_t gene_protein_type;
 
-constexpr gene_protein_type GENE_PROT_NONE = 0;
+constexpr gene_protein_type GENE_PROT_INVALID = 0;
 constexpr gene_protein_type GENE_PROT_X = 1;
 constexpr gene_protein_type GENE_PROT_Y = 2;
 constexpr gene_protein_type GENE_PROT_Z = 3;
@@ -114,7 +114,7 @@ typedef uint8_t gene_body_attribute_type;
 constexpr gene_body_attribute_type GENE_BODY_ATTRIB_INVALID = 0;
 
 // fraction of zygote mass that will be transformed into fat during development, to act as the initial energy supply of the bug
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO = 1;
+//constexpr gene_body_attribute_type GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO = 1;	// OBSOLETE - fat ratio is implicitly determined by unspecialized cells
 
 // minimum fat to body mass ratio that enables growth and reproduction. If fat mass ratio falls below
 // this threshold, growth is stalled until the balance is restored. Also, an egg will not be generated if the

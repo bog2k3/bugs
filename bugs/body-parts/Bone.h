@@ -11,14 +11,6 @@
 #include "BodyPart.h"
 
 #include <glm/vec2.hpp>
-#include <memory>
-
-struct BoneInitializationData : public BodyPartInitializationData {
-	virtual ~BoneInitializationData() noexcept = default;
-	BoneInitializationData();
-
-	CummulativeValue aspectRatio;
-};
 
 class Bone: public BodyPart {
 public:
@@ -33,8 +25,7 @@ protected:
 	float length_;
 	float width_;
 
-	void commit() override;
-	void cacheInitializationData() override;
+	void updateFixtures() override;
 	void die() override;
 };
 
