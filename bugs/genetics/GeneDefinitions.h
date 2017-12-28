@@ -29,7 +29,7 @@ enum class gene_type : uint8_t {
 	JOINT_ATTRIBUTE = 8,		// controls attributes of the joint that would be created between children of this cell during division
 	MUSCLE_ATTRIBUTE = 9,		// controls attributes of the muscles (left/right) around the joint created by division
 	PART_ATTRIBUTE = 10,		// body part attribute - establishes characteristics of certain body parts
-	BODY_ATTRIBUTE = 12,		// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+	BODY_ATTRIBUTE = 11,		// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
 	NEURON = 12,				// creates a new neuron at the specified location (neuron will belong the the current cell)
 	SYNAPSE = 13,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
@@ -80,7 +80,8 @@ constexpr gene_joint_attribute GENE_JOINT_ATTR_TYPE = 1;				// if >0 type is piv
 constexpr gene_joint_attribute GENE_JOINT_ATTR_LOW_LIMIT = 2;			// low angle limit for joint
 constexpr gene_joint_attribute GENE_JOINT_ATTR_HIGH_LIMIT = 3;			// high angle limit for joint
 constexpr gene_joint_attribute GENE_JOINT_ATTR_RESET_TORQUE = 4;		// torque that moves the joint back into rest position when no forces act on it
-constexpr gene_joint_attribute GENE_JOINT_ATTR_END = 5;
+constexpr gene_joint_attribute GENE_JOINT_ATTR_SIZE = 5;				// [m^2]
+constexpr gene_joint_attribute GENE_JOINT_ATTR_END = 6;
 
 // ----------------------------------- gene_muscle_attribute_type -------------------------------//
 
@@ -100,12 +101,11 @@ typedef uint8_t gene_part_attribute_type;
 
 constexpr gene_part_attribute_type GENE_ATTRIB_INVALID = 0;
 constexpr gene_part_attribute_type GENE_ATTRIB_LOCAL_ROTATION = 1;		// rotates the part around its own center
-constexpr gene_part_attribute_type GENE_ATTRIB_SIZE = 2;				// represents the surface area of the part
-constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 3;		// aspect_ratio = length / width
-constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC1 = 4;			// generic attribute - meaning depends on specific type of body part
-constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC2 = 5;			// generic attribute - meaning depends on specific type of body part
-constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD = 6;			// input/output (depends on motor/sensor) coord in VMS; uses attrib index
-constexpr gene_part_attribute_type GENE_ATTRIB_END = 7;
+constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 2;		// aspect_ratio = length / width
+constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC1 = 3;			// generic attribute - meaning depends on specific type of body part
+constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC2 = 4;			// generic attribute - meaning depends on specific type of body part
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD = 5;			// input/output (depends on motor/sensor) coord in VMS; uses attrib index
+constexpr gene_part_attribute_type GENE_ATTRIB_END = 6;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//
 

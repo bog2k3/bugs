@@ -22,7 +22,14 @@ public:
 		: Cell(size, position, rotation, mirror, rightSide) {
 		branch_ = branch;
 		branch_.push_back(rightSide ? 'R' : 'L');
+
+		initializeGeneValues();
 	}
+
+	// TODO as the decoding goes and density genes pop up, the cell must change it's size to reflect the new density
+	// TODO when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
+
+	void initializeGeneValues();
 
 private:
 	friend class BodyPart;

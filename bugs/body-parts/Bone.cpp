@@ -23,31 +23,22 @@
 #include <dmalloc.h>
 #endif
 
-const glm::vec3 debug_color(0.f, 1.f, 0.f);
+static const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
 #define DEBUG_DRAW_BONE
 
-BoneInitializationData::BoneInitializationData()
-	: aspectRatio(BodyConst::initialBoneAspectRatio) {
-	density.reset(BodyConst::initialBoneDensity);
-}
-
-void Bone::cacheInitializationData() {
-	BodyPart::cacheInitializationData();
-	auto initData = std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData());
-	float aspectRatio = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
-	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
-	width_ = length_ / aspectRatio;			// w = l/a
-}
-
-Bone::Bone()
-	: BodyPart(BodyPartType::BONE, std::make_shared<BoneInitializationData>())
+Bone::Bone(BodyPartContext const& context, BodyCell const& cell)
+	: BodyPart(BodyPartType::BONE, context, cell)
 	, length_(0)
 	, width_(0)
 {
-	auto initData = std::dynamic_pointer_cast<BoneInitializationData>(getInitializationData());
-	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
-	registerAttribute(GENE_ATTRIB_GENERIC1, initData->density);
+	cell.mapAttributes_[GENE_ATTRIB_GENERIC1][0].changeAbs(BodyConst::initialBoneDensity);
+	cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO][0].changeAbs(BodyConst::initialBoneAspectRatio);
+	float aspectRatio = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO][0].clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
+	density_ = cell.mapAttributes_[GENE_ATTRIB_GENERIC1][0].clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
+	// TODO figure out how to handle density here, because changing it would also require changing size to keep same mass
+	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
+	width_ = length_ / aspectRatio;			// w = l/a
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_BONE;
 	physBody_.userPointer_ = this;
@@ -62,7 +53,7 @@ Bone::~Bone() {
 void Bone::die() {
 }
 
-void Bone::commit() {
+void Bone::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif

@@ -29,8 +29,7 @@ public:
 	static constexpr float ZygoteDensityInv					= 1.f / ZygoteDensity; // [m^2/kg]
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
 	static constexpr float MuscleDensity					= 13.f;			// [kg/m^2]
-	static constexpr float TorsoDensity						= 7.f;			// [kg/m^2]
-	static constexpr float TorsoEnergyDensity				= 100.f;		// [J/m^2] how much ready-to-use energy the torso can store
+//	static constexpr float TorsoEnergyDensity				= 100.f;		// [J/m^2] how much ready-to-use energy the torso can store
 	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*]
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
 	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.6f;			// [m/s] max meters/second linear contraction speed
@@ -43,7 +42,7 @@ public:
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float NoseDensity						= 3.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
-	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
+//	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
 	static constexpr float JointForceToleranceFactor		= 4.e+5f;		// [N/m^2] how much force a joint can take, relative to its size
 	static constexpr float JointTorqueToleranceFactor		= 3.5e+2f;		// [Nm/m^2] how much torque a joint can take, relative to its size
 	static constexpr float JointDensity						= 9.f;			// [kg/m^2]
@@ -51,7 +50,7 @@ public:
 	static constexpr float SensorNoiseThreshConstant		= 6.5e+4f;		// [*]	bigger makes lower noise threshold
 
 	// default initial values for cummulative properties:
-	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
+//	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
 	static constexpr float initialBodyPartDensity			= 10.f;			// [kg/m^2]
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
 	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
@@ -65,7 +64,7 @@ public:
 	static constexpr float initialNoseSize					= 0.5e-4f;		// [m^2]
 
 	// default values for whole-body attributes:
-	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat
+//	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat
 	static constexpr float initialMinFatMassRatio			= 0.15f;		// [*] fat percentage of total body weight. below this fraction, growth is halted
 	static constexpr float initialAdultLeanMass				= 6.f;			// [kg]
 	static constexpr float initialGrowthSpeed				= 20.e-3f;		// [kg/s] how fast lean mass can be added to the body

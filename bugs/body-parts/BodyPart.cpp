@@ -29,31 +29,32 @@
 #include <dmalloc.h>
 #endif
 
-BodyPartInitializationData::BodyPartInitializationData()
+/*BodyPartInitializationData::BodyPartInitializationData()
 	: localRotation(0)
 	, size(BodyConst::initialBodyPartSize)
 	, density(BodyConst::initialBodyPartDensity)
 {
-}
+}*/
 
-BodyPart::BodyPart(BodyPartType type, std::shared_ptr<BodyPartInitializationData> initialData)
-	: type_(type)
-	, committed_(false)
-	, dontCreateBody_(false)
-	, geneValuesCached_(false)
+BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell)
+	: context_(context)
+	, type_(type)
+	//, committed_(false)
+	//, dontCreateBody_(false)
+	//, geneValuesCached_(false)
 	, localRotation_(0)
-	, size_(0.01f)
-	, density_(1.f)
-	, initialData_(initialData)
-	, updateList_(nullptr)
+	, size_(cell.size())
+	, density_(BodyConst::initialBodyPartDensity)
+	//, updateList_(nullptr)
 	, lastCommitSize_inv_(0)
 	, destroyCalled_(false)
 	, dead_(false)
 {
-	assertDbg (initialData != nullptr);
+	size_ = cell.size();
+	localRotation_ = cell.mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION][0].clamp(-PI, PI);
 
-	registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->localRotation);
-	registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
+	//registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->localRotation);
+	//registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
 
 	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 	physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
@@ -187,9 +188,9 @@ void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
 	});
 }*/
 
-void BodyPart::purge_initializationData() {
+/*void BodyPart::purge_initializationData() {
 	initialData_.reset();
-}
+}*/
 
 /*glm::vec2 BodyPart::getParentSpacePosition() {
 	if (!geneValuesCached_) {
@@ -266,7 +267,7 @@ void BodyPart::draw(RenderContext const& ctx) {
 	Shape3D::get()->drawLine(pos + glm::vec3(0, -0.01f, 0), pos + glm::vec3(0, 0.01f, 0), glm::vec3(1.f, 0.2f, 0.2f));
 }
 
-void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue& value) {
+/*void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue& value) {
 	registerAttribute(type, 0, value);
 }
 
@@ -275,7 +276,7 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 	while (attrVec.size() < index + 1)
 		attrVec.push_back(nullptr);
 	attrVec[index] = &value;
-}
+}*/
 
 /*UpdateList* BodyPart::getUpdateList() {
 	if (updateList_)
@@ -382,12 +383,12 @@ void BodyPart::removeAllLinks() {
 		children_[i]->draw_tree(ctx);
 }*/
 
-void BodyPart::cacheInitializationData() {
+/*void BodyPart::cacheInitializationData() {
 	localRotation_ = limitAngle(initialData_->localRotation, 2*PI);
 	//lateralOffset_ = initialData_->lateralOffset;
 	size_ = initialData_->size.clamp(BodyConst::MinBodyPartSize, 1.e10f);
 	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
-}
+}*/
 
 /*void BodyPart::hierarchyMassChanged() {
 	if (parent_)
@@ -465,7 +466,7 @@ Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
 	assertDbg(pPart);
 	if (!pPart)
 		return nullptr;
-	return nullptr; //pPart->getOwner();
+	return pPart->context_->owner;
 }
 
 /*aabb BodyPart::getAABBRecursive() {

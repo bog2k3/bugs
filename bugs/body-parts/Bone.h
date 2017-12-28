@@ -14,7 +14,7 @@
 
 class Bone: public BodyPart {
 public:
-	Bone();
+	Bone(BodyPartContext const& context, BodyCell const& cell);
 	virtual ~Bone() override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 
