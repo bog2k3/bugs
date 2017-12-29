@@ -11,6 +11,7 @@
 #include "Cell.h"
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CummulativeValue.h"
+#include "BodyConst.h"
 
 #include <map>
 #include <vector>
@@ -31,10 +32,13 @@ public:
 
 	void initializeGeneValues();
 
+	float density() const { return density_; }
+
 private:
 	friend class BodyPart;
 
 	std::vector<char> branch_;
+	float density_ = BodyConst::initialBodyPartDensity;
 
 	std::map<gene_protein_type, CummulativeValue> mapProteins_;
 	std::map<gene_division_param_type, CummulativeValue> mapDivisionParams_;

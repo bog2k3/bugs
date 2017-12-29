@@ -1,145 +1,153 @@
-* change synapse linkage - VMS based for each input and output
-	- gene for number of neuron inputs
-	- gene for each input vms coord and output coord
-	- weight gene per each input
-	- remove index-based synapse gene
-* rethink hyperspace to favour most-usefull possibilities
-* !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
-	- a small change by itself must be able to benefit the bug - current model is not good at this
-	- new cell division based system
-	- new division parameter genes: angle, ratio, mirror?, reorientate?, level restrictions
-		^ these boolean values are encoded in floats +/-
-	- cell divides at an angle but its children keep the same orientation, unless reorientate is specified in the division, in which case the children will be reoriented by this angle
-	- proteins accumulate per cell, not per segment - no more segments 
-	- if proteins yield x*y*z*w = 0, the cell remains unspecialized - may store fat
-	- proteins should have a float weight instead of current int 1 (the float weight modulus is used for hyperspace)
-	- division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
-	- new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
-	- if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
-	- division happens when gene decoding reaches the end, so all genes have a chance of being read
-		- !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
-	- each cell either specializes into a body part or remains unspecialized
-	- joints and muscles are not created explicitly any more - remove them from hyperspace
-	- must rething muscle linkange and body part hierarchies
-	- must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
-			- (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
-	- !!! proteins are NOT inherited !!!
-	- default child cell genome offset is 0 - same genes as parent
-	- new gene child offset left/right which changes the default offset of the child cells once the division takes place
-	- each cell knows if it's left or right
-	- new restrictions on genes for left/right
-	- unused positions in hyperspace create unspecialized cells
-	- division creates bond between child cells (weld joint)
-	- when dividing, each existing bond is either split or inherited by one side:
-		-- if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
-		-- otherwise each side inherits bonds on its side of the division axis
-	- result is a graph of cells - use it to find shortest path to route sensor/motor nerves
-	- no more start marker genes in order to allow for easy variation in offsets
-	- if decoding starts on a STOP gene, it moves forward until the 1st valid gene
-	- body attribute genes are read at any depth but only interpreted once - see below
-	- neural genes are read at all depths (from all cells) but are added into a set (via pointers) and only interpreted once
-	- new Neuron gene creates a neuron in VMS at specified location
-	- neurons are only created by the new Neuron gene and will be housed inside the current cell
-	- all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
-		- thus no more neuron indexes
-	- all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
-	- VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
-	- when a joint between cells breaks, all synapses, motor lines and sensor lines passing through it are disconnected
-		- also if some of the cells become isolated from energy sources they die
-		- after a split, each of the two parts may live on if they have energy
-		- must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
-	- when a cell splits, neurons from the cell are randomly distributed between its children
-	- !!! No more need for a Torso, it'll just be an unspecialized cell
-	- tune muscle actuation: max contraction speed + limited range of motion 
+* [ ] change synapse linkage - VMS based for each input and output
+	- [ ] gene for number of neuron inputs
+	- [ ] gene for each input vms coord and output coord
+	- [ ] weight gene per each input
+	- [ ] remove index-based synapse gene
+* [ ] rethink hyperspace to favour most-usefull possibilities
+* [ ] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
+	- [ ] a small change by itself must be able to benefit the bug - current model is not good at this
+	- [ ] new cell division based system
+	- [ ] new division parameter genes: angle, ratio, mirror?, reorientate?, level restrictions
+		-- [ ] ^ these boolean values are encoded in floats +/-
+	- [ ] cell divides at an angle but its children keep the same orientation, unless reorientate is specified in the division, in which case the children will be reoriented by this angle
+	- [ ] proteins accumulate per cell, not per segment - no more segments 
+	- [ ] if proteins yield x*y*z*w = 0, the cell remains unspecialized - may store fat
+	- [ ] proteins should have a float weight instead of current int 1 (the float weight modulus is used for hyperspace)
+	- [ ] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
+	- [ ] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
+	- [ ] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
+	- [ ] division happens when gene decoding reaches the end, so all genes have a chance of being read
+		-- [ ] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
+	- [ ] each cell either specializes into a body part or remains unspecialized
+		-- [ ] ^ maps of gene-types/values in BodyCell that cummulates the values
+		-- [ ] once the decoding is done, the body part type is determined and following actions take place:
+		-- [ ] a map of body-part-type/static methods is used to call the correct method to update the cell's density
+		-- [ ] another similar map is used to retrieve the future body part's shape and connection points, and all neighbour link positions are updated so that cells will be in the correct position
+		-- [ ] the correct body part is now instantiated while the cell's position, size, density and shape are all correct.
+		-- [ ] BodyPart base class uses the cell to retrieve size, density, position, rotation and velocity for PhysicalBody
+		-- [ ] derived body part classes use the cell's gene maps to retrieve various specific attributes 
+		-- [ ] unspecialized cells will instantiate a FatCell body part which acts as an energy storage
+	- [ ] joints and muscles are not created explicitly any more - remove them from hyperspace
+	- [ ] must rething muscle linkange and body part hierarchies
+	- [ ] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
+		-- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
+	- [ ] !!! proteins are NOT inherited !!!
+	- [ ] default child cell genome offset is 0 - same genes as parent
+	- [ ] new gene child offset left/right which changes the default offset of the child cells once the division takes place
+	- [ ] each cell knows if it's left or right
+	- [ ] new restrictions on genes for left/right
+	- [ ] unused positions in hyperspace create unspecialized cells
+	- [ ] division creates bond between child cells (weld joint)
+	- [ ] when dividing, each existing bond is either split or inherited by one side:
+		-- [ ] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
+		-- [ ] otherwise each side inherits bonds on its side of the division axis
+	- [ ] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
+	- [ ] no more start marker genes in order to allow for easy variation in offsets
+	- [ ] if decoding starts on a STOP gene, it moves forward until the 1st valid gene
+	- [ ] body attribute genes are read at any depth but only interpreted once - see below
+	- [ ] neural genes are read at all depths (from all cells) but are added into a set (via pointers) and only interpreted once
+	- [ ] new Neuron gene creates a neuron in VMS at specified location
+	- [ ] neurons are only created by the new Neuron gene and will be housed inside the current cell
+	- [ ] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
+		-- [ ] thus no more neuron indexes
+	- [ ] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
+	- [ ] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
+	- [ ] when a joint between cells breaks, all synapses, motor lines and sensor lines passing through it are disconnected
+		-- [ ] also if some of the cells become isolated from energy sources they die
+		-- [ ] after a split, each of the two parts may live on if they have energy
+		-- [ ] must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
+	- [ ] when a cell splits, neurons from the cell are randomly distributed between its children
+			- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
+	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
 
-* World must also be serializable and save the general world properties (extents and other things)
-	- create spatial cache (call setExtents) also when loading
-* parameterized loading of World - when merging a session should omit walls & adjust extents & existing walls to union
-		* !!! optimize World::getEntitiesInBox(), it takes 95% of Nose::update() which takes 90% of all entities update
-			- partition the world in a matrix and cache entities in each cell; query cells overlaping the box requested
-			- cache only for the duration of the frame, so for each cell at most 1 call will be made per frame
-* must test aabb.intersect() and spatial cache
-* write a proper build config (make or cmake) - don't rely on eclipse any more
-		* Logger must be thread-safe!
-* velocity & angular velocity sensors
-* eyes
-* orientation sensor (compass)
-		* add a second body segment and move egg layer to the other end of it (to prevent interference with legs)
-		* synchronize grippers better (earlier)
-		* split update list to each core to run faster
-		* fix MAX neural structure processing nose outputs - replace thresh neurons with gates
-		* !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
-			- EntityLabeler created
-		* parts with no fixtures (noses) are not drawn correctly after commit
-		* !!! fix problem with nose triangle being too small -> causes Box2D to crash
-* !!! prevent b2d crashing from too small polygons which may be caused by degenerated body parts
-	- maybe don't create fixtures for them?
-		* multiple outputs from nose (sense different types of entities)
-		* need FAST method to get nearest body of certain type (for nose)
-		* outputVMS coord genes for sensors (indexed)
-		* extend VMS to 0..1000 (0..100 is to small compared to mutation values)
-		* redesign bug with two simple legs, two nose sensors - drive by smell
-			- simple neural system, just bias towards the stronger sensor
-		* add priority to synapses (float) - inputs will be ordered by highest priority first
-			- this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
-			- default 0 priority to input nerves so they shouldn't affect the order;
-			- default [0.0~10.0] priority for random synapses
-* changes in neurons:
-			- neuralConst as offset to sum in all neuron types (rename to "bias")
-			- new neuralParam to use in special function neurons which now use neuralConst
-			- new abs() neural function
-			- figure out how to multiply 2 signals - perhaps a new neural func?
-	- memory neuron with a special input (#0) to signal when to write
-			- gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
-		* implement slow motion with fixed timestep
-* gripperul sa se desprinda la o anumita forta d.p. cu size
-* spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
-	- variable food chunk size
-* heterogenous environment
-	- hazards/dangers
-	- different types of food spawners
-	- add complexity - more objects and stuff
-* mouth can only eat stuff smaller than its size
-* bugs should be able to eat smaller bugs alive
-* !!! fix repopulation (zygot mass) !!!
-		* rewrite default bug genome to use segmentation for leg
-		* tune nerve signals - GRIPPER must disengage sooner
-		* tune joint resillience
-* bugs degenerate too quickly and too often. Make them more stable
-		- reenabled start marker genes which increased stability
-* find a better way to decode the genome rather than offset-based
-		* develop a better embrionic development process (protein system done)
-		* print population & generations in status update
-		* !!! fix autosave (doesn't save any more, wtf?)
-* fix world design to favour movers
-	- food spawners should pause from time to time to make them go in another place
-	- movable food spawners - spawn more food than static ones
-		* print mutation statistics after meyosis
-		* !!! add SENSORS
-* prevent fixture overlapping after load from file -> results in box2D hang (maybe do an epsilon update on physWorld after each entity is deserialized)
-* make multiple worlds on different machines which communicate through portals via network TCP
-		* [obsolete]  !!! have redundancy in neural system to make muscle command harder to break
-		* prevent attraction between incompatible gamettes
-		* check for double deletion and other memory issues (valgrind)
-* GUI [lowprio] - stuff to interact with world
-* serialization 
-		- save/load to/from bigfile
-	- other entity types (gamete, dead bug) - also make bug adults directly
-		* !!! INVESTIGATE (fix dev gene reusage neural linking) - may already be fixed
-		* make gametes fuse into new zygotes
-		* fix basic bug neural routing - now it's fucked up
-		* make egglayer grow instead of torso
-		* fix scaling after break apart
-		* fix joint nan angle
-* do some statistical analysis on mutation rates
-		* add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
-		* [obs] make split work
-* add "duplicate" as a gene spawn method (copy existing gene)
-	- 50%-50% chance to duplicate or new
-		* make eggs attract each other
-		* !!! make eggs and zygotes (dead ones as well) as food
-		* make dead body parts as food
-		* fix basic bug muscle sync
-* switch from float to double 
-* clean up all TODOs and WARNINGs from code... (right.... this will be here forever)
+* [ ] World must also be serializable and save the general world properties (extents and other things)
+	- [ ] create spatial cache (call setExtents) also when loading
+* [ ] parameterized loading of World - when merging a session should omit walls & adjust extents & existing walls to union
+		* [X] !!! optimize World::getEntitiesInBox(), it takes 95% of Nose::update() which takes 90% of all entities update
+			- [X] partition the world in a matrix and cache entities in each cell; query cells overlaping the box requested
+			- [X] cache only for the duration of the frame, so for each cell at most 1 call will be made per frame
+* [ ] must test aabb.intersect() and spatial cache
+* [ ] write a proper build config (make or cmake) - don't rely on eclipse any more
+		* [X] Logger must be thread-safe!
+* [ ] velocity & angular velocity sensors
+* [ ] eyes
+* [ ] orientation sensor (compass)
+		* [X] add a second body segment and move egg layer to the other end of it (to prevent interference with legs)
+		* [X] synchronize grippers better (earlier)
+		* [X] split update list to each core to run faster
+		* [X] fix MAX neural structure processing nose outputs - replace thresh neurons with gates
+		* [X] !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
+			- [X] EntityLabeler created
+		* [X] parts with no fixtures (noses) are not drawn correctly after commit
+		* [X] !!! fix problem with nose triangle being too small -> causes Box2D to crash
+* [ ] !!! prevent b2d crashing from too small polygons which may be caused by degenerated body parts
+	- [ ] maybe don't create fixtures for them?
+		* [X] multiple outputs from nose (sense different types of entities)
+		* [X] need FAST method to get nearest body of certain type (for nose)
+		* [X] outputVMS coord genes for sensors (indexed)
+		* [X] extend VMS to 0..1000 (0..100 is to small compared to mutation values)
+		* [X] redesign bug with two simple legs, two nose sensors - drive by smell
+			- [X] simple neural system, just bias towards the stronger sensor
+		* [X] add priority to synapses (float) - inputs will be ordered by highest priority first
+			- [X] this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
+			- [X] default 0 priority to input nerves so they shouldn't affect the order;
+			- [X] default [0.0~10.0] priority for random synapses
+* [ ] changes in neurons:
+			- [X] neuralConst as offset to sum in all neuron types (rename to "bias")
+			- [X] new neuralParam to use in special function neurons which now use neuralConst
+			- [X] new abs() neural function
+			- [X] figure out how to multiply 2 signals - perhaps a new neural func?
+	- [ ] memory neuron with a special input (#0) to signal when to write
+			- [X] gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
+		* [X] implement slow motion with fixed timestep
+* [ ] gripperul sa se desprinda la o anumita forta d.p. cu size
+* [ ] spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
+	- [ ] variable food chunk size
+* [ ] heterogenous environment
+	- [ ] hazards/dangers
+	- [ ] different types of food spawners
+	- [ ] add complexity - more objects and stuff
+* [ ] mouth can only eat stuff smaller than its size
+* [ ] bugs should be able to eat smaller bugs alive
+* [ ] !!! fix repopulation (zygot mass) !!!
+		* [X] rewrite default bug genome to use segmentation for leg
+		* [X] tune nerve signals - GRIPPER must disengage sooner
+		* [X] tune joint resillience
+* [ ] bugs degenerate too quickly and too often. Make them more stable
+		- [X] reenabled start marker genes which increased stability
+* [ ] find a better way to decode the genome rather than offset-based
+		* [X] develop a better embrionic development process (protein system done)
+		* [X] print population & generations in status update
+		* [X] !!! fix autosave (doesn't save any more, wtf?)
+* [ ] fix world design to favour movers
+	- [ ] food spawners should pause from time to time to make them go in another place
+	- [ ] movable food spawners - spawn more food than static ones
+		* [X] print mutation statistics after meyosis
+		* [X] !!! add SENSORS
+* [ ] prevent fixture overlapping after load from file -> results in box2D hang (maybe do an epsilon update on physWorld after each entity is deserialized)
+* [ ] make multiple worlds on different machines which communicate through portals via network TCP
+		* [X] [obsolete]  !!! have redundancy in neural system to make muscle command harder to break
+		* [X] prevent attraction between incompatible gamettes
+		* [X] check for double deletion and other memory issues (valgrind)
+* [ ] GUI [lowprio] - stuff to interact with world
+* [ ] serialization 
+		- [X] save/load to/from bigfile
+	- [ ] other entity types (gamete, dead bug) - also make bug adults directly
+		* [X] !!! INVESTIGATE (fix dev gene reusage neural linking) - may already be fixed
+		* [X] make gametes fuse into new zygotes
+		* [X] fix basic bug neural routing - now it's fucked up
+		* [X] make egglayer grow instead of torso
+		* [X] fix scaling after break apart
+		* [X] fix joint nan angle
+* [ ] do some statistical analysis on mutation rates
+		* [X] add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
+		* [X] [obs] make split work
+		* [OBSOLETE] [ ] add "duplicate" as a gene spawn method (copy existing gene)
+			- [OBSOLETE] [ ] 50%-50% chance to duplicate or new
+		* [X] make eggs attract each other
+		* [X] !!! make eggs and zygotes (dead ones as well) as food
+		* [X] make dead body parts as food
+		* [X] fix basic bug muscle sync
+* [ ] switch from float to double 
+* [ ] clean up all TODOs and WARNINGs from code... (right.... this will be here forever)
 

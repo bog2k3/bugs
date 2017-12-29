@@ -13,7 +13,7 @@
 enum class BodyPartType {
 	INVALID = 0,
 
-	UNSPECIALIZED,
+	FAT,					// is created from unspecialized cells
 	BONE,
 	JOINT,
 	MUSCLE,

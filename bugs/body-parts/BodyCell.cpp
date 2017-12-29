@@ -6,7 +6,6 @@
  */
 
 #include "BodyCell.h"
-#include "BodyConst.h"
 
 void BodyCell::initializeGeneValues() {
 	mapDivisionParams_[GENE_DIVISION_RATIO].reset(1.f);

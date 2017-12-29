@@ -44,7 +44,7 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 	//, geneValuesCached_(false)
 	, localRotation_(0)
 	, size_(cell.size())
-	, density_(BodyConst::initialBodyPartDensity)
+	, density_(cell.density())
 	//, updateList_(nullptr)
 	, lastCommitSize_inv_(0)
 	, destroyCalled_(false)
