@@ -14,12 +14,13 @@
 	- [ ] if proteins yield x*y*z*w = 0, the cell remains unspecialized - may store fat
 	- [ ] proteins should have a float weight instead of current int 1 (the float weight modulus is used for hyperspace)
 	- [ ] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
+	- [ ] when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
 	- [ ] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
 	- [ ] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
 	- [ ] division happens when gene decoding reaches the end, so all genes have a chance of being read
 		-- [ ] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
-	- [ ] each cell either specializes into a body part or remains unspecialized
-		-- [ ] ^ maps of gene-types/values in BodyCell that cummulates the values
+	- [ ] each cell specializes into a body part depending on hyperspace position or turns into a FatCell (for unused or incomplete positions)
+		-- [X] ^ maps of gene-types/values in BodyCell that cummulates the values
 		-- [ ] once the decoding is done, the body part type is determined and following actions take place:
 		-- [ ] a map of body-part-type/static methods is used to call the correct method to update the cell's density
 		-- [ ] another similar map is used to retrieve the future body part's shape and connection points, and all neighbour link positions are updated so that cells will be in the correct position

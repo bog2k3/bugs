@@ -36,13 +36,13 @@
 {
 }*/
 
-BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell)
+BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell, bool suppressPhysicalBody)
 	: context_(context)
 	, type_(type)
 	//, committed_(false)
 	//, dontCreateBody_(false)
 	//, geneValuesCached_(false)
-	, localRotation_(0)
+	//, localRotation_(0)
 	, size_(cell.size())
 	, density_(cell.density())
 	//, updateList_(nullptr)
@@ -51,13 +51,20 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 	, dead_(false)
 {
 	size_ = cell.size();
-	localRotation_ = cell.mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION][0].clamp(-PI, PI);
+	//localRotation_ = cell.mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION].clamp(-PI, PI);
 
 	//registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->localRotation);
 	//registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
 
-	physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
-	physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
+	if (!suppressPhysicalBody) {
+		World::getInstance()->queueDeferredAction([this, cell] {
+			PhysicsProperties props(cell.position_, cell.angle_, true, velocity?, angularVelocity?);
+			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
+			physBody_.create(props);
+			updateFixtures();
+		});
+	}
 }
 
 BodyPart::~BodyPart() {
@@ -245,16 +252,18 @@ void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
 }*/
 
 glm::vec3 BodyPart::getWorldTransformation() {
-	if (physBody_.b2Body_ && !noFixtures_) {
+	if (physBody_.b2Body_ /*&& !noFixtures_*/) {
 		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
 	} else {
+		assertDbg(!!!"This should never happen");
+		return glm::vec3(0);
 		// if not committed yet, must compute these values on the fly
-		glm::vec3 parentTransform(/*parent_ ? parent_->getWorldTransformation() :*/ glm::vec3(0));
-		glm::vec2 pos {0}; //= getParentSpacePosition(); // this will temporarily cache gene values as well - that's ok because
-													// we're not committed yet, so we're invisible to other threads
-		return parentTransform + glm::vec3(
-				glm::rotate(pos, parentTransform.z),
-				/*attachmentDirectionParent_ +*/ localRotation_);
+//		glm::vec3 parentTransform(/*parent_ ? parent_->getWorldTransformation() :*/ glm::vec3(0));
+//		glm::vec2 pos {0}; //= getParentSpacePosition(); // this will temporarily cache gene values as well - that's ok because
+//													// we're not committed yet, so we're invisible to other threads
+//		return parentTransform + glm::vec3(
+//				glm::rotate(pos, parentTransform.z),
+//				/*attachmentDirectionParent_ +*/ localRotation_);
 	}
 }
 
@@ -267,11 +276,11 @@ void BodyPart::draw(RenderContext const& ctx) {
 	Shape3D::get()->drawLine(pos + glm::vec3(0, -0.01f, 0), pos + glm::vec3(0, 0.01f, 0), glm::vec3(1.f, 0.2f, 0.2f));
 }
 
-/*void BodyPart::registerAttribute(gene_part_attribute_type type, CummulativeValue& value) {
+/*void BodyPart::registerAttribute(gene_part_attribute_type type, CumulativeValue& value) {
 	registerAttribute(type, 0, value);
 }
 
-void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value) {
+void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, CumulativeValue& value) {
 	auto &attrVec = mapAttributes_[type];
 	while (attrVec.size() < index + 1)
 		attrVec.push_back(nullptr);

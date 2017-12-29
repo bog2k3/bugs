@@ -50,8 +50,6 @@ public:
 	static constexpr float SensorNoiseThreshConstant		= 6.5e+4f;		// [*]	bigger makes lower noise threshold
 
 	// default initial values for cummulative properties:
-//	static constexpr float initialBodyPartSize				= 1.e-4f;		// [m^2]
-	static constexpr float initialBodyPartDensity			= 10.f;			// [kg/m^2]
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
 	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
 	static constexpr float initialJointSize					= 1.9e-4f;		// [m^2]

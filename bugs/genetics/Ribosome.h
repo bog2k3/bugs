@@ -7,7 +7,7 @@
 
 #include "Genome.h"
 #include "Gene.h"
-#include "CummulativeValue.h"
+#include "CumulativeValue.h"
 #include "../body-parts/BodyPart.h"
 
 #include <glm/vec4.hpp>
@@ -28,11 +28,11 @@ class Joint;
 
 struct NeuronInfo {
 	int index;
-	CummulativeValue transfer;
-	CummulativeValue bias;
-	CummulativeValue param;
-	CummulativeValue inputVMSCoord;
-	CummulativeValue outputVMSCoord;
+	CumulativeValue transfer;
+	CumulativeValue bias;
+	CumulativeValue param;
+	CumulativeValue inputVMSCoord;
+	CumulativeValue outputVMSCoord;
 	/*NeuronInfo(int index, float transfer, float constant)
 		: index(index), transfer(transfer), bias(constant) {
 	}*/
@@ -45,15 +45,15 @@ struct NeuronInfo {
 };
 
 struct SynapseInfo {
-	CummulativeValue weight;
-	CummulativeValue priority;
+	CumulativeValue weight;
+	CumulativeValue priority;
 };
 
 struct GrowthData {
 	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this part
 	glm::vec4 hyperPosition { 0 };	// protein hyper-space position for current cell
-	CummulativeValue offsets[2]; // holds relative genome offsets for each segment in a body part
+	CumulativeValue offsets[2]; // holds relative genome offsets for each segment in a body part
 
 	GrowthData(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
@@ -84,7 +84,7 @@ public:
 private:
 	Bug* bug_;
 	std::vector<std::pair<BodyPart*, GrowthData>> activeSet_;
-	std::map<BodyPart*, std::pair<Joint*, CummulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
+	std::map<BodyPart*, std::pair<Joint*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 																	// and relative genome offset of the joint (if joint exists)
 	std::vector<Muscle*> muscles_;
 	std::vector<const Gene*> neuralGenes_;

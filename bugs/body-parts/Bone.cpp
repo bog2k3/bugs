@@ -32,11 +32,10 @@ Bone::Bone(BodyPartContext const& context, BodyCell const& cell)
 	, length_(0)
 	, width_(0)
 {
-	cell.mapAttributes_[GENE_ATTRIB_GENERIC1][0].changeAbs(BodyConst::initialBoneDensity);
-	cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO][0].changeAbs(BodyConst::initialBoneAspectRatio);
-	float aspectRatio = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO][0].clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
-	density_ = cell.mapAttributes_[GENE_ATTRIB_GENERIC1][0].clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
-	// TODO figure out how to handle density here, because changing it would also require changing size to keep same mass
+	cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].changeAbs(BodyConst::initialBoneAspectRatio);
+	float aspectRatio = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].clamp(
+				BodyConst::MaxBodyPartAspectRatioInv,
+				BodyConst::MaxBodyPartAspectRatio);
 	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
 	width_ = length_ / aspectRatio;			// w = l/a
 
@@ -45,19 +44,26 @@ Bone::Bone(BodyPartContext const& context, BodyCell const& cell)
 }
 
 Bone::~Bone() {
-	if (committed_) {
-		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
-	}
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
+	physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 }
 
-void Bone::die() {
+float Bone::getDensity(BodyCell const& cell) {
+	auto densValue = cell.mapAttributes_[GENE_ATTRIB_GENERIC1];
+	densValue.changeAbs(BodyConst::initialBoneDensity);
+	return densValue.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }
+
+//void Bone::die() {
+//}
 
 void Bone::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (committed_) {
+	if (physBody_.b2Body_->GetFixtureList()) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 
@@ -66,8 +72,8 @@ void Bone::updateFixtures() {
 	shape.SetAsBox(length_ * 0.5f, width_ * 0.5f); // our x and y mean length and width (because length is parallel to OX axis)
 	b2FixtureDef fixDef;
 	fixDef.density = density_;
-	fixDef.friction = 0.2f;
-	fixDef.restitution = 0.3f;
+	fixDef.friction = 0.2f;		// TODO replace with BodyConst::constant
+	fixDef.restitution = 0.3f;	// same
 	fixDef.shape = &shape;
 
 	physBody_.b2Body_->CreateFixture(&fixDef);

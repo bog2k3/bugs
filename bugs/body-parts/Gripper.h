@@ -20,7 +20,7 @@ struct GripperInitializationData : public BodyPartInitializationData {
 	virtual ~GripperInitializationData() noexcept = default;
 	GripperInitializationData() = default;
 
-	CummulativeValue inputVMSCoord; // input nerve VMS coordinate
+	CumulativeValue inputVMSCoord; // input nerve VMS coordinate
 };
 
 

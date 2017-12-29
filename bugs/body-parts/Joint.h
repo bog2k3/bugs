@@ -18,9 +18,9 @@ struct JointInitializationData : public BodyPartInitializationData {
 	virtual ~JointInitializationData() noexcept = default;
 	JointInitializationData();
 
-	CummulativeValue phiMin;
-	CummulativeValue phiMax;
-	CummulativeValue resetTorque;
+	CumulativeValue phiMin;
+	CumulativeValue phiMax;
+	CumulativeValue resetTorque;
 };
 
 class b2RevoluteJoint;

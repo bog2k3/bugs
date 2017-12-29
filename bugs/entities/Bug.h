@@ -12,7 +12,7 @@
 #include "Bug/LifetimeSensor.h"
 #include "../genetics/Genome.h"
 #include "../genetics/GeneDefinitions.h"
-#include "../genetics/CummulativeValue.h"
+#include "../genetics/CumulativeValue.h"
 #include "../serialization/objectTypes.h"
 
 #include <boglfw/entities/Entity.h>
@@ -113,13 +113,13 @@ protected:
 	std::vector<EggLayer*> eggLayers_;
 	std::vector<BodyPart*> deadBodyParts_;
 
-	std::map<gene_body_attribute_type, CummulativeValue*> mapBodyAttributes_;
-	CummulativeValue initialFatMassRatio_;
-	CummulativeValue minFatMasRatio_;
-	CummulativeValue adultLeanMass_;
-	CummulativeValue growthSpeed_;
-	CummulativeValue reproductiveMassRatio_;
-	CummulativeValue eggMass_;
+	std::map<gene_body_attribute_type, CumulativeValue*> mapBodyAttributes_;
+	CumulativeValue initialFatMassRatio_;
+	CumulativeValue minFatMasRatio_;
+	CumulativeValue adultLeanMass_;
+	CumulativeValue growthSpeed_;
+	CumulativeValue reproductiveMassRatio_;
+	CumulativeValue eggMass_;
 
 	unsigned generation_=0;  // the generation this bug represents
 	static std::atomic<int> population;

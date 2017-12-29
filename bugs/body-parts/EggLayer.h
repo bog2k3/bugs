@@ -15,8 +15,8 @@ struct EggLayerInitializationData : public BodyPartInitializationData {
 	virtual ~EggLayerInitializationData() noexcept = default;
 	EggLayerInitializationData();
 
-	CummulativeValue ejectSpeed;
-	CummulativeValue inputVMSCoord[2];
+	CumulativeValue ejectSpeed;
+	CumulativeValue inputVMSCoord[2];
 };
 
 class b2WeldJoint;

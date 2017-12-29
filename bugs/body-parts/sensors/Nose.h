@@ -22,7 +22,7 @@ static constexpr size_t NoseDetectableFlavoursCount = sizeof(NoseDetectableFlavo
 	virtual ~NoseInitializationData() noexcept = default;
 	NoseInitializationData() = default;
 
-	CummulativeValue outputVMSCoord[NoseDetectableFlavoursCount]; // output nerve VMS coordinate
+	CumulativeValue outputVMSCoord[NoseDetectableFlavoursCount]; // output nerve VMS coordinate
 };*/
 
 class Nose : public BodyPart, public ISensor {

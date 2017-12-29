@@ -1,21 +1,21 @@
 /*
- * CummulativeValue.h
+ * CumulativeValue.h
  *
  *  Created on: Dec 22, 2014
  *      Author: bogdan
  */
 
-#ifndef GENETICS_CUMMULATIVEVALUE_H_
-#define GENETICS_CUMMULATIVEVALUE_H_
+#ifndef GENETICS_CumulativeValue_H_
+#define GENETICS_CumulativeValue_H_
 
 #include <boglfw/utils/assert.h>
 
 #include <cassert>
 #include <cmath>
 
-struct CummulativeValue {
-	CummulativeValue() {}
-	explicit CummulativeValue(float initial) : value_(initial), cachedValue_(value_), cacheUpdated_(true), n_(1), factor_(1.f) {}
+struct CumulativeValue {
+	CumulativeValue() {}
+	explicit CumulativeValue(float initial) : value_(initial), cachedValue_(value_), cacheUpdated_(true), n_(1), factor_(1.f) {}
 	inline operator float() const {
 		if (!hasValue())
 			return 0;
@@ -37,7 +37,7 @@ struct CummulativeValue {
 		cacheUpdated_ = false;
 	}
 	inline void reset(float initialValue) {
-		*this = CummulativeValue(initialValue);
+		*this = CumulativeValue(initialValue);
 	}
 	inline bool hasValue() const { return n_ > 0; }
 	inline float clamp(float min, float max) {
@@ -49,7 +49,7 @@ struct CummulativeValue {
 	}
 private:
 	inline void updateCache() const {
-		assertDbg(n_ > 0 && "trying to read empty (uninitialized) CummulativeValue !!!");
+		assertDbg(n_ > 0 && "trying to read empty (uninitialized) CumulativeValue !!!");
 		cachedValue_ = value_ * factor_ / n_;
 		cacheUpdated_ = true;
 	}
@@ -62,4 +62,4 @@ private:
 };
 
 
-#endif /* GENETICS_CUMMULATIVEVALUE_H_ */
+#endif /* GENETICS_CumulativeValue_H_ */

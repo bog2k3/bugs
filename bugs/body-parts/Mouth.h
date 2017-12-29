@@ -16,7 +16,7 @@ struct MouthInitializationData : public BodyPartInitializationData {
 	virtual ~MouthInitializationData() noexcept = default;
 	MouthInitializationData();
 
-	CummulativeValue aspectRatio;
+	CumulativeValue aspectRatio;
 };
 
 class Mouth: public BodyPart {

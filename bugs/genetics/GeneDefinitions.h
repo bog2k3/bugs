@@ -104,8 +104,9 @@ constexpr gene_part_attribute_type GENE_ATTRIB_LOCAL_ROTATION = 1;		// rotates t
 constexpr gene_part_attribute_type GENE_ATTRIB_ASPECT_RATIO = 2;		// aspect_ratio = length / width
 constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC1 = 3;			// generic attribute - meaning depends on specific type of body part
 constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC2 = 4;			// generic attribute - meaning depends on specific type of body part
-constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD = 5;			// input/output (depends on motor/sensor) coord in VMS; uses attrib index
-constexpr gene_part_attribute_type GENE_ATTRIB_END = 6;
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD1 = 5;			// input/output (depends on motor/sensor) coord in VMS;
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD2 = 6;			// input/output (depends on motor/sensor) coord in VMS;
+constexpr gene_part_attribute_type GENE_ATTRIB_END = 7;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//
 

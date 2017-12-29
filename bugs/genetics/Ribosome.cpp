@@ -20,7 +20,7 @@
 #include "Gene.h"
 #include "Genome.h"
 #include "GeneDefinitions.h"
-#include "CummulativeValue.h"
+#include "CumulativeValue.h"
 
 #include <boglfw/math/math3D.h>
 #include <boglfw/utils/log.h>
@@ -235,6 +235,16 @@ bool Ribosome::step() {
 	return true;
 }
 
+// call this before instantiating the body part in order to update to correct density and size
+void Ribosome::updateCellDensity(BodyCell &cell) {
+	auto fn = mapDensityFunctions[specializationType(cell)];	// undefined function and map -> implement with static methods for density in bodyparts
+	auto oldDensity = cell.density;
+	cell.density_ = fn(cell);
+	// must adjust cell size to conserve mass
+	cell.size_ *= oldDensity / cell.density_;
+	// TODO must update link positions
+}
+
 void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {
 	// grow only works on bones and torso
 	if (parent->getType() != BodyPartType::BONE && parent->getType() != BodyPartType::TORSO)
@@ -327,7 +337,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 
 	if (useUpstreamJoint) {
 		// add joint mapping to this part:
-		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, CummulativeValue());
+		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, CumulativeValue());
 	}
 
 	//parent->add(bp, angle);
@@ -510,7 +520,7 @@ void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
 	int depth = part->getDepth();
 	if (depth >= g.minDepth && depth <= g.maxDepth)
 	{
-		CummulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
+		CumulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
 		if (pAttrib)
 			pAttrib->changeAbs(g.value);
 	}

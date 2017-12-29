@@ -10,7 +10,7 @@
 
 #include "Cell.h"
 #include "../genetics/GeneDefinitions.h"
-#include "../genetics/CummulativeValue.h"
+#include "../genetics/CumulativeValue.h"
 #include "BodyConst.h"
 
 #include <map>
@@ -20,15 +20,19 @@ class BodyCell: public Cell {
 public:
 
 	BodyCell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide, std::vector<char> const& branch = {})
-		: Cell(size, position, rotation, mirror, rightSide) {
+		: Cell(size, position, rotation, mirror, rightSide)
+	{
 		branch_ = branch;
 		branch_.push_back(rightSide ? 'R' : 'L');
 
 		initializeGeneValues();
 	}
 
-	// TODO as the decoding goes and density genes pop up, the cell must change it's size to reflect the new density
 	// TODO when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
+	// TODO at the end of decoding, accumulated rotation attribute gene value must be used to alter the rotation of the cell
+	// 		effectively the cell's orientation should become
+	//			angle_ + mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION]
+	//		this means also altering all links relative angles in order to keep them in the same physical positions
 
 	void initializeGeneValues();
 
@@ -40,11 +44,11 @@ private:
 	std::vector<char> branch_;
 	float density_ = BodyConst::initialBodyPartDensity;
 
-	std::map<gene_protein_type, CummulativeValue> mapProteins_;
-	std::map<gene_division_param_type, CummulativeValue> mapDivisionParams_;
-	std::map<gene_joint_attribute, CummulativeValue> mapJointAttribs_;
-	std::map<gene_muscle_attribute, CummulativeValue> mapMuscleAttribs_;
-	std::map<gene_part_attribute_type, std::vector<CummulativeValue>> mapAttributes_;
+	std::map<gene_protein_type, CumulativeValue> mapProteins_;
+	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;
+	std::map<gene_joint_attribute, CumulativeValue> mapJointAttribs_;
+	std::map<gene_muscle_attribute, CumulativeValue> mapMuscleAttribs_;
+	std::map<gene_part_attribute_type, Cummulative> mapAttributes_;
 };
 
 #endif /* BODY_PARTS_BODYCELL_H_ */

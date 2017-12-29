@@ -9,7 +9,7 @@
 #define OBJECTS_BODY_PARTS_BODYPART_H_
 
 #include "../genetics/GeneDefinitions.h"
-#include "../genetics/CummulativeValue.h"
+#include "../genetics/CumulativeValue.h"
 #include "BodyPartTypes.h"
 
 #include <boglfw/physics/PhysicsBody.h>
@@ -28,7 +28,7 @@ struct BodyPartContext;
 
 class BodyPart {
 public:
-	BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell);
+	BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell, bool suppressPhysicalBody=false);
 	virtual ~BodyPart();
 
 	// call this to destroy and delete the object. Never delete directly
@@ -62,7 +62,7 @@ public:
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
 	 */
-	/*inline CummulativeValue* getAttribute(gene_part_attribute_type attrib, unsigned index=0) {
+	/*inline CumulativeValue* getAttribute(gene_part_attribute_type attrib, unsigned index=0) {
 		if (mapAttributes_.find(attrib) == mapAttributes_.end())
 			return nullptr;
 		auto &attrVec = mapAttributes_[attrib];
@@ -98,7 +98,7 @@ public:
 	/** returns the default (rest) angle of this part relative to its parent
 	 */
 	//inline float getDefaultAngle() const { return /*attachmentDirectionParent_ +*/ localRotation_; }
-	inline float getLocalRotation() const { return localRotation_; }
+	//inline float getLocalRotation() const { return localRotation_; }
 	//inline float getAttachmentAngle() const { return 0/*attachmentDirectionParent_*/; }
 
 	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
@@ -140,7 +140,7 @@ protected:
 	std::vector<BodyPart*> neighbours_;
 
 	//bool committed_;
-	bool noFixtures_ = false;
+	//bool noFixtures_ = false;
 	// bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
 	//bool dontCreateBody_;			// set to true to prevent creating an actual physics body
 	/* this indicates if the values that come from genes (such as angleOffset_, size_ etc) have been cached
@@ -151,7 +151,6 @@ protected:
 
 	// final positioning and physical values:
 	//float attachmentDirectionParent_;
-	float localRotation_;
 	float size_;
 	float density_;
 
@@ -175,8 +174,8 @@ protected:
 	//virtual void onDetachedFromParent() {}
 
 
-	//void registerAttribute(gene_part_attribute_type type, CummulativeValue& value);
-	//void registerAttribute(gene_part_attribute_type type, unsigned index, CummulativeValue& value);
+	//void registerAttribute(gene_part_attribute_type type, CumulativeValue& value);
+	//void registerAttribute(gene_part_attribute_type type, unsigned index, CumulativeValue& value);
 	// returns the attachment point for the current part in its parent's coordinate space.
 	//glm::vec2 getUpstreamAttachmentPoint();
 	//UpdateList* getUpdateList();
@@ -200,7 +199,7 @@ private:
 	//inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
 	//void remove(BodyPart* part);
 
-	//std::map<gene_part_attribute_type, std::vector<CummulativeValue*>> mapAttributes_;
+	//std::map<gene_part_attribute_type, std::vector<CumulativeValue*>> mapAttributes_;
 	//std::shared_ptr<BodyPartInitializationData> initialData_;
 	//UpdateList* updateList_;
 	float lastCommitSize_inv_ = 0;

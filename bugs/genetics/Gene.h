@@ -156,7 +156,6 @@ struct GeneProtein {
 struct GeneAttribute {
 	BranchRestriction restriction;
 	gene_part_attribute_type attribute = GENE_ATTRIB_INVALID;
-	Atom<int> attribIndex;							// some attributes are indexed (like VMS coords for inputs/outputs)
 	Atom<float> value;
 
 	GeneAttribute() = default;

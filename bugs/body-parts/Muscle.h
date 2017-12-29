@@ -20,8 +20,8 @@ struct MuscleInitializationData : public BodyPartInitializationData {
 	virtual ~MuscleInitializationData() noexcept = default;
 	MuscleInitializationData();
 
-	CummulativeValue aspectRatio;	// length/width
-	CummulativeValue inputVMSCoord; // input nerve VMS coordinate
+	CumulativeValue aspectRatio;	// length/width
+	CumulativeValue inputVMSCoord; // input nerve VMS coordinate
 };
 
 class Muscle: public BodyPart, public IMotor {
