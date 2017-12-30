@@ -27,7 +27,7 @@ static const glm::vec3 debug_color(0.f, 1.f, 0.f);
 
 #define DEBUG_DRAW_BONE
 
-Bone::Bone(BodyPartContext const& context, BodyCell const& cell)
+Bone::Bone(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::BONE, context, cell)
 	, length_(0)
 	, width_(0)
@@ -80,9 +80,6 @@ void Bone::updateFixtures() {
 }
 glm::vec2 Bone::getAttachmentPoint(float relativeAngle)
 {
-	if (!geneValuesCached_) {
-		cacheInitializationData();
-	}
 	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
 	return ret;
 }
@@ -110,14 +107,3 @@ void Bone::draw(RenderContext const& ctx) {
 				debug_color);
 	}
 }
-
-float Bone::getAspectRatio() {
-	if (!geneValuesCached_) {
-#ifdef DEBUG
-		World::assertOnMainThread();
-#endif
-		cacheInitializationData();
-	}
-	return length_ / width_;
-}
-

@@ -14,12 +14,13 @@
 
 class Bone: public BodyPart {
 public:
-	Bone(BodyPartContext const& context, BodyCell const& cell);
+	Bone(BodyPartContext const& context, BodyCell& cell);
 	virtual ~Bone() override;
-	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 
+	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void draw(RenderContext const& ctx) override;
-	float getAspectRatio();
+
+	float aspectRatio() const { return length_ / width_; }
 
 protected:
 	float length_;

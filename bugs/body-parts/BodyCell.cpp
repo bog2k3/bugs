@@ -20,3 +20,7 @@ void BodyCell::initializeGeneValues() {
 	mapMuscleAttribs_[GENE_MUSCLE_ATTR_SIZE].reset(BodyConst::initialMuscleSize);
 	mapMuscleAttribs_[GENE_MUSCLE_ATTR_INSERT_OFFSET].reset(BodyConst::initialMuscleInsertOffset);
 }
+
+float BodyCell::radius(float angle) {
+	return todo;
+}

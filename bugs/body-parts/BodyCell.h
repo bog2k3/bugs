@@ -28,6 +28,10 @@ public:
 		initializeGeneValues();
 	}
 
+	// returns the radius in a given local angle (relative to cell's orientation)
+	// that is distance from center to cell's outline - it may be non-uniform for non-circle cells
+	float radius(float angle) const override;
+
 	// TODO when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
 	// TODO at the end of decoding, accumulated rotation attribute gene value must be used to alter the rotation of the cell
 	// 		effectively the cell's orientation should become
@@ -42,7 +46,7 @@ private:
 	friend class BodyPart;
 
 	std::vector<char> branch_;
-	float density_ = BodyConst::initialBodyPartDensity;
+	float density_ = BodyConst::FatDensity;
 
 	std::map<gene_protein_type, CumulativeValue> mapProteins_;
 	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;

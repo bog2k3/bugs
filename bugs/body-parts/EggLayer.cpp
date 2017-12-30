@@ -34,47 +34,47 @@ static const glm::vec3 debug_color_ripe(0.2f, 1.0f, 0.1f);
 
 #define DEBUG_DRAW_EGGLAYER
 
-EggLayerInitializationData::EggLayerInitializationData()
-	: ejectSpeed(BodyConst::initialEggEjectSpeed) {
-}
+//EggLayerInitializationData::EggLayerInitializationData()
+//	: ejectSpeed(BodyConst::initialEggEjectSpeed) {
+//}
+//
+//void EggLayer::cacheInitializationData() {
+//	BodyPart::cacheInitializationData();
+//	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
+//	ejectSpeed_ = data->ejectSpeed.clamp(0, BodyConst::MaxEggEjectSpeed);
+//}
 
-void EggLayer::cacheInitializationData() {
-	BodyPart::cacheInitializationData();
-	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
-	ejectSpeed_ = data->ejectSpeed.clamp(0, BodyConst::MaxEggEjectSpeed);
-}
+//float EggLayer::getInputVMSCoord(unsigned index) const {
+//	if (index >= 2)
+//		return 0;
+//	auto initData = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
+//	if (initData)
+//		return initData->inputVMSCoord[index].clamp(0, BodyConst::MaxVMSCoordinateValue);
+//	else
+//		return 0;
+//}
 
-float EggLayer::getInputVMSCoord(unsigned index) const {
-	if (index >= 2)
-		return 0;
-	auto initData = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
-	if (initData)
-		return initData->inputVMSCoord[index].clamp(0, BodyConst::MaxVMSCoordinateValue);
-	else
-		return 0;
-}
-
-EggLayer::EggLayer()
-	: BodyPart(BodyPartType::EGGLAYER, std::make_shared<EggLayerInitializationData>())
+EggLayer::EggLayer(BodyPartContext const& context, BodyCell& cell)
+	: BodyPart(BodyPartType::EGGLAYER, context, cell)
 	, targetEggMass_(BodyConst::initialEggMass)
-	, ejectSpeed_(0)
 {
-	inputs_.push_back(new InputSocket(nullptr, 1));	// [0] - suppress growth
-	inputs_.push_back(new InputSocket(nullptr, 1)); // [1] - suppress release
-
-	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
-	registerAttribute(GENE_ATTRIB_GENERIC1, data->ejectSpeed);
-	registerAttribute(GENE_ATTRIB_VMS_COORD, 0, data->inputVMSCoord[0]);
-	registerAttribute(GENE_ATTRIB_VMS_COORD, 1, data->inputVMSCoord[1]);
+	inputs_[0] = new InputSocket(nullptr, 1);	// [0] - suppress growth
+	inputs_[1] = new InputSocket(nullptr, 1); 	// [1] - suppress release
+	VMSCoords_[0] = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
+	VMSCoords_[1] = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD2].clamp(0, BodyConst::MaxVMSCoordinateValue);
+	cell.mapAttributes_[GENE_ATTRIB_GENERIC1].changeAbs(BodyConst::initialEggEjectSpeed);
+	ejectSpeed_ = cell.mapAttributes_[GENE_ATTRIB_GENERIC1].clamp(0, BodyConst::MaxEggEjectSpeed);
+	initialSize_ = size_;
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_EGGLAYER;
 	physBody_.userPointer_ = this;
 }
 
 EggLayer::~EggLayer() {
-	for (auto &i : inputs_)
+	for (auto &i : inputs_) {
 		delete i;
-	inputs_.clear();
+		i = nullptr;
+	}
 }
 
 void EggLayer::die() {
@@ -116,15 +116,13 @@ void EggLayer::draw(RenderContext const& ctx) {
 }
 
 glm::vec2 EggLayer::getAttachmentPoint(float relativeAngle) {
-	if (!geneValuesCached_) {
-#ifdef DEBUG
-		World::assertOnMainThread();
-#endif
-		cacheInitializationData();
-	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
+}
+
+float EggLayer::getDensity(BodyCell const& cell) {
+	return BodyConst::ZygoteDensity;
 }
 
 void EggLayer::update(float dt) {
@@ -162,20 +160,15 @@ void EggLayer::useFood(float food) {
 	}
 }
 
-void EggLayer::commit() {
+void EggLayer::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (committed_) {
+	if (physBody_.b2Body_->GetFixtureList()) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
-		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
-		pJoint = nullptr;
-	} else {
-		initialSize_ = size_;
+//		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
+//		pJoint = nullptr;
 	}
-
-	// override density with zygote density
-	density_ = BodyConst::ZygoteDensity;
 
 	b2CircleShape shape;
 	shape.m_radius = sqrtf(size_ * PI_INV);

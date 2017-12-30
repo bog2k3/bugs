@@ -11,19 +11,19 @@
 #include "BodyPart.h"
 #include "../entities/Bug/IMotor.h"
 
-struct EggLayerInitializationData : public BodyPartInitializationData {
-	virtual ~EggLayerInitializationData() noexcept = default;
-	EggLayerInitializationData();
+//struct EggLayerInitializationData : public BodyPartInitializationData {
+//	virtual ~EggLayerInitializationData() noexcept = default;
+//	EggLayerInitializationData();
+//
+//	CumulativeValue ejectSpeed;
+//	CumulativeValue inputVMSCoord[2];
+//};
 
-	CumulativeValue ejectSpeed;
-	CumulativeValue inputVMSCoord[2];
-};
-
-class b2WeldJoint;
+//class b2WeldJoint;
 
 class EggLayer: public BodyPart, public IMotor {
 public:
-	EggLayer();
+	EggLayer(BodyPartContext const& context, BodyCell& cell);
 	virtual ~EggLayer() override;
 
  	void draw(RenderContext const& ctx) override;
@@ -39,20 +39,22 @@ public:
 	// IMotor::
 	unsigned getInputCount() const override { return 2; }
 	InputSocket* getInputSocket(unsigned index) const override { return index < 2 ? inputs_[index] : nullptr; }
-	float getInputVMSCoord(unsigned index) const override;
+	float getInputVMSCoord(unsigned index) const override { return index < 2 ? VMSCoords_[index] : 0; }
 #ifdef DEBUG
 	//std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
 
+	static float getDensity(BodyCell const& cell);
+
 protected:
-	void commit() override;
+	void updateFixtures() override;
 	//void onAddedToParent() override;
 	void die() override;
-	void cacheInitializationData() override;
-	void checkScale();
+	//void cacheInitializationData() override;
 
-	b2WeldJoint* pJoint = nullptr;
-	std::vector<InputSocket*> inputs_;
+//	b2WeldJoint* pJoint = nullptr;
+	InputSocket* inputs_[2];
+	float VMSCoords_[2];
 	bool suppressGrowth_ = false;
 	bool suppressRelease_ = false;
 	float initialSize_ = 0;
