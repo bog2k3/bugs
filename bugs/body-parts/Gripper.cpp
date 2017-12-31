@@ -30,45 +30,29 @@ const glm::vec3 debug_color(1.f, 0.6f, 0.f);
 
 #define DEBUG_DRAW_GRIPPER
 
-Gripper::Gripper()
-	: BodyPart(BodyPartType::GRIPPER, std::make_shared<GripperInitializationData>())
+Gripper::Gripper(BodyPartContext const& context, BodyCell& cell)
+	: BodyPart(BodyPartType::GRIPPER, context, cell)
 	, inputSocket_(new InputSocket(nullptr, 1.f))
 	, active_(false)
 	, groundJoint_(nullptr)
 {
-	getInitializationData()->density.reset(BodyConst::GripperDensity);
-
-	auto initData = std::dynamic_pointer_cast<GripperInitializationData>(getInitializationData());
-	registerAttribute(GENE_ATTRIB_MOTOR_INPUT_COORD, initData->inputVMSCoord);
+	inputVMSCoord_ = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_GRIPPER;
 	physBody_.userPointer_ = this;
-}
 
-float Gripper::getInputVMSCoord(unsigned index) const {
-	if (index != 0)
-		return 0;
-	auto initData = std::dynamic_pointer_cast<GripperInitializationData>(getInitializationData());
-	if (initData)
-		return initData->inputVMSCoord.clamp(0, BodyConst::MaxVMSCoordinateValue);
-	else
-		return 0;
+	context.updateList.add(this);
 }
-
-/*void Gripper::onAddedToParent() {
-	assertDbg(getUpdateList() && "update list should be available to the body at this time");
-	getUpdateList()->add(this);
-}*/
 
 Gripper::~Gripper() {
 	delete inputSocket_;
 }
 
-void Gripper::commit() {
+void Gripper::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (committed_) {
+	if (physBody_.b2Body_->GetFixtureList()) {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	};
 
@@ -116,34 +100,20 @@ void Gripper::setActive(bool active) {
 }
 
 void Gripper::draw(RenderContext const& ctx) {
+#ifdef DEBUG_DRAW_GRIPPER
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec3 pos = {vec3xy(transform), 0};
-	if (committed_) {
-		// nothing, physics draws
-#ifdef DEBUG_DRAW_GRIPPER
-		if (isDead()) {
-			float sizeLeft = getFoodValue() / density_;
-			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
-		} else if (active_) {
-			Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV)*0.6f, 12, debug_color);
-		}
-#endif
-	} else {
-		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
-		Shape3D::get()->drawLine(pos,
-				pos + glm::vec3(glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0),
-				debug_color);
+	if (isDead()) {
+		float sizeLeft = getFoodValue() / density_;
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
+	} else if (active_) {
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV)*0.6f, 12, debug_color);
 	}
+#endif
 }
 
 glm::vec2 Gripper::getAttachmentPoint(float relativeAngle)
 {
-	if (!geneValuesCached_) {
-#ifdef DEBUG
-		World::assertOnMainThread();
-#endif
-		cacheInitializationData();
-	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
@@ -151,6 +121,9 @@ glm::vec2 Gripper::getAttachmentPoint(float relativeAngle)
 
 void Gripper::die() {
 	setActive(false);
-	if (context_)
-		context_->updateList.remove(this);
+	context_.updateList.remove(this);
+}
+
+float Gripper::getDensity(BodyCell const& cell) {
+	return BodyConst::GripperDensity;
 }

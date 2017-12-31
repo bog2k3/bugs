@@ -11,15 +11,6 @@
 #include "BodyPart.h"
 #include "../entities/Bug/IMotor.h"
 
-//struct EggLayerInitializationData : public BodyPartInitializationData {
-//	virtual ~EggLayerInitializationData() noexcept = default;
-//	EggLayerInitializationData();
-//
-//	CumulativeValue ejectSpeed;
-//	CumulativeValue inputVMSCoord[2];
-//};
-
-//class b2WeldJoint;
 
 class EggLayer: public BodyPart, public IMotor {
 public:
@@ -34,14 +25,12 @@ public:
 	void useFood(float food);
 	inline void setTargetEggMass(float mass) { targetEggMass_ = mass; }
 
-	//float getMass_tree() override;
-
 	// IMotor::
 	unsigned getInputCount() const override { return 2; }
 	InputSocket* getInputSocket(unsigned index) const override { return index < 2 ? inputs_[index] : nullptr; }
 	float getInputVMSCoord(unsigned index) const override { return index < 2 ? VMSCoords_[index] : 0; }
 #ifdef DEBUG
-	//std::string getMotorDebugName() const override { return getDebugName(); }
+	std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
 
 	static float getDensity(BodyCell const& cell);

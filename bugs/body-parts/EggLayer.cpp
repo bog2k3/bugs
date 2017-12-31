@@ -34,26 +34,6 @@ static const glm::vec3 debug_color_ripe(0.2f, 1.0f, 0.1f);
 
 #define DEBUG_DRAW_EGGLAYER
 
-//EggLayerInitializationData::EggLayerInitializationData()
-//	: ejectSpeed(BodyConst::initialEggEjectSpeed) {
-//}
-//
-//void EggLayer::cacheInitializationData() {
-//	BodyPart::cacheInitializationData();
-//	auto data = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
-//	ejectSpeed_ = data->ejectSpeed.clamp(0, BodyConst::MaxEggEjectSpeed);
-//}
-
-//float EggLayer::getInputVMSCoord(unsigned index) const {
-//	if (index >= 2)
-//		return 0;
-//	auto initData = std::dynamic_pointer_cast<EggLayerInitializationData>(getInitializationData());
-//	if (initData)
-//		return initData->inputVMSCoord[index].clamp(0, BodyConst::MaxVMSCoordinateValue);
-//	else
-//		return 0;
-//}
-
 EggLayer::EggLayer(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::EGGLAYER, context, cell)
 	, targetEggMass_(BodyConst::initialEggMass)
@@ -68,6 +48,8 @@ EggLayer::EggLayer(BodyPartContext const& context, BodyCell& cell)
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_EGGLAYER;
 	physBody_.userPointer_ = this;
+
+	context.updateList.add(this);
 }
 
 EggLayer::~EggLayer() {
@@ -78,41 +60,29 @@ EggLayer::~EggLayer() {
 }
 
 void EggLayer::die() {
-	if (context_)
-		context_->updateList.remove(this);
+	context_.updateList.remove(this);
 }
 
-/*float EggLayer::getMass_tree() {
-	return initialSize_ * density_;
-}*/
-
 void EggLayer::draw(RenderContext const& ctx) {
+#ifdef DEBUG_DRAW_EGGLAYER
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec3 pos {vec3xy(transform), 0};
-	if (committed_) {
-#ifdef DEBUG_DRAW_EGGLAYER
-		if (isDead()) {
-			float sizeLeft = getFoodValue() / density_;
-			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
-		} else {
-			float r_2 = sqrtf(size_*PI_INV) * 0.5f;
-			glm::vec3 color = eggMassBuffer_ >= targetEggMass_ ? debug_color_ripe : (suppressGrowth_ ? debug_color_suppressed : debug_color);
-			Shape3D::get()->drawLine(
-				pos - glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z), 0),
-				pos + glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z), 0),
-				color);
-			Shape3D::get()->drawLine(
-				pos - glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f), 0),
-				pos + glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f), 0),
-				color);
-		}
-#endif // DEBUG_DRAW_EGGLAYER
+	if (isDead()) {
+		float sizeLeft = getFoodValue() / density_;
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
 	} else {
-		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
-		Shape3D::get()->drawLine(pos,
-				pos + glm::vec3(glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0),
-				debug_color);
+		float r_2 = sqrtf(size_*PI_INV) * 0.5f;
+		glm::vec3 color = eggMassBuffer_ >= targetEggMass_ ? debug_color_ripe : (suppressGrowth_ ? debug_color_suppressed : debug_color);
+		Shape3D::get()->drawLine(
+			pos - glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z), 0),
+			pos + glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z), 0),
+			color);
+		Shape3D::get()->drawLine(
+			pos - glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f), 0),
+			pos + glm::vec3(glm::rotate(glm::vec2(r_2, 0), transform.z+PI*0.5f), 0),
+			color);
 	}
+#endif // DEBUG_DRAW_EGGLAYER
 }
 
 glm::vec2 EggLayer::getAttachmentPoint(float relativeAngle) {
@@ -157,6 +127,7 @@ void EggLayer::useFood(float food) {
 		eggMassBuffer_ += food;
 		size_ = initialSize_ + eggMassBuffer_ * BodyConst::ZygoteDensityInv;
 		//applyScale_tree(1.f);
+		throw std::runtime_error("Implement!");
 	}
 }
 

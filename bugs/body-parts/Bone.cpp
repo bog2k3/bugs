@@ -23,8 +23,6 @@
 #include <dmalloc.h>
 #endif
 
-static const glm::vec3 debug_color(0.f, 1.f, 0.f);
-
 #define DEBUG_DRAW_BONE
 
 Bone::Bone(BodyPartContext const& context, BodyCell& cell)
@@ -56,9 +54,6 @@ float Bone::getDensity(BodyCell const& cell) {
 	return densValue.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }
 
-//void Bone::die() {
-//}
-
 void Bone::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
@@ -85,25 +80,14 @@ glm::vec2 Bone::getAttachmentPoint(float relativeAngle)
 }
 
 void Bone::draw(RenderContext const& ctx) {
-	if (committed_) {
-		// nothing to draw, physics will draw for us
 #ifdef DEBUG_DRAW_BONE
-		if (isDead()) {
-			float ratio = sqrt((getFoodValue() / density_) / size_);
-			float widthLeft = width_ * ratio;
-			float lengthLeft = length_ * ratio;
-			glm::vec3 worldTransform = getWorldTransformation();
-			Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
-				glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
-		}
-#endif
-	} else {
+	if (isDead()) {
+		float ratio = sqrt((getFoodValue() / density_) / size_);
+		float widthLeft = width_ * ratio;
+		float lengthLeft = length_ * ratio;
 		glm::vec3 worldTransform = getWorldTransformation();
 		Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
-				glm::vec2(length_, width_), worldTransform.z, debug_color);
-		Shape3D::get()->drawLine(
-				{vec3xy(worldTransform), 0},
-				{vec3xy(worldTransform) + glm::rotate(getAttachmentPoint(0), worldTransform.z), 0},
-				debug_color);
+			glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5, 0, 1));
 	}
+#endif
 }

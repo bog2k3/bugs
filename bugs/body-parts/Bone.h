@@ -27,7 +27,6 @@ protected:
 	float width_;
 
 	void updateFixtures() override;
-//	void die() override;
 
 	static float getDensity(BodyCell const& cell);	// return the density of the future body part created from this cell
 };

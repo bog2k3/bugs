@@ -16,18 +16,10 @@
 
 class b2WeldJoint;
 
-struct GripperInitializationData : public BodyPartInitializationData {
-	virtual ~GripperInitializationData() noexcept = default;
-	GripperInitializationData() = default;
-
-	CumulativeValue inputVMSCoord; // input nerve VMS coordinate
-};
-
-
 class Gripper : public BodyPart, public IMotor {
 public:
-	Gripper();
-	~Gripper() override;
+	Gripper(BodyPartContext const& context, BodyCell& cell);
+	virtual ~Gripper() override;
 
 	void draw(RenderContext const& ctx) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
@@ -36,19 +28,22 @@ public:
 
 	// IMotor::
 	unsigned getInputCount() const override { return 1; }
-	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : 0; }
-	float getInputVMSCoord(unsigned index) const override;
+	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : nullptr; }
+	float getInputVMSCoord(unsigned index) const override { return index==0 ? inputVMSCoord_ : 0; }
 #ifdef DEBUG
-	//std::string getMotorDebugName() const override { return getDebugName(); }
+	std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
+
+	static float getDensity(BodyCell const& cell);
 
 protected:
 	InputSocket* inputSocket_;
+	float inputVMSCoord_;
 	std::atomic<bool> active_;
 	b2WeldJoint* groundJoint_;
 
 	void setActive(bool active);
-	void commit() override;
+	void updateFixtures() override;
 	void die() override;
 	//void onAddedToParent() override;
 };
