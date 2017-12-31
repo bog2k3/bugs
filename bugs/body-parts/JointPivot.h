@@ -14,21 +14,21 @@
 
 #define DEBUG_DRAW_JOINT
 
-struct JointInitializationData : public BodyPartInitializationData {
-	virtual ~JointInitializationData() noexcept = default;
-	JointInitializationData();
-
-	CumulativeValue phiMin;
-	CumulativeValue phiMax;
-	CumulativeValue resetTorque;
-};
+//struct JointInitializationData : public BodyPartInitializationData {
+//	virtual ~JointInitializationData() noexcept = default;
+//	JointInitializationData();
+//
+//	CumulativeValue phiMin;
+//	CumulativeValue phiMax;
+//	CumulativeValue resetTorque;
+//};
 
 class b2RevoluteJoint;
 
-class Joint : public BodyPart {
+class JointPivot : public BodyPart {
 public:
-	Joint();
-	virtual ~Joint() override;
+	JointPivot(BodyPartContext const& context, BodyCell& cell);	// use the parent cell (that has divided) for the joint
+	virtual ~JointPivot() override;
 
 	void draw(RenderContext const& ctx) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
@@ -43,6 +43,8 @@ public:
 
 	void addTorque(float t, float maxSpeed);
 
+	static float getDensity(BodyCell const& cell);
+
 protected:
 	b2RevoluteJoint* physJoint_;
 	float phiMin_;
@@ -51,10 +53,8 @@ protected:
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
 	void getNormalizedLimits(float &low, float &high);
-	void commit() override;
-	void cacheInitializationData() override;
+	void updateFixtures() override;
 	void die() override;
-	//void onAddedToParent() override;
 	//void onDetachedFromParent() override;
 	void onPhysJointDestroyed(b2Joint* joint);
 	void destroyPhysJoint();

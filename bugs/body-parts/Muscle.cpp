@@ -34,7 +34,6 @@
  */
 
 #include "Muscle.h"
-#include "Joint.h"
 #include "Bone.h"
 #include "BodyConst.h"
 #include "../neuralnet/InputSocket.h"
@@ -52,6 +51,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <math.h>
 #include <Box2D/Box2D.h>
+#include "JointPivot.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -104,7 +104,7 @@ Muscle::~Muscle() {
 	delete inputSocket_;
 }
 
-void Muscle::setJoint(Joint* joint, int motorDirSign) {
+void Muscle::setJoint(JointPivot* joint, int motorDirSign) {
 	assert(!joint_ && "only call this once per instance!");
 	assert(joint && "invalid arg (null)");
 	joint_ = joint;

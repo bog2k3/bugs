@@ -17,7 +17,6 @@
 #include "../body-parts/BodyConst.h"
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/BodyPart.h"
-#include "../body-parts/Joint.h"
 #include "../serialization/GenomeSerialization.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
@@ -37,6 +36,7 @@
 #include <glm/vec3.hpp>
 #include <sstream>
 #include <algorithm>
+#include "../body-parts/JointPivot.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>

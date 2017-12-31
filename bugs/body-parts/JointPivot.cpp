@@ -5,7 +5,8 @@
  *      Author: bogdan
  */
 
-#include "Joint.h"
+#include "JointPivot.h"
+
 #include "BodyConst.h"
 
 #include <boglfw/World.h>
@@ -28,48 +29,41 @@
 
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
-JointInitializationData::JointInitializationData()
-	: phiMin(BodyConst::initialJointMinPhi)
-	, phiMax(BodyConst::initialJointMaxPhi)
-	, resetTorque(BodyConst::initialJointResetTorque) {
-	size.reset(BodyConst::initialJointSize);
-}
+//JointInitializationData::JointInitializationData()
+//	: phiMin(BodyConst::initialJointMinPhi)
+//	, phiMax(BodyConst::initialJointMaxPhi)
+//	, resetTorque(BodyConst::initialJointResetTorque) {
+//	size.reset(BodyConst::initialJointSize);
+//}
 
-void Joint::cacheInitializationData() {
-	BodyPart::cacheInitializationData();
-	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
-	phiMin_ = initData->phiMin.clamp(-PI*0.9f, 0);
-	phiMax_ = initData->phiMax.clamp(0, limitAngle(initData->phiMax, PI*0.9f));
-	resetTorque_ = initData->resetTorque.clamp(0, 1.e3f);
-}
+//void JointPivot::cacheInitializationData() {
+//	BodyPart::cacheInitializationData();
+//	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
+//	phiMin_ = initData->phiMin.clamp(-PI*0.9f, 0);
+//	phiMax_ = initData->phiMax.clamp(0, limitAngle(initData->phiMax, PI*0.9f));
+//	resetTorque_ = initData->resetTorque.clamp(0, 1.e3f);
+//}
 
-Joint::Joint()
-	: BodyPart(BodyPartType::JOINT, std::make_shared<JointInitializationData>())
+JointPivot::Joint(BodyPartContext const& context, BodyCell& cell)
+	: BodyPart(BodyPartType::JOINT, context, cell, true)
 	, physJoint_(nullptr)
-	, phiMin_(0)
-	, phiMax_(0)
-	, resetTorque_(0)
 {
-	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
-	registerAttribute(GENE_ATTRIB_JOINT_LOW_LIMIT, initData->phiMin);
-	registerAttribute(GENE_ATTRIB_JOINT_HIGH_LIMIT, initData->phiMax);
-	registerAttribute(GENE_ATTRIB_JOINT_RESET_TORQUE, initData->resetTorque);
+
+	phiMin_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_LOW_LIMIT].clamp(-PI*0.9f, 0);
+	phiMax_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_HIGH_LIMIT].clamp(0, PI*0.9f);
+	resetTorque_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_RESET_TORQUE].clamp(0, BodyConst::MaxJointResetTorque);
+
+	context.updateList.add(this);
 }
 
-Joint::~Joint() {
+JointPivot::~JointPivot() {
 	if (committed_ && physJoint_) {
 		destroyPhysJoint();
 	}
-	if (context_)
-		context_->updateList.remove(this);
+	context_.updateList.remove(this);
 }
 
-/*void Joint::onAddedToParent() {
-	assertDbg(getUpdateList() && "update list should be available to the body at this time");
-	getUpdateList()->add(this);
-}*/
-
-void Joint::commit() {
+void JointPivot::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
@@ -112,7 +106,7 @@ void Joint::commit() {
 			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));*/
 }
 
-void Joint::destroyPhysJoint() {
+void JointPivot::destroyPhysJoint() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
@@ -121,54 +115,39 @@ void Joint::destroyPhysJoint() {
 	physJoint_ = nullptr;
 }
 
-glm::vec3 Joint::getWorldTransformation() {
-	if (!committed_)
-		return BodyPart::getWorldTransformation();
-	else if (physJoint_) {
+glm::vec3 JointPivot::getWorldTransformation() {
+	if (physJoint_) {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
 			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());
 	} else
-		return glm::vec3(0);
+		throw std::runtime_error("Implement this!");
 }
 
-void Joint::draw(RenderContext const& ctx) {
+void JointPivot::draw(RenderContext const& ctx) {
 #ifndef DEBUG_DRAW_JOINT
-	if (committed_) {
-		// nothing, physics draws
-	} else
-#endif
-	{
-		if (!physJoint_)
-			return;
-		glm::vec3 transform = getWorldTransformation();
-		glm::vec2 pos = vec3xy(transform);
-		if (isDead()) {
-			float sizeLeft = getFoodValue() / density_;
-			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV), 12, glm::vec3(0.5f,0,1));
-		} else {
-			Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
-			Shape3D::get()->drawLine({pos, 0},
-					{pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0},
-					debug_color);
-		}
+	glm::vec3 transform = getWorldTransformation();
+	glm::vec2 pos = vec3xy(transform);
+	if (isDead()) {
+		float sizeLeft = getFoodValue() / density_;
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV), 12, glm::vec3(0.5f,0,1));
+	} else {
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
+		Shape3D::get()->drawLine({pos, 0},
+				{pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0},
+				debug_color);
 	}
+#endif
 }
 
-glm::vec2 Joint::getAttachmentPoint(float relativeAngle)
+glm::vec2 JointPivot::getAttachmentPoint(float relativeAngle)
 {
-	if (!geneValuesCached_) {
-#ifdef DEBUG
-		World::assertOnMainThread();
-#endif
-		cacheInitializationData();
-	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
-float Joint::getJointAngle() const {
-	if (committed_) {
+float JointPivot::getJointAngle() const {
+	if (physJoint_) {
 		float ret = physJoint_->GetJointAngle();
 		if (std::isnan(ret))
 			ret = 0;
@@ -179,13 +158,13 @@ float Joint::getJointAngle() const {
 		return 0;
 }
 
-void Joint::addTorque(float t, float maxSpeed) {
+void JointPivot::addTorque(float t, float maxSpeed) {
 	assertDbg(!std::isnan(t));
 	assertDbg(!std::isnan(maxSpeed));
 	vecTorques.push_back(std::make_pair(t, maxSpeed));
 }
 
-void Joint::update(float dt) {
+void JointPivot::update(float dt) {
 	PERF_MARKER_FUNC;
 	if (!physJoint_ || dt == 0)
 		return;
@@ -194,9 +173,9 @@ void Joint::update(float dt) {
 	float motorTorque = physJoint_->GetMotorTorque(invdt);
 	float reactionForce = physJoint_->GetReactionForce(invdt).Length();
 	bool jointIsFUBAR = std::isnan(reactionTorque) || std::isnan(reactionForce);
-	bool excessForce = reactionForce > size_ * BodyConst::JointForceToleranceFactor;
-	bool excessRTorque = abs(reactionTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
-	bool excessMTorque = abs(motorTorque) > size_ * BodyConst::JointTorqueToleranceFactor;
+	bool excessForce = reactionForce > size_ * density_ * BodyConst::JointForceToleranceFactor;
+	bool excessRTorque = abs(reactionTorque) > size_ * density_ * BodyConst::JointTorqueToleranceFactor;
+	bool excessMTorque = abs(motorTorque) > size_ * density_ * BodyConst::JointTorqueToleranceFactor;
 #ifdef DEBUG
 //	if (getOwner()->getId() == 1) {
 //		if (getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)" ||
@@ -265,8 +244,8 @@ void Joint::update(float dt) {
 	}
 }
 
-void Joint::die() {
-	if (committed_ && physJoint_)
+void JointPivot::die() {
+	if (physJoint_)
 		physJoint_->EnableMotor(false);
 }
 
@@ -277,7 +256,12 @@ void Joint::die() {
 	}
 }*/
 
-void Joint::onPhysJointDestroyed(b2Joint* joint) {
+void JointPivot::onPhysJointDestroyed(b2Joint* joint) {
 	physJoint_ = nullptr;
 }
 
+float JointPivot::getDensity(BodyCell const& cell) {
+	auto value = cell.mapJointAttribs_[GENE_JOINT_ATTR_DENSITY];
+	value.changeAbs(BodyConst::initialJointDensity);
+	return value.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
+}

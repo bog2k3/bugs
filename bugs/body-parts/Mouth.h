@@ -10,36 +10,27 @@
 
 #include "BodyPart.h"
 
-class b2WeldJoint;
-
-struct MouthInitializationData : public BodyPartInitializationData {
-	virtual ~MouthInitializationData() noexcept = default;
-	MouthInitializationData();
-
-	CumulativeValue aspectRatio;
-};
-
 class Mouth: public BodyPart {
 public:
-	Mouth();
+	Mouth(BodyPartContext const& context, BodyCell& cell);
 	virtual ~Mouth() override;
 
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void draw(RenderContext const& ctx) override;
 	void update(float dt);
 
+	static float getDensity(BodyCell const& cell);
+
 protected:
 	float length_;
 	float width_;
 	float bufferSize_;
 	float usedBuffer_;
-	b2WeldJoint* pJoint;
-	int onCollisionEventHandle;
+//	b2WeldJoint* pJoint;
+	int onCollisionEventHandle_;
 
-	void cacheInitializationData() override;
-	void commit() override;
+	void updateFixtures() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
-	//void onAddedToParent() override;
 	void die() override;
 };
 

@@ -13,7 +13,7 @@
 
 #define DEBUG_DRAW_MUSCLE
 
-class Joint;
+class JointPivot;
 class InputSocket;
 
 struct MuscleInitializationData : public BodyPartInitializationData {
@@ -30,7 +30,7 @@ public:
 	Muscle();
 	virtual ~Muscle() override;
 
-	void setJoint(Joint* joint, int motorDirSign);
+	void setJoint(JointPivot* joint, int motorDirSign);
 
 	void draw(RenderContext const& ctx) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
@@ -48,7 +48,7 @@ protected:
 	static constexpr int nAngleSteps = 10;
 
 	InputSocket* inputSocket_ = nullptr;
-	Joint* joint_ = nullptr;
+	JointPivot* joint_ = nullptr;
 	float aspectRatio_;
 	float rotationSign_ = 1.f;
 	float maxForce_;

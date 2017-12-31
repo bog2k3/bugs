@@ -22,5 +22,6 @@ void BodyCell::initializeGeneValues() {
 }
 
 float BodyCell::radius(float angle) {
-	return todo;
+	// TODO cell radius - use map to call static methods to get attachment points ?
+	throw std::runtime_error("Implement this!");
 }

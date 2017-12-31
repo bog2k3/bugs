@@ -5,7 +5,6 @@
 #include "../body-parts/Torso.h"
 #include "../body-parts/Bone.h"
 #include "../body-parts/Gripper.h"
-#include "../body-parts/Joint.h"
 #include "../body-parts/ZygoteShell.h"
 #include "../body-parts/Muscle.h"
 #include "../body-parts/Mouth.h"
@@ -29,6 +28,7 @@
 
 #include <utility>
 #include <algorithm>
+#include "../body-parts/JointPivot.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -199,7 +199,7 @@ bool Ribosome::step() {
 			// decode joint genes if such is the case:
 			auto it = mapJointOffsets_.find(p);
 			if (it != mapJointOffsets_.end()) {
-				Joint* joint = it->second.first;
+				JointPivot* joint = it->second.first;
 				int jOffset = it->second.second.hasValue() ? it->second.second : 0;
 				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + jOffset));
 			}
@@ -266,11 +266,11 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
 	// until it touches an edge of the parent. That point is used as attachment of the new part.
 
-	Joint* upstreamJoint = nullptr;
+	JointPivot* upstreamJoint = nullptr;
 	bool useUpstreamJoint = partMustGenerateJoint(newBodyPartType);
 	if (useUpstreamJoint) {
 		// we cannot grow this part directly onto its parent, they must be connected by a joint
-		upstreamJoint = new Joint();
+		upstreamJoint = new JointPivot();
 //		parent->add(upstreamJoint, angle);
 
 		// set part to point to the joint's node, since that's where the actual part will be attached:
@@ -747,7 +747,7 @@ void Ribosome::commitNeurons() {
 		n->commitInputs();
 }
 
-Joint* Ribosome::findNearestJoint(Muscle* m, int dir) {
+JointPivot* Ribosome::findNearestJoint(Muscle* m, int dir) {
 	/*assertDbg(m->getParent() && "muscle should have a parent!");
 	int nChildren = m->getParent()->getChildrenCount();
 	std::vector<BodyPart*> bp;
@@ -781,12 +781,12 @@ Joint* Ribosome::findNearestJoint(Muscle* m, int dir) {
 
 void Ribosome::resolveMuscleLinkage() {
 	for (Muscle* m : muscles_) {
-		Joint* jNeg = findNearestJoint(m, -1);
-		Joint* jPos = findNearestJoint(m, +1);
+		JointPivot* jNeg = findNearestJoint(m, -1);
+		JointPivot* jPos = findNearestJoint(m, +1);
 		if (!jNeg && !jPos)
 			continue;
 		// default to the joint on the negative side and only select the positive one if more appropriate:
-		Joint* targetJoint = jNeg;
+		JointPivot* targetJoint = jNeg;
 		if (jNeg != jPos) {
 			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m->getAttachmentAngle());
 			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m->getAttachmentAngle());

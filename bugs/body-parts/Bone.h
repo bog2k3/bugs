@@ -22,13 +22,13 @@ public:
 
 	float aspectRatio() const { return length_ / width_; }
 
+	static float getDensity(BodyCell const& cell);	// return the density of the future body part created from this cell
+
 protected:
 	float length_;
 	float width_;
 
 	void updateFixtures() override;
-
-	static float getDensity(BodyCell const& cell);	// return the density of the future body part created from this cell
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

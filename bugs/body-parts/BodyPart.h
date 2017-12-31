@@ -11,6 +11,7 @@
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CumulativeValue.h"
 #include "BodyPartTypes.h"
+#include "BodyPartContext.h"
 
 #include <boglfw/physics/PhysicsBody.h>
 
@@ -24,7 +25,6 @@ class RenderContext;
 class Bug;
 class BodyCell;
 class Entity;
-struct BodyPartContext;
 
 class BodyPart {
 public:
@@ -57,7 +57,7 @@ public:
 	// must return the actual amount deduced from mass argument
 	virtual float addFood(float mass) { throw std::runtime_error("not implemented"); /*if (parent_) return parent_->addFood(mass); else return 0;*/ }
 
-	Bug* getOwner() const { return context_ ? &context_->owner : nullptr; }
+	Bug* getOwner() const { context_.owner; }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
@@ -129,6 +129,10 @@ public:
 
 	static Entity* getEntityFromBodyPartPhysBody(PhysicsBody const& body);
 
+#ifdef DEBUG
+	std::string getDebugName() const { throw std::runtime_error("Implement this!"); }
+#endif
+
 protected:
 	BodyPartContext& context_;
 	// these are used when initializing the body and whenever a new commit is called.
@@ -183,7 +187,7 @@ protected:
 	//void reattachChildren();
 	//void computeBodyPhysProps();
 
-	friend class Joint;
+	friend class JointPivot;
 
 	virtual void detachMotorLines(std::vector<unsigned> const& lines);
 	//virtual void hierarchyMassChanged();

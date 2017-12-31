@@ -43,9 +43,9 @@ public:
 	static constexpr float NoseDensity						= 3.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 //	static constexpr float FoodProcessingSpeedDensity		= 50.e-2f;		// [kg/(m^2*s)] how much food can a unit size torso process in a second?
-	static constexpr float JointForceToleranceFactor		= 4.e+5f;		// [N/m^2] how much force a joint can take, relative to its size
-	static constexpr float JointTorqueToleranceFactor		= 3.5e+2f;		// [Nm/m^2] how much torque a joint can take, relative to its size
-	static constexpr float JointDensity						= 9.f;			// [kg/m^2]
+	static constexpr float JointForceToleranceFactor		= 4.e+4f;		// [N/kg] how much force a joint can take, relative to its size
+	static constexpr float JointTorqueToleranceFactor		= 3.5e+1f;		// [Nm/kg] how much torque a joint can take, relative to its size
+	static constexpr float MaxJointResetTorque				= 1.e+3f;		// [N*m] max joint snap-back torque
 	static constexpr float SensorSizeScalingConstant		= 0.5e+4f;		// [*]
 	static constexpr float SensorNoiseThreshConstant		= 6.5e+4f;		// [*]	bigger makes lower noise threshold
 
@@ -53,10 +53,13 @@ public:
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
 	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
 	static constexpr float initialJointSize					= 1.9e-4f;		// [m^2]
+	static constexpr float initialJointDensity				= 9.f;			// [kg/m^2]
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.6f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
+	static constexpr float initialMuscleSize				= 1.0e-2f;		// [m^2]
+	static constexpr float initialMuscleInsertOffset		= PI/5;			// [rad]
 	static constexpr float initialMouthSize					= 0.5e-3f;		// [m^2]
 	static constexpr float initialMouthAspectRatio			= 0.15f;		// [*] length/width
 	static constexpr float initialNoseSize					= 0.5e-4f;		// [m^2]

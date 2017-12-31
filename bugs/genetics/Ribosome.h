@@ -24,7 +24,7 @@ class OutputSocket;
 class IMotor;
 class ISensor;
 class Muscle;
-class Joint;
+class JointPivot;
 
 struct NeuronInfo {
 	int index;
@@ -84,7 +84,7 @@ public:
 private:
 	Bug* bug_;
 	std::vector<std::pair<BodyPart*, GrowthData>> activeSet_;
-	std::map<BodyPart*, std::pair<Joint*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
+	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 																	// and relative genome offset of the joint (if joint exists)
 	std::vector<Muscle*> muscles_;
 	std::vector<const Gene*> neuralGenes_;
@@ -118,7 +118,7 @@ private:
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
 	void resolveMuscleLinkage();
-	Joint* findNearestJoint(Muscle* m, int dir);
+	JointPivot* findNearestJoint(Muscle* m, int dir);
 
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();

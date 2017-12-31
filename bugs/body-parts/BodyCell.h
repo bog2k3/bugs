@@ -52,7 +52,7 @@ private:
 	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;
 	std::map<gene_joint_attribute, CumulativeValue> mapJointAttribs_;
 	std::map<gene_muscle_attribute, CumulativeValue> mapMuscleAttribs_;
-	std::map<gene_part_attribute_type, Cummulative> mapAttributes_;
+	std::map<gene_part_attribute_type, CumulativeValue> mapAttributes_;
 };
 
 #endif /* BODY_PARTS_BODYCELL_H_ */

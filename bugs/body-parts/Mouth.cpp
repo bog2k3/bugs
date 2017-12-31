@@ -31,55 +31,36 @@ static const glm::vec3 debug_color(0.2f, 0.8f, 1.f);
 
 #define DEBUG_DRAW_MOUTH
 
-MouthInitializationData::MouthInitializationData()
-	: aspectRatio(BodyConst::initialMouthAspectRatio) {
-	size.reset(BodyConst::initialMouthSize);
-}
-
-void Mouth::cacheInitializationData() {
-	BodyPart::cacheInitializationData();
-	auto data = std::dynamic_pointer_cast<MouthInitializationData>(getInitializationData());
-	float aspectRatio = data->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
-	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
-	width_ = length_ / aspectRatio;			// w = l/a
-}
-
-Mouth::Mouth()
-	: BodyPart(BodyPartType::MOUTH, std::make_shared<MouthInitializationData>())
-	, length_(0)
-	, width_(0)
+Mouth::Mouth(BodyPartContext const& context, BodyCell& cell)
+	: BodyPart(BodyPartType::MOUTH, context, cell)
 	, bufferSize_(0)
 	, usedBuffer_(0)
-	, pJoint(nullptr)
 {
-	onCollisionEventHandle = physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
+	cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].changeAbs(BodyConst::initialMouthAspectRatio);
+	float aspectRatio = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].clamp(
+				BodyConst::MaxBodyPartAspectRatioInv,
+				BodyConst::MaxBodyPartAspectRatio);
+	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
+	width_ = length_ / aspectRatio;			// w = l/a
+
+	onCollisionEventHandle_ = physBody_.onCollision.add(std::bind(&Mouth::onCollision, this, std::placeholders::_1, std::placeholders::_2));
 	physBody_.userObjectType_ = ObjectTypes::BPART_MOUTH;
 	physBody_.userPointer_ = this;
 	physBody_.collisionEventMask_ = EventCategoryFlags::FOOD;
+
+	context.updateList.add(this);
 }
 
 Mouth::~Mouth() {
 }
 
 void Mouth::die() {
-	if (context_)
-		context_->updateList.remove(this);
-	physBody_.onCollision.remove(onCollisionEventHandle);
+	context_.updateList.remove(this);
+	physBody_.onCollision.remove(onCollisionEventHandle_);
 	physBody_.collisionEventMask_ = 0;
 }
 
-/*void Mouth::onAddedToParent() {
-	assertDbg(getUpdateList() && "update list should be available to the body at this time");
-	getUpdateList()->add(this);
-}*/
-
 glm::vec2 Mouth::getAttachmentPoint(float relativeAngle) {
-	if (!geneValuesCached_) {
-#ifdef DEBUG
-		World::getInstance()->assertOnMainThread();
-#endif
-		cacheInitializationData();
-	}
 	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
@@ -89,11 +70,11 @@ void Mouth::commit() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (committed_) {
+	if (physBody_.b2Body_->GetFixtureList()) {
 		physBody_.b2Body_->DestroyFixture(
 				&physBody_.b2Body_->GetFixtureList()[0]);
-		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
-		pJoint = nullptr;
+//		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
+//		pJoint = nullptr;
 	}
 
 	bufferSize_ = size_ * BodyConst::MouthBufferDensity;
@@ -120,27 +101,19 @@ void Mouth::commit() {
 }
 
 void Mouth::draw(RenderContext const& ctx) {
-	if (committed_) {
-		// nothing to draw, physics will draw for us
 #ifdef DEBUG_DRAW_MOUTH
-		float ratio = sqrt((getFoodValue() / density_) / size_);
-		float widthLeft = width_ * ratio;
-		float lengthLeft = length_ * ratio;
-		glm::vec3 worldTransform = getWorldTransformation();
-		Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
+	float ratio = sqrt((getFoodValue() / density_) / size_);
+	float widthLeft = width_ * ratio;
+	float lengthLeft = length_ * ratio;
+	glm::vec3 worldTransform = getWorldTransformation();
+	Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
 #endif
-	} else {
-		glm::vec3 worldTransform = getWorldTransformation();
-		Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(length_, width_), worldTransform.z, debug_color);
-		Shape3D::get()->drawLine(glm::vec3(vec3xy(worldTransform), 0),
-				glm::vec3(vec3xy(worldTransform), 0) + glm::vec3(glm::rotate(getAttachmentPoint(0), worldTransform.z), 0),
-				debug_color);
-	}
 }
 
 void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	if (impulseMagnitude > 1000) {
-//TODO implement hurt
+		//TODO implement hurt
+		throw std::runtime_error("Implement this!");
 		return;
 	}
 	b2AABB otherAABB;
@@ -207,4 +180,10 @@ void Mouth::update(float dt) {
 		return;
 	/*if (usedBuffer_ > 0)
 		usedBuffer_ -= parent_->addFood(usedBuffer_);*/
+	// TODO food addition
+	throw std::runtime_error("Implement this!");
+}
+
+float Mouth::getDensity(BodyCell const& cell) {
+	return BodyConst::MouthDensity;
 }

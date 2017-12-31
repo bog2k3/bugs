@@ -15,6 +15,7 @@
 	- [ ] proteins should have a float weight instead of current int 1 (the float weight modulus is used for hyperspace)
 	- [ ] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
 	- [ ] when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
+		-- [ ] original cell is kept for joint genes and its size is changed to joint size - it's used on the ctor of PivotJoint
 	- [ ] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
 	- [ ] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
 	- [ ] division happens when gene decoding reaches the end, so all genes have a chance of being read
@@ -38,7 +39,7 @@
 	- [ ] each cell knows if it's left or right
 	- [ ] new restrictions on genes for left/right
 	- [ ] unused positions in hyperspace create unspecialized cells
-	- [ ] division creates bond between child cells (weld joint)
+	- [ ] division creates bond between child cells (weld/pivot joint)
 	- [ ] when dividing, each existing bond is either split or inherited by one side:
 		-- [ ] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
 		-- [ ] otherwise each side inherits bonds on its side of the division axis

@@ -50,7 +50,6 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 	, destroyCalled_(false)
 	, dead_(false)
 {
-	size_ = cell.size();
 	//localRotation_ = cell.mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION].clamp(-PI, PI);
 
 	//registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->localRotation);
