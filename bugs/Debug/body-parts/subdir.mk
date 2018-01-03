@@ -10,7 +10,8 @@ CPP_SRCS += \
 ../body-parts/Cell.cpp \
 ../body-parts/EggLayer.cpp \
 ../body-parts/Gripper.cpp \
-../body-parts/Joint.cpp \
+../body-parts/JointPivot.cpp \
+../body-parts/JointWeld.cpp \
 ../body-parts/Mouth.cpp \
 ../body-parts/Muscle.cpp \
 ../body-parts/Torso.cpp \
@@ -23,7 +24,8 @@ OBJS += \
 ./body-parts/Cell.o \
 ./body-parts/EggLayer.o \
 ./body-parts/Gripper.o \
-./body-parts/Joint.o \
+./body-parts/JointPivot.o \
+./body-parts/JointWeld.o \
 ./body-parts/Mouth.o \
 ./body-parts/Muscle.o \
 ./body-parts/Torso.o \
@@ -36,7 +38,8 @@ CPP_DEPS += \
 ./body-parts/Cell.d \
 ./body-parts/EggLayer.d \
 ./body-parts/Gripper.d \
-./body-parts/Joint.d \
+./body-parts/JointPivot.d \
+./body-parts/JointWeld.d \
 ./body-parts/Mouth.d \
 ./body-parts/Muscle.d \
 ./body-parts/Torso.d \

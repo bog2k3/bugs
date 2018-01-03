@@ -56,19 +56,19 @@ public:
 
 	// deserialize a Bug from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
-	void serialize(BinaryStream &stream) override;
+	void serialize(BinaryStream &stream) const override;
 
 	void update(float dt) override;
 	void draw(RenderContext const &ctx) override;
-	int getSerializationType() override { return SerializationObjectTypes::BUG; }
+	int getSerializationType() const override { return SerializationObjectTypes::BUG; }
 
-	const Genome& getGenome() { return genome_; }
-	glm::vec2 getVelocity();
-	float getMass();
-	unsigned getGeneration() { return generation_; }
-	bool isAlive() { return isAlive_; }
-	float getNeuronData(int neuronIndex);
-	Torso* getBody() { return body_; }
+	const Genome& getGenome() const { return genome_; }
+	glm::vec2 getVelocity() const;
+	float getMass() const;
+	unsigned getGeneration() const { return generation_; }
+	bool isAlive() const { return isAlive_; }
+	float getNeuronValue(int neuronIndex) const;
+//	Torso* getBody() { return body_; }
 
 	void kill();
 
@@ -103,7 +103,7 @@ protected:
 	bool isAlive_;
 	bool isDeveloping_;
 	float tRibosomeStep_; // time since last ribosome step
-	Torso* body_;
+//	Torso* body_;
 	ZygoteShell* zygoteShell_;
 	UpdateList bodyPartsUpdateList_;
 	float growthMassBuffer_;	// stores processed food to be used for growth (at the speed dictated by genes)
@@ -114,17 +114,17 @@ protected:
 	std::vector<BodyPart*> deadBodyParts_;
 
 	std::map<gene_body_attribute_type, CumulativeValue*> mapBodyAttributes_;
-	CumulativeValue initialFatMassRatio_;
+//	CumulativeValue initialFatMassRatio_;
 	CumulativeValue minFatMasRatio_;
 	CumulativeValue adultLeanMass_;
 	CumulativeValue growthSpeed_;
 	CumulativeValue reproductiveMassRatio_;
 	CumulativeValue eggMass_;
 
-	unsigned generation_=0;  // the generation this bug represents
-	static std::atomic<int> population;
-	static std::atomic<int> freeZygotes;
-	static std::atomic<int> maxGeneration;
+	uint generation_=0;  // the generation this bug represents
+	static std::atomic<uint> population;
+	static std::atomic<uint> freeZygotes;
+	static std::atomic<uint> maxGeneration;
 
 	friend class Ribosome;
 

@@ -8,6 +8,7 @@
 #include "BodyCell.h"
 
 void BodyCell::initializeGeneValues() {
+#error "must populate maps first!!!"
 	mapDivisionParams_[GENE_DIVISION_RATIO].reset(1.f);
 	mapDivisionParams_[GENE_DIVISION_SEPARATE].reset(-0.5f);
 

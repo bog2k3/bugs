@@ -45,9 +45,9 @@
 const float DECODE_FREQUENCY = 5.f; // genes per second
 const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
 
-std::atomic<int> Bug::population {0};
-std::atomic<int> Bug::maxGeneration {0};
-std::atomic<int> Bug::freeZygotes {0};
+std::atomic<uint> Bug::population {0};
+std::atomic<uint> Bug::maxGeneration {0};
+std::atomic<uint> Bug::freeZygotes {0};
 std::atomic<uint64_t> Bug::nextId {1};
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation)
@@ -57,13 +57,13 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, isAlive_(true)
 	, isDeveloping_(true)
 	, tRibosomeStep_(0)
-	, body_(nullptr)
+//	, body_(nullptr)
 	, zygoteShell_(nullptr)
 	, growthMassBuffer_(0)
 	, maxGrowthMassBuffer_(0)
 	, cachedLeanMass_(0)
 	, cachedMassDirty_(false)
-	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
+//	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
 	, growthSpeed_(BodyConst::initialGrowthSpeed)
@@ -81,15 +81,15 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
 	//zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 
-	body_ = new Torso();
+//	body_ = new Torso();
 	//zygoteShell_->add(body_, 0);
-	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
-	body_->onMotorLinesDetached.add(std::bind(&Bug::onMotorLinesDetached, this, std::placeholders::_1));
-	body_->onBodyMassChanged.add([this] { cachedMassDirty_ = true; });
-	body_->setOwner(this);
+//	body_->onFoodProcessed.add(std::bind(&Bug::onFoodProcessed, this, std::placeholders::_1));
+//	body_->onMotorLinesDetached.add(std::bind(&Bug::onMotorLinesDetached, this, std::placeholders::_1));
+//	body_->onBodyMassChanged.add([this] { cachedMassDirty_ = true; });
+//	body_->setOwner(this);
 	ribosome_ = new Ribosome(this);
 
-	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
+//	mapBodyAttributes_[GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO] = &initialFatMassRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO] = &minFatMasRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_ADULT_LEAN_MASS] = &adultLeanMass_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_GROWTH_SPEED] = &growthSpeed_;
@@ -108,10 +108,11 @@ Bug::~Bug() {
 		zygoteShell_->destroy();
 		zygoteShell_ = nullptr;
 	}
-	else if (body_) {
+#warning "Destroy body parts here"
+	/*else if (body_) {
 		body_->destroy();
 		body_ = nullptr;
-	} else {
+	}*/ else {
 		for (auto bp : deadBodyParts_)
 			if (bp != nullptr)
 				bp->destroy();
@@ -134,12 +135,13 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				LOGLN("Embryo not viable. DISCARDED.");
 				World::getInstance()->queueDeferredAction([this] {
 					//zygoteShell_->die_tree();
-					body_->detach(false);
-					body_->destroy();
-					body_ = nullptr;
+//					body_->detach(false);
+//					body_->destroy();
+//					body_ = nullptr;
+#warning "do whatever cleanup required here"
 				});
 				return;
-#warning "this will live forever"
+#warning "this will live forever, must destroy bug instance and just leave a dummy zygote behind for food"
 			}
 
 			population++; // new member of the bug population
@@ -150,9 +152,9 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			fixAllGeneValues();
 
 			// compute fat amount and scale up the torso to the correct size
-			float fatMass = zygMass * initialFatMassRatio_;
-			body_->setInitialFatMass(fatMass);
-			cachedLeanMass_ = zygMass - fatMass;
+//			float fatMass = zygMass * initialFatMassRatio_;
+//			body_->setInitialFatMass(fatMass);
+//			cachedLeanMass_ = zygMass - fatMass;
 
 			zygoteShell_->updateCachedDynamicPropsFromBody();
 			// commit all changes and create the physics bodys and fixtures:
@@ -160,7 +162,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			// delete embryo shell
 			World::getInstance()->queueDeferredAction([this] {
-				body_->detach(false);
+//				body_->detach(false);
 				zygoteShell_->destroy();
 				zygoteShell_ = nullptr;
 			});
@@ -186,7 +188,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 }
 
 void Bug::fixAllGeneValues() {
-	initialFatMassRatio_.reset(clamp(initialFatMassRatio_.get(), 0.f, 1.f));
+//	initialFatMassRatio_.reset(clamp(initialFatMassRatio_.get(), 0.f, 1.f));
 	minFatMasRatio_.reset(clamp(minFatMasRatio_.get(), 0.f, 1.f));
 	adultLeanMass_.reset(clamp(adultLeanMass_.get(), 0.f, 1.e+20f));
 	growthSpeed_.reset(clamp(growthSpeed_.get(), 0.f, 1.e+20f));
@@ -218,7 +220,7 @@ void Bug::kill() {
 			--population; // one less bug
 			isAlive_ = false;
 			//body_->die_tree();
-			body_ = nullptr;
+//			body_ = nullptr;
 		}
 	});
 }
@@ -256,7 +258,7 @@ void Bug::update(float dt) {
 	if (cachedMassDirty_) {
 		// some part broke up, must recompute some things
 		float oldLeanMass = cachedLeanMass_;
-		body_->resetCachedMass();
+//		body_->resetCachedMass();
 #warning "getMass_tree() includes fat too after purging initialization data"
 		cachedLeanMass_ = 1.f;//body_->getMass_tree();
 		adultLeanMass_.changeRel(cachedLeanMass_ / oldLeanMass);
@@ -421,7 +423,7 @@ void Bug::deserialize(BinaryStream &stream) {
 	World::getInstance()->takeOwnershipOf(std::move(ptr));
 }
 
-float Bug::getNeuronData(int neuronIndex) {
+float Bug::getNeuronValue(int neuronIndex) {
 	if (neuronIndex < 0 || neuronIndex >= neuralNet_->neurons.size())
 		return 0;
 	return neuralNet_->neurons[neuronIndex]->getValue();

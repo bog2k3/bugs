@@ -150,7 +150,7 @@ struct GeneOffset {
 struct GeneProtein {
 	BranchRestriction restriction;
 	Atom<gene_protein_type> protein;				// the type of protein this gene produces
-	Atom<float> weight;								// abs() is used
+	Atom<float> weight;								// +/- moves the axis coordinate
 };
 
 struct GeneAttribute {

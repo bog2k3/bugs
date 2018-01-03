@@ -48,7 +48,7 @@ private:
 	std::vector<char> branch_;
 	float density_ = BodyConst::FatDensity;
 
-	std::map<gene_protein_type, CumulativeValue> mapProteins_;
+	glm::vec4 proteinValues_ {0}; // hyper-space position for current cell
 	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;
 	std::map<gene_joint_attribute, CumulativeValue> mapJointAttribs_;
 	std::map<gene_muscle_attribute, CumulativeValue> mapMuscleAttribs_;

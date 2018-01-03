@@ -40,8 +40,12 @@ Ribosome::Ribosome(Bug* bug)
 	// there are no default body parts; they either get created by the genes, or the embryo
 	// is discarded at the end of development if it lacks critical parts such as mouth or egg-layer
 
+	float initialSize = bug->zygoteShell_->getMass() / BodyConst::FatDensity;	// because unspecialized cells have the density of fat
+	BodyCell* initialCell = new BodyCell(initialSize, glm::vec2(0, 0), 0, false, false);
+	cells_.push_back(initialCell);
+
 	// start decoding with root body part at offset 0 in the genome:
-	activeSet_.push_back(std::make_pair(bug_->body_, 0));
+	activeSet_.push_back(std::make_pair(initialCell, 0));
 }
 
 Ribosome::~Ribosome() {
@@ -71,7 +75,7 @@ void Ribosome::cleanUp() {
 //static bool isCircularGreater(decltype(Gene::RID) x1, decltype(Gene::RID) x2) {
 //	decltype(Gene::RID) d1 = x1 - x2;
 //	decltype(Gene::RID) d2 = x2 - x1;
-//	return d1 < d2;
+//	return abs(d1) < abs(d2);
 //}
 
 void Ribosome::initializeNeuralNetwork() {
@@ -180,7 +184,7 @@ bool Ribosome::step() {
 			}
 		}
 #endif
-		BodyPart* p = activeSet_[i].first;
+		BodyCell* cell = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second.crtGenomePos++;
 		Gene *g1 = nullptr, *g2 = nullptr;
 		if (offset < bug_->genome_.first.genes.size())
@@ -211,9 +215,9 @@ bool Ribosome::step() {
 
 		// now decode the genes:
 		if (g1)
-			decodeGene(*g1, p, &activeSet_[i].second, true);
+			decodeGene(*g1, cell, &activeSet_[i].second, true);
 		if (g2)
-			decodeGene(*g2, p, &activeSet_[i].second, true);
+			decodeGene(*g2, cell, &activeSet_[i].second, true);
 
 		int skipCount = 0;
 		if (g1 && g1->type == gene_type::SKIP) {
@@ -243,6 +247,7 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 	// must adjust cell size to conserve mass
 	cell.size_ *= oldDensity / cell.density_;
 	// TODO must update link positions
+	throw std::runtime_error("Implement this!");
 }
 
 void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {

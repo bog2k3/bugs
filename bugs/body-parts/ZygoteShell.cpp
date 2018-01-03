@@ -32,21 +32,22 @@ ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
 	, mass_(mass)
 	, dead_(false)
 {
-	getInitializationData()->size.reset(mass*BodyConst::ZygoteDensityInv);
-	getInitializationData()->density.reset(BodyConst::ZygoteDensity);
-	getInitializationData()->localRotation.reset(randf()*2*PI);
+	size_ = mass * BodyConst::ZygoteDensityInv;
+	density_ = BodyConst::ZygoteDensity;
+	localRotation_ = randf() * 2*PI;
+#warning "these values above require some updating in the physBody"
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;
 	physBody_.userPointer_ = this;
 
-	cacheInitializationData();
-	computeBodyPhysProps();
-	cachedProps_.position = position;
-	cachedProps_.velocity = velocity;
+//	cacheInitializationData();
+//	computeBodyPhysProps();
+//	cachedProps_.position = position;
+//	cachedProps_.velocity = velocity;
 
 	World::getInstance()->queueDeferredAction([this]() {
 		physBody_.create(cachedProps_);
-		commit();
+		updateFixtures();
 		committed_ = true;
 	});
 }

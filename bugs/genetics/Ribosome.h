@@ -26,7 +26,7 @@ class ISensor;
 class Muscle;
 class JointPivot;
 
-struct NeuronInfo {
+/*struct NeuronInfo {
 	int index;
 	CumulativeValue transfer;
 	CumulativeValue bias;
@@ -35,27 +35,26 @@ struct NeuronInfo {
 	CumulativeValue outputVMSCoord;
 	/*NeuronInfo(int index, float transfer, float constant)
 		: index(index), transfer(transfer), bias(constant) {
-	}*/
+	}* /
 	explicit NeuronInfo(int index)
 		: index(index) {
 	}
 	NeuronInfo(NeuronInfo const& other) = default;
 	NeuronInfo() : index(-1) {
 	}
-};
+};*/
 
-struct SynapseInfo {
+/*struct SynapseInfo {
 	CumulativeValue weight;
 	CumulativeValue priority;
-};
+};*/
 
-struct GrowthData {
-	unsigned startGenomePos; // initial genome offset for this part (children are relative to this one)
-	unsigned crtGenomePos; // current READ position in genome for this part
-	glm::vec4 hyperPosition { 0 };	// protein hyper-space position for current cell
-	CumulativeValue offsets[2]; // holds relative genome offsets for each segment in a body part
+struct DecodeContext {
+	unsigned startGenomePos; // initial genome offset for this cell (children are relative to this one)
+	unsigned crtGenomePos; // current READ position in genome for this cell
+	CumulativeValue childOffsets[2]; // holds relative genome offsets for each future child cell (0 is left, 1 right)
 
-	GrowthData(int initialOffs)
+	DecodeContext(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
 	}
 };
@@ -83,20 +82,22 @@ public:
 
 private:
 	Bug* bug_;
-	std::vector<std::pair<BodyPart*, GrowthData>> activeSet_;
-	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
-																	// and relative genome offset of the joint (if joint exists)
+	std::vector<BodyCell*> cells_;
+	std::vector<std::pair<BodyCell*, DecodeContext>> activeSet_;
+//	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
+//																	// and relative genome offset of the joint (if joint exists)
 	std::vector<Muscle*> muscles_;
-	std::vector<const Gene*> neuralGenes_;
-	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
-											// to actual indices in the neural network plus cummulative properties
+	std::set<const Gene*> neuralGenes_;		// neural genes are added here and decoded at the end when all cells are done
+	std::set<const Gene*> bodyAttribGenes_;	// same for body attribute genes
+//	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
+//											// to actual indices in the neural network plus cummulative properties
 #ifdef DEBUG
-	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
-	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
+//	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
+//	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
 #endif
-	std::map<uint64_t, SynapseInfo> mapSynapses_;
-	std::set<int> outputNeurons_;	// virtual indices of output neurons
-	std::set<int> inputNeurons_;	// virtual indices of input neurons
+//	std::map<uint64_t, SynapseInfo> mapSynapses_;
+//	std::set<int> outputNeurons_;	// virtual indices of output neurons
+//	std::set<int> inputNeurons_;	// virtual indices of input neurons
 	std::vector<IMotor*> motors_;
 	int nMotorLines_ = 0;
 	std::vector<ISensor*> sensors_;
@@ -113,23 +114,23 @@ private:
 	void decodeNeuralParam(GeneNeuralParam const& g);
 	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
 	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
-	bool partMustGenerateJoint(BodyPartType part_type);
-	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
+//	bool partMustGenerateJoint(BodyPartType part_type);
+//	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
 	void resolveMuscleLinkage();
-	JointPivot* findNearestJoint(Muscle* m, int dir);
+//	JointPivot* findNearestJoint(Muscle* m, int dir);
 
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();
-	void checkAndAddNeuronMapping(int virtualIndex);
-	void updateNeuronConstant(int virtualIndex, float constant);
-	bool hasNeuron(int virtualIndex, bool physical); // checks whether a virtual neuron exists and, if requested, its physical equivalent too
+//	void checkAndAddNeuronMapping(int virtualIndex);
+//	void updateNeuronConstant(int virtualIndex, float constant);
+//	bool hasNeuron(int virtualIndex, bool physical); // checks whether a virtual neuron exists and, if requested, its physical equivalent too
 	// Compute a synapse key (unique id for from-to pair:
-	inline uint64_t synKey(uint64_t from, uint64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
-	void createSynapse(int from, int to, SynapseInfo const& info);
+//	inline uint64_t synKey(uint64_t from, uint64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
+//	void createSynapse(int from, int to, SynapseInfo const& info);
 	void resolveNerveLinkage();
-	void commitNeurons();
+//	void commitNeurons();
 	void linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,
 						 std::vector<InputOutputNerve<InputSocket*>> const& orderedMotorInputs_);
 	void linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedInputNeurons_,
