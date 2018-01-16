@@ -80,7 +80,7 @@ constexpr gene_joint_attribute GENE_JOINT_ATTR_TYPE = 1;				// if >0 type is piv
 constexpr gene_joint_attribute GENE_JOINT_ATTR_LOW_LIMIT = 2;			// low angle limit for joint
 constexpr gene_joint_attribute GENE_JOINT_ATTR_HIGH_LIMIT = 3;			// high angle limit for joint
 constexpr gene_joint_attribute GENE_JOINT_ATTR_RESET_TORQUE = 4;		// torque that moves the joint back into rest position when no forces act on it
-constexpr gene_joint_attribute GENE_JOINT_ATTR_SIZE = 5;				// [m^2]
+constexpr gene_joint_attribute GENE_JOINT_ATTR_MASS_RATIO = 5;			// proportion of parent cell mass that goes into the joint
 constexpr gene_joint_attribute GENE_JOINT_ATTR_DENSITY = 6;				// [kg/m^2] denser joints take more mass to make, but are stronger
 constexpr gene_joint_attribute GENE_JOINT_ATTR_END = 7;
 

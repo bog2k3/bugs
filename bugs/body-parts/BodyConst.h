@@ -57,6 +57,7 @@ public:
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.6f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
+	static constexpr float initialJointMassRatio			= 0.1f;			// proportion of cell mass that goes into making the pivot joint
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialMuscleSize				= 1.0e-2f;		// [m^2]
 	static constexpr float initialMuscleInsertOffset		= PI/5;			// [rad]
