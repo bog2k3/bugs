@@ -55,48 +55,78 @@ struct Atom {
 
 /*
  * This holds a sequence of values indicating the branch-and-depth based restrictions for another gene.
- * activeLevels holds the number of levels from levels[] that are to be used. Any level that is unused is considered by default '*' (always passes)
+ * activeLevels holds the number of levels from levels[] that are to be used. Any level that is unused is considered by default least restrictive.
  * the value of activeLevels should be considered modulo MAX_DIVISION_DEPTH in order to avoid overflow
- * levels hold numbers that modulo 4 yield a value from 0 to 3. This value means:
- * 		0 - '*' any (all pass)
- * 		1 - 'L' left (pass only if current division level is left-side)
- * 		2 - 'R' right (same ~ right-side)
- * 		3 - '0' this level does not pass - the gene is not applicable at this level
  */
 struct BranchRestriction {
-	Atom<unsigned> levels[constants::MAX_DIVISION_DEPTH];
+	struct levelRule {
+		Atom<float> applyLeft;		// passes if >0 and current cell is left-handed
+		Atom<float> applyRight;		// passes if >0 and current cell is right-handed
+		Atom<float> blockLeft;		// if >0 and current is left-handed, blocks gene propagation down the tree
+		Atom<float> blockRight;		// if >0 and current is right-handed, blocks gene propagation down the tree
+	};
+	std::vector<levelRule> levels[constants::MAX_DIVISION_DEPTH];
 	Atom<unsigned> activeLevels;
 
 	BranchRestriction() {
-		activeLevels .set(1u);
-		memset(levels, 0, sizeof(levels));
+		activeLevels.set(1u);
+		memset(levels, ALL_PASS_APPLY, sizeof(levels));
 	}
 
+	/* code contains pairs of characters separated by spaces, indicating the following:
+	 * first char:
+	 * 		'0' - none apply
+	 * 		'L' - apply left only
+	 * 		'R' - apply right only
+	 * 		'*' - apply both
+	 * second char:
+	 * 		'<' - block propagation if left
+	 * 		'>' - block if right
+	 * 		'X' - block both
+	 * 		'-' - don't block
+	 */
 	BranchRestriction(const char* code) {
-		activeLevels.set(strlen(code));
+		activeLevels.set((strlen(code)+1)/3);
 		memset(levels, 0, sizeof(levels));
 		for (uint i=0; i<activeLevels; i++) {
-			switch (code[i]) {
-			case '*':
-				levels[i].set(0);
+			levels[i].applyLeft.set(constants::FBOOL_true);
+			levels[i].applyRight.set(constants::FBOOL_true);
+			levels[i].blockLeft.set(constants::FBOOL_false);
+			levels[i].blockRight.set(constants::FBOOL_false);
+			switch (code[i*3+0]) {
+				case '0':
+					levels[i].applyLeft.set(constants::FBOOL_false);
+					levels[i].applyRight.set(constants::FBOOL_false);
+					break;
+				case 'L':
+					levels[i].applyRight.set(constants::FBOOL_false);
+					break;
+				case 'R':
+					levels[i].applyLeft.set(constants::FBOOL_false);
+					break;
+				case '*':
+					break;
+				default:
+					throw std::runtime_error("Unknown symbol in restriction code: " + code[i*3+0]);
+			}
+			switch (code[i*3+1]) {
+			case '<':
+				levels[i].blockLeft.set(constants::FBOOL_true);
 				break;
-			case 'L':
-				levels[i].set(1);
+			case '>':
+				levels[i].blockRight.set(constants::FBOOL_true);
 				break;
-			case 'R':
-				levels[i].set(2);
+			case 'X':
+				levels[i].blockLeft.set(constants::FBOOL_true);
+				levels[i].blockRight.set(constants::FBOOL_true);
 				break;
-			case '0':
-				levels[i].set(3);
+			case '-':
 				break;
-			default:
-				throw std::runtime_error("Unknown symbol in restriction code: " + code[i]);
+				default:
+					throw std::runtime_error("Unknown symbol in restriction code: " + code[i*3+1]);
 			}
 		}
 	}
-};
-
-struct GeneStartMarker {
 };
 
 struct GeneStop {
@@ -256,9 +286,6 @@ public:
 		update_meta_genes_vec();
 	}
 
-#ifdef ENABLE_START_MARKER_GENES
-	Gene(GeneStartMarker const& gsm) : Gene(gene_type::START_MARKER, gsm) {}
-#endif
 	Gene(GeneStop const &gs) : Gene(gene_type::STOP, gs) {}
 	Gene(GeneNoOp const &gnop) : Gene(gene_type::NO_OP, gnop) {}
 	Gene(GeneSkip const &gs) : Gene(gene_type::SKIP, gs) {}

@@ -62,6 +62,8 @@
 			- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
 
+* [ ] !!! New gene mutation method: Flip-Sign (with much lower probability) -> will avoid boolean float genes becoming too stable by being too far away from zero
+
 * [ ] World must also be serializable and save the general world properties (extents and other things)
 	- [ ] create spatial cache (call setExtents) also when loading
 * [ ] parameterized loading of World - when merging a session should omit walls & adjust extents & existing walls to union

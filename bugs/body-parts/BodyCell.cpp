@@ -9,7 +9,7 @@
 
 void BodyCell::initializeGeneValues() {
 	mapDivisionParams_[GENE_DIVISION_RATIO] = CumulativeValue(1.f);			// default to 50%-50%
-	mapDivisionParams_[GENE_DIVISION_SEPARATE] = CumulativeValue(-0.5f);	// default to sticky
+	mapDivisionParams_[GENE_DIVISION_SEPARATE] = CumulativeValue(constants::FBOOL_false);	// default to sticky
 	mapDivisionParams_[GENE_DIVISION_AFFINITY] = CumulativeValue();
 	mapDivisionParams_[GENE_DIVISION_ANGLE] = CumulativeValue();
 	mapDivisionParams_[GENE_DIVISION_MIRROR] = CumulativeValue();
@@ -20,7 +20,7 @@ void BodyCell::initializeGeneValues() {
 	mapJointAttribs_[GENE_JOINT_ATTR_RESET_TORQUE] = CumulativeValue(BodyConst::initialJointResetTorque);
 	mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO] = CumulativeValue(BodyConst::initialJointMassRatio);
 	mapJointAttribs_[GENE_JOINT_ATTR_DENSITY] = CumulativeValue(BodyConst::initialJointDensity);
-	mapJointAttribs_[GENE_JOINT_ATTR_TYPE] = CumulativeValue(-0.5f);		// default to weld joint
+	mapJointAttribs_[GENE_JOINT_ATTR_TYPE] = CumulativeValue(constants::FBOOL_false);		// default to weld joint
 
 	mapMuscleAttribs_[GENE_MUSCLE_ATTR_ASPECT_RATIO] = CumulativeValue(BodyConst::initialMuscleAspectRatio);
 	mapMuscleAttribs_[GENE_MUSCLE_ATTR_SIZE] = CumulativeValue(BodyConst::initialMuscleSize);

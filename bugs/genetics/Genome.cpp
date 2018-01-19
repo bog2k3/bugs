@@ -309,9 +309,6 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 	throw std::runtime_error("Implement!");
 	int altered = 0;
 	switch (g.type) {
-#ifdef ENABLE_START_MARKER_GENES
-	case gene_type::START_MARKER:
-#endif
 	case gene_type::STOP:
 	case gene_type::NO_OP:
 		break;
@@ -384,9 +381,6 @@ void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, f
 	swapCh = g.chance_to_swap.value;
 	mutationCh = 0;
 	switch (g.type) {
-#ifdef ENABLE_START_MARKER_GENES
-	case gene_type::START_MARKER:
-#endif
 	case gene_type::STOP:
 	case gene_type::NO_OP:
 		break;

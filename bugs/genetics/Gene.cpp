@@ -242,9 +242,6 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		{gene_type::NEURON_INPUT_COORD, 0.5},
 		{gene_type::NEURON_OUTPUT_COORD, 0.5},
 		{gene_type::SKIP, 0.12},
-#ifdef ENABLE_START_MARKER_GENES
-		{gene_type::START_MARKER, 0.1},
-#endif
 		{gene_type::STOP, 0.09},
 		{gene_type::NO_OP, 0.09},
 	};
@@ -283,10 +280,6 @@ Gene Gene::createRandom(int spaceLeftAfter, int nNeurons) {
 		return createRandomAttribGene();
 	case gene_type::SKIP:
 		return createRandomSkipGene(spaceLeftAfter);
-#ifdef ENABLE_START_MARKER_GENES
-	case gene_type::START_MARKER:
-		return GeneStartMarker();
-#endif
 	case gene_type::STOP:
 		return GeneStop();
 	case gene_type::SYNAPSE:
@@ -325,10 +318,6 @@ char Gene::getSymbol() const {
 		return 'P';
 	case gene_type::SKIP:
 		return '>';
-#ifdef ENABLE_START_MARKER_GENES
-	case gene_type::START_MARKER:
-		return ':';
-#endif
 	case gene_type::STOP:
 		return '!';
 	case gene_type::SYNAPSE:

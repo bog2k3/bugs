@@ -13,6 +13,9 @@ namespace constants {
 	constexpr float initial_gene_swap					=	0.01f;		// chance to swap gene
 	constexpr float initial_gene_mutation_value			=	0.01f;		// value by which a gene mutates (for ints it's always +/-1)
 
+	constexpr float FBOOL_true							= 	initial_gene_mutation_value * 0.5f;	// true value for float-encoded bool genes
+	constexpr float FBOOL_false							= 	-FBOOL_true;						// false value -||-
+
 	// dynamic alteration amplitudes for genes' meta-genes:
 	constexpr float change_gene_mutate					=	0.005f;		// how the mutate meta gene changes
 	constexpr float change_gene_delete					=	0.0001f;	// ...

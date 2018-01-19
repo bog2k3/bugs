@@ -168,22 +168,6 @@ bool Ribosome::step() {
 	}
 	unsigned nCrtBranches = activeSet_.size();
 	for (unsigned i=0; i<nCrtBranches; i++) {
-#ifdef ENABLE_START_MARKER_GENES
-		if (activeSet_[i].second.crtGenomePos == activeSet_[i].second.startGenomePos) {
-			// move forward until we hit a start marker
-			auto &c1 = bug_->genome_.first.genes;
-			auto &c2 = bug_->genome_.second.genes;
-			auto &offs = activeSet_[i].second.crtGenomePos;
-			while ((c1.size() > offs && c1[offs].type != gene_type::START_MARKER)
-				|| (c2.size() > offs && c2[offs].type != gene_type::START_MARKER)) {
-				activeSet_[i].second.crtGenomePos++;
-				// did we hit a marker?
-				if ((c1.size() > offs && c1[offs].type == gene_type::START_MARKER)
-					|| (c2.size() > offs && c2[offs].type == gene_type::START_MARKER))
-					break;
-			}
-		}
-#endif
 		BodyCell* cell = activeSet_[i].first;
 		unsigned offset = activeSet_[i].second.crtGenomePos++;
 		Gene *g1 = nullptr, *g2 = nullptr;
@@ -387,10 +371,6 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 	switch (g.type) {
 	case gene_type::NO_OP:
 		break;
-#ifdef ENABLE_START_MARKER_GENES
-	case gene_type::START_MARKER:
-		break;
-#endif
 	case gene_type::SKIP:
 		break;
 	case gene_type::STOP:

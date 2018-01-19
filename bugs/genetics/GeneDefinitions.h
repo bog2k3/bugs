@@ -10,36 +10,31 @@
 
 #include <cstdint>
 
-//#define ENABLE_START_MARKER_GENES
-
 // ----------------------------------- gene_type -------------------------------//
 
 enum class gene_type : uint8_t {
 
 	INVALID = 0,
 	NO_OP = 1,					// no operation gene; dummy.
-#ifdef ENABLE_START_MARKER_GENES
-	START_MARKER = 2,			// marks the beginning of a separate sequence of genes
-#endif
-	STOP = 3,					// signals the ribosome to stop reading genes after this one
-	SKIP = 4,					// control gene -> skip next N genes if all conditions are met
-	PROTEIN = 5,				// protein gene -> produces a specific protein type in the cell
-	OFFSET = 6,					// controls the relative genome offset of a child cell (left or right)
-	DIVISION_PARAM = 7,			// controls the parameters of division in this cell like affinity, ratio, angle etc
-	JOINT_ATTRIBUTE = 8,		// controls attributes of the joint that would be created between children of this cell during division
-	MUSCLE_ATTRIBUTE = 9,		// controls attributes of the muscles (left/right) around the joint created by division
-	PART_ATTRIBUTE = 10,		// body part attribute - establishes characteristics of certain body parts
-	BODY_ATTRIBUTE = 11,		// body attribute - controls specific whole-body attributes that do not belong to a specific part,
+	STOP = 2,					// signals the ribosome to stop reading genes after this one
+	SKIP = 3,					// control gene -> skip next N genes if all conditions are met
+	PROTEIN = 4,				// protein gene -> produces a specific protein type in the cell
+	OFFSET = 5,					// controls the relative genome offset of a child cell (left or right)
+	DIVISION_PARAM = 6,			// controls the parameters of division in this cell like affinity, ratio, angle etc
+	JOINT_ATTRIBUTE = 7,		// controls attributes of the joint that would be created between children of this cell during division
+	MUSCLE_ATTRIBUTE = 8,		// controls attributes of the muscles (left/right) around the joint created by division
+	PART_ATTRIBUTE = 9,		// body part attribute - establishes characteristics of certain body parts
+	BODY_ATTRIBUTE = 10,		// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
-	NEURON = 12,				// creates a new neuron at the specified location (neuron will belong the the current cell)
-	SYNAPSE = 13,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
-	TRANSFER_FUNC = 14,			// controls the transfer function of a neuron (cummulative)
-	NEURAL_BIAS = 15,			// neural bias (cummulative) - is added to the weighted sum of the inputs
-	NEURON_OUTPUT_COORD = 16,	// output coord (in VMS) from a neuron - where the axon lies
-	NEURON_INPUT_COORD = 17,	// input coord (in VMS) to a neuron - where the dendrites lie
-	NEURAL_PARAM = 18,			// neural parameter - used by some types of neurons for specific purposes
+	NEURON = 11,				// creates a new neuron at the specified location (neuron will belong the the current cell)
+	SYNAPSE = 12,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
+	TRANSFER_FUNC = 13,			// controls the transfer function of a neuron (cummulative)
+	NEURAL_BIAS = 14,			// neural bias (cummulative) - is added to the weighted sum of the inputs
+	NEURON_OUTPUT_COORD = 15,	// output coord (in VMS) from a neuron - where the axon lies
+	NEURON_INPUT_COORD = 16,	// input coord (in VMS) to a neuron - where the dendrites lie
+	NEURAL_PARAM = 17,			// neural parameter - used by some types of neurons for specific purposes
 
-	END = 19
+	END = 18
 };
 
 // ----------------------------------- gene_protein_type -------------------------------//
