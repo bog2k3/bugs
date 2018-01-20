@@ -33,9 +33,11 @@ Chromosome Bug::createBasicChromosome() {
 	std::map<std::string, unsigned> offsetMarkers;
 	std::vector<offsetInsertion> insertions;
 
-#define OFFSET_MARKER(name) { crtOffset = c.genes.size(); offsetMarkers[#name] = crtOffset; }
-#define INSERT_OFFSET(targetMarker) { insertions.push_back(offsetInsertion(crtOffset, c.genes.size(), #targetMarker)); }
+#define OFFSET_MARKER(name) { offsetMarkers[#name] = c.genes.size(); }
+#define INSERT_OFFSET(targetMarker, sourceMarker) { insertions.push_back(offsetInsertion(offsetMarkers[sourceMarker], c.genes.size(), #targetMarker)); }
 #define PUSH(g) c.genes.push_back(g)
+
+#error "make sure inserted offsets are relative to parent cell's offset"
 
 //  ------- constants -------------------------
 
@@ -50,10 +52,16 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float rightLeg_push_VMScoord = 200;
 	constexpr float leftGripper_VMScoord = 250;
 	constexpr float rightGripper_VMScoord = 300;
+	constexpr float egglayer_sig1_VMScoord = 500;
+	constexpr float egglayer_sig2_VMScoord = 550;
 	constexpr float musclePeriod = 3.f; // seconds
 	constexpr float gripper_signal_threshold = -0.55f;
 	constexpr float gripper_signal_phase_offset = 1.0f * PI;
-	constexpr float mouth_size_ratio = 0.05f;
+	constexpr float mouth_size_ratio = 0.35f;		// mouth to head ratio (M3/#3a)
+	constexpr float egglayer_size_ratio = 0.05f;	// egglayer to body ratio (E1/#1)
+	constexpr float head_size_ratio = 0.3f;			// head to body ratio (#2b/#2a)
+
+	constexpr float sfu = constants::small_gene_value;	// small float unit
 
 //  ------- genome begins -------------------------
 
@@ -86,8 +94,43 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gba);
 
 	GeneDivisionParam gdp;
+	gdp.param = GENE_DIVISION_MIRROR;
+	gdp.value.set(2*constants::FBOOL_true);
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_RATIO;
+	gdp.value.set(1.f / egglayer_size_ratio);
+	PUSH(gdp);
+
+	GeneOffset go;
+	go.side = constants::FBOOL_true;	// true (positive) means left
+	INSERT_OFFSET(C1, C0);
+	PUSH(go);
+
+	go.side = constants::FBOOL_false;	// false (negative) means right
+	INSERT_OFFSET(EGG_LAYER, C0);
+	PUSH(go);
+
+	OFFSET_MARKER(C1)	//------------------------------- MARKER ----------------
+
+	go.side = constants::FBOOL_true;
+	go.restriction = BranchRestriction("0v");	// don't apply to C0
+	INSERT_OFFSET(C2a, C1);
+	PUSH(go);
+
+	go.side = constants::FBOOL_false;
+	go.restriction = BranchRestriction("0v");	// don't apply to C0
+	INSERT_OFFSET(C2b, C1);
+	PUSH(go);
+
+	gdp.param = GENE_DIVISION_RATIO;
+	gdp.restriction = BranchRestriction("0v");	// don't apply to C0
+	gdp.value.set(1.f / head_size_ratio);
+	PUSH(gdp);
+
+	OFFSET_MARKER(C2b)	//------------------------------- MARKER ----------------
+
 	gdp.param = GENE_DIVISION_AFFINITY;
-	//gdp.restriction = BranchRestriction("*- L- *- *- *- 0< RX");
 	gdp.value.set(constants::FBOOL_true);
 	PUSH(gdp);
 
@@ -96,40 +139,71 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_MIRROR;
-	gdp.value.set(constants::FBOOL_true);
+	gdp.value.set(constants::FBOOL_false);
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_REORIENT;
 	gdp.value.set(constants::FBOOL_false);
 	PUSH(gdp);
 
-	gdp.param = GENE_DIVISION_RATIO;
-	gdp.value.set(1.f - mouth_size_ratio);
-	PUSH(gdp);
-
 	gdp.param = GENE_DIVISION_SEPARATE;
 	gdp.value.set(constants::FBOOL_false);
 	PUSH(gdp);
 
-	GeneOffset go;
-	go.side = constants::FBOOL_true;	// true (positive) means left
-	INSERT_OFFSET(C1L);
+	gdp.param = GENE_DIVISION_RATIO;
+	gdp.restriction = BranchRestriction("0v 0v R-");	// only apply to C2b
+	gdp.value.set(mouth_size_ratio);
+	PUSH(gdp);
+
+	go.side = constants::FBOOL_true;
+	go.restriction = BranchRestriction("0v 0v R-");	// only apply to C2b
+	INSERT_OFFSET(MOUTH, C2b);
 	PUSH(go);
 
-	go.side = constants::FBOOL_false;	// false (negative) means right
-	INSERT_OFFSET(EGG_LAYER);
+	go.side = constants::FBOOL_false;
+	go.restriction = BranchRestriction("0v 0v R-");	// only apply to C2b
+	INSERT_OFFSET(C3a, C2b);
 	PUSH(go);
+
+	PUSH(GeneStop());
+
+	OFFSET_MARKER(C2a)	//------------------------------- MARKER ----------------
+	OFFSET_MARKER(C3a)	//------------------------------- MARKER ----------------
 
 	PUSH(GeneStop());
 
 	OFFSET_MARKER(EGG_LAYER)	//------------------------------- MARKER ----------------
 
 	GeneProtein gp;
-	gp.weight.set(1);
-	gp.protein.set(GENE_PROT_)
+	gp.protein.set(GENE_PROT_X);
+	gp.weight.set(-sfu);
+	PUSH(gp);
 
+	gp.protein.set(GENE_PROT_Y);
+	gp.weight.set(+sfu);
+	PUSH(gp);
 
-	PUSH(GeneStop());
+	gp.protein.set(GENE_PROT_Z);
+	gp.weight.set(+sfu);
+	PUSH(gp);
+
+	gp.protein.set(GENE_PROT_W);
+	gp.weight.set(+sfu);
+	PUSH(gp);
+
+	GeneAttribute ga;
+	ga.attribute = GENE_ATTRIB_GENERIC1;
+	ga.value.set(BodyConst::initialEggEjectSpeed);
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_VMS_COORD1;	// egg-layer suppress growth signal
+	ga.value.set(egglayer_sig1_VMScoord);
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_VMS_COORD2;	// egg-layer suppress release signal
+	ga.value.set(egglayer_sig2_VMScoord);
+	PUSH(ga);
+
 	PUSH(GeneStop());
 
 //  ------- finished genome; house-keeping from here on -----------------

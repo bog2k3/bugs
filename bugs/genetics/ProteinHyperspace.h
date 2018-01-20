@@ -14,36 +14,36 @@ static constexpr BodyPartType proteinHyperspace[2][2][2][2] = {
 	/* W- */ {
 		/* Z- */ {
 			/* Y- */ {
-				/* X- */ BodyPartType::BONE, /* X+ */ BodyPartType::INVALID
+				/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::EGGLAYER
 			},
 			/* Y+ */ {
-				/* X- */ BodyPartType::GRIPPER, /* X+ */ BodyPartType::MOUTH
+				/* X- */ BodyPartType::MOUTH, /* X+ */ BodyPartType::FAT
 			},
 		},
 		/* Z+ */ {
 			/* Y- */ {
-				/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
+				/* X- */ BodyPartType::FAT, /* X+ */ BodyPartType::BONE
 			},
 			/* Y+ */ {
-				/* X- */ BodyPartType::MUSCLE, /* X+ */ BodyPartType::EGGLAYER
+				/* X- */ BodyPartType::BONE, /* X+ */ BodyPartType::GRIPPER
 			},
 		},
 	},
 	/* W+ */ {
 		/* Z- */ {
 			/* Y- */ {
-				/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
+				/* X- */ BodyPartType::SENSOR_SIGHT, /* X+ */ BodyPartType::GRIPPER
 			},
 			/* Y+ */ {
-				/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::INVALID
+				/* X- */ BodyPartType::GRIPPER, /* X+ */ BodyPartType::BONE
 			},
 		},
 		/* Z+ */ {
 			/* Y- */ {
-				/* X- */ BodyPartType::INVALID, /* X+ */ BodyPartType::INVALID
+				/* X- */ BodyPartType::BONE, /* X+ */ BodyPartType::SENSOR_COMPASS
 			},
 			/* Y+ */ {
-				/* X- */ BodyPartType::SENSOR_COMPASS, /* X+ */ BodyPartType::SENSOR_SIGHT
+				/* X- */ BodyPartType::EGGLAYER, /* X+ */ BodyPartType::SENSOR_SIGHT
 			},
 		},
 	}

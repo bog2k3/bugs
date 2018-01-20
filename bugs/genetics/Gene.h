@@ -57,15 +57,18 @@ struct Atom {
  * This holds a sequence of values indicating the branch-and-depth based restrictions for another gene.
  * activeLevels holds the number of levels from levels[] that are to be used. Any level that is unused is considered by default least restrictive.
  * the value of activeLevels should be considered modulo MAX_DIVISION_DEPTH in order to avoid overflow
+ *
+ * * skip rules apply on current cell based on its handedness
+ * * stop rules apply on the node's subtrees (left or right) - so if we have stopRight>0 at level 1, its level 2 right subtree will not get the gene
  */
 struct BranchRestriction {
 	struct levelRule {
-		Atom<float> applyLeft;		// passes if >0 and current cell is left-handed
-		Atom<float> applyRight;		// passes if >0 and current cell is right-handed
-		Atom<float> blockLeft;		// if >0 and current is left-handed, blocks gene propagation down the tree
-		Atom<float> blockRight;		// if >0 and current is right-handed, blocks gene propagation down the tree
+		Atom<float> skipLeft;		// restricts application if >0 and current cell is left-handed
+		Atom<float> skipRight;		// restricts application if >0 and current cell is right-handed
+		Atom<float> stopLeft;		// if >0 blocks gene propagation down the left subtree
+		Atom<float> stopRight;		// if >0 blocks gene propagation down the right subtree
 	};
-	std::vector<levelRule> levels[constants::MAX_DIVISION_DEPTH];
+	levelRule levels[constants::MAX_DIVISION_DEPTH];	// default value for each level is most permissive due to strict >0 comparison above ^
 	Atom<unsigned> activeLevels;
 
 	BranchRestriction() {
@@ -75,34 +78,34 @@ struct BranchRestriction {
 
 	/* code contains pairs of characters separated by spaces, indicating the following:
 	 * first char:
-	 * 		'0' - none apply
-	 * 		'L' - apply left only
-	 * 		'R' - apply right only
-	 * 		'*' - apply both
+	 * 		'0' - apply to none (skip both)
+	 * 		'L' - apply to left only (skip right)
+	 * 		'R' - apply to right only (skip left)
+	 * 		'*' - apply to both
 	 * second char:
-	 * 		'<' - block propagation if left
-	 * 		'>' - block if right
-	 * 		'X' - block both
-	 * 		'-' - don't block
+	 * 		'v' - propagate both ways
+	 * 		'<' - propagate left only (stop right)
+	 * 		'>' - propagate right only (stop left)
+	 * 		'-' - stop both ways (don't propagate at all)
 	 */
 	BranchRestriction(const char* code) {
 		activeLevels.set((strlen(code)+1)/3);
 		memset(levels, 0, sizeof(levels));
 		for (uint i=0; i<activeLevels; i++) {
-			levels[i].applyLeft.set(constants::FBOOL_true);
-			levels[i].applyRight.set(constants::FBOOL_true);
-			levels[i].blockLeft.set(constants::FBOOL_false);
-			levels[i].blockRight.set(constants::FBOOL_false);
+			levels[i].skipLeft.set(constants::FBOOL_false);
+			levels[i].skipRight.set(constants::FBOOL_false);
+			levels[i].stopLeft.set(constants::FBOOL_false);
+			levels[i].stopRight.set(constants::FBOOL_false);
 			switch (code[i*3+0]) {
 				case '0':
-					levels[i].applyLeft.set(constants::FBOOL_false);
-					levels[i].applyRight.set(constants::FBOOL_false);
+					levels[i].skipLeft.set(constants::FBOOL_true);
+					levels[i].skipRight.set(constants::FBOOL_true);
 					break;
 				case 'L':
-					levels[i].applyRight.set(constants::FBOOL_false);
+					levels[i].skipRight.set(constants::FBOOL_true);
 					break;
 				case 'R':
-					levels[i].applyLeft.set(constants::FBOOL_false);
+					levels[i].skipLeft.set(constants::FBOOL_true);
 					break;
 				case '*':
 					break;
@@ -111,16 +114,16 @@ struct BranchRestriction {
 			}
 			switch (code[i*3+1]) {
 			case '<':
-				levels[i].blockLeft.set(constants::FBOOL_true);
+				levels[i].stopRight.set(constants::FBOOL_true);
 				break;
 			case '>':
-				levels[i].blockRight.set(constants::FBOOL_true);
-				break;
-			case 'X':
-				levels[i].blockLeft.set(constants::FBOOL_true);
-				levels[i].blockRight.set(constants::FBOOL_true);
+				levels[i].stopLeft.set(constants::FBOOL_true);
 				break;
 			case '-':
+				levels[i].stopLeft.set(constants::FBOOL_true);
+				levels[i].stopRight.set(constants::FBOOL_true);
+				break;
+			case 'v':
 				break;
 				default:
 					throw std::runtime_error("Unknown symbol in restriction code: " + code[i*3+1]);
