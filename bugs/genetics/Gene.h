@@ -71,9 +71,13 @@ struct BranchRestriction {
 	levelRule levels[constants::MAX_DIVISION_DEPTH];	// default value for each level is most permissive due to strict >0 comparison above ^
 	Atom<unsigned> activeLevels;
 
+	void clear() {
+		activeLevels.set(0u);
+		memset(levels, 0, sizeof(levels));
+	}
+
 	BranchRestriction() {
-		activeLevels.set(1u);
-		memset(levels, ALL_PASS_APPLY, sizeof(levels));
+		clear();
 	}
 
 	/* code contains pairs of characters separated by spaces, indicating the following:
@@ -89,13 +93,10 @@ struct BranchRestriction {
 	 * 		'-' - stop both ways (don't propagate at all)
 	 */
 	BranchRestriction(const char* code) {
+		clear();
 		activeLevels.set((strlen(code)+1)/3);
 		memset(levels, 0, sizeof(levels));
 		for (uint i=0; i<activeLevels; i++) {
-			levels[i].skipLeft.set(constants::FBOOL_false);
-			levels[i].skipRight.set(constants::FBOOL_false);
-			levels[i].stopLeft.set(constants::FBOOL_false);
-			levels[i].stopRight.set(constants::FBOOL_false);
 			switch (code[i*3+0]) {
 				case '0':
 					levels[i].skipLeft.set(constants::FBOOL_true);

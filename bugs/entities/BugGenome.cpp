@@ -96,18 +96,22 @@ Chromosome Bug::createBasicChromosome() {
 	GeneDivisionParam gdp;
 	gdp.param = GENE_DIVISION_MIRROR;
 	gdp.value.set(2*constants::FBOOL_true);
+	gdp.restriction.clear();
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_RATIO;
 	gdp.value.set(1.f / egglayer_size_ratio);
+	gdp.restriction.clear();
 	PUSH(gdp);
 
 	GeneOffset go;
 	go.side = constants::FBOOL_true;	// true (positive) means left
+	go.restriction.clear();
 	INSERT_OFFSET(C1, C0);
 	PUSH(go);
 
 	go.side = constants::FBOOL_false;	// false (negative) means right
+	go.restriction.clear();
 	INSERT_OFFSET(EGG_LAYER, C0);
 	PUSH(go);
 
@@ -132,76 +136,150 @@ Chromosome Bug::createBasicChromosome() {
 
 	gdp.param = GENE_DIVISION_AFFINITY;
 	gdp.value.set(constants::FBOOL_true);
+	gdp.restriction.clear();
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_ANGLE;
 	gdp.value.set(-PI/2);
+	gdp.restriction.clear();
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_MIRROR;
 	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_REORIENT;
 	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_SEPARATE;
 	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_RATIO;
-	gdp.restriction = BranchRestriction("0v 0v R-");	// only apply to C2b
 	gdp.value.set(mouth_size_ratio);
+	gdp.restriction = BranchRestriction("0v 0v");	// don't apply to C0 and C1
 	PUSH(gdp);
 
 	go.side = constants::FBOOL_true;
-	go.restriction = BranchRestriction("0v 0v R-");	// only apply to C2b
+	go.restriction = BranchRestriction("0v 0v");	// don't apply to C0 and C1
 	INSERT_OFFSET(MOUTH, C2b);
 	PUSH(go);
 
 	go.side = constants::FBOOL_false;
-	go.restriction = BranchRestriction("0v 0v R-");	// only apply to C2b
+	go.restriction = BranchRestriction("0v 0v");	// don't apply to C0 and C1
 	INSERT_OFFSET(C3a, C2b);
 	PUSH(go);
 
 	PUSH(GeneStop());
 
+	GeneAttribute ga;
+
 	OFFSET_MARKER(C2a)	//------------------------------- MARKER ----------------
 	OFFSET_MARKER(C3a)	//------------------------------- MARKER ----------------
+
+	gdp.param = GENE_DIVISION_MIRROR;
+	gdp.value.set(2*constants::FBOOL_true);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	OFFSET_MARKER(C3b)	//------------------------------- MARKER ----------------
+	OFFSET_MARKER(C3c)	//------------------------------- MARKER ----------------
+
+#error "continue from here"
+
+	gdp.param = GENE_DIVISION_MIRROR;
+	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_AFFINITY;
+	gdp.value.set(constants::FBOOL_true);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_ANGLE;
+	gdp.value.set(0.f);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_REORIENT;
+	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_RATIO;
+	gdp.value.set(1.f);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	go.side = constants::FBOOL_true;
+	go.restriction = BranchRestriction("0v 0v");	//
+	INSERT_OFFSET(MOUTH, C2b);
+	PUSH(go);
+
+	go.side = constants::FBOOL_false;
+	go.restriction = BranchRestriction("0v 0v");	//
+	INSERT_OFFSET(C3a, C2b);
+	PUSH(go);
 
 	PUSH(GeneStop());
 
 	OFFSET_MARKER(EGG_LAYER)	//------------------------------- MARKER ----------------
+	OFFSET_MARKER(MOUTH)		//------------------------------- MARKER ----------------
 
 	GeneProtein gp;
 	gp.protein.set(GENE_PROT_X);
 	gp.weight.set(-sfu);
+	gp.restriction.clear();
 	PUSH(gp);
 
 	gp.protein.set(GENE_PROT_Y);
 	gp.weight.set(+sfu);
+	gp.restriction.clear();
 	PUSH(gp);
 
 	gp.protein.set(GENE_PROT_Z);
 	gp.weight.set(+sfu);
+	gp.restriction.clear();
 	PUSH(gp);
 
 	gp.protein.set(GENE_PROT_W);
 	gp.weight.set(+sfu);
+	gp.restriction.clear();
 	PUSH(gp);
 
-	GeneAttribute ga;
+	gp.protein.set(GENE_PROT_Z);					// move mouth from +z to -z
+	gp.weight.set(-2*sfu);
+	gp.restriction = BranchRestriction("0v 0v");
+	PUSH(gp);
+
+	gp.protein.set(GENE_PROT_W);					// and from +w to -w
+	gp.weight.set(-2*sfu);
+	gp.restriction = BranchRestriction("0v 0v");
+	PUSH(gp);
+
 	ga.attribute = GENE_ATTRIB_GENERIC1;
 	ga.value.set(BodyConst::initialEggEjectSpeed);
+	ga.restriction.clear();
 	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_VMS_COORD1;	// egg-layer suppress growth signal
 	ga.value.set(egglayer_sig1_VMScoord);
+	ga.restriction.clear();
 	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_VMS_COORD2;	// egg-layer suppress release signal
 	ga.value.set(egglayer_sig2_VMScoord);
+	ga.restriction.clear();
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(BodyConst::initialMouthAspectRatio);
+	ga.restriction.clear();
 	PUSH(ga);
 
 	PUSH(GeneStop());
