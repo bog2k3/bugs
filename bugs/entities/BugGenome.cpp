@@ -60,6 +60,7 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float mouth_size_ratio = 0.35f;		// mouth to head ratio (M3/#3a)
 	constexpr float egglayer_size_ratio = 0.05f;	// egglayer to body ratio (E1/#1)
 	constexpr float head_size_ratio = 0.3f;			// head to body ratio (#2b/#2a)
+	constexpr float leg_size_ratio = 1.2f;			// leg to torso ratio (#5b/B5)
 
 	constexpr float sfu = constants::small_gene_value;	// small float unit
 
@@ -352,6 +353,42 @@ Chromosome Bug::createBasicChromosome() {
 
 	OFFSET_MARKER(C4e)	//------------------------------- MARKER ----------------
 
+	gdp.param = GENE_DIVISION_ANGLE;
+	gdp.value.set(PI/4);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_AFFINITY;
+	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction = BranchRestriction("0v 0v 0v 0v 0v Rv Lv");
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_AFFINITY;
+	gdp.value.set(constants::FBOOL_true);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_MIRROR;
+	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_RATIO;
+	gdp.value.set(leg_size_ratio);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+#error "left off"
+
+	gdp.param = GENE_DIVISION_REORIENT;
+	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_SEPARATE;
+	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
+	PUSH(gdp);
 
 
 //  ------- finished genome; house-keeping from here on -----------------
