@@ -178,13 +178,13 @@ struct GeneMuscleAttribute {
 struct GeneOffset {
 	BranchRestriction restriction;
 	Atom<int> offset;
-	Atom<float> side;	// negative is right, positive is left
+	Atom<float> side;	// negative is right, positive is left, 0 is both
 };
 
 struct GeneProtein {
 	BranchRestriction restriction;
-	Atom<gene_protein_type> protein;				// the type of protein this gene produces
-	Atom<float> weight;								// +/- moves the axis coordinate
+	gene_protein_type protein;		// the type of protein this gene produces
+	Atom<float> weight;				// +/- moves the axis coordinate
 };
 
 struct GeneAttribute {
