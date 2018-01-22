@@ -167,7 +167,7 @@ struct GeneJointAttribute {
 
 struct GeneMuscleAttribute {
 	BranchRestriction restriction;
-	Atom<float> side;				// distinguish between the two muscles: negative is left, positive is right
+	Atom<float> side;				// distinguish between the two muscles: negative is left, positive is right, zero is both
 	gene_muscle_attribute attrib = GENE_MUSCLE_ATTR_INVALID;
 	Atom<float> value;
 

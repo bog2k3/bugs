@@ -61,6 +61,8 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float egglayer_size_ratio = 0.05f;	// egglayer to body ratio (E1/#1)
 	constexpr float head_size_ratio = 0.3f;			// head to body ratio (#2b/#2a)
 	constexpr float leg_size_ratio = 1.2f;			// leg to torso ratio (#5b/B5)
+	constexpr float legJoint_mass_ratio = 0.1f;		// joint ratio to parent cell
+	constexpr float legMuscle_mass_ratio = 0.1f;	// muscle mass ratio relative to parent cell
 
 	constexpr float sfu = constants::small_gene_value;	// small float unit
 
@@ -93,6 +95,10 @@ Chromosome Bug::createBasicChromosome() {
 	gba.attribute = GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO;
 	gba.value.set(BodyConst::initialReproductiveMassRatio);
 	PUSH(gba);
+
+	// neural genes start here --------------------------------------
+	// todo
+	// neural genes end here --------------------------------------
 
 	GeneDivisionParam gdp;
 	gdp.param = GENE_DIVISION_MIRROR;
@@ -165,6 +171,12 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.restriction = BranchRestriction("0v 0v");	// don't apply to C0 and C1
 	PUSH(gdp);
 
+	GeneAttribute ga;
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	ga.restriction.clear();
+	PUSH(ga);
+
 	go.side.set(constants::FBOOL_true);
 	go.restriction = BranchRestriction("0v 0v");	// don't apply to C0 and C1
 	INSERT_OFFSET(MOUTH, C2b);
@@ -177,7 +189,6 @@ Chromosome Bug::createBasicChromosome() {
 
 	PUSH(GeneStop());
 
-	GeneAttribute ga;
 	GeneProtein gp;
 
 	OFFSET_MARKER(EGG_LAYER)	//------------------------------- MARKER ----------------
@@ -212,6 +223,11 @@ Chromosome Bug::createBasicChromosome() {
 	gp.weight.set(-2*sfu);
 	gp.restriction = BranchRestriction("0v 0v");
 	PUSH(gp);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	ga.restriction.clear();
+	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_GENERIC1;
 	ga.value.set(BodyConst::initialEggEjectSpeed);
@@ -280,6 +296,11 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.restriction.clear();
 	PUSH(gdp);
 
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	ga.restriction.clear();
+	PUSH(ga);
+
 	go.side.set(constants::FBOOL_true);
 	go.restriction = BranchRestriction("0v 0< 0v");	// don't apply to C0, C1, right subtree of C1 and C2a
 	INSERT_OFFSET(C4f, C3bc);
@@ -329,6 +350,11 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.restriction.clear();
 	PUSH(gdp);
 
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(0);
+	ga.restriction.clear();
+	PUSH(ga);
+
 	gp.protein = GENE_PROT_X;
 	gp.restriction.clear();
 	gp.weight.set(-sfu);
@@ -358,10 +384,46 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.restriction.clear();
 	PUSH(gdp);
 
+	gdp.param = GENE_DIVISION_ANGLE;
+	gdp.value.set(3*PI/4);
+	gdp.restriction = BranchRestriction("0v 0v 0v 0v 0v");	// 3PI/4 averaged with the above value of PI/4 yield PI/2
+	PUSH(gdp);
+
 	gdp.param = GENE_DIVISION_AFFINITY;
 	gdp.value.set(constants::FBOOL_false);
 	gdp.restriction = BranchRestriction("0v 0v 0v 0v 0v Rv Lv");
 	PUSH(gdp);
+
+	GeneJointAttribute gja;
+	gja.attrib = GENE_JOINT_ATTR_TYPE;
+	gja.value.set(constants::FBOOL_true);
+	gja.restriction.clear();
+	PUSH(gja);
+
+	gja.attrib = GENE_JOINT_ATTR_MASS_RATIO;
+	gja.value.set(legJoint_mass_ratio);
+	gja.restriction.clear();
+	PUSH(gja);
+
+	gja.attrib = GENE_JOINT_ATTR_RESET_TORQUE;
+	gja.value.set(BodyConst::initialJointResetTorque);
+	gja.restriction.clear();
+	PUSH(gja);
+
+	gja.attrib = GENE_JOINT_ATTR_DENSITY;
+	gja.value.set(BodyConst::initialJointDensity);
+	gja.restriction.clear();
+	PUSH(gja);
+
+	gja.attrib = GENE_JOINT_ATTR_HIGH_LIMIT;
+	gja.value.set(BodyConst::initialJointMaxPhi);
+	gja.restriction.clear();
+	PUSH(gja);
+
+	gja.attrib = GENE_JOINT_ATTR_LOW_LIMIT;
+	gja.value.set(BodyConst::initialJointMinPhi);
+	gja.restriction.clear();
+	PUSH(gja);
 
 	gdp.param = GENE_DIVISION_AFFINITY;
 	gdp.value.set(constants::FBOOL_true);
@@ -378,8 +440,6 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.restriction.clear();
 	PUSH(gdp);
 
-#error "left off"
-
 	gdp.param = GENE_DIVISION_REORIENT;
 	gdp.value.set(constants::FBOOL_false);
 	gdp.restriction.clear();
@@ -389,6 +449,66 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.value.set(constants::FBOOL_false);
 	gdp.restriction.clear();
 	PUSH(gdp);
+
+	gp.protein = GENE_PROT_X;
+	gp.weight.set(+sfu);
+	gp.restriction.clear();
+	PUSH(gdp);
+
+	gp.protein = GENE_PROT_Y;
+	gp.weight.set(sfu);
+	gp.restriction.clear();
+	PUSH(gdp);
+
+	gp.protein = GENE_PROT_Y;
+	gp.weight.set(-2*sfu);
+	gp.restriction = BranchRestriction("0v 0v 0v 0v 0v 0v 0>");
+	PUSH(gdp);
+
+	gp.protein = GENE_PROT_Z;
+	gp.weight.set(-sfu);
+	gp.restriction.clear();
+	PUSH(gdp);
+
+	gp.protein = GENE_PROT_W;
+	gp.weight.set(+sfu);
+	gp.restriction.clear();
+	PUSH(gdp);
+
+	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
+	ga.value.set(3*PI/4);
+	ga.restriction = BranchRestriction("0v 0v 0v 0v 0v L-");
+	PUSH(ga);
+
+	GeneMuscleAttribute gma;
+	gma.attrib = GENE_MUSCLE_ATTR_ASPECT_RATIO;
+	gma.side.set(0);
+	gma.value.set(BodyConst::initialMuscleAspectRatio);
+	gma.restriction.clear();
+	PUSH(gma);
+
+	gma.attrib = GENE_MUSCLE_ATTR_INSERT_OFFSET;
+	gma.side.set(0);
+	gma.value.set(BodyConst::initialMuscleInsertOffset);
+	gma.restriction.clear();
+	PUSH(gma);
+
+	gma.attrib = GENE_MUSCLE_ATTR_MASS_RATIO;
+	gma.side.set(0);
+	gma.value.set(legMuscle_mass_ratio);
+	gma.restriction.clear();
+	PUSH(gma);
+
+#error "must figure out muscle coordinates in division tree"
+	gma.attrib = GENE_MUSCLE_ATTR_INPUT_COORD;
+	gma.side.set(sfu);	// left
+	gma.restriction.clear();
+	gma.value.set(leftLeg_pull_VMScoord);
+	PUSH(gma);
+
+	PUSH(GeneStop());
+
+	OFFSET_MARKER(C4ab)	//------------------------------- MARKER ----------------
 
 
 //  ------- finished genome; house-keeping from here on -----------------

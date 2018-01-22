@@ -52,7 +52,7 @@ public:
 	// default initial values for cummulative properties:
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
 	static constexpr float initialBoneAspectRatio			= 0.7f;			// [*]  length/width
-	static constexpr float initialJointSize					= 1.9e-4f;		// [m^2]
+//	static constexpr float initialJointSize					= 1.9e-4f;		// [m^2]
 	static constexpr float initialJointDensity				= 9.f;			// [kg/m^2]
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.6f;		// [rad]
