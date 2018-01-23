@@ -1,21 +1,39 @@
 * [ ] change synapse linkage - VMS based for each input and output
-	- [ ] gene for number of neuron inputs
-	- [ ] gene for each input vms coord and output coord
-	- [ ] weight gene per each input
+	- [ ] gene for number of neuron inputs - float, integer part is used
+	- [ ] gene for each input vms coord and output coord - these are based on i/o index
+		-- these is how synapses will be created ^ (each input binds to the nearest output; outputs can remain unattached)
+	- [ ] weight gene per each input - index based
 	- [ ] remove index-based synapse gene
-* [ ] rethink hyperspace to favour most-usefull possibilities
+	- [ ] all indexes (for inputs/outputs) are floats and integer part is used
+* [ ] new Neuron gene creates a neuron in VMS at specified location
+	- [ ] neurons are only created by the new Neuron gene and will be housed inside the current cell
+	- [ ] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
+		-- [ ] thus no more neuron indexes
+	- [ ] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
+	- [ ] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
+
+* [ ] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
 * [ ] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
 	- [ ] a small change by itself must be able to benefit the bug - current model is not good at this
 	- [ ] new cell division based system
-	- [ ] new division parameter genes: angle, ratio, mirror?, reorientate?, level restrictions
-		-- [ ] ^ these boolean values are encoded in floats +/-
-	- [ ] cell divides at an angle but its children keep the same orientation, unless reorientate is specified in the division, in which case the children will be reoriented by this angle
+		-- [X] cell division working prototype
+		-- [ ] !! implement new mechanism in Ribosome
+	- [X] new division parameter genes: angle, ratio, mirror?, reorientate?, level restrictions
+		-- [X] ^ these boolean values are encoded in floats +/-
+	- [X] cell divides at an angle but its children keep the same orientation, unless reorientate is specified in the division, in which case the children will be reoriented by this angle
 	- [ ] proteins accumulate per cell, not per segment - no more segments 
-	- [ ] if proteins yield x*y*z*w = 0, the cell remains unspecialized - may store fat
-	- [ ] proteins should have a float weight instead of current int 1 (the float weight modulus is used for hyperspace)
+	- [ ] if proteins yield x*y*z*w = 0, the cell specializes into default type - fat cell body part
+	- [X] proteins should have a float weight instead of current int 1
+	- [ ] division creates bond between child cells (weld/pivot joint)
+	- [ ] when dividing, each existing bond is either split or inherited by one side:
+		-- [ ] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
+		-- [ ] otherwise each side inherits bonds on its side of the division axis
+		-- [ ] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
 	- [ ] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
+		-- [ ] (pivot only) joint's default (rest) orientation is perpendicular to the division axis, going from left child cell to right child cell; it's angle direction is the same as the parent cell (so joint can be mirrored as well)
+		-- [ ] left and right muscles are defined with respect to the joint's zero-axis (left muscle on the positive side) 
 	- [ ] when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
-		-- [ ] original cell is kept for joint genes and its size is changed to joint size - it's used on the ctor of PivotJoint
+		-- [ ] original cell is kept for joint/muscle genes and its size is changed to joint size - it's used on the ctor of PivotJoint
 	- [ ] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
 	- [ ] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
 	- [ ] division happens when gene decoding reaches the end, so all genes have a chance of being read
@@ -29,31 +47,20 @@
 		-- [ ] BodyPart base class uses the cell to retrieve size, density, position, rotation and velocity for PhysicalBody
 		-- [ ] derived body part classes use the cell's gene maps to retrieve various specific attributes 
 		-- [ ] unspecialized cells will instantiate a FatCell body part which acts as an energy storage
-	- [ ] joints and muscles are not created explicitly any more - remove them from hyperspace
-	- [ ] must rething muscle linkange and body part hierarchies
+	- [X] joints and muscles are not created explicitly any more - remove them from hyperspace
+	- [ ] must rethink muscle linkange and body part hierarchies
 	- [ ] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
 		-- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
 	- [ ] !!! proteins are NOT inherited !!!
 	- [ ] default child cell genome offset is 0 - same genes as parent
-	- [ ] new gene child offset left/right which changes the default offset of the child cells once the division takes place
-	- [ ] each cell knows if it's left or right
+	- [ ] new gene child offset left/right which changes the default offset (relatively) of the child cells once the division takes place
+	- [ ] each cell knows if it's left or right and if it's mirrored
 	- [ ] new restrictions on genes for left/right
-	- [ ] unused positions in hyperspace create unspecialized cells
-	- [ ] division creates bond between child cells (weld/pivot joint)
-	- [ ] when dividing, each existing bond is either split or inherited by one side:
-		-- [ ] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
-		-- [ ] otherwise each side inherits bonds on its side of the division axis
-	- [ ] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
-	- [ ] no more start marker genes in order to allow for easy variation in offsets
+	- [X] all unused positions in hyperspace should be filled up with FatCell
+	- [X] no more start marker genes in order to allow for easy variation in offsets
 	- [ ] if decoding starts on a STOP gene, it moves forward until the 1st valid gene
 	- [ ] body attribute genes are read at any depth but only interpreted once - see below
 	- [ ] neural genes are read at all depths (from all cells) but are added into a set (via pointers) and only interpreted once
-	- [ ] new Neuron gene creates a neuron in VMS at specified location
-	- [ ] neurons are only created by the new Neuron gene and will be housed inside the current cell
-	- [ ] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
-		-- [ ] thus no more neuron indexes
-	- [ ] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
-	- [ ] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
 	- [ ] when a joint between cells breaks, all synapses, motor lines and sensor lines passing through it are disconnected
 		-- [ ] also if some of the cells become isolated from energy sources they die
 		-- [ ] after a split, each of the two parts may live on if they have energy
