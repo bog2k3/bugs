@@ -39,7 +39,7 @@
 	- [ ] division happens when gene decoding reaches the end, so all genes have a chance of being read
 		-- [ ] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
 	- [ ] each cell specializes into a body part depending on hyperspace position or turns into a FatCell (for unused or incomplete positions)
-		-- [X] ^ maps of gene-types/values in BodyCell that cummulates the values
+		-- [X] ^ maps of gene-types/values in BodyCell that accumulates the values
 		-- [ ] once the decoding is done, the body part type is determined and following actions take place:
 		-- [ ] a map of body-part-type/static methods is used to call the correct method to update the cell's density
 		-- [ ] another similar map is used to retrieve the future body part's shape and connection points, and all neighbour link positions are updated so that cells will be in the correct position
@@ -66,7 +66,7 @@
 		-- [ ] after a split, each of the two parts may live on if they have energy
 		-- [ ] must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
 	- [ ] when a cell splits, neurons from the cell are randomly distributed between its children
-			- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
+	- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
 
 * [ ] !!! New gene mutation method: Flip-Sign (with much lower probability) -> will avoid boolean float genes becoming too stable by being too far away from zero
@@ -74,43 +74,43 @@
 * [ ] World must also be serializable and save the general world properties (extents and other things)
 	- [ ] create spatial cache (call setExtents) also when loading
 * [ ] parameterized loading of World - when merging a session should omit walls & adjust extents & existing walls to union
-		* [X] !!! optimize World::getEntitiesInBox(), it takes 95% of Nose::update() which takes 90% of all entities update
-			- [X] partition the world in a matrix and cache entities in each cell; query cells overlaping the box requested
-			- [X] cache only for the duration of the frame, so for each cell at most 1 call will be made per frame
+* [X] !!! optimize World::getEntitiesInBox(), it takes 95% of Nose::update() which takes 90% of all entities update
+	- [X] partition the world in a matrix and cache entities in each cell; query cells overlaping the box requested
+	- [X] cache only for the duration of the frame, so for each cell at most 1 call will be made per frame
 * [ ] must test aabb.intersect() and spatial cache
 * [ ] write a proper build config (make or cmake) - don't rely on eclipse any more
-		* [X] Logger must be thread-safe!
+* [X] Logger must be thread-safe!
 * [ ] velocity & angular velocity sensors
 * [ ] eyes
 * [ ] orientation sensor (compass)
-		* [X] add a second body segment and move egg layer to the other end of it (to prevent interference with legs)
-		* [X] synchronize grippers better (earlier)
-		* [X] split update list to each core to run faster
-		* [X] fix MAX neural structure processing nose outputs - replace thresh neurons with gates
-		* [X] !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
-			- [X] EntityLabeler created
-		* [X] parts with no fixtures (noses) are not drawn correctly after commit
-		* [X] !!! fix problem with nose triangle being too small -> causes Box2D to crash
+* [X] add a second body segment and move egg layer to the other end of it (to prevent interference with legs)
+* [X] synchronize grippers better (earlier)
+* [X] split update list to each core to run faster
+* [X] fix MAX neural structure processing nose outputs - replace thresh neurons with gates
+* [X] !!! create DebugDraw class to overlay labels over Entities - use to debug nose signal values
+	- [X] EntityLabeler created
+* [X] parts with no fixtures (noses) are not drawn correctly after commit
+* [X] !!! fix problem with nose triangle being too small -> causes Box2D to crash
 * [ ] !!! prevent b2d crashing from too small polygons which may be caused by degenerated body parts
 	- [ ] maybe don't create fixtures for them?
-		* [X] multiple outputs from nose (sense different types of entities)
-		* [X] need FAST method to get nearest body of certain type (for nose)
-		* [X] outputVMS coord genes for sensors (indexed)
-		* [X] extend VMS to 0..1000 (0..100 is to small compared to mutation values)
-		* [X] redesign bug with two simple legs, two nose sensors - drive by smell
-			- [X] simple neural system, just bias towards the stronger sensor
-		* [X] add priority to synapses (float) - inputs will be ordered by highest priority first
-			- [X] this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
-			- [X] default 0 priority to input nerves so they shouldn't affect the order;
-			- [X] default [0.0~10.0] priority for random synapses
+* [X] multiple outputs from nose (sense different types of entities)
+* [X] need FAST method to get nearest body of certain type (for nose)
+* [X] outputVMS coord genes for sensors (indexed)
+* [X] extend VMS to 0..1000 (0..100 is to small compared to mutation values)
+* [X] redesign bug with two simple legs, two nose sensors - drive by smell
+	- [X] simple neural system, just bias towards the stronger sensor
+* [X] add priority to synapses (float) - inputs will be ordered by highest priority first
+	- [X] this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
+	- [X] default 0 priority to input nerves so they shouldn't affect the order;
+	- [X] default [0.0~10.0] priority for random synapses
 * [ ] changes in neurons:
-			- [X] neuralConst as offset to sum in all neuron types (rename to "bias")
-			- [X] new neuralParam to use in special function neurons which now use neuralConst
-			- [X] new abs() neural function
-			- [X] figure out how to multiply 2 signals - perhaps a new neural func?
+	- [X] neuralConst as offset to sum in all neuron types (rename to "bias")
+	- [X] new neuralParam to use in special function neurons which now use neuralConst
+	- [X] new abs() neural function
+	- [X] figure out how to multiply 2 signals - perhaps a new neural func?
 	- [ ] memory neuron with a special input (#0) to signal when to write
-			- [X] gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
-		* [X] implement slow motion with fixed timestep
+	- [X] gate neuron with a special input (#0) to signal when to pass through (use bias as thresh)
+* [X] implement slow motion with fixed timestep
 * [ ] gripperul sa se desprinda la o anumita forta d.p. cu size
 * [ ] spawnerele de mancare sa faca pauza din cand in cand -> avantaj mooveri
 	- [ ] variable food chunk size
@@ -121,44 +121,44 @@
 * [ ] mouth can only eat stuff smaller than its size
 * [ ] bugs should be able to eat smaller bugs alive
 * [ ] !!! fix repopulation (zygot mass) !!!
-		* [X] rewrite default bug genome to use segmentation for leg
-		* [X] tune nerve signals - GRIPPER must disengage sooner
-		* [X] tune joint resillience
+* [X] rewrite default bug genome to use segmentation for leg
+* [X] tune nerve signals - GRIPPER must disengage sooner
+* [X] tune joint resillience
 * [ ] bugs degenerate too quickly and too often. Make them more stable
-		- [X] reenabled start marker genes which increased stability
+	- [X] reenabled start marker genes which increased stability
 * [ ] find a better way to decode the genome rather than offset-based
-		* [X] develop a better embrionic development process (protein system done)
-		* [X] print population & generations in status update
-		* [X] !!! fix autosave (doesn't save any more, wtf?)
+* [X] develop a better embrionic development process (protein system done)
+* [X] print population & generations in status update
+* [X] !!! fix autosave (doesn't save any more, wtf?)
 * [ ] fix world design to favour movers
 	- [ ] food spawners should pause from time to time to make them go in another place
 	- [ ] movable food spawners - spawn more food than static ones
-		* [X] print mutation statistics after meyosis
-		* [X] !!! add SENSORS
+* [X] print mutation statistics after meyosis
+* [X] !!! add SENSORS
 * [ ] prevent fixture overlapping after load from file -> results in box2D hang (maybe do an epsilon update on physWorld after each entity is deserialized)
 * [ ] make multiple worlds on different machines which communicate through portals via network TCP
-		* [X] [obsolete]  !!! have redundancy in neural system to make muscle command harder to break
-		* [X] prevent attraction between incompatible gamettes
-		* [X] check for double deletion and other memory issues (valgrind)
+* [X] [obsolete]  !!! have redundancy in neural system to make muscle command harder to break
+* [X] prevent attraction between incompatible gamettes
+* [X] check for double deletion and other memory issues (valgrind)
 * [ ] GUI [lowprio] - stuff to interact with world
 * [ ] serialization 
-		- [X] save/load to/from bigfile
+	- [X] save/load to/from bigfile
 	- [ ] other entity types (gamete, dead bug) - also make bug adults directly
-		* [X] !!! INVESTIGATE (fix dev gene reusage neural linking) - may already be fixed
-		* [X] make gametes fuse into new zygotes
-		* [X] fix basic bug neural routing - now it's fucked up
-		* [X] make egglayer grow instead of torso
-		* [X] fix scaling after break apart
-		* [X] fix joint nan angle
+* [X] !!! INVESTIGATE (fix dev gene reusage neural linking) - may already be fixed
+* [X] make gametes fuse into new zygotes
+* [X] fix basic bug neural routing - now it's fucked up
+* [X] make egglayer grow instead of torso
+* [X] fix scaling after break apart
+* [X] fix joint nan angle
 * [ ] do some statistical analysis on mutation rates
-		* [X] add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
-		* [X] [obs] make split work
-		* [OBSOLETE] [ ] add "duplicate" as a gene spawn method (copy existing gene)
-			- [OBSOLETE] [ ] 50%-50% chance to duplicate or new
-		* [X] make eggs attract each other
-		* [X] !!! make eggs and zygotes (dead ones as well) as food
-		* [X] make dead body parts as food
-		* [X] fix basic bug muscle sync
+* [X] add "skipNext" and "jump" genes [added SKIP gene and maxDepth on growth]
+* [X] [obs] make split work
+* [OBSOLETE] [ ] add "duplicate" as a gene spawn method (copy existing gene)
+	- [OBSOLETE] [ ] 50%-50% chance to duplicate or new
+* [X] make eggs attract each other
+* [X] !!! make eggs and zygotes (dead ones as well) as food
+* [X] make dead body parts as food
+* [X] fix basic bug muscle sync
 * [ ] switch from float to double 
 * [ ] clean up all TODOs and WARNINGs from code... (right.... this will be here forever)
 
