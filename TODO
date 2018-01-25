@@ -31,11 +31,12 @@
 		-- [ ] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
 	- [ ] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
 		-- [ ] (pivot only) joint's default (rest) orientation is perpendicular to the division axis, going from left child cell to right child cell; it's angle direction is the same as the parent cell (so joint can be mirrored as well)
-		-- [ ] left and right muscles are defined with respect to the joint's zero-axis (left muscle on the positive side) 
+		-- [ ] left and right muscles are defined with respect to the joint's zero-axis (left muscle on the positive side); mirrored joints have left/right switched 
 	- [ ] when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
 		-- [ ] original cell is kept for joint/muscle genes and its size is changed to joint size - it's used on the ctor of PivotJoint
 	- [ ] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
 	- [ ] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
+	- [ ] new VMS offset gene to control offset for a division branch (mirrored trees with same genes must have different coordinates to enable control by different neurons)
 	- [ ] division happens when gene decoding reaches the end, so all genes have a chance of being read
 		-- [ ] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
 	- [ ] each cell specializes into a body part depending on hyperspace position or turns into a FatCell (for unused or incomplete positions)

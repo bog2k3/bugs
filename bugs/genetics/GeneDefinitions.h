@@ -26,15 +26,16 @@ enum class gene_type : uint8_t {
 	PART_ATTRIBUTE = 9,		// body part attribute - establishes characteristics of certain body parts
 	BODY_ATTRIBUTE = 10,		// body attribute - controls specific whole-body attributes that do not belong to a specific part,
 									// such as metabolic parameters
-	NEURON = 11,				// creates a new neuron at the specified location (neuron will belong the the current cell)
-	SYNAPSE = 12,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
-	TRANSFER_FUNC = 13,			// controls the transfer function of a neuron (cummulative)
-	NEURAL_BIAS = 14,			// neural bias (cummulative) - is added to the weighted sum of the inputs
-	NEURON_OUTPUT_COORD = 15,	// output coord (in VMS) from a neuron - where the axon lies
-	NEURON_INPUT_COORD = 16,	// input coord (in VMS) to a neuron - where the dendrites lie
-	NEURAL_PARAM = 17,			// neural parameter - used by some types of neurons for specific purposes
+	VMS_OFFSET = 11,			// offsets all VMS coordinates specified in the cell (inputs and outputs, neuron positions)
+	NEURON = 12,				// creates a new neuron at the specified location (neuron will belong the the current cell)
+	SYNAPSE = 13,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
+	TRANSFER_FUNC = 14,			// controls the transfer function of a neuron (cummulative)
+	NEURAL_BIAS = 15,			// neural bias (cummulative) - is added to the weighted sum of the inputs
+	NEURON_OUTPUT_COORD = 16,	// output coord (in VMS) from a neuron - where the axon lies
+	NEURON_INPUT_COORD = 17,	// input coord (in VMS) to a neuron - where the dendrites lie
+	NEURAL_PARAM = 18,			// neural parameter - used by some types of neurons for specific purposes
 
-	END = 18
+	END = 19
 };
 
 // ----------------------------------- gene_protein_type -------------------------------//

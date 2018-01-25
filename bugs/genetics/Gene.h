@@ -195,6 +195,11 @@ struct GeneAttribute {
 	GeneAttribute() = default;
 };
 
+struct GeneVMSOffset {
+	BranchRestriction restriction;
+	Atom<float> value;
+};
+
 struct GeneNeuron {
 	Atom<float> neuronLocation;		// neuron location in VMS
 };
@@ -242,7 +247,6 @@ class Gene {
 public:
 	gene_type type;		// the type of gene
 	union GeneData {
-		GeneStartMarker gene_start_marker;
 		GeneStop gene_stop;
 		GeneNoOp gene_no_op;
 		GeneSkip gene_skip;
@@ -252,6 +256,7 @@ public:
 		GeneAttribute gene_attribute;
 		GeneJointAttribute gene_joint_attrib;
 		GeneMuscleAttribute gene_muscle_attrib;
+		GeneVMSOffset gene_vms_offset;
 		GeneNeuron gene_neuron;
 		GeneSynapse gene_synapse;
 		GeneNeuronOutputCoord gene_neuron_output;
@@ -261,7 +266,6 @@ public:
 		GeneNeuralParam gene_neural_param;
 		GeneBodyAttribute gene_body_attribute;
 
-		GeneData(GeneStartMarker const& gsm) : gene_start_marker(gsm) {}
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
 		GeneData(GeneNoOp const &gnop) : gene_no_op(gnop) {}
 		GeneData(GeneSkip const &gs) : gene_skip(gs) {}
@@ -271,6 +275,7 @@ public:
 		GeneData(GeneAttribute const &gla) : gene_attribute(gla) {}
 		GeneData(GeneJointAttribute const &gja) : gene_joint_attrib(gja) {}
 		GeneData(GeneMuscleAttribute const& gma) : gene_muscle_attrib(gma) {}
+		GeneData(GeneVMSOffset const& gvo) : gene_vms_offset(gvo) {}
 		GeneData(GeneNeuron const& gn) : gene_neuron(gn) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
 		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
@@ -299,6 +304,7 @@ public:
 	Gene(GeneAttribute const &gla) : Gene(gene_type::PART_ATTRIBUTE, gla) {}
 	Gene(GeneJointAttribute const &gja) : Gene(gene_type::JOINT_ATTRIBUTE, gja) {}
 	Gene(GeneMuscleAttribute const &gma) : Gene(gene_type::MUSCLE_ATTRIBUTE, gma) {}
+	Gene(GeneVMSOffset const& gvo) : Gene(gene_type::VMS_OFFSET, gvo) {}
 	Gene(GeneNeuron const& gn) : Gene(gene_type::NEURON, gn) {}
 	Gene(GeneSynapse const &gs) : Gene(gene_type::SYNAPSE, gs) {}
 	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(gene_type::NEURON_OUTPUT_COORD, gnoc) {}
