@@ -30,10 +30,10 @@ public:
 	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
-	int getSerializationType() override { return SerializationObjectTypes::WALL; }
+	int getSerializationType() const override { return SerializationObjectTypes::WALL; }
 	// deserialize a Wall from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
-	void serialize(BinaryStream &stream) override;
+	void serialize(BinaryStream &stream) const override;
 
 protected:
 	PhysicsBody body_;

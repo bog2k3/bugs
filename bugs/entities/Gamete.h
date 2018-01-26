@@ -43,8 +43,8 @@ public:
 	void draw(RenderContext const& ctx) override;
 #endif
 
-	void serialize(BinaryStream &stream) override;
-	int getSerializationType() override { return SerializationObjectTypes::GAMETE; }
+	void serialize(BinaryStream &stream) const override;
+	int getSerializationType() const override { return SerializationObjectTypes::GAMETE; }
 
 	const Chromosome& getChromosome() const { return chromosome_; }
 

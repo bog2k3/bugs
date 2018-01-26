@@ -30,10 +30,10 @@ public:
 			FunctionalityFlags::SERIALIZABLE;
 	}
 
-	int getSerializationType() override { return SerializationObjectTypes::FOOD_DISPENSER; }
+	int getSerializationType() const override { return SerializationObjectTypes::FOOD_DISPENSER; }
 	// deserialize a dispenser from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
-	void serialize(BinaryStream &stream) override;
+	void serialize(BinaryStream &stream) const override;
 
 
 	void draw(RenderContext const& ctx) override;
