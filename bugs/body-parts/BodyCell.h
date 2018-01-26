@@ -13,6 +13,8 @@
 #include "../genetics/CumulativeValue.h"
 #include "BodyConst.h"
 
+#include <glm/vec2.hpp>
+
 #include <map>
 #include <vector>
 
@@ -41,6 +43,9 @@ public:
 	void initializeGeneValues();
 
 	float density() const { return density_; }
+
+protected:
+	Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const override;
 
 private:
 	friend class BodyPart;

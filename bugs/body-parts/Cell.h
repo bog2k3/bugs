@@ -26,6 +26,8 @@ public:
 	Cell(Cell const&) = delete;
 	virtual ~Cell() = default;
 
+	bool isActive() const { return active_; }
+
 	// returns the radius in a given local angle (relative to cell's orientation)
 	// that is distance from center to cell's outline - it may be non-uniform for non-circle cells
 	virtual float radius(float angle) const;
@@ -46,11 +48,17 @@ public:
 	 * reorientate: true to align the newly spawned cells with the division axis, false to keep parent orientation
 	 * mirror: true to mirror the right side - it's orientation will be mirrored with respect to division axis, and it's angles will be CW
 	 */
-	void divide(std::vector<Cell*> &cells, float ratio, bool reorientate, bool mirror);
+	std::pair<Cell*, Cell*> divide(float ratio, bool reorientate, bool mirror);
+
+	void deactivate() { active_ = false; }
 
 	static void fixOverlap(std::set<Cell*> &marked);
 
+protected:
+	virtual Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const;
+
 private:
+	bool active_ = true;
 	glm::vec2 position_;
 	float angle_;
 	float size_; // area

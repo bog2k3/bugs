@@ -1,6 +1,8 @@
 #include "Ribosome.h"
 
 #include "../entities/Bug.h"
+#include "../body-parts/BodyConst.h"
+#include "../body-parts/BodyCell.h"
 #include "../body-parts/BodyPart.h"
 #include "../body-parts/Torso.h"
 #include "../body-parts/Bone.h"
@@ -55,13 +57,15 @@ Ribosome::~Ribosome() {
 void Ribosome::cleanUp() {
 	neuralGenes_.clear();
 	activeSet_.clear();
-	mapNeurons_.clear();
-	mapSynapses_.clear();
-	outputNeurons_.clear();
-	inputNeurons_.clear();
+//	mapNeurons_.clear();
+//	mapSynapses_.clear();
+//	outputNeurons_.clear();
+//	inputNeurons_.clear();
 	motors_.clear();
 	sensors_.clear();
 	mapInputNerves_.clear();
+
+	throw std::runtime_error("make sure this is complete");
 }
 
 // compares two unsigned longs as if they were expressed as coordinates in a circular scale
@@ -81,43 +85,45 @@ void Ribosome::cleanUp() {
 void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
 	bug_->neuralNet_ = new NeuralNet();
-	bug_->neuralNet_->neurons.reserve(mapNeurons_.size());
-	for (uint i=0; i<mapNeurons_.size(); i++) {
-		bug_->neuralNet_->neurons.push_back(new Neuron());
-	}
-#ifdef DEBUG
-	for (auto const& it : mapNeurons_) {
-		mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
-		if (false) {
-			LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons[it.second.index]);
-		}
-	}
-#endif
+//	bug_->neuralNet_->neurons.reserve(mapNeurons_.size());
+//	for (uint i=0; i<mapNeurons_.size(); i++) {
+//		bug_->neuralNet_->neurons.push_back(new Neuron());
+//	}
+//#ifdef DEBUG
+//	for (auto const& it : mapNeurons_) {
+//		mapNeuronVirtIndex_[bug_->neuralNet_->neurons[it.second.index]] = it.first;
+//		if (false) {
+//			LOGLN("Neuron MAPPING: " << it.first << "(v) -> " << it.second.index << "(r)" << "\t" << bug_->neuralNet_->neurons[it.second.index]);
+//		}
+//	}
+//#endif
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::decodeDeferredGenes() {
 	// create all synapses
-	for (auto s : mapSynapses_) {
-		int32_t from = s.first >> 32;
-		int32_t to = (s.first) & 0xFFFFFFFF;
-		createSynapse(from, to, s.second);
-	}
-	// now decode the deferred neural genes (neuron properties):
-	for (auto &g : neuralGenes_)
-		decodeGene(*g, nullptr, nullptr, false);
-	// apply all neuron properties
-	for (auto &n : mapNeurons_) {
-		if (n.second.transfer.hasValue()) {
-			int funcIndex = clamp((int)n.second.transfer.get(),
-					(int)transferFuncNames::FN_ONE,
-					(int)transferFuncNames::FN_MAXCOUNT-1);
-			bug_->neuralNet_->neurons[n.second.index]->setTranferFunction((transferFuncNames)funcIndex);
-		}
-		if (n.second.bias.hasValue())
-			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.bias;
-		if (n.second.param.hasValue())
-			bug_->neuralNet_->neurons[n.second.index]->neuralParam = n.second.param;
-	}
+//	for (auto s : mapSynapses_) {
+//		int32_t from = s.first >> 32;
+//		int32_t to = (s.first) & 0xFFFFFFFF;
+//		createSynapse(from, to, s.second);
+//	}
+//	// now decode the deferred neural genes (neuron properties):
+//	for (auto &g : neuralGenes_)
+//		decodeGene(*g, nullptr, nullptr, false);
+//	// apply all neuron properties
+//	for (auto &n : mapNeurons_) {
+//		if (n.second.transfer.hasValue()) {
+//			int funcIndex = clamp((int)n.second.transfer.get(),
+//					(int)transferFuncNames::FN_ONE,
+//					(int)transferFuncNames::FN_MAXCOUNT-1);
+//			bug_->neuralNet_->neurons[n.second.index]->setTranferFunction((transferFuncNames)funcIndex);
+//		}
+//		if (n.second.bias.hasValue())
+//			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.bias;
+//		if (n.second.param.hasValue())
+//			bug_->neuralNet_->neurons[n.second.index]->neuralParam = n.second.param;
+//	}
+	throw std::runtime_error("Not implemented!");
 }
 
 template <typename T>
@@ -159,7 +165,8 @@ bool Ribosome::step() {
 		// link nerves to sensors and motors:
 		resolveNerveLinkage();
 		// commit neuron properties:
-		commitNeurons();
+//		commitNeurons();
+		throw std::runtime_error("Not implemented!");
 
 		// clean up:
 		cleanUp();
@@ -180,38 +187,39 @@ bool Ribosome::step() {
 				|| (g1 && g1->type == gene_type::STOP)
 				|| (g2 && g2->type == gene_type::STOP)) {
 			// so much for this development path;
-			// grow body parts from all segments now
+			// TODO we must decide if cell will divide or specialize
 //			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
 //				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
 //						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);
 			// decode joint genes if such is the case:
-			auto it = mapJointOffsets_.find(p);
-			if (it != mapJointOffsets_.end()) {
-				JointPivot* joint = it->second.first;
-				int jOffset = it->second.second.hasValue() ? it->second.second : 0;
-				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + jOffset));
-			}
+//			auto it = mapJointOffsets_.find(p);
+//			if (it != mapJointOffsets_.end()) {
+//				JointPivot* joint = it->second.first;
+//				int jOffset = it->second.second.hasValue() ? it->second.second : 0;
+//				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + jOffset));
+//			}
 			// and remove this branch:
+			cell->deactivate();
 			activeSet_.erase(activeSet_.begin()+i);
 			i--, nCrtBranches--;
 			continue;
 		}
 
 		// now decode the genes:
-		if (g1)
-			decodeGene(*g1, cell, &activeSet_[i].second, true);
-		if (g2)
-			decodeGene(*g2, cell, &activeSet_[i].second, true);
+		if (g1 && geneQualifies(*g1, *cell))
+			decodeGene(*g1, *cell, activeSet_[i].second, true);
+		if (g2 && geneQualifies(*g2, *cell))
+			decodeGene(*g2, *cell, activeSet_[i].second, true);
 
 		int skipCount = 0;
 		if (g1 && g1->type == gene_type::SKIP) {
-			int depth = p->getDepth();
-			if (depth <= g1->data.gene_skip.maxDepth && depth >= g1->data.gene_skip.minDepth)
+			//int depth = p->getDepth();
+			//if (depth <= g1->data.gene_skip.maxDepth && depth >= g1->data.gene_skip.minDepth)
+			if (geneQualifies(*g1, *cell))
 				skipCount += g1->data.gene_skip.count;
 		}
 		if (g2 && g2->type == gene_type::SKIP) {
-			int depth = p->getDepth();
-			if (depth <= g2->data.gene_skip.maxDepth && depth >= g2->data.gene_skip.minDepth) {
+			if (geneQualifies(*g2, *cell)) {
 				if (skipCount)
 					skipCount = (skipCount + g2->data.gene_skip.count) / 2;
 				else
@@ -234,7 +242,7 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 	throw std::runtime_error("Implement this!");
 }
 
-void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {
+/*void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {
 	// grow only works on bones and torso
 	if (parent->getType() != BodyPartType::BONE && parent->getType() != BodyPartType::TORSO)
 		return;
@@ -339,7 +347,7 @@ void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::v
 
 	// start a new development path from the new part:
 	activeSet_.push_back(std::make_pair(bp, genomeOffset));
-}
+}*/
 
 void Ribosome::addMotor(IMotor* motor, BodyPart* part) {
 	motors_.push_back(motor);
@@ -352,22 +360,22 @@ void Ribosome::addSensor(ISensor* sensor) {
 	sensors_.push_back(sensor);
 }
 
-bool Ribosome::hasNeuron(int virtualIndex, bool physical) {
-	 bool hasVirtual = mapNeurons_.find(virtualIndex) != mapNeurons_.end();
-	 if (physical)
-		 return hasVirtual && bug_->neuralNet_ && mapNeurons_[virtualIndex].index < bug_->neuralNet_->neurons.size();
-	 else
-		 return hasVirtual;
-}
+//bool Ribosome::hasNeuron(int virtualIndex, bool physical) {
+//	 bool hasVirtual = mapNeurons_.find(virtualIndex) != mapNeurons_.end();
+//	 if (physical)
+//		 return hasVirtual && bug_->neuralNet_ && mapNeurons_[virtualIndex].index < bug_->neuralNet_->neurons.size();
+//	 else
+//		 return hasVirtual;
+//}
+//
+//void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
+//	if (!hasNeuron(virtualIndex, false)) {
+//		int realIndex = mapNeurons_.size();
+//		mapNeurons_[virtualIndex] = NeuronInfo(realIndex);
+//	}
+//}
 
-void Ribosome::checkAndAddNeuronMapping(int virtualIndex) {
-	if (!hasNeuron(virtualIndex, false)) {
-		int realIndex = mapNeurons_.size();
-		mapNeurons_[virtualIndex] = NeuronInfo(realIndex);
-	}
-}
-
-void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural) {
+void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, bool deferNeural) {
 	switch (g.type) {
 	case gene_type::NO_OP:
 		break;
@@ -376,16 +384,16 @@ void Ribosome::decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData,
 	case gene_type::STOP:
 		break;
 	case gene_type::PROTEIN:
-		decodeProtein(g.data.gene_protein, part, growthData);
+		decodeProtein(g.data.gene_protein, cell, ctx);
 		break;
 	case gene_type::OFFSET:
-		decodeOffset(g.data.gene_offset, part, growthData);
+		decodeOffset(g.data.gene_offset, cell, ctx);
 		break;
 	/*case gene_type::JOINT_OFFSET:
 		decodeJointOffset(g.data.gene_joint_offset, part);*/
 		break;
 	case gene_type::PART_ATTRIBUTE:
-		decodePartAttrib(g.data.gene_attribute, part);
+		decodePartAttrib(g.data.gene_attribute, cell, ctx);
 		break;
 	case gene_type::BODY_ATTRIBUTE:
 		bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
@@ -501,67 +509,75 @@ void Ribosome::decodeOffset(GeneOffset const& g, BodyPart *part, GrowthData *gro
 		mapJointOffsets_[part].second.changeAbs(g.offset);
 }*/
 
-void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyPart* part) {
-	int depth = part->getDepth();
-	if (depth >= g.minDepth && depth <= g.maxDepth)
-	{
-		CumulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
-		if (pAttrib)
-			pAttrib->changeAbs(g.value);
-	}
+void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
+//	int depth = part->getDepth();
+//	if (depth >= g.minDepth && depth <= g.maxDepth)
+//	{
+//		CumulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
+//		if (pAttrib)
+//			pAttrib->changeAbs(g.value);
+//	}
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::decodeSynapse(GeneSynapse const& g) {
 	// the number of neurons is derived from the synapse values
-	checkAndAddNeuronMapping(g.from);
-	checkAndAddNeuronMapping(g.to);
-	uint64_t key = synKey(g.from, g.to);
-	assert(!std::isnan(g.weight.value));
-	mapSynapses_[key].weight.changeAbs(g.weight);
-	mapSynapses_[key].priority.changeAbs(g.priority);
+//	checkAndAddNeuronMapping(g.from);
+//	checkAndAddNeuronMapping(g.to);
+//	uint64_t key = synKey(g.from, g.to);
+//	assert(!std::isnan(g.weight.value));
+//	mapSynapses_[key].weight.changeAbs(g.weight);
+//	mapSynapses_[key].priority.changeAbs(g.priority);
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
-	if (hasNeuron(g.targetNeuron, false))
-		mapNeurons_[g.targetNeuron].transfer.changeAbs(g.functionID);
+//	if (hasNeuron(g.targetNeuron, false))
+//		mapNeurons_[g.targetNeuron].transfer.changeAbs(g.functionID);
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::decodeNeuralBias(GeneNeuralBias const& g) {
 	assert(!std::isnan(g.value.value));
-	if (hasNeuron(g.targetNeuron, false))
-		mapNeurons_[g.targetNeuron].bias.changeAbs(g.value);
+//	if (hasNeuron(g.targetNeuron, false))
+//		mapNeurons_[g.targetNeuron].bias.changeAbs(g.value);
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::decodeNeuralParam(GeneNeuralParam const& g) {
 	assert(!std::isnan(g.value.value));
-	if (hasNeuron(g.targetNeuron, false))
-		mapNeurons_[g.targetNeuron].param.changeAbs(g.value);
+//	if (hasNeuron(g.targetNeuron, false))
+//		mapNeurons_[g.targetNeuron].param.changeAbs(g.value);
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
-	checkAndAddNeuronMapping(g.srcNeuronVirtIndex);
-	mapNeurons_[g.srcNeuronVirtIndex].outputVMSCoord.changeAbs(g.outCoord);
-	// add this neuron into the outputNeurons_ set:
-	outputNeurons_.insert(g.srcNeuronVirtIndex);
+//	checkAndAddNeuronMapping(g.srcNeuronVirtIndex);
+//	mapNeurons_[g.srcNeuronVirtIndex].outputVMSCoord.changeAbs(g.outCoord);
+//	// add this neuron into the outputNeurons_ set:
+//	outputNeurons_.insert(g.srcNeuronVirtIndex);
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
-	checkAndAddNeuronMapping(g.destNeuronVirtIndex);
-	mapNeurons_[g.destNeuronVirtIndex].inputVMSCoord.changeAbs(g.inCoord);
-	// add this neuron into the inputNeurons_ set:
-	inputNeurons_.insert(g.destNeuronVirtIndex);
+//	checkAndAddNeuronMapping(g.destNeuronVirtIndex);
+//	mapNeurons_[g.destNeuronVirtIndex].inputVMSCoord.changeAbs(g.inCoord);
+//	// add this neuron into the inputNeurons_ set:
+//	inputNeurons_.insert(g.destNeuronVirtIndex);
+	throw std::runtime_error("Not implemented!");
 }
 
 void Ribosome::createSynapse(int from, int to, SynapseInfo const& info) {
-	assertDbg(hasNeuron(from, true));	// should be there, since synapses dictate neurons
-	assertDbg(hasNeuron(to, true));
-
-	OutputSocket* pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
-	Neuron* pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
-
-	InputSocket* i = new InputSocket(pTo, info.weight);
-	pTo->addInput(std::unique_ptr<InputSocket>(i), info.priority);
-	pFrom->addTarget(i);
+//	assertDbg(hasNeuron(from, true));	// should be there, since synapses dictate neurons
+//	assertDbg(hasNeuron(to, true));
+//
+//	OutputSocket* pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
+//	Neuron* pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
+//
+//	InputSocket* i = new InputSocket(pTo, info.weight);
+//	pTo->addInput(std::unique_ptr<InputSocket>(i), info.priority);
+//	pFrom->addTarget(i);
+	throw std::runtime_error("Not implemented!");
 }
 
 // returns -1 if none found
@@ -624,12 +640,13 @@ void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& ord
 			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &orderedOutputNeurons_[neuronIndex].first->output);
 
 #ifdef DEBUG
-			if (false) {
-				LOGLN("LinkMotorNerve: virtN[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
-						<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
-						<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
-						<< " {lineId:" << nerveLineId << "}");
-			}
+//			if (false) {
+//				LOGLN("LinkMotorNerve: virtN[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
+//						<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
+//						<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
+//						<< " {lineId:" << nerveLineId << "}");
+//			}
+			throw std::runtime_error("Not implemented!");
 #endif
 		}
 	}
@@ -684,7 +701,8 @@ void Ribosome::resolveNerveLinkage() {
 			mapInputNerves_[motors_[i]->getInputSocket(j)] = motorInputs.size();
 			motorInputs.push_back(std::make_pair(motors_[i]->getInputSocket(j), motors_[i]->getInputVMSCoord(j)));
 #ifdef DEBUG
-			mapSockMotorInfo[motors_[i]->getInputSocket(j)] = std::make_pair(motors_[i]->getMotorDebugName(), j);
+//			mapSockMotorInfo[motors_[i]->getInputSocket(j)] = std::make_pair(motors_[i]->getMotorDebugName(), j);
+			throw std::runtime_error("Not implemented!");
 #endif
 		}
 	}
@@ -696,95 +714,101 @@ void Ribosome::resolveNerveLinkage() {
 	}
 	// build the neuron vectors:
 	std::vector<InputOutputNerve<Neuron*>> inputNeurons;
-	for (int i : inputNeurons_) {
-		if (!hasNeuron(i, true))
-			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses
-		Neuron* neuron = bug_->neuralNet_->neurons[mapNeurons_[i].index];
-		float vmsCoord = mapNeurons_[i].inputVMSCoord;
-		inputNeurons.push_back(std::make_pair(neuron, vmsCoord));
-	}
-	std::vector<InputOutputNerve<Neuron*>> outputNeurons;
-	for (int i : outputNeurons_) {
-		if (!hasNeuron(i, true))
-			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses
-		Neuron* neuron = bug_->neuralNet_->neurons[mapNeurons_[i].index];
-		float vmsCoord = mapNeurons_[i].outputVMSCoord;
-		outputNeurons.push_back(std::make_pair(neuron, vmsCoord));
-	}
-	// sort the input/output nerves by their VMS coords, smallest to greatest:
-	sortNervesByVMSCoord(motorInputs);
-	sortNervesByVMSCoord(sensorOutputs);
-	sortNervesByVMSCoord(outputNeurons);
-	sortNervesByVMSCoord(inputNeurons);
-
-	// link nerves to motors/sensors:
-	linkMotorNerves(outputNeurons, motorInputs);
-	linkSensorNerves(inputNeurons, sensorOutputs);
-
-	motors_.clear();
-	sensors_.clear();
-	inputNeurons_.clear();
-	outputNeurons_.clear();
+//	for (int i : inputNeurons_) {
+//		if (!hasNeuron(i, true))
+//			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses
+//		Neuron* neuron = bug_->neuralNet_->neurons[mapNeurons_[i].index];
+//		float vmsCoord = mapNeurons_[i].inputVMSCoord;
+//		inputNeurons.push_back(std::make_pair(neuron, vmsCoord));
+//	}
+//	std::vector<InputOutputNerve<Neuron*>> outputNeurons;
+//	for (int i : outputNeurons_) {
+//		if (!hasNeuron(i, true))
+//			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses
+//		Neuron* neuron = bug_->neuralNet_->neurons[mapNeurons_[i].index];
+//		float vmsCoord = mapNeurons_[i].outputVMSCoord;
+//		outputNeurons.push_back(std::make_pair(neuron, vmsCoord));
+//	}
+//	// sort the input/output nerves by their VMS coords, smallest to greatest:
+//	sortNervesByVMSCoord(motorInputs);
+//	sortNervesByVMSCoord(sensorOutputs);
+//	sortNervesByVMSCoord(outputNeurons);
+//	sortNervesByVMSCoord(inputNeurons);
+//
+//	// link nerves to motors/sensors:
+//	linkMotorNerves(outputNeurons, motorInputs);
+//	linkSensorNerves(inputNeurons, sensorOutputs);
+//
+//	motors_.clear();
+//	sensors_.clear();
+//	inputNeurons_.clear();
+//	outputNeurons_.clear();
+	throw std::runtime_error("Not implemented!");
 }
 
-void Ribosome::commitNeurons() {
-	for (auto &n : bug_->neuralNet_->neurons)
-		n->commitInputs();
-}
+//void Ribosome::commitNeurons() {
+//	for (auto &n : bug_->neuralNet_->neurons)
+//		n->commitInputs();
+//}
 
-JointPivot* Ribosome::findNearestJoint(Muscle* m, int dir) {
-	/*assertDbg(m->getParent() && "muscle should have a parent!");
-	int nChildren = m->getParent()->getChildrenCount();
-	std::vector<BodyPart*> bp;
-	bp.reserve(nChildren);
-	for (int i=0; i<nChildren; i++)
-		bp.push_back(m->getParent()->getChild(i));
-	std::sort(bp.begin(), bp.end(), [] (BodyPart* left, BodyPart* right) -> bool {
-		return left->getAttachmentAngle() < right->getAttachmentAngle();
-	});
-
-	int mIndex = -1;
-	for (int i=0; i<nChildren; i++) {
-		if (m->getParent()->getChild(i) == m) {
-			mIndex = i;
-			break;
-		}
-	}
-	assertDbg(mIndex >= 0 && "muscle should have been found in parent!");
-	int index = mIndex;
-	do {
-		if (dir > 0)
-			index = circularNext(index, nChildren);
-		else
-			index = circularPrev(index, nChildren);
-
-		if (m->getParent()->getChild(index)->getType() == BodyPartType::JOINT)
-			return dynamic_cast<Joint*>(m->getParent()->getChild(index));
-	} while (index != mIndex);*/
-	return nullptr;
-}
+//JointPivot* Ribosome::findNearestJoint(Muscle* m, int dir) {
+//	assertDbg(m->getParent() && "muscle should have a parent!");
+//	int nChildren = m->getParent()->getChildrenCount();
+//	std::vector<BodyPart*> bp;
+//	bp.reserve(nChildren);
+//	for (int i=0; i<nChildren; i++)
+//		bp.push_back(m->getParent()->getChild(i));
+//	std::sort(bp.begin(), bp.end(), [] (BodyPart* left, BodyPart* right) -> bool {
+//		return left->getAttachmentAngle() < right->getAttachmentAngle();
+//	});
+//
+//	int mIndex = -1;
+//	for (int i=0; i<nChildren; i++) {
+//		if (m->getParent()->getChild(i) == m) {
+//			mIndex = i;
+//			break;
+//		}
+//	}
+//	assertDbg(mIndex >= 0 && "muscle should have been found in parent!");
+//	int index = mIndex;
+//	do {
+//		if (dir > 0)
+//			index = circularNext(index, nChildren);
+//		else
+//			index = circularPrev(index, nChildren);
+//
+//		if (m->getParent()->getChild(index)->getType() == BodyPartType::JOINT)
+//			return dynamic_cast<Joint*>(m->getParent()->getChild(index));
+//	} while (index != mIndex);
+//	return nullptr;
+//}
 
 void Ribosome::resolveMuscleLinkage() {
-	for (Muscle* m : muscles_) {
-		JointPivot* jNeg = findNearestJoint(m, -1);
-		JointPivot* jPos = findNearestJoint(m, +1);
-		if (!jNeg && !jPos)
-			continue;
-		// default to the joint on the negative side and only select the positive one if more appropriate:
-		JointPivot* targetJoint = jNeg;
-		if (jNeg != jPos) {
-			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m->getAttachmentAngle());
-			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m->getAttachmentAngle());
-			if (posDelta < negDelta) {
-				targetJoint = jPos;
-			} else if (posDelta == negDelta) {
-				// angle differences are equal, choose the one towards which the muscle is oriented
-				if (m->getLocalRotation() > 0) {
-					targetJoint = jPos;
-				}
-			}
-		}
-		m->setJoint(targetJoint, angleDiff(m->getAttachmentAngle(), targetJoint->getAttachmentAngle()) > 0 ? -1 : +1);
-	}
-	muscles_.clear();
+//	for (Muscle* m : muscles_) {
+//		JointPivot* jNeg = findNearestJoint(m, -1);
+//		JointPivot* jPos = findNearestJoint(m, +1);
+//		if (!jNeg && !jPos)
+//			continue;
+//		// default to the joint on the negative side and only select the positive one if more appropriate:
+//		JointPivot* targetJoint = jNeg;
+//		if (jNeg != jPos) {
+//			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m->getAttachmentAngle());
+//			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m->getAttachmentAngle());
+//			if (posDelta < negDelta) {
+//				targetJoint = jPos;
+//			} else if (posDelta == negDelta) {
+//				// angle differences are equal, choose the one towards which the muscle is oriented
+//				if (m->getLocalRotation() > 0) {
+//					targetJoint = jPos;
+//				}
+//			}
+//		}
+//		m->setJoint(targetJoint, angleDiff(m->getAttachmentAngle(), targetJoint->getAttachmentAngle()) > 0 ? -1 : +1);
+//	}
+//	muscles_.clear();
+	throw std::runtime_error("Not implemented!");
+}
+
+bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {
+	throw std::runtime_error("Not implemented!");
 }

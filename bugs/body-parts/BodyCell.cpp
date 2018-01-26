@@ -35,3 +35,7 @@ float BodyCell::radius(float angle) {
 	// TODO cell radius - use map to call static methods to get attachment points ?
 	throw std::runtime_error("Implement this!");
 }
+
+Cell* BodyCell::createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const {
+	throw std::runtime_error("implement!"); // also compute child's branch to pass on ctor
+}

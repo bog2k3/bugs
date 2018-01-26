@@ -40,16 +40,18 @@ void Cell::bond(Cell* other) {
 	other->neighbours_.push_back({oAngle, this});
 }
 
-void Cell::fixOverlap(std::set<Cell*> &marked) {
+std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 	// 1. push all overlapping cells away until they touch on the edges
 	// 2. pull all bonded cells inward until they touch on the edges
 	// 3. mark all cells that have been moved and their neighbors
 	// 4. repeat until no more marked cells
 
 	std::set<Cell*> newMarked;
+	sts::set<Cell*> allAffected;
 
 	while (!marked.empty()) {
 		for (Cell* c : marked) {
+			allAffected.insert(c);
 			for (auto &n : c->neighbours_) {
 				auto diff = n.other->position_ - c->position_;
 				float angle = pointDirection(diff);
@@ -71,6 +73,7 @@ void Cell::fixOverlap(std::set<Cell*> &marked) {
 		marked.swap(newMarked);
 		newMarked.clear();
 	}
+	return allAffected;
 }
 
 void Cell::updateBonds() {
@@ -84,7 +87,7 @@ void Cell::updateBonds() {
  * reorientate: true to align the newly spawned cells with the division axis, false to keep parent orientation
  * mirror: true to mirror the right side - it's orientation will be mirrored with respect to division axis, and it's angles will be CW
  */
-void Cell::divide(std::vector<Cell*> &cells, float ratio, bool reorientate, bool mirror) {
+std::pair<Cell*, Cell*> Cell::divide(float ratio, bool reorientate, bool mirror) {
 	float ls = size_ * ratio / (ratio + 1);
 	float rs = size_ / (ratio + 1);
 	float lr = sqrtf(ls / PI);
@@ -96,8 +99,8 @@ void Cell::divide(std::vector<Cell*> &cells, float ratio, bool reorientate, bool
 	float la = reorientate ? wangle(division_angle_) : angle_;
 	float ra = reorientate ? wangle(division_angle_) : (mirror ? angle_ + 2*division_angle_ : angle_);
 
-	Cell* cl = new Cell(ls, lC, la, mirror_, false);
-	Cell* cr = new Cell(rs, rC, ra, mirror != mirror_, true);
+	Cell* cl = createChild(ls, lC, la, mirror_, false);
+	Cell* cr = createChild(rs, rC, ra, mirror != mirror_, true);
 
 	// create bond between siblings:
 	cl->bond(cr);
@@ -125,18 +128,20 @@ void Cell::divide(std::vector<Cell*> &cells, float ratio, bool reorientate, bool
 			other->bond(cr);
 	}
 
-	auto it = std::find(cells.begin(), cells.end(), this);
-	*it = cl;
-	cells.push_back(cr);
+	deactivate(); // this cell is no longer active (it's out of the graph of cells)
 
 	std::set<Cell*> overlapping {cl, cr};
 	for (auto n : neighbours_) {
 		overlapping.insert(n.other);
 	}
 
-	fixOverlap(overlapping);
-	for (auto c : cells)
+	auto affected = fixOverlap(overlapping);
+	for (auto c : affected)
 		c->updateBonds();
 
-	delete this;
+	return {cl, cr};
+}
+
+Cell* Cell::createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) {
+	return new Cell(size, position, rotation, mirror, rightSide);
 }

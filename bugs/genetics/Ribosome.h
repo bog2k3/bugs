@@ -55,7 +55,7 @@ struct DecodeContext {
 	CumulativeValue childOffsets[2]; // holds relative genome offsets for each future child cell (0 is left, 1 right)
 
 	DecodeContext(int initialOffs)
-		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
+		: startGenomePos(initialOffs), crtGenomePos(initialOffs), childOffsets {0, 0} {
 	}
 };
 
@@ -103,11 +103,11 @@ private:
 	std::vector<ISensor*> sensors_;
 	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
-	void decodeGene(Gene const& g, BodyPart* part, GrowthData *growthData, bool deferNeural);
-	void decodeProtein(GeneProtein const& g, BodyPart* part, GrowthData *growthData);
-	void decodeOffset(GeneOffset const& g, BodyPart* part, GrowthData *growthData);
+	void decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, bool deferNeural);
+	void decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx);
+	void decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	//void decodeJointOffset(GeneJointOffset const& g, BodyPart* part);
-	void decodePartAttrib(GeneAttribute const& g, BodyPart* part);
+	void decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);
 	void decodeNeuralBias(GeneNeuralBias const& g);
@@ -142,6 +142,11 @@ private:
 
 	template<typename T>
 	void sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves);
+
+	// returns true if the gene applies to this cell (gene passes the branch restriction of the cell)
+	bool geneQualifies(Gene& g, BodyCell& c);
+
+	void updateCellDensity(BodyCell &cell);
 
 	void cleanUp();
 };
