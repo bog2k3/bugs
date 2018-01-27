@@ -37,6 +37,8 @@ public:
 	float rangle(float angle);
 
 	const glm::vec2& position() const { return position_; }
+	float angle() const { return angle_; }
+	float size() const { return size_; }
 
 	unsigned neighbourCount() const { return neighbours_.size(); }
 	link neighbour(unsigned index) const { return neighbours_[index]; }
@@ -52,7 +54,7 @@ public:
 
 	void deactivate() { active_ = false; }
 
-	static void fixOverlap(std::set<Cell*> &marked);
+	static std::set<Cell*> fixOverlap(std::set<Cell*> &marked);
 
 protected:
 	virtual Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const;

@@ -27,7 +27,7 @@ static constexpr size_t NoseDetectableFlavoursCount = sizeof(NoseDetectableFlavo
 
 class Nose : public BodyPart, public ISensor {
 public:
-	Nose();
+	Nose(BodyPartContext const& context, BodyCell& cell);
 	~Nose() override;
 
 	void draw(RenderContext const& ctx) override;

@@ -134,7 +134,7 @@ public:
 #endif
 
 protected:
-	BodyPartContext& context_;
+	BodyPartContext const& context_;
 	// these are used when initializing the body and whenever a new commit is called.
 	// they contain world-space values that are updated only prior to committing
 	//PhysicsProperties cachedProps_;

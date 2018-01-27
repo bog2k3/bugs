@@ -31,8 +31,8 @@ const glm::vec3 debug_color(1.f, 0.8f, 0.f);
 
 #define DEBUG_DRAW_NOSE
 
-Nose::Nose()
-	: BodyPart(BodyPartType::SENSOR_PROXIMITY, std::make_shared<NoseInitializationData>())
+Nose::Nose(BodyPartContext const& context, BodyCell& cell)
+	: BodyPart(BodyPartType::SENSOR_PROXIMITY, context, cell)
 {
 	for (uint i=0; i<getOutputCount(); i++)
 		outputSocket_[i] = new OutputSocket();
@@ -40,9 +40,13 @@ Nose::Nose()
 	physBody_.userObjectType_ = ObjectTypes::BPART_NOSE;
 	physBody_.userPointer_ = this;
 
-	auto data = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
-	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
-		registerAttribute(GENE_ATTRIB_VMS_COORD, i, data->outputVMSCoord[i]);
+//	auto data = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
+//	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
+//		registerAttribute(GENE_ATTRIB_VMS_COORD, i, data->outputVMSCoord[i]);
+	// TODO
+	throw std::runtime_error("Implement this!");
+
+	context_.updateList.add(this);
 }
 
 Nose::~Nose() {
@@ -51,9 +55,10 @@ Nose::~Nose() {
 }
 
 void Nose::draw(RenderContext const& ctx) {
-	if (committed_ && !noFixtures_) {
-		// nothing to draw, physics will draw for us
-	} else {
+//	if (!noFixtures_) {
+//		// nothing to draw, physics will draw for us
+//	} else
+	{
 #ifdef DEBUG_DRAW_NOSE
 		glm::vec3 worldTransform = getWorldTransformation();
 		glm::vec3 zero {vec3xy(worldTransform), 0};
@@ -75,9 +80,6 @@ void Nose::draw(RenderContext const& ctx) {
 
 
 glm::vec2 Nose::getAttachmentPoint(float relativeAngle) {
-	if (!geneValuesCached_) {
-		cacheInitializationData();
-	}
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
@@ -174,11 +176,13 @@ void Nose::update(float dt) {
 float Nose::getOutputVMSCoord(unsigned index) const {
 	if (index >= getOutputCount())
 		return 0;
-	auto initData = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
-	if (initData)
-		return initData->outputVMSCoord[index].clamp(0, BodyConst::MaxVMSCoordinateValue);
-	else
-		return 0;
+//	auto initData = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
+//	if (initData)
+//		return initData->outputVMSCoord[index].clamp(0, BodyConst::MaxVMSCoordinateValue);
+//	else
+//		return 0;
+	// TODO
+	throw std::runtime_error("Implement this!");
 }
 
 
@@ -186,11 +190,13 @@ void Nose::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (committed_ && !noFixtures_) {
+	if (physBody_.b2Body_->GetFixtureList()[0]) {
 		physBody_.b2Body_->DestroyFixture(
 				&physBody_.b2Body_->GetFixtureList()[0]);
-		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
-		pJoint = nullptr;
+//		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
+//		pJoint = nullptr;
+		// TODO
+		throw std::runtime_error("Implement this!");
 	}
 
 	// create fixture:
@@ -201,7 +207,9 @@ void Nose::updateFixtures() {
 	float height = 3 * sqA3;
 
 	if (base*height < b2_linearSlop) {
-		noFixtures_ = true;
+//		noFixtures_ = true;
+		// TODO
+		throw std::runtime_error("Implement this!");
 		return;
 	}
 
@@ -231,8 +239,7 @@ void Nose::updateFixtures() {
 
 
 void Nose::die() {
-	if (context_)
-		context_->updateList.remove(this);
+	context_.updateList.remove(this);
 }
 
 

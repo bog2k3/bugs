@@ -234,11 +234,11 @@ bool Ribosome::step() {
 
 // call this before instantiating the body part in order to update to correct density and size
 void Ribosome::updateCellDensity(BodyCell &cell) {
-	auto fn = mapDensityFunctions[specializationType(cell)];	// undefined function and map -> implement with static methods for density in bodyparts
-	auto oldDensity = cell.density;
-	cell.density_ = fn(cell);
+//	auto fn = mapDensityFunctions[specializationType(cell)];	// undefined function and map -> implement with static methods for density in bodyparts
+//	auto oldDensity = cell.density;
+//	cell.density_ = fn(cell);
 	// must adjust cell size to conserve mass
-	cell.size_ *= oldDensity / cell.density_;
+//	cell.size_ *= oldDensity / cell.density_;
 	// TODO must update link positions
 	throw std::runtime_error("Implement this!");
 }
@@ -434,7 +434,7 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 }*/
 
 void Ribosome::decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx) {
-	cell.proteinValues_.data[g.protein - GENE_PROT_X] += g.weight;
+	cell.proteinValues_[g.protein - GENE_PROT_X] += g.weight;
 }
 
 void Ribosome::decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx) {
@@ -460,7 +460,7 @@ void Ribosome::decodeJointAttrib(GeneJointAttribute const& g, BodyCell &cell, De
 }
 
 void Ribosome::decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
-	if (g.attrib > GENE_MUSCLE_ATTR_INVALID && g.param < GENE_MUSCLE_ATTR_END)
+	if (g.attrib > GENE_MUSCLE_ATTR_INVALID && g.attrib < GENE_MUSCLE_ATTR_END)
 		cell.mapMuscleAttribs_[g.attrib].changeAbs(g.value);
 }
 

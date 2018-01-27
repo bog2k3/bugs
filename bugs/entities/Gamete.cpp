@@ -140,7 +140,7 @@ void Gamete::draw(RenderContext const& ctx) {
 }
 #endif
 
-void Gamete::serialize(BinaryStream &stream) {
+void Gamete::serialize(BinaryStream &stream) const {
 	//TODO...
 }
 

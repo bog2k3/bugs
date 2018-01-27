@@ -68,7 +68,7 @@ void FoodDispenser::update(float dt) {
 	}
 }
 
-void FoodDispenser::serialize(BinaryStream &stream) {
+void FoodDispenser::serialize(BinaryStream &stream) const {
 	glm::vec2 pos = physBody_.getPosition();
 	stream << pos.x << pos.y << direction_;
 }

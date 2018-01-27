@@ -54,7 +54,7 @@ void Wall::deserialize(BinaryStream &stream) {
 	World::getInstance()->takeOwnershipOf(std::unique_ptr<Wall>(new Wall(from, to, width)));
 }
 
-void Wall::serialize(BinaryStream &stream) {
+void Wall::serialize(BinaryStream &stream) const {
 	stream << from_.x << from_.y;
 	stream << to_.x << to_.y;
 	stream << width_;

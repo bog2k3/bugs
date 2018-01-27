@@ -7,6 +7,7 @@
 
 #include "Bone.h"
 #include "BodyConst.h"
+#include "BodyCell.h"
 #include "../ObjectTypesAndFlags.h"
 
 #include <boglfw/World.h>

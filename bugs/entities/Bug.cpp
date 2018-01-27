@@ -247,11 +247,12 @@ void Bug::update(float dt) {
 		neuralNet_->iterate();
 	}
 
-	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
-		// we just depleted our energy supply and died
-		kill();
-		return;
-	}
+#warning "implement die!"	// TODO
+//	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
+//		// we just depleted our energy supply and died
+//		kill();
+//		return;
+//	}
 
 	//LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
 
@@ -288,15 +289,15 @@ void Bug::draw(RenderContext const &ctx) {
 			bp->draw(ctx);
 
 	// draw debug data:
-	if (ctx.enabledLayers.bugDebug && body_) {
+	if (ctx.enabledLayers.bugDebug /*&& body_*/) {
 		auto x = [this](Viewport* vp) {
-			glm::vec3 wldPos = body_->getWorldTransformation();
+			glm::vec3 wldPos {0}; // TODO = body_->getWorldTransformation();
 			wldPos.z = 0; // z was rotation before
 			glm::vec3 viewpPos = vp->project(wldPos);
 			return viewpPos.x;
 		};
 		auto y = [this](Viewport* vp) {
-			glm::vec3 wldPos = body_->getWorldTransformation();
+			glm::vec3 wldPos {0}; //TODO = body_->getWorldTransformation();
 			wldPos.z = 0; // z was rotation before
 			glm::vec3 viewpPos = vp->project(wldPos);
 			return viewpPos.y;
@@ -317,7 +318,8 @@ void Bug::onFoodProcessed(float mass) {
 	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
 	if (cachedMassDirty_)
 		return;
-	float fatMassRatio = body_->getFatMass() / (cachedLeanMass_ + body_->getFatMass());
+	float fatMassRatio = 0; //TODO body_->getFatMass() / (cachedLeanMass_ + body_->getFatMass());
+	throw std::runtime_error("Implement this!");
 	float growthMass = 0;
 	float eggMass = 0;
 	if (fatMassRatio >= minFatMasRatio_) {
@@ -344,7 +346,9 @@ void Bug::onFoodProcessed(float mass) {
 		}
 	}
 	// use the left food to make fat and energy:
-	body_->replenishEnergyFromMass(mass - eggMass - growthMass);
+	// body_->replenishEnergyFromMass(mass - eggMass - growthMass);
+	// TODO
+	throw std::runtime_error("Implement this!");
 }
 
 void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
@@ -384,19 +388,23 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0), 1);
 }
 
-glm::vec2 Bug::getVelocity() {
+glm::vec2 Bug::getVelocity() const {
 	if (zygoteShell_)
 		return b2g(zygoteShell_->getBody().b2Body_->GetLinearVelocity());
-	if (body_)
-		b2g(body_->getBody().b2Body_->GetLinearVelocity());
+//	if (body_)
+//		b2g(body_->getBody().b2Body_->GetLinearVelocity());
+	// TODO
+	throw std::runtime_error("Implement this!");
 	return glm::vec2(0);
 }
 
-float Bug::getMass() {
+float Bug::getMass() const {
 	return 1.f;//zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
+	// TODO
+	throw std::runtime_error("Implement this!");
 }
 
-void Bug::serialize(BinaryStream &stream) {
+void Bug::serialize(BinaryStream &stream) const {
 	if (!isAlive_)
 		return;
 	glm::vec2 pos = getPosition();
@@ -423,14 +431,16 @@ void Bug::deserialize(BinaryStream &stream) {
 	World::getInstance()->takeOwnershipOf(std::move(ptr));
 }
 
-float Bug::getNeuronValue(int neuronIndex) {
+float Bug::getNeuronValue(int neuronIndex) const {
 	if (neuronIndex < 0 || neuronIndex >= neuralNet_->neurons.size())
 		return 0;
 	return neuralNet_->neurons[neuronIndex]->getValue();
 }
 
 glm::vec3 Bug::getWorldTransform() const {
-	return body_ ? body_->getWorldTransformation() : zygoteShell_ ? zygoteShell_->getWorldTransformation() : glm::vec3(0);
+	//return body_ ? body_->getWorldTransformation() : zygoteShell_ ? zygoteShell_->getWorldTransformation() : glm::vec3(0);
+	// TODO
+	throw std::runtime_error("Implement this!");
 }
 
 aabb Bug::getAABB() const {

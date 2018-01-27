@@ -6,6 +6,8 @@
  */
 
 #include "BodyCell.h"
+#include "BodyConst.h"
+#include "../genetics/constants.h"
 
 void BodyCell::initializeGeneValues() {
 	mapDivisionParams_[GENE_DIVISION_RATIO] = CumulativeValue(1.f);			// default to 50%-50%
@@ -23,7 +25,7 @@ void BodyCell::initializeGeneValues() {
 	mapJointAttribs_[GENE_JOINT_ATTR_TYPE] = CumulativeValue(constants::FBOOL_false);		// default to weld joint
 
 	mapMuscleAttribs_[GENE_MUSCLE_ATTR_ASPECT_RATIO] = CumulativeValue(BodyConst::initialMuscleAspectRatio);
-	mapMuscleAttribs_[GENE_MUSCLE_ATTR_SIZE] = CumulativeValue(BodyConst::initialMuscleSize);
+	mapMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO] = CumulativeValue(BodyConst::initialMuscleMassRatio);
 	mapMuscleAttribs_[GENE_MUSCLE_ATTR_INSERT_OFFSET] = CumulativeValue(BodyConst::initialMuscleInsertOffset);
 	mapMuscleAttribs_[GENE_MUSCLE_ATTR_INPUT_COORD] = CumulativeValue();
 
@@ -31,7 +33,7 @@ void BodyCell::initializeGeneValues() {
 		mapAttributes_[i] = CumulativeValue();
 }
 
-float BodyCell::radius(float angle) {
+float BodyCell::radius(float angle) const {
 	// TODO cell radius - use map to call static methods to get attachment points ?
 	throw std::runtime_error("Implement this!");
 }

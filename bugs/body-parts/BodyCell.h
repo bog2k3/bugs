@@ -14,6 +14,7 @@
 #include "BodyConst.h"
 
 #include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 #include <map>
 #include <vector>

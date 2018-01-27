@@ -7,6 +7,7 @@
 
 #include "BodyPart.h"
 #include "BodyConst.h"
+#include "BodyCell.h"
 #include "../entities/Bug.h"
 #include "../genetics/GeneDefinitions.h"
 #include "../ObjectTypesAndFlags.h"
@@ -57,7 +58,7 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 
 	if (!suppressPhysicalBody) {
 		World::getInstance()->queueDeferredAction([this, cell] {
-			PhysicsProperties props(cell.position_, cell.angle_, true, velocity?, angularVelocity?);
+			PhysicsProperties props(cell.position(), cell.angle(), true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
 			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
 			physBody_.create(props);

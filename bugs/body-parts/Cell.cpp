@@ -47,7 +47,7 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 	// 4. repeat until no more marked cells
 
 	std::set<Cell*> newMarked;
-	sts::set<Cell*> allAffected;
+	std::set<Cell*> allAffected;
 
 	while (!marked.empty()) {
 		for (Cell* c : marked) {
@@ -142,6 +142,6 @@ std::pair<Cell*, Cell*> Cell::divide(float ratio, bool reorientate, bool mirror)
 	return {cl, cr};
 }
 
-Cell* Cell::createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) {
+Cell* Cell::createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const {
 	return new Cell(size, position, rotation, mirror, rightSide);
 }
