@@ -59,29 +59,29 @@
 
 static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 
-MuscleInitializationData::MuscleInitializationData()
-	: aspectRatio(BodyConst::initialMuscleAspectRatio) {
-	density.reset(BodyConst::MuscleDensity);
-}
+//MuscleInitializationData::MuscleInitializationData()
+//	: aspectRatio(BodyConst::initialMuscleAspectRatio) {
+//	density.reset(BodyConst::MuscleDensity);
+//}
+//
+//void Muscle::cacheInitializationData() {
+//	BodyPart::cacheInitializationData();
+//	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
+//	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
+//}
+//
+//float Muscle::getInputVMSCoord(unsigned index) const {
+//	if (index != 0)
+//		return 0;
+//	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
+//	if (initData)
+//		return initData->inputVMSCoord.clamp(0, BodyConst::MaxVMSCoordinateValue);
+//	else
+//		return 0;
+//}
 
-void Muscle::cacheInitializationData() {
-	BodyPart::cacheInitializationData();
-	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
-	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
-}
-
-float Muscle::getInputVMSCoord(unsigned index) const {
-	if (index != 0)
-		return 0;
-	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
-	if (initData)
-		return initData->inputVMSCoord.clamp(0, BodyConst::MaxVMSCoordinateValue);
-	else
-		return 0;
-}
-
-Muscle::Muscle()
-	: BodyPart(BodyPartType::MUSCLE, std::make_shared<MuscleInitializationData>())
+Muscle::Muscle(BodyPartContext const& context, BodyCell& cell)
+	: BodyPart(BodyPartType::MUSCLE, context, cell)
 	, inputSocket_(new InputSocket(nullptr, 1.f))
 	, aspectRatio_(1.f)
 	, maxForce_(0)
@@ -129,7 +129,7 @@ void Muscle::onJointDied(BodyPart* joint) {
 	getUpdateList()->add(this);
 }*/
 
-void Muscle::commit() {
+void Muscle::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif

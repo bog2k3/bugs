@@ -35,10 +35,10 @@ Chromosome Bug::createBasicChromosome() {
 	std::vector<offsetInsertion> insertions;
 
 #define OFFSET_MARKER(name) { offsetMarkers[#name] = c.genes.size(); }
-#define INSERT_OFFSET(targetMarker, sourceMarker) { insertions.push_back(offsetInsertion(offsetMarkers[sourceMarker], c.genes.size(), #targetMarker)); }
+#define INSERT_OFFSET(targetMarker, sourceMarker) { insertions.push_back(offsetInsertion(offsetMarkers[#sourceMarker], c.genes.size(), #targetMarker)); }
 #define PUSH(g) c.genes.push_back(g)
 
-#error "make sure inserted offsets are relative to parent cell's offset"
+#warning "make sure inserted offsets are relative to parent cell's offset"
 
 //  ------- constants -------------------------
 

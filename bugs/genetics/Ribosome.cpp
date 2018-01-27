@@ -136,7 +136,8 @@ void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves) {
 bool Ribosome::step() {
 	LOGPREFIX("Ribosome");
 	if (activeSet_.empty()) {
-		// finished decoding all body parts.
+		// finished division and specialization;
+		// TODO must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
 
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
@@ -389,67 +390,40 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 	case gene_type::OFFSET:
 		decodeOffset(g.data.gene_offset, cell, ctx);
 		break;
-	/*case gene_type::JOINT_OFFSET:
-		decodeJointOffset(g.data.gene_joint_offset, part);*/
+	case gene_type::DIVISION_PARAM:
+		decodeDivisionParam(g.data.gene_division_param, cell, ctx);
 		break;
 	case gene_type::PART_ATTRIBUTE:
 		decodePartAttrib(g.data.gene_attribute, cell, ctx);
 		break;
+	case gene_type::JOINT_ATTRIBUTE:
+		decodeJointAttrib(g.data.gene_joint_attrib, cell, ctx);
+		break;
+	case gene_type::MUSCLE_ATTRIBUTE:
+		decodeMuscleAttrib(g.data.gene_muscle_attrib, cell, ctx);
+		break;
 	case gene_type::BODY_ATTRIBUTE:
-		bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
+		bodyAttribGenes_.insert(&g);
+		//bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
 		break;
+	case gene_type::VMS_OFFSET:
+		decodeVMSOffset(g.data.gene_vms_offset, cell, ctx);
+		break;
+	case gene_type::NEURON:
 	case gene_type::SYNAPSE:
-		// only from depth 0 (torso) must the neural genes be taken into account
-		if (!part || part->getType() == BodyPartType::TORSO) {
-			decodeSynapse(g.data.gene_synapse);
-		}
-		break;
-	case gene_type::NEURON_OUTPUT_COORD:
-		if (!part || part->getType() == BodyPartType::TORSO) {
-			if (deferNeural)
-				neuralGenes_.push_back(&g);
-			else
-				decodeNeuronOutputCoord(g.data.gene_neuron_output);
-		}
-		break;
 	case gene_type::NEURON_INPUT_COORD:
-		if (!part || part->getType() == BodyPartType::TORSO) {
-			if (deferNeural)
-				neuralGenes_.push_back(&g);
-			else
-				decodeNeuronInputCoord(g.data.gene_neuron_input);
-		}
-		break;
+	case gene_type::NEURON_OUTPUT_COORD:
 	case gene_type::TRANSFER_FUNC:
-		if (!part || part->getType() == BodyPartType::TORSO) {
-			if (deferNeural)
-				neuralGenes_.push_back(&g);
-			else
-				decodeTransferFn(g.data.gene_transfer_function);
-		}
-		break;
 	case gene_type::NEURAL_BIAS:
-		if (!part || part->getType() == BodyPartType::TORSO) {
-			if (deferNeural)
-				neuralGenes_.push_back(&g);
-			else
-				decodeNeuralBias(g.data.gene_neural_constant);
-		}
-		break;
 	case gene_type::NEURAL_PARAM:
-		if (!part || part->getType() == BodyPartType::TORSO) {
-			if (deferNeural)
-				neuralGenes_.push_back(&g);
-			else
-				decodeNeuralParam(g.data.gene_neural_param);
-		}
+		neuralGenes_.insert(&g);
 		break;
 	default:
 		ERROR("Unhandled gene type : " << (uint)g.type);
 	}
 }
 
-bool Ribosome::partMustGenerateJoint(BodyPartType part_type) {
+/*bool Ribosome::partMustGenerateJoint(BodyPartType part_type) {
 	switch (part_type) {
 	case BodyPartType::BONE:
 	case BodyPartType::GRIPPER:
@@ -457,67 +431,41 @@ bool Ribosome::partMustGenerateJoint(BodyPartType part_type) {
 	default:
 		return false;
 	}
-}
-
-void Ribosome::decodeProtein(GeneProtein const& g, BodyPart* part, GrowthData *growthData) {
-	int crtDepth = part->getDepth();
-	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
-		return;
-	//uint segment = clamp<int>(g.targetSegment, 0, BodyPart::MAX_CHILDREN-1);
-	glm::vec4 &pos = growthData->hyperPosition;
-	switch (g.protein) {
-	case GENE_PROT_A:
-		pos.x--;
-		break;
-	case GENE_PROT_B:
-		pos.x++;
-		break;
-	case GENE_PROT_C:
-		pos.y--;
-		break;
-	case GENE_PROT_D:
-		pos.y++;
-		break;
-	case GENE_PROT_E:
-		pos.z--;
-		break;
-	case GENE_PROT_F:
-		pos.z++;
-		break;
-	case GENE_PROT_G:
-		pos.w--;
-		break;
-	case GENE_PROT_H:
-		pos.w++;
-		break;
-	}
-}
-
-void Ribosome::decodeOffset(GeneOffset const& g, BodyPart *part, GrowthData *growthData) {
-	int crtDepth = part->getDepth();
-	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
-		return;
-	float side = clamp<float>(g.side, -1, +1);
-	//growthData->offsets[segment].changeAbs(g.offset);
-}
-
-/*void Ribosome::decodeJointOffset(GeneJointOffset const& g, BodyPart* part) {
-	int crtDepth = part->getDepth();
-	if (crtDepth < g.minDepth || crtDepth > g.maxDepth)
-		return;
-	if (mapJointOffsets_.find(part) != mapJointOffsets_.end())
-		mapJointOffsets_[part].second.changeAbs(g.offset);
 }*/
 
+void Ribosome::decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx) {
+	cell.proteinValues_.data[g.protein - GENE_PROT_X] += g.weight;
+}
+
+void Ribosome::decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx) {
+	if (g.side >= 0)
+		ctx.childOffsets[0].changeAbs(g.offset);
+	if (g.side <= 0)
+		ctx.childOffsets[1].changeAbs(g.offset);
+}
+
+void Ribosome::decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, DecodeContext &ctx) {
+	if (g.param > GENE_DIVISION_INVALID && g.param < GENE_DIVISION_END)
+		cell.mapDivisionParams_[g.param].changeAbs(g.value);
+}
+
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
-//	int depth = part->getDepth();
-//	if (depth >= g.minDepth && depth <= g.maxDepth)
-//	{
-//		CumulativeValue* pAttrib = part->getAttribute(g.attribute, g.attribIndex);
-//		if (pAttrib)
-//			pAttrib->changeAbs(g.value);
-//	}
-	throw std::runtime_error("Not implemented!");
+	if (g.attribute > GENE_ATTRIB_INVALID && g.attribute < GENE_ATTRIB_END)
+		cell.mapAttributes_[g.attribute].changeAbs(g.value);
+}
+
+void Ribosome::decodeJointAttrib(GeneJointAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
+	if (g.attrib > GENE_JOINT_ATTR_INVALID && g.attrib < GENE_JOINT_ATTR_END)
+		cell.mapJointAttribs_[g.attrib].changeAbs(g.value);
+}
+
+void Ribosome::decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
+	if (g.attrib > GENE_MUSCLE_ATTR_INVALID && g.param < GENE_MUSCLE_ATTR_END)
+		cell.mapMuscleAttribs_[g.attrib].changeAbs(g.value);
+}
+
+void Ribosome::decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx) {
+	cell.VMSOffset_.changeAbs(g.value);
 }
 
 void Ribosome::decodeSynapse(GeneSynapse const& g) {
@@ -567,7 +515,7 @@ void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 	throw std::runtime_error("Not implemented!");
 }
 
-void Ribosome::createSynapse(int from, int to, SynapseInfo const& info) {
+//void Ribosome::createSynapse(int from, int to, SynapseInfo const& info) {
 //	assertDbg(hasNeuron(from, true));	// should be there, since synapses dictate neurons
 //	assertDbg(hasNeuron(to, true));
 //
@@ -577,8 +525,8 @@ void Ribosome::createSynapse(int from, int to, SynapseInfo const& info) {
 //	InputSocket* i = new InputSocket(pTo, info.weight);
 //	pTo->addInput(std::unique_ptr<InputSocket>(i), info.priority);
 //	pFrom->addTarget(i);
-	throw std::runtime_error("Not implemented!");
-}
+//	throw std::runtime_error("Not implemented!");
+//}
 
 // returns -1 if none found
 template <typename T>

@@ -16,18 +16,18 @@
 class JointPivot;
 class InputSocket;
 
-struct MuscleInitializationData : public BodyPartInitializationData {
-	virtual ~MuscleInitializationData() noexcept = default;
-	MuscleInitializationData();
-
-	CumulativeValue aspectRatio;	// length/width
-	CumulativeValue inputVMSCoord; // input nerve VMS coordinate
-};
+//struct MuscleInitializationData : public BodyPartInitializationData {
+//	virtual ~MuscleInitializationData() noexcept = default;
+//	MuscleInitializationData();
+//
+//	CumulativeValue aspectRatio;	// length/width
+//	CumulativeValue inputVMSCoord; // input nerve VMS coordinate
+//};
 
 class Muscle: public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent:
-	Muscle();
+	Muscle(BodyPartContext const& context, BodyCell& cell);
 	virtual ~Muscle() override;
 
 	void setJoint(JointPivot* joint, int motorDirSign);
@@ -67,8 +67,8 @@ protected:
 	 * {ret} is relative position in current slice [0.0, 1.0] - use this to interpolate
 	 */
 	float getCurrentPhiSlice();
-	void cacheInitializationData() override;
-	void commit() override;
+//	void cacheInitializationData() override;
+	void updateFixtures() override;
 	//void onAddedToParent() override;
 	void die() override;
 

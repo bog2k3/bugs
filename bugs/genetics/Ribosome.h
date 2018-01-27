@@ -55,7 +55,7 @@ struct DecodeContext {
 	CumulativeValue childOffsets[2]; // holds relative genome offsets for each future child cell (0 is left, 1 right)
 
 	DecodeContext(int initialOffs)
-		: startGenomePos(initialOffs), crtGenomePos(initialOffs), childOffsets {0, 0} {
+		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
 	}
 };
 
@@ -106,7 +106,10 @@ private:
 	void decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, bool deferNeural);
 	void decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx);
-	//void decodeJointOffset(GeneJointOffset const& g, BodyPart* part);
+	void decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, DecodeContext &ctx);
+	void decodeJointAttrib(GeneJointAttribute const& g, BodyCell &cell, DecodeContext &ctx);
+	void decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx);
+	void decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeSynapse(GeneSynapse const& g);
 	void decodeTransferFn(GeneTransferFunction const& g);
