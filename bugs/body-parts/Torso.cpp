@@ -30,110 +30,110 @@
 
 static const glm::vec3 debug_color(1.f, 1.f, 0.f);
 
-//Torso::Torso()
-//	: BodyPart(BodyPartType::INVALID, std::make_shared<BodyPartInitializationData>())
-//	, fatMass_(0)
-//	, lastCommittedTotalSizeInv_(0)
-//	, frameUsedEnergy_(0)
-//	, energyBuffer_(0)
-//	, maxEnergyBuffer_(0)
-//	, cachedMassTree_(0)
-//	, foodProcessingSpeed_(0)
-//	, foodBufferSize_(0)
-//	, foodBuffer_(0)
-//{
-//	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
-//	physBody_.userPointer_ = this;
-//}
+Torso::Torso()
+	: BodyPart(BodyPartType::INVALID, std::make_shared<BodyPartInitializationData>())
+	, fatMass_(0)
+	, lastCommittedTotalSizeInv_(0)
+	, frameUsedEnergy_(0)
+	, energyBuffer_(0)
+	, maxEnergyBuffer_(0)
+	, cachedMassTree_(0)
+	, foodProcessingSpeed_(0)
+	, foodBufferSize_(0)
+	, foodBuffer_(0)
+{
+	physBody_.userObjectType_ = ObjectTypes::BPART_TORSO;
+	physBody_.userPointer_ = this;
+}
 
 Torso::~Torso() {
 }
 
-/*void Torso::onAddedToParent() {
+void Torso::onAddedToParent() {
 	assertDbg(getUpdateList() && "update list should be available to the body at this time");
 	getUpdateList()->add(this);
-}*/
+}
 
-//void Torso::updateFixtures() {
-//#ifdef DEBUG
-//	World::assertOnMainThread();
-//#endif
-//	if (committed_) {
-//		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
-//	}
-//
-//	float fakeFatMass = fatMass_;
-//	float fatSize = (fakeFatMass) * BodyConst::FatDensityInv;
-//	lastCommittedTotalSizeInv_ = 1.f / (size_ + fatSize);
-//
-//	float density = (size_ * BodyConst::TorsoDensity + fakeFatMass) / (size_ + fakeFatMass * BodyConst::FatDensityInv);
-//
-//	// create fixture....
-//	b2CircleShape shape;
-//	shape.m_p.Set(0, 0);
-//	shape.m_radius = sqrtf((size_+fatSize)/PI);
-//
-//	b2FixtureDef fixDef;
-//	fixDef.density = density;
-//	fixDef.friction = 0.2f;
-//	fixDef.restitution = 0.3f;
-//	fixDef.shape = &shape;
-//
-//	physBody_.b2Body_->CreateFixture(&fixDef);
-//	maxEnergyBuffer_ = size_ * BodyConst::TorsoEnergyDensity;
-//	foodProcessingSpeed_ = size_ * BodyConst::FoodProcessingSpeedDensity;
-//	foodBufferSize_ = foodProcessingSpeed_; // enough for 1 second
-//
-//#warning "gresit, copiii inca nu sunt scalati"
-//	cachedMassTree_ = 1.f; //BodyPart::getMass_tree();
-//}
+void Torso::updateFixtures() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
+	if (committed_) {
+		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
+	}
 
-//void Torso::draw(RenderContext const& ctx) {
-//	if (committed_) {
-//		// nothing, physics draws
-//#ifdef DEBUG_DRAW_TORSO
-//		if (isDead()) {
-//			glm::vec3 transform = getWorldTransformation();
-//			glm::vec2 pos = vec3xy(transform);
-//			float sizeLeft = getFoodValue() / density_;
-//			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft/PI), 12, glm::vec3(0.5f,0,1));
-//		} else {
-//			// draw the inner circle - actual torso size without fat
-//			glm::vec3 transform = getWorldTransformation();
-//			glm::vec2 pos = vec3xy(transform);
-//			Shape3D::get()->drawCircleXOY(pos, sqrtf(size_/PI), 12, debug_color);
-//		}
-//#endif
-//	} else {
-//		glm::vec3 transform = getWorldTransformation();
-//		glm::vec2 pos = vec3xy(transform);
-//		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_/PI), 12, debug_color);
-//		Shape3D::get()->drawCircleXOY(pos, sqrtf((size_+fatMass_*BodyConst::FatDensityInv)*PI_INV), 12, debug_color);
-//		Shape3D::get()->drawLine({pos, 0},
-//				{pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z), 0},
-//				debug_color);
-//	}
-//}
-//
-//glm::vec2 Torso::getAttachmentPoint(float relativeAngle)
-//{
-//	if (!geneValuesCached_) {
-//#ifdef DEBUG
-//		World::getInstance()->assertOnMainThread();
-//#endif
-//		cacheInitializationData();
-//	}
-//	float fatSize = fatMass_*BodyConst::FatDensityInv;
-//	float fullSize = size_ + fatSize;
-//	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(fullSize * PI_INV), 0), relativeAngle));
-//	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
-//	return ret;
-//}
-//
-//void Torso::setInitialFatMass(float fat) {
-//	assertDbg(!committed_);
-//	fatMass_ = fat;
-//}
+	float fakeFatMass = fatMass_;
+	float fatSize = (fakeFatMass) * BodyConst::FatDensityInv;
+	lastCommittedTotalSizeInv_ = 1.f / (size_ + fatSize);
+
+	float density = (size_ * BodyConst::TorsoDensity + fakeFatMass) / (size_ + fakeFatMass * BodyConst::FatDensityInv);
+
+	// create fixture....
+	b2CircleShape shape;
+	shape.m_p.Set(0, 0);
+	shape.m_radius = sqrtf((size_+fatSize)/PI);
+
+	b2FixtureDef fixDef;
+	fixDef.density = density;
+	fixDef.friction = 0.2f;
+	fixDef.restitution = 0.3f;
+	fixDef.shape = &shape;
+
+	physBody_.b2Body_->CreateFixture(&fixDef);
+	maxEnergyBuffer_ = size_ * BodyConst::TorsoEnergyDensity;
+	foodProcessingSpeed_ = size_ * BodyConst::FoodProcessingSpeedDensity;
+	foodBufferSize_ = foodProcessingSpeed_; // enough for 1 second
+
+#warning "gresit, copiii inca nu sunt scalati"
+	cachedMassTree_ = 1.f; //BodyPart::getMass_tree();
+}
+
+void Torso::draw(RenderContext const& ctx) {
+	if (committed_) {
+		// nothing, physics draws
+#ifdef DEBUG_DRAW_TORSO
+		if (isDead()) {
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			float sizeLeft = getFoodValue() / density_;
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft/PI), 12, glm::vec3(0.5f,0,1));
+		} else {
+			// draw the inner circle - actual torso size without fat
+			glm::vec3 transform = getWorldTransformation();
+			glm::vec2 pos = vec3xy(transform);
+			Shape3D::get()->drawCircleXOY(pos, sqrtf(size_/PI), 12, debug_color);
+		}
+#endif
+	} else {
+		glm::vec3 transform = getWorldTransformation();
+		glm::vec2 pos = vec3xy(transform);
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_/PI), 12, debug_color);
+		Shape3D::get()->drawCircleXOY(pos, sqrtf((size_+fatMass_*BodyConst::FatDensityInv)*PI_INV), 12, debug_color);
+		Shape3D::get()->drawLine({pos, 0},
+				{pos + glm::rotate(glm::vec2(sqrtf(size_/PI), 0), transform.z), 0},
+				debug_color);
+	}
+}
+
+glm::vec2 Torso::getAttachmentPoint(float relativeAngle)
+{
+	if (!geneValuesCached_) {
+#ifdef DEBUG
+		World::getInstance()->assertOnMainThread();
+#endif
+		cacheInitializationData();
+	}
+	float fatSize = fatMass_*BodyConst::FatDensityInv;
+	float fullSize = size_ + fatSize;
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(fullSize * PI_INV), 0), relativeAngle));
+	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+	return ret;
+}
+
+void Torso::setInitialFatMass(float fat) {
+	assertDbg(!committed_);
+	fatMass_ = fat;
+}
 
 void Torso::consumeEnergy(float amount) {
 	frameUsedEnergy_ += amount;
@@ -172,13 +172,13 @@ void Torso::update(float dt) {
 
 void Torso::die() {
 	// if this was ever alive, do a final commit to update its size to the cached mass
-//	if (committed_) {
-//		World::getInstance()->queueDeferredAction([this] {
-//			commit();
-//		});
-//	}
-//	if (context_)
-//		context_->updateList.remove(this);
+	if (committed_) {
+		World::getInstance()->queueDeferredAction([this] {
+			commit();
+		});
+	}
+	if (context_)
+		context_->updateList.remove(this);
 }
 
 float Torso::addFood(float mass) {
@@ -199,7 +199,7 @@ void Torso::replenishEnergyFromMass(float mass) {
 }
 
 void Torso::detachMotorLines(std::vector<unsigned> const& lines) {
-//	onMotorLinesDetached.trigger(lines);
+	onMotorLinesDetached.trigger(lines);
 }
 
 void Torso::detach(bool die) {
@@ -210,8 +210,8 @@ void Torso::detach(bool die) {
 	BodyPart::detach(die);
 }
 
-/*void Torso::hierarchyMassChanged() {
+void Torso::hierarchyMassChanged() {
 	onBodyMassChanged.trigger();
-}*/
+}
 
 #endif
