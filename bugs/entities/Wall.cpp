@@ -30,7 +30,7 @@ Wall::Wall(glm::vec2 const &from, glm::vec2 const &to, float width)
 	float angle = pointDirectionNormalized(delta / length);
 	PhysicsProperties props((from + to)*0.5f, angle, false, glm::vec2(0), 0);
 
-	World::getInstance()->queueDeferredAction([this, props, length, width]() {
+	World::getInstance().queueDeferredAction([this, props, length, width]() {
 		body_.create(props);
 		body_.getEntityFunc_ = &getEntityFromWallPhysBody;
 
@@ -51,7 +51,7 @@ void Wall::deserialize(BinaryStream &stream) {
 	glm::vec2 from, to;
 	float width;
 	stream >> from.x >> from.y >> to.x >> to.y >> width;
-	World::getInstance()->takeOwnershipOf(std::unique_ptr<Wall>(new Wall(from, to, width)));
+	World::getInstance().takeOwnershipOf(std::unique_ptr<Wall>(new Wall(from, to, width)));
 }
 
 void Wall::serialize(BinaryStream &stream) const {

@@ -35,7 +35,7 @@ FoodDispenser::FoodDispenser(glm::vec2 const &position, float direction)
 
 	PhysicsProperties props(position, direction, false, glm::vec2(0), 0);
 
-	World::getInstance()->queueDeferredAction([this, props]() {
+	World::getInstance().queueDeferredAction([this, props]() {
 		physBody_.create(props);
 		// create fixture
 		b2CircleShape shp;
@@ -64,7 +64,7 @@ void FoodDispenser::update(float dt) {
 		offset = glm::rotate(offset, direction_ + randomAngle);
 		glm::vec2 velocity = glm::normalize(offset) * spawnVelocity_;
 		std::unique_ptr<FoodChunk> chunk(new FoodChunk(position_ + offset, direction_+randomAngle, velocity, 0, spawnMass_));
-		World::getInstance()->takeOwnershipOf(std::move(chunk));
+		World::getInstance().takeOwnershipOf(std::move(chunk));
 	}
 }
 
@@ -77,7 +77,7 @@ void FoodDispenser::deserialize(BinaryStream &stream) {
 	glm::vec2 pos;
 	float dir;
 	stream >> pos.x >> pos.y >> dir;
-	World::getInstance()->takeOwnershipOf(std::unique_ptr<FoodDispenser>(new FoodDispenser(pos, dir)));
+	World::getInstance().takeOwnershipOf(std::unique_ptr<FoodDispenser>(new FoodDispenser(pos, dir)));
 }
 
 glm::vec3 FoodDispenser::getWorldTransform() const {

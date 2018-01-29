@@ -134,7 +134,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			if (!isAlive_) {
 				// embryo not viable, discarded.
 				LOGLN("Embryo not viable. DISCARDED.");
-				World::getInstance()->queueDeferredAction([this] {
+				World::getInstance().queueDeferredAction([this] {
 					//zygoteShell_->die_tree();
 //					body_->detach(false);
 //					body_->destroy();
@@ -162,7 +162,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			//body_->commit_tree(cachedLeanMass_/currentMass);
 
 			// delete embryo shell
-			World::getInstance()->queueDeferredAction([this] {
+			World::getInstance().queueDeferredAction([this] {
 //				body_->detach(false);
 				zygoteShell_->destroy();
 				zygoteShell_ = nullptr;
@@ -173,7 +173,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			/*body_->applyRecursive([this](BodyPart* part) {
 				part->onDied.add([this](BodyPart *dying) {
-					World::getInstance()->queueDeferredAction([this, dying] {
+					World::getInstance().queueDeferredAction([this, dying] {
 						dying->removeAllLinks();
 					});
 					deadBodyParts_.push_back(dying);
@@ -205,7 +205,7 @@ void Bug::updateDeadDecaying(float dt) {
 			continue;
 		deadBodyParts_[i]->consumeFoodValue(dt * WorldConst::BodyDecaySpeed);
 		if (deadBodyParts_[i]->getFoodValue() <= 0) {
-			World::getInstance()->queueDeferredAction([this, i] {
+			World::getInstance().queueDeferredAction([this, i] {
 				deadBodyParts_[i]->destroy();
 				bodyPartsUpdateList_.remove(deadBodyParts_[i]);
 				deadBodyParts_[i] = nullptr;
@@ -215,7 +215,7 @@ void Bug::updateDeadDecaying(float dt) {
 }
 
 void Bug::kill() {
-	World::getInstance()->queueDeferredAction([this] {
+	World::getInstance().queueDeferredAction([this] {
 		if (isAlive_) {
 			LOGLN("bug DIED");
 			--population; // one less bug
@@ -429,7 +429,7 @@ void Bug::deserialize(BinaryStream &stream) {
 	Genome genome;
 	stream >> genome;
 	std::unique_ptr<Bug> ptr(new Bug(genome, mass, glm::vec2(posx, posy), glm::vec2(velx, vely), generation));
-	World::getInstance()->takeOwnershipOf(std::move(ptr));
+	World::getInstance().takeOwnershipOf(std::move(ptr));
 }
 
 float Bug::getNeuronValue(int neuronIndex) const {

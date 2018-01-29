@@ -102,8 +102,8 @@ void JointPivot::updateFixtures() {
 
 	//def.collideConnected = true;
 
-	physJoint_ = (b2RevoluteJoint*)World::getInstance()->getPhysics()->CreateJoint(&def);
-	jointListenerHandle_ = World::getInstance()->getDestroyListener()->addCallback(physJoint_,
+	physJoint_ = (b2RevoluteJoint*)World::getInstance().getPhysics()->CreateJoint(&def);
+	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
 			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));*/
 }
 
@@ -111,7 +111,7 @@ void JointPivot::destroyPhysJoint() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	World::getInstance()->getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
+	World::getInstance().getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
 	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
 	physJoint_ = nullptr;
 }
@@ -201,7 +201,7 @@ void JointPivot::update(float dt) {
 		LOGNP(reason.str() << ")\n");
 
 #endif
-		World::getInstance()->queueDeferredAction([this] () {
+		World::getInstance().queueDeferredAction([this] () {
 			/*BodyPart* downStream = children_[0];
 			downStream->detach(true); // this will be taken over by bug entity
 			detach(true);
@@ -252,7 +252,7 @@ void JointPivot::die() {
 
 /*void Joint::onDetachedFromParent() {
 	if (physJoint_) {
-		World::getInstance()->getPhysics()->DestroyJoint(physJoint_);
+		World::getInstance().getPhysics()->DestroyJoint(physJoint_);
 		physJoint_ = nullptr;
 	}
 }*/

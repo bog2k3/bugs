@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
 		PhysDestroyListener destroyListener;
 		physWld.SetDestructionListener(&destroyListener);
 
-		World world;
+		World &world = World::getInstance();
 
 		world.setPhysics(&physWld);
 		world.setDestroyListener(&destroyListener);
@@ -252,7 +252,7 @@ int main(int argc, char* argv[]) {
 		win1->addElement(std::make_shared<Button>(glm::vec2(100, 100), glm::vec2(60, 35), "buton1"));
 		win1->addElement(std::make_shared<TextField>(glm::vec2(50, 170), glm::vec2(200, 40), "text"));*/
 
-		OperationsStack opStack(vp1, World::getInstance(), &physWld);
+		OperationsStack opStack(vp1, &world, &physWld);
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationPan(InputEvent::MB_RIGHT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
@@ -287,7 +287,7 @@ int main(int argc, char* argv[]) {
 				{20, 10, ViewportCoord::percent}); 											// size
 
 		DrawList drawList;
-		drawList.add(World::getInstance());
+		drawList.add(&world);
 		drawList.add(&physWld);
 		drawList.add(&scale);
 		drawList.add(&sigViewer);
@@ -302,7 +302,7 @@ int main(int argc, char* argv[]) {
 		updateList.add(&physWld);
 		updateList.add(&contactListener);
 		updateList.add(&sessionMgr.getPopulationManager());
-		updateList.add(World::getInstance());
+		updateList.add(&world);
 		updateList.add(&sigViewer);
 		updateList.add(&prototype);
 
@@ -324,7 +324,7 @@ int main(int argc, char* argv[]) {
 				glm::vec3(0.3f, 0.3f, 1.f), 30.f, 50, sessionMgr.getPopulationManager().getPopulationTarget()+1, 0, 0);
 
 	#ifdef DEBUG
-		// Bug* pB = dynamic_cast<Bug*>(World::getInstance()->getEntities(EntityType::BUG)[0]);
+		// Bug* pB = dynamic_cast<Bug*>(world.getEntities(EntityType::BUG)[0]);
 		// static constexpr float neuronUpdateTime = 0.05f;
 	//	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
 	//	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);

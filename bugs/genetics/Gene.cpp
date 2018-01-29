@@ -91,6 +91,13 @@ void Gene::update_meta_genes_vec() {
 		ATOM(data.gene_neural_param.neuronLocation)
 		ATOM(data.gene_neural_param.value)
 		break;
+	case gene_type::SKIP:
+		ATOM(data.gene_skip.count)
+		RESTRICTION(data.gene_skip.restriction)
+		break;
+	case gene_type::STOP:
+	case gene_type::NO_OP:
+		break;
 	default:
 		throw std::runtime_error("You forgot to add a gene type!");
 		break;

@@ -36,7 +36,7 @@ Gamete::Gamete(Chromosome &ch, glm::vec2 pos, glm::vec2 speed, float mass)
 			EventCategoryFlags::GAMETE | EventCategoryFlags::FOOD,	// TODO handle mouth collision properly (from Mouth)
 			EventCategoryFlags::GAMETE)
 {
-	World::getInstance()->queueDeferredAction([this, pos, speed, mass]() {
+	World::getInstance().queueDeferredAction([this, pos, speed, mass]() {
 		PhysicsProperties props(pos, 0, true, speed, 0);
 		body_.create(props);
 		body_.getEntityFunc_ = &getEntityFromGametePhysBody;
@@ -83,7 +83,7 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 			body_.b2Body_->GetMass() + other->body_.b2Body_->GetMass(),
 			(body_.getPosition() + other->body_.getPosition()) * 0.5f, b2g(velocity),
 			std::max(generation_, other->generation_)));
-	World::getInstance()->takeOwnershipOf(std::move(newlySpawnedBug));
+	World::getInstance().takeOwnershipOf(std::move(newlySpawnedBug));
 	// destroy these gamettes:
 	destroy();
 	other->destroy();
@@ -98,7 +98,7 @@ void Gamete::update(float dt) {
 	updateSkipCounter_ = 0;
 	// attract other gamettes
 	std::vector<b2Body*> bodies;
-	World::getInstance()->getBodiesInArea(body_.getPosition(), WorldConst::GameteAttractRadius, true, bodies);
+	World::getInstance().getBodiesInArea(body_.getPosition(), WorldConst::GameteAttractRadius, true, bodies);
 	for (auto b : bodies) {
 		if (!b->GetUserData() || b->GetType() != b2_dynamicBody)
 			continue;

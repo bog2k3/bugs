@@ -111,7 +111,7 @@ void EggLayer::update(float dt) {
 		glm::vec2 speed = glm::rotate(glm::vec2(1, 0), transform.z) * ejectSpeed_;
 		std::unique_ptr<Gamete> egg(new Gamete(chr, vec3xy(transform), speed, targetEggMass_));
 		egg->generation_ = getOwner()->getGeneration() + 1;
-		World::getInstance()->takeOwnershipOf(std::move(egg));
+		World::getInstance().takeOwnershipOf(std::move(egg));
 		eggMassBuffer_ -= targetEggMass_;
 	}
 }

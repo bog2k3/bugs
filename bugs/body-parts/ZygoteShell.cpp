@@ -44,7 +44,7 @@ ZygoteShell::ZygoteShell(glm::vec2 position, float angle, glm::vec2 velocity, fl
 //	cachedProps_.position = position;
 //	cachedProps_.velocity = velocity;
 
-//	World::getInstance()->queueDeferredAction([this]() {
+//	World::getInstance().queueDeferredAction([this]() {
 //		physBody_.create(cachedProps_);
 //		updateFixtures();
 //		committed_ = true;

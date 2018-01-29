@@ -35,42 +35,42 @@ SessionManager::SessionManager() {
 void SessionManager::startEmptySession() {
 	LOGPREFIX("SessionManager");
 	LOGLN("Starting empty session... removing all existing entities...");
-	World::getInstance()->reset();
+	World::getInstance().reset();
 	LOGLN("Finished. Session is now clean.");
 }
 
 void SessionManager::startDefaultSession() {
 	LOGPREFIX("SessionManager");
 	LOGLN("Creating default session...");
-	World::getInstance()->reset();
+	World::getInstance().reset();
 	float worldRadius = 10.f;
 	populationMgr.setWorldSize(glm::vec2(worldRadius*2, worldRadius*2));
-	World::getInstance()->setBounds(-worldRadius, worldRadius, worldRadius, -worldRadius);
+	World::getInstance().setBounds(-worldRadius, worldRadius, worldRadius, -worldRadius);
 
 	LOGLN("Building entities for default session...");
 
 	std::unique_ptr<Wall> w1(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f));
-	World::getInstance()->takeOwnershipOf(std::move(w1));
+	World::getInstance().takeOwnershipOf(std::move(w1));
 	std::unique_ptr<Wall> w2(new Wall(glm::vec2(-worldRadius, +worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f));
-	World::getInstance()->takeOwnershipOf(std::move(w2));
+	World::getInstance().takeOwnershipOf(std::move(w2));
 	std::unique_ptr<Wall> w3(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(-worldRadius, +worldRadius), 0.2f));
-	World::getInstance()->takeOwnershipOf(std::move(w3));
+	World::getInstance().takeOwnershipOf(std::move(w3));
 	std::unique_ptr<Wall> w4(new Wall(glm::vec2(+worldRadius, -worldRadius), glm::vec2(+worldRadius, +worldRadius), 0.2f));
-	World::getInstance()->takeOwnershipOf(std::move(w4));
+	World::getInstance().takeOwnershipOf(std::move(w4));
 
 	for (int i=0; i<20; i++) {
 		std::unique_ptr<FoodDispenser> foodDisp(new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0));
-		World::getInstance()->takeOwnershipOf(std::move(foodDisp));
+		World::getInstance().takeOwnershipOf(std::move(foodDisp));
 	}
 
 	// bug id=1 is a standard for reference:
-//	World::getInstance()->takeOwnershipOf(std::unique_ptr<Bug>(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)))));
+//	World::getInstance().takeOwnershipOf(std::unique_ptr<Bug>(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)))));
 
 	for (int i=0; i<populationMgr.getPopulationTarget(); i++) {
-		std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
-//		std::unique_ptr<Bug> bug(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
+//		std::unique_ptr<Bug> bug(Bug::newBasicMutantBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
+		std::unique_ptr<Bug> bug(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f))));
 //		if (bug->getId() == 2)
-			World::getInstance()->takeOwnershipOf(std::move(bug));
+			World::getInstance().takeOwnershipOf(std::move(bug));
 	}
 	LOGLN("Finished building default session.");
 }
@@ -79,7 +79,7 @@ bool SessionManager::loadSessionFromFile(std::string const &path) {
 	LOGPREFIX("SessionManager");
 	LOGLN("Loading session from file \"" << path << "\"...");
 	// LOGLN("Removing all entities...");
-	World::getInstance()->reset();
+	World::getInstance().reset();
 	// LOGLN("World is now clean.");
 	return mergeSessionFromFile(path);
 
@@ -103,7 +103,7 @@ bool SessionManager::saveSessionToFile(std::string const& path) {
 	LOGLN("Saving session to file \"" << path << "\"...");
 	Serializer serializer;
 	std::vector<Entity*> vecSer;
-	World::getInstance()->getEntities(vecSer, EntityType::ALL, Entity::FunctionalityFlags::SERIALIZABLE);
+	World::getInstance().getEntities(vecSer, EntityType::ALL, Entity::FunctionalityFlags::SERIALIZABLE);
 	for (auto e : vecSer)
 		serializer.queueObject(e);
 	if (!serializer.serializeToFile(path)) {

@@ -17,7 +17,7 @@
 #include <dmalloc.h>
 #endif
 
-//#define DEBUG_ONE_BUG_ONLY
+#define DEBUG_ONE_BUG_ONLY
 
 #ifdef DEBUG
 	#ifdef DEBUG_ONE_BUG_ONLY
@@ -42,7 +42,7 @@ void PopulationManager::update(float dt) {
 	if (bugPopulation != 0 && bugPopulation <= minPopulation) {
 		LOGPREFIX("PopulationManager");
 		LOGLN("Population reached the minimum point ("<<minPopulation<<"). Refilling up to "<<refillPopulationTarget<<"...");
-//		auto vec = World::getInstance()->getEntitiesOfType(Bug::entityType);
+//		auto vec = World::getInstance().getEntitiesOfType(Bug::entityType);
 //		vec.erase(std::remove_if(vec.begin(), vec.end(), [] (Entity* e) {
 //			Bug* bug = static_cast<Bug*>(e);
 //			return !bug->isAlive();
@@ -54,7 +54,7 @@ void PopulationManager::update(float dt) {
 			glm::vec2 pos = glm::vec2(srandf()*worldSize_.x*0.5f, srandf()*worldSize_.y*0.5f);
 //			std::unique_ptr<Bug> newBug(new Bug(bug->getGenome(), bug->getMass(), pos, glm::vec2(0), bug->getGeneration()));
 			std::unique_ptr<Bug> newBug(Bug::newBasicMutantBug(pos));
-			World::getInstance()->takeOwnershipOf(std::move(newBug));
+			World::getInstance().takeOwnershipOf(std::move(newBug));
 		}
 	}
 }

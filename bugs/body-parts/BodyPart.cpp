@@ -40,24 +40,14 @@
 BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell, bool suppressPhysicalBody)
 	: context_(context)
 	, type_(type)
-	//, committed_(false)
-	//, dontCreateBody_(false)
-	//, geneValuesCached_(false)
-	//, localRotation_(0)
 	, size_(cell.size())
 	, density_(cell.density())
-	//, updateList_(nullptr)
 	, lastCommitSize_inv_(0)
 	, destroyCalled_(false)
 	, dead_(false)
 {
-	//localRotation_ = cell.mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION].clamp(-PI, PI);
-
-	//registerAttribute(GENE_ATTRIB_LOCAL_ROTATION, initialData_->localRotation);
-	//registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
-
 	if (!suppressPhysicalBody) {
-		World::getInstance()->queueDeferredAction([this, &cell] {
+		World::getInstance().queueDeferredAction([this, &cell] {
 			PhysicsProperties props(cell.position(), cell.angle(), true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
 			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
@@ -76,7 +66,7 @@ BodyPart::BodyPart(glm::vec2 position, float angle, glm::vec2 velocity, float an
 	, dead_(false)
 {
 	size_ = mass / density_;
-	World::getInstance()->queueDeferredAction([this, position, velocity, angle, angularVelocity] {
+	World::getInstance().queueDeferredAction([this, position, velocity, angle, angularVelocity] {
 			PhysicsProperties props(position, angle, true, velocity, angularVelocity); //TODO velocity?, angularVelocity?);
 			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
@@ -188,7 +178,7 @@ void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
 		reverseUpdateCachedProps();
 	lastCommitSize_inv_ = 1.f / size_;
 
-	World::getInstance()->queueDeferredAction([this, initialScale] () {
+	World::getInstance().queueDeferredAction([this, initialScale] () {
 		// perform commit on local node:
 		if (type_ != BodyPartType::JOINT) {
 			if (!physBody_.b2Body_ && !dontCreateBody_)
@@ -335,7 +325,7 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 		{
 			lastCommitSize_inv_ = 1.f / size_;
 			if (type_ != BodyPartType::JOINT) {
-				World::getInstance()->queueDeferredAction([this] {
+				World::getInstance().queueDeferredAction([this] {
 					commit();
 				});
 				committed_now = true;
@@ -349,7 +339,7 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 	}
 	if (type_ == BodyPartType::JOINT && committed_ && (should_commit_joint || parentChanged || child_changed)) {
 		// must commit a joint whenever the threshold is reached, or parent or child has committed
-		World::getInstance()->queueDeferredAction([this] {
+		World::getInstance().queueDeferredAction([this] {
 			commit();
 		});
 		committed_now = true;

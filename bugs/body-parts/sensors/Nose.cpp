@@ -134,7 +134,7 @@ void Nose::update(float dt) {
 		static thread_local std::vector<Entity*> ents;
 		ents.clear();
 //TODO optimize here - restrict box to area in front of the nose
-		World::getInstance()->getEntitiesInBox(ents, NoseDetectableFlavours[i], Entity::FunctionalityFlags::DONT_CARE, pos, maxDist * 1.1f, true);
+		World::getInstance().getEntitiesInBox(ents, NoseDetectableFlavours[i], Entity::FunctionalityFlags::DONT_CARE, pos, maxDist * 1.1f, true);
 
 		// use all entities in the visibility cone (where cos(phi)>0)
 		float cummulatedSignal = 0.f;

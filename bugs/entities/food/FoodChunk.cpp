@@ -26,7 +26,7 @@ FoodChunk::FoodChunk(glm::vec2 position, float angle, glm::vec2 velocity, float 
 {
 	PhysicsProperties props(position, angle, true, velocity, angularVelocity);
 
-	World::getInstance()->queueDeferredAction([this, props]() {
+	World::getInstance().queueDeferredAction([this, props]() {
 		physBody_.create(props);
 		physBody_.getEntityFunc_ = &getEntityFromFoodChunkPhysBody;
 

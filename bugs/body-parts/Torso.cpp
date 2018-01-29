@@ -119,7 +119,7 @@ glm::vec2 Torso::getAttachmentPoint(float relativeAngle)
 {
 	if (!geneValuesCached_) {
 #ifdef DEBUG
-		World::getInstance()->assertOnMainThread();
+		World::getInstance().assertOnMainThread();
 #endif
 		cacheInitializationData();
 	}
@@ -156,7 +156,7 @@ void Torso::update(float dt) {
 		float crtSize = fatMass_ * BodyConst::FatDensityInv + size_;
 		if (crtSize * lastCommittedTotalSizeInv_ > BodyConst::SizeThresholdToCommit
 				|| crtSize * lastCommittedTotalSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
-			World::getInstance()->queueDeferredAction([this] {
+			World::getInstance().queueDeferredAction([this] {
 				updateFixtures();
 				//reattachChildren();
 			});
@@ -173,7 +173,7 @@ void Torso::update(float dt) {
 void Torso::die() {
 	// if this was ever alive, do a final commit to update its size to the cached mass
 	if (committed_) {
-		World::getInstance()->queueDeferredAction([this] {
+		World::getInstance().queueDeferredAction([this] {
 			commit();
 		});
 	}
@@ -204,7 +204,7 @@ void Torso::detachMotorLines(std::vector<unsigned> const& lines) {
 
 void Torso::detach(bool die) {
 #ifdef DEBUG
-		World::getInstance()->assertOnMainThread();
+		World::getInstance().assertOnMainThread();
 #endif
 	motorLines_.clear(); // because we don't want any line detached. And we don't need to track them either
 	BodyPart::detach(die);
