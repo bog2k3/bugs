@@ -16,92 +16,87 @@ void Gene::update_meta_genes_vec() {
 	metaGenes.push_back(&chance_to_delete);
 	metaGenes.push_back(&chance_to_swap);
 
-	throw std::runtime_error("Implement!");
+#define ATOM(A) \
+	metaGenes.push_back(&A.chanceToMutate); \
+	metaGenes.push_back(&A.changeAmount);
+#define RESTRICTION(R) \
+	ATOM(R.activeLevels); \
+	for (auto i=0u; i<sizeof(R.levels)/sizeof(BranchRestriction::levelRule); i++) { \
+		ATOM(R.levels[i].skipLeft); \
+		ATOM(R.levels[i].skipRight); \
+		ATOM(R.levels[i].stopLeft); \
+		ATOM(R.levels[i].stopRight); \
+	}
 
 	switch (type) {
-	/*case gene_type::PROTEIN:
-		metaGenes.push_back(&data.gene_protein.maxDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_protein.maxDepth.changeAmount);
-		metaGenes.push_back(&data.gene_protein.minDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_protein.minDepth.changeAmount);
-		metaGenes.push_back(&data.gene_protein.protein.chanceToMutate);
-		metaGenes.push_back(&data.gene_protein.protein.changeAmount);
-		metaGenes.push_back(&data.gene_protein.weight.chanceToMutate);
-		metaGenes.push_back(&data.gene_protein.weight.changeAmount);
+	case gene_type::DIVISION_PARAM:
+		ATOM(data.gene_division_param.value)
+		RESTRICTION(data.gene_division_param.restriction)
+		break;
+	case gene_type::JOINT_ATTRIBUTE:
+		ATOM(data.gene_joint_attrib.value);
+		RESTRICTION(data.gene_joint_attrib.restriction)
+		break;
+	case gene_type::MUSCLE_ATTRIBUTE:
+		ATOM(data.gene_muscle_attrib.side)
+		ATOM(data.gene_muscle_attrib.value)
+		RESTRICTION(data.gene_muscle_attrib.restriction)
+		break;
+	case gene_type::VMS_OFFSET:
+		ATOM(data.gene_vms_offset.value)
+		RESTRICTION(data.gene_vms_offset.restriction)
+		break;
+	case gene_type::PROTEIN:
+		ATOM(data.gene_protein.weight);
+		RESTRICTION(data.gene_protein.restriction);
 		break;
 	case gene_type::OFFSET:
-		metaGenes.push_back(&data.gene_offset.maxDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_offset.maxDepth.changeAmount);
-		metaGenes.push_back(&data.gene_offset.minDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_offset.minDepth.changeAmount);
-		metaGenes.push_back(&data.gene_offset.offset.chanceToMutate);
-		metaGenes.push_back(&data.gene_offset.offset.changeAmount);
-		metaGenes.push_back(&data.gene_offset.side.chanceToMutate);
-		metaGenes.push_back(&data.gene_offset.side.changeAmount);
+		ATOM(data.gene_offset.offset)
+		ATOM(data.gene_offset.side)
+		RESTRICTION(data.gene_offset.restriction)
 		break;
-	/*case gene_type::JOINT_OFFSET:
-		metaGenes.push_back(&data.gene_joint_offset.maxDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_joint_offset.maxDepth.changeAmount);
-		metaGenes.push_back(&data.gene_joint_offset.minDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_joint_offset.minDepth.changeAmount);
-		metaGenes.push_back(&data.gene_joint_offset.offset.chanceToMutate);
-		metaGenes.push_back(&data.gene_joint_offset.offset.changeAmount);
-		break; * /
 	case gene_type::PART_ATTRIBUTE:
-		metaGenes.push_back(&data.gene_attribute.maxDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_attribute.maxDepth.changeAmount);
-		metaGenes.push_back(&data.gene_attribute.minDepth.chanceToMutate);
-		metaGenes.push_back(&data.gene_attribute.minDepth.changeAmount);
-		metaGenes.push_back(&data.gene_attribute.value.chanceToMutate);
-		metaGenes.push_back(&data.gene_attribute.value.changeAmount);
-		break;
-	case gene_type::SYNAPSE:
-		metaGenes.push_back(&data.gene_synapse.from.chanceToMutate);
-		metaGenes.push_back(&data.gene_synapse.from.changeAmount);
-		metaGenes.push_back(&data.gene_synapse.to.chanceToMutate);
-		metaGenes.push_back(&data.gene_synapse.to.changeAmount);
-		metaGenes.push_back(&data.gene_synapse.weight.chanceToMutate);
-		metaGenes.push_back(&data.gene_synapse.weight.changeAmount);
-		metaGenes.push_back(&data.gene_synapse.priority.chanceToMutate);
-		metaGenes.push_back(&data.gene_synapse.priority.changeAmount);
-		break;
-	case gene_type::NEURON_INPUT_COORD:
-		metaGenes.push_back(&data.gene_neuron_input.destNeuronVirtIndex.chanceToMutate);
-		metaGenes.push_back(&data.gene_neuron_input.destNeuronVirtIndex.changeAmount);
-		metaGenes.push_back(&data.gene_neuron_input.inCoord.chanceToMutate);
-		metaGenes.push_back(&data.gene_neuron_input.inCoord.changeAmount);
-		break;
-	case gene_type::NEURON_OUTPUT_COORD:
-		metaGenes.push_back(&data.gene_neuron_output.srcNeuronVirtIndex.chanceToMutate);
-		metaGenes.push_back(&data.gene_neuron_output.srcNeuronVirtIndex.changeAmount);
-		metaGenes.push_back(&data.gene_neuron_output.outCoord.chanceToMutate);
-		metaGenes.push_back(&data.gene_neuron_output.outCoord.changeAmount);
-		break;
-	case gene_type::TRANSFER_FUNC:
-		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.chanceToMutate);
-		metaGenes.push_back(&data.gene_transfer_function.targetNeuron.changeAmount);
-		metaGenes.push_back(&data.gene_transfer_function.functionID.chanceToMutate);
-		metaGenes.push_back(&data.gene_transfer_function.functionID.changeAmount);
-		break;
-	case gene_type::NEURAL_BIAS:
-		metaGenes.push_back(&data.gene_neural_constant.targetNeuron.chanceToMutate);
-		metaGenes.push_back(&data.gene_neural_constant.targetNeuron.changeAmount);
-		metaGenes.push_back(&data.gene_neural_constant.value.chanceToMutate);
-		metaGenes.push_back(&data.gene_neural_constant.value.changeAmount);
-		break;
-	case gene_type::NEURAL_PARAM:
-		metaGenes.push_back(&data.gene_neural_param.targetNeuron.chanceToMutate);
-		metaGenes.push_back(&data.gene_neural_param.targetNeuron.changeAmount);
-		metaGenes.push_back(&data.gene_neural_param.value.chanceToMutate);
-		metaGenes.push_back(&data.gene_neural_param.value.changeAmount);
+		ATOM(data.gene_attribute.value)
+		RESTRICTION(data.gene_attribute.restriction)
 		break;
 	case gene_type::BODY_ATTRIBUTE:
-		metaGenes.push_back(&data.gene_body_attribute.value.chanceToMutate);
-		metaGenes.push_back(&data.gene_body_attribute.value.changeAmount);
-		break;*/
+		ATOM(data.gene_body_attribute.value)
+		break;
+	case gene_type::NEURON:
+		ATOM(data.gene_neuron.neuronLocation)
+		break;
+	case gene_type::SYNAPSE:
+		ATOM(data.gene_synapse.srcLocation)
+		ATOM(data.gene_synapse.destLocation)
+		ATOM(data.gene_synapse.priority)
+		ATOM(data.gene_synapse.weight)
+		break;
+	case gene_type::NEURON_INPUT_COORD:
+		ATOM(data.gene_neuron_input.neuronLocation)
+		ATOM(data.gene_neuron_input.coordinate)
+		break;
+	case gene_type::NEURON_OUTPUT_COORD:
+		ATOM(data.gene_neuron_output.neuronLocation)
+		ATOM(data.gene_neuron_output.coordinate)
+		break;
+	case gene_type::TRANSFER_FUNC:
+		ATOM(data.gene_transfer_function.neuronLocation)
+		ATOM(data.gene_transfer_function.functionID)
+		break;
+	case gene_type::NEURAL_BIAS:
+		ATOM(data.gene_neural_constant.neuronLocation)
+		ATOM(data.gene_neural_constant.value)
+		break;
+	case gene_type::NEURAL_PARAM:
+		ATOM(data.gene_neural_param.neuronLocation)
+		ATOM(data.gene_neural_param.value)
+		break;
 	default:
+		throw std::runtime_error("You forgot to add a gene type!");
 		break;
 	}
+#undef ATOM
+#undef RESTRICTION
 }
 
 Gene Gene::createRandomBodyAttribGene() {
@@ -117,9 +112,6 @@ Gene Gene::createRandomBodyAttribGene() {
 	case GENE_BODY_ATTRIB_GROWTH_SPEED:
 		g.value.set(BodyConst::initialGrowthSpeed);
 		break;
-//	case GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO:
-//		g.value.set(BodyConst::initialFatMassRatio);
-//		break;
 	case GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO:
 		g.value.set(BodyConst::initialMinFatMassRatio);
 		break;
@@ -127,7 +119,7 @@ Gene Gene::createRandomBodyAttribGene() {
 		g.value.set(BodyConst::initialReproductiveMassRatio);
 		break;
 	default:
-		ERROR("unhandled body attrib type: " << g.attribute);
+		throw std::runtime_error("unhandled body attrib type! ");
 	}
 	return g;
 }
