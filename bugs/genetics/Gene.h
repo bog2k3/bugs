@@ -144,7 +144,7 @@ struct GeneSkip {
 	Atom<int> count;
 
 	GeneSkip() {
-		restriction = BranchRestriction("*");
+		restriction = BranchRestriction("*v");
 		count.set(2);
 	}
 };
@@ -159,7 +159,7 @@ struct GeneDivisionParam {
 
 struct GeneJointAttribute {
 	BranchRestriction restriction;
-	gene_joint_attribute attrib = GENE_JOINT_ATTR_INVALID;
+	gene_joint_attribute_type attrib = GENE_JOINT_ATTR_INVALID;
 	Atom<float> value;
 
 	GeneJointAttribute() = default;
@@ -168,7 +168,7 @@ struct GeneJointAttribute {
 struct GeneMuscleAttribute {
 	BranchRestriction restriction;
 	Atom<float> side;				// distinguish between the two muscles: negative is left, positive is right, zero is both
-	gene_muscle_attribute attrib = GENE_MUSCLE_ATTR_INVALID;
+	gene_muscle_attribute_type attrib = GENE_MUSCLE_ATTR_INVALID;
 	Atom<float> value;
 
 	GeneMuscleAttribute() = default;
@@ -338,7 +338,7 @@ public:
 
 	// @spaceLeftAfter tells how many genes are in the chromosome after the position where this one will be inserted
 	// @nNeurons tells how many neurons the genome creates
-	static Gene createRandom(int spaceLeftAfter, int nNeurons);
+	static Gene createRandom(int spaceLeftAfter);
 
 	std::vector<MetaGene*> metaGenes;
 
@@ -353,13 +353,17 @@ private:
 	static Gene createRandomOffsetGene(int spaceLeftAfter);
 	static Gene createRandomAttribGene();
 	static Gene createRandomNeuronGene();
-	static Gene createRandomSynapseGene(int nNeurons);
-	static Gene createRandomNeuronInputCoordGene(int nNeurons);
-	static Gene createRandomNeuronOutputCoordGene(int nNeurons);
-	static Gene createRandomTransferFuncGene(int nNeurons);
-	static Gene createRandomNeuralBiasGene(int nNeurons);
-	static Gene createRandomNeuralParamGene(int nNeurons);
+	static Gene createRandomSynapseGene();
+	static Gene createRandomNeuronInputCoordGene();
+	static Gene createRandomNeuronOutputCoordGene();
+	static Gene createRandomTransferFuncGene();
+	static Gene createRandomNeuralBiasGene();
+	static Gene createRandomNeuralParamGene();
 	static Gene createRandomBodyAttribGene();
+	static Gene createRandomDivisionParamGene();
+	static Gene createRandomVMSOffsetGene();
+	static Gene createRandomJointAttributeGene();
+	static Gene createRandomMuscleAttributeGene();
 };
 
 #endif //__gene_h__

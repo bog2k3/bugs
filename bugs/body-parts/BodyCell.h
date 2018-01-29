@@ -45,9 +45,9 @@ public:
 
 	float density() const { return density_; }
 
-	std::map<gene_joint_attribute, CumulativeValue> mapJointAttribs_;
-	std::map<gene_muscle_attribute, CumulativeValue> mapLeftMuscleAttribs_;
-	std::map<gene_muscle_attribute, CumulativeValue> mapRightMuscleAttribs_;
+	std::map<gene_joint_attribute_type, CumulativeValue> mapJointAttribs_;
+	std::map<gene_muscle_attribute_type, CumulativeValue> mapLeftMuscleAttribs_;
+	std::map<gene_muscle_attribute_type, CumulativeValue> mapRightMuscleAttribs_;
 	std::map<gene_part_attribute_type, CumulativeValue> mapAttributes_;
 
 protected:

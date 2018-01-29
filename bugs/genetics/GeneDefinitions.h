@@ -67,29 +67,29 @@ constexpr gene_division_param_type GENE_DIVISION_REORIENT = 5;			// if >0 childr
 constexpr gene_division_param_type GENE_DIVISION_SEPARATE = 6;			// if >0 children will be separated (not connected by a joint), otherwise a joint is created
 constexpr gene_division_param_type GENE_DIVISION_END = 7;
 
-// ----------------------------------- gene_joint_attribute_type -------------------------------//
+// ----------------------------------- gene_joint_attribute_type_type -------------------------------//
 
-typedef uint8_t gene_joint_attribute;
+typedef uint8_t gene_joint_attribute_type;
 
-constexpr gene_joint_attribute GENE_JOINT_ATTR_INVALID = 0;
-constexpr gene_joint_attribute GENE_JOINT_ATTR_TYPE = 1;				// if >0 type is pivot joint, else weld joint
-constexpr gene_joint_attribute GENE_JOINT_ATTR_LOW_LIMIT = 2;			// low angle limit for joint
-constexpr gene_joint_attribute GENE_JOINT_ATTR_HIGH_LIMIT = 3;			// high angle limit for joint
-constexpr gene_joint_attribute GENE_JOINT_ATTR_RESET_TORQUE = 4;		// torque that moves the joint back into rest position when no forces act on it
-constexpr gene_joint_attribute GENE_JOINT_ATTR_MASS_RATIO = 5;			// proportion of parent cell mass that goes into the joint
-constexpr gene_joint_attribute GENE_JOINT_ATTR_DENSITY = 6;				// [kg/m^2] denser joints take more mass to make, but are stronger
-constexpr gene_joint_attribute GENE_JOINT_ATTR_END = 7;
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_INVALID = 0;
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_TYPE = 1;				// if >0 type is pivot joint, else weld joint
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_LOW_LIMIT = 2;			// low angle limit for joint
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_HIGH_LIMIT = 3;			// high angle limit for joint
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_RESET_TORQUE = 4;		// torque that moves the joint back into rest position when no forces act on it
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_MASS_RATIO = 5;			// proportion of parent cell mass that goes into the joint
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_DENSITY = 6;				// [kg/m^2] denser joints take more mass to make, but are stronger
+constexpr gene_joint_attribute_type GENE_JOINT_ATTR_END = 7;
 
-// ----------------------------------- gene_muscle_attribute_type -------------------------------//
+// ----------------------------------- gene_muscle_attribute_type_type -------------------------------//
 
-typedef uint8_t gene_muscle_attribute;
+typedef uint8_t gene_muscle_attribute_type;
 
-constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INVALID = 0;
-constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_MASS_RATIO = 1;		// proportion of parent cell mass that goes into making the muscle
-constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_ASPECT_RATIO = 2;		// length / width
-constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INPUT_COORD = 3;		// VMS input coordinate for muscle
-constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_INSERT_OFFSET = 4;		// lateral insertion offset from joint in radians - clamped to [0, PI/2]
-constexpr gene_muscle_attribute GENE_MUSCLE_ATTR_END = 5;
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INVALID = 0;
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_MASS_RATIO = 1;		// proportion of parent cell mass that goes into making the muscle
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_ASPECT_RATIO = 2;		// length / width
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INPUT_COORD = 3;		// VMS input coordinate for muscle
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INSERT_OFFSET = 4;		// lateral insertion offset from joint in radians - clamped to [0, PI/2]
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_END = 5;
 
 
 // ----------------------------------- gene_part_attribute_type -------------------------------//

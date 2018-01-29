@@ -181,8 +181,6 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	int stat_new = 0;
 #endif
 
-	std::map<int, bool> mapNeuronsExist;
-
 	static constexpr float numberMutationsPerChromosome = 0.125f;	// how many mutations we desire for a chromosome at most, on average
 	static constexpr float numberSwapsPerChromosome = 0.0625f;
 	static constexpr float numberDeletionsPerChromosome = 0.025f;
@@ -198,21 +196,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		totalChanceToMutate += mutateCh;
 		totalChanceToSwap += swapCh;
 		totalChanceToDelete += deleteCh;
-
-		throw std::runtime_error("Implement!");
-		// count
-//		switch (c.genes[i].type) {
-//		case gene_type::SYNAPSE:
-//			if (c.genes[i].data.gene_synapse.from >= 0)
-//				mapNeuronsExist[c.genes[i].data.gene_synapse.from] = true;
-//			if (c.genes[i].data.gene_synapse.to >= 0)
-//				mapNeuronsExist[c.genes[i].data.gene_synapse.to] = true;
-//			break;
-//		default:
-//			break;
-//		}
 	}
-	int nNeurons = mapNeuronsExist.size();
 
 	// now we compute a factor to multiply the mutation chances to bring them into the desired range
 	float mutationChanceFactor = std::min(1.f, numberMutationsPerChromosome / totalChanceToMutate);
@@ -271,7 +255,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	if (//false && // DEBUG: disable adding new genes
 			randf() < constants::global_chance_to_spawn_gene * c.genes.size()) {
 		int position = randi(c.genes.size()-1);
-		Gene newGene(Gene::createRandom(c.genes.size()-position, nNeurons));
+		Gene newGene(Gene::createRandom(c.genes.size()-position));
 		if (c.genes[position].type == gene_type::NO_OP)
 			c.genes[position] = newGene;
 		else {
