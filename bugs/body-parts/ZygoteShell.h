@@ -10,9 +10,11 @@
 
 #include "BodyPart.h"
 
+#include <glm/vec2.hpp>
+
 class ZygoteShell: public BodyPart {
 public:
-	ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass);
+	ZygoteShell(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass, BodyPartContext const& context);
 	~ZygoteShell() override;
 
 	void draw(RenderContext const& ctx) override;

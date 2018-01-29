@@ -45,6 +45,11 @@ public:
 
 	float density() const { return density_; }
 
+	std::map<gene_joint_attribute, CumulativeValue> mapJointAttribs_;
+	std::map<gene_muscle_attribute, CumulativeValue> mapLeftMuscleAttribs_;
+	std::map<gene_muscle_attribute, CumulativeValue> mapRightMuscleAttribs_;
+	std::map<gene_part_attribute_type, CumulativeValue> mapAttributes_;
+
 protected:
 	Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const override;
 
@@ -58,9 +63,6 @@ private:
 	glm::vec4 proteinValues_ {0}; // hyper-space position for current cell
 	CumulativeValue VMSOffset_;  // VMS offset for all other VMS coordinates specified in this cell (neuron position, neuron in/out coords, sensor/motor coords)
 	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;
-	std::map<gene_joint_attribute, CumulativeValue> mapJointAttribs_;
-	std::map<gene_muscle_attribute, CumulativeValue> mapMuscleAttribs_;
-	std::map<gene_part_attribute_type, CumulativeValue> mapAttributes_;
 };
 
 #endif /* BODY_PARTS_BODYCELL_H_ */

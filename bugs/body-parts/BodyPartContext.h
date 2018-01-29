@@ -14,6 +14,10 @@ class UpdateList;
 struct BodyPartContext {
 	Bug& owner;
 	UpdateList& updateList;
+
+	BodyPartContext(Bug& owner, UpdateList& updateList)
+		: owner(owner), updateList(updateList) {
+	}
 };
 
 #endif /* BODY_PARTS_BODYPARTCONTEXT_H_ */

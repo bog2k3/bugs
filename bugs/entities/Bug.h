@@ -14,6 +14,7 @@
 #include "../genetics/GeneDefinitions.h"
 #include "../genetics/CumulativeValue.h"
 #include "../serialization/objectTypes.h"
+#include "../body-parts/BodyPartContext.h"
 
 #include <boglfw/entities/Entity.h>
 #include <boglfw/utils/UpdateList.h>
@@ -112,6 +113,7 @@ protected:
 	bool cachedMassDirty_;		// flag to signal that cachedLeanMass_ must be recomputed
 	std::vector<EggLayer*> eggLayers_;
 	std::vector<BodyPart*> deadBodyParts_;
+	BodyPartContext context_;
 
 	std::map<gene_body_attribute_type, CumulativeValue*> mapBodyAttributes_;
 //	CumulativeValue initialFatMassRatio_;

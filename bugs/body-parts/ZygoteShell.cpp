@@ -27,14 +27,13 @@
 
 const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 
-ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
-	: BodyPart(BodyPartType::ZYGOTE_SHELL, std::make_shared<BodyPartInitializationData>())
+ZygoteShell::ZygoteShell(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass, BodyPartContext const& context)
+	: BodyPart(position, randf() * 2*PI, velocity, angularVelocity, mass, context)
 	, mass_(mass)
 	, dead_(false)
 {
-	size_ = mass * BodyConst::ZygoteDensityInv;
-	density_ = BodyConst::ZygoteDensity;
-	localRotation_ = randf() * 2*PI;
+	//size_ = mass * BodyConst::ZygoteDensityInv;
+	//density_ = BodyConst::ZygoteDensity;
 #warning "these values above require some updating in the physBody"
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_ZYGOTE;
@@ -45,11 +44,11 @@ ZygoteShell::ZygoteShell(glm::vec2 position, glm::vec2 velocity, float mass)
 //	cachedProps_.position = position;
 //	cachedProps_.velocity = velocity;
 
-	World::getInstance()->queueDeferredAction([this]() {
-		physBody_.create(cachedProps_);
-		updateFixtures();
-		committed_ = true;
-	});
+//	World::getInstance()->queueDeferredAction([this]() {
+//		physBody_.create(cachedProps_);
+//		updateFixtures();
+//		committed_ = true;
+//	});
 }
 
 ZygoteShell::~ZygoteShell() {
@@ -92,11 +91,12 @@ void ZygoteShell::draw(RenderContext const& ctx) {
 }
 
 void ZygoteShell::updateCachedDynamicPropsFromBody() {
-	PhysicsProperties &props = cachedProps_;
-	props.angle = physBody_.b2Body_->GetAngle();
-	props.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
-	props.position = b2g(physBody_.b2Body_->GetPosition());
-	props.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
+//	PhysicsProperties &props = cachedProps_;
+//	props.angle = physBody_.b2Body_->GetAngle();
+//	props.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
+//	props.position = b2g(physBody_.b2Body_->GetPosition());
+//	props.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
+	throw std::runtime_error("Not implemented!");
 }
 
 void ZygoteShell::die() {

@@ -5,10 +5,11 @@
  *      Author: bog
  */
 
-#include "../neuralnet/InputSocket.h"
-#include "../ObjectTypesAndFlags.h"
 #include "Gripper.h"
 #include "BodyConst.h"
+#include "BodyCell.h"
+#include "../neuralnet/InputSocket.h"
+#include "../ObjectTypesAndFlags.h"
 
 #include <boglfw/World.h>
 #include <boglfw/renderOpenGL/Shape3D.h>

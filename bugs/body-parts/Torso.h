@@ -5,6 +5,8 @@
  *      Author: bog
  */
 
+#if 0
+
 #ifndef OBJECTS_BODY_PARTS_TORSO_H_
 #define OBJECTS_BODY_PARTS_TORSO_H_
 
@@ -69,3 +71,5 @@ protected:
 };
 
 #endif /* OBJECTS_BODY_PARTS_TORSO_H_ */
+
+#endif

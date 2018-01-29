@@ -15,6 +15,8 @@
 
 #include <boglfw/physics/PhysicsBody.h>
 
+#include <glm/vec2.hpp>
+
 #include <vector>
 //#include <map>
 #include <memory>
@@ -29,6 +31,7 @@ class Entity;
 class BodyPart {
 public:
 	BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell, bool suppressPhysicalBody=false);
+	BodyPart(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass, BodyPartContext const& context);
 	virtual ~BodyPart();
 
 	// call this to destroy and delete the object. Never delete directly
@@ -171,7 +174,7 @@ protected:
 	 * At this point the physics fixtures must be created.
 	 * The physicsProperties of the body are in world coordinates at this time;
 	 */
-	virtual void updateFixtures();
+	virtual void updateFixtures() = 0;
 	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 	//virtual void onAddedToParent() {}

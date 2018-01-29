@@ -8,6 +8,7 @@
 #include "JointPivot.h"
 
 #include "BodyConst.h"
+#include "BodyCell.h"
 
 #include <boglfw/World.h>
 #include <boglfw/math/box2glm.h>
@@ -44,7 +45,7 @@ static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 //	resetTorque_ = initData->resetTorque.clamp(0, 1.e3f);
 //}
 
-JointPivot::Joint(BodyPartContext const& context, BodyCell& cell)
+JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::JOINT, context, cell, true)
 	, physJoint_(nullptr)
 {
@@ -57,7 +58,7 @@ JointPivot::Joint(BodyPartContext const& context, BodyCell& cell)
 }
 
 JointPivot::~JointPivot() {
-	if (committed_ && physJoint_) {
+	if (physJoint_) {
 		destroyPhysJoint();
 	}
 	context_.updateList.remove(this);
@@ -69,7 +70,7 @@ void JointPivot::updateFixtures() {
 #endif
 	//assertDbg(nChildren_ <= 1);
 
-	if (committed_) {
+	if (physJoint_) {
 		destroyPhysJoint();
 	}
 
@@ -261,7 +262,8 @@ void JointPivot::onPhysJointDestroyed(b2Joint* joint) {
 }
 
 float JointPivot::getDensity(BodyCell const& cell) {
-	auto value = cell.mapJointAttribs_[GENE_JOINT_ATTR_DENSITY];
+	auto it = cell.mapJointAttribs_.find(GENE_JOINT_ATTR_DENSITY);
+	auto value = it != cell.mapJointAttribs_.end() ? it->second : CumulativeValue();
 	value.changeAbs(BodyConst::initialJointDensity);
 	return value.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }

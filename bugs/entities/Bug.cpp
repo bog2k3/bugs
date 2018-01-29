@@ -63,6 +63,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, maxGrowthMassBuffer_(0)
 	, cachedLeanMass_(0)
 	, cachedMassDirty_(false)
+	, context_(*this, bodyPartsUpdateList_)
 //	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
@@ -75,9 +76,9 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	LOGLN("new embryo [id="<<id<<"]; printing chromosomes:");
 	LOGLN("C1: " << genome.first.stringify());
 	LOGLN("C2: " << genome.second.stringify());
-#warning "here create a BodyPartContext and pass it to the zygote / torso"
+
 	// create embryo shell:
-	zygoteShell_ = new ZygoteShell(position, velocity, zygoteMass);
+	zygoteShell_ = new ZygoteShell(position, 0, velocity, 0, zygoteMass, context_);
 	// zygote mass determines the overall bug size after decoding -> must have equal overal mass
 	//zygoteShell_->setUpdateList(bodyPartsUpdateList_);
 

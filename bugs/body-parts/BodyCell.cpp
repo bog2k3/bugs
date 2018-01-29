@@ -22,12 +22,14 @@ void BodyCell::initializeGeneValues() {
 	mapJointAttribs_[GENE_JOINT_ATTR_RESET_TORQUE] = CumulativeValue(BodyConst::initialJointResetTorque);
 	mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO] = CumulativeValue(BodyConst::initialJointMassRatio);
 	mapJointAttribs_[GENE_JOINT_ATTR_DENSITY] = CumulativeValue(BodyConst::initialJointDensity);
-	mapJointAttribs_[GENE_JOINT_ATTR_TYPE] = CumulativeValue(constants::FBOOL_false);		// default to weld joint
+	mapJointAttribs_[GENE_JOINT_ATTR_TYPE] = CumulativeValue();		// default to weld joint (0)
 
-	mapMuscleAttribs_[GENE_MUSCLE_ATTR_ASPECT_RATIO] = CumulativeValue(BodyConst::initialMuscleAspectRatio);
-	mapMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO] = CumulativeValue(BodyConst::initialMuscleMassRatio);
-	mapMuscleAttribs_[GENE_MUSCLE_ATTR_INSERT_OFFSET] = CumulativeValue(BodyConst::initialMuscleInsertOffset);
-	mapMuscleAttribs_[GENE_MUSCLE_ATTR_INPUT_COORD] = CumulativeValue();
+	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_ASPECT_RATIO] = CumulativeValue(BodyConst::initialMuscleAspectRatio);
+	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO] = CumulativeValue(BodyConst::initialMuscleMassRatio);
+	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_INSERT_OFFSET] = CumulativeValue(BodyConst::initialMuscleInsertOffset);
+	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_INPUT_COORD] = CumulativeValue();
+
+	mapRightMuscleAttribs_ = mapLeftMuscleAttribs_;
 
 	for (auto i=GENE_ATTRIB_INVALID+1; i<GENE_ATTRIB_END; i++)
 		mapAttributes_[i] = CumulativeValue();

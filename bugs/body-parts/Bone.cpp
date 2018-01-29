@@ -50,7 +50,8 @@ Bone::~Bone() {
 }
 
 float Bone::getDensity(BodyCell const& cell) {
-	auto densValue = cell.mapAttributes_[GENE_ATTRIB_GENERIC1];
+	auto it = cell.mapAttributes_.find(GENE_ATTRIB_GENERIC1);
+	auto densValue = it != cell.mapAttributes_.end() ? it->second : CumulativeValue();
 	densValue.changeAbs(BodyConst::initialBoneDensity);
 	return densValue.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 }

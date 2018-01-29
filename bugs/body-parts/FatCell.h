@@ -12,8 +12,8 @@
 
 class FatCell: public BodyPart {
 public:
+	FatCell(BodyPartContext const& context, BodyCell& cell);
 	virtual ~FatCell();
-	FatCell();
 };
 
 #endif /* BODY_PARTS_FATCELL_H_ */

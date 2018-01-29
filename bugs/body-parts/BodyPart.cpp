@@ -57,7 +57,7 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 	//registerAttribute(GENE_ATTRIB_SIZE, initialData_->size);
 
 	if (!suppressPhysicalBody) {
-		World::getInstance()->queueDeferredAction([this, cell] {
+		World::getInstance()->queueDeferredAction([this, &cell] {
 			PhysicsProperties props(cell.position(), cell.angle(), true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
 			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
@@ -65,6 +65,24 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 			updateFixtures();
 		});
 	}
+}
+
+BodyPart::BodyPart(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass, BodyPartContext const& context)
+	: context_(context)
+	, type_(BodyPartType::ZYGOTE_SHELL)
+	, density_(BodyConst::ZygoteDensity)
+	, lastCommitSize_inv_(0)
+	, destroyCalled_(false)
+	, dead_(false)
+{
+	size_ = mass / density_;
+	World::getInstance()->queueDeferredAction([this, position, velocity, angle, angularVelocity] {
+			PhysicsProperties props(position, angle, true, velocity, angularVelocity); //TODO velocity?, angularVelocity?);
+			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
+			physBody_.create(props);
+			updateFixtures();
+		});
 }
 
 BodyPart::~BodyPart() {
@@ -268,8 +286,7 @@ glm::vec3 BodyPart::getWorldTransformation() {
 }
 
 void BodyPart::draw(RenderContext const& ctx) {
-	if (committed_)
-		return;
+	return; // TODO do we need this here still?
 	glm::vec3 trans = getWorldTransformation();
 	glm::vec3 pos(trans.x, trans.y, 0);
 	Shape3D::get()->drawLine(pos + glm::vec3(-0.01f, 0, 0), pos + glm::vec3(0.01f, 0, 0), glm::vec3(0.2f, 0.2f, 1.f));
@@ -475,7 +492,7 @@ Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
 	assertDbg(pPart);
 	if (!pPart)
 		return nullptr;
-	return pPart->context_->owner;
+	return &pPart->context_.owner;
 }
 
 /*aabb BodyPart::getAABBRecursive() {

@@ -27,7 +27,7 @@ class InputSocket;
 class Muscle: public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent:
-	Muscle(BodyPartContext const& context, BodyCell& cell);
+	Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide);
 	virtual ~Muscle() override;
 
 	void setJoint(JointPivot* joint, int motorDirSign);
@@ -39,7 +39,7 @@ public:
 	// IMotor::
 	unsigned getInputCount() const override { return 1; }
 	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : nullptr; }
-	float getInputVMSCoord(unsigned index) const override;
+	float getInputVMSCoord(unsigned index) const override { return inputVMSCoord_; }
 #ifdef DEBUG
 	//std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
@@ -49,6 +49,7 @@ protected:
 
 	InputSocket* inputSocket_ = nullptr;
 	JointPivot* joint_ = nullptr;
+	float inputVMSCoord_;
 	float aspectRatio_;
 	float rotationSign_ = 1.f;
 	float maxForce_;

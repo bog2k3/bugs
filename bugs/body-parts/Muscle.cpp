@@ -36,6 +36,7 @@
 #include "Muscle.h"
 #include "Bone.h"
 #include "BodyConst.h"
+#include "BodyCell.h"
 #include "../neuralnet/InputSocket.h"
 
 #include <boglfw/World.h>
@@ -80,10 +81,10 @@ static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 //		return 0;
 //}
 
-Muscle::Muscle(BodyPartContext const& context, BodyCell& cell)
-	: BodyPart(BodyPartType::MUSCLE, context, cell)
+Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
+	: BodyPart(BodyPartType::MUSCLE, context, cell, true) // suppress physical body
 	, inputSocket_(new InputSocket(nullptr, 1.f))
-	, aspectRatio_(1.f)
+//	, aspectRatio_(1.f)
 	, maxForce_(0)
 	, maxJointAngularSpeed_(0)
 	, phiToRSinAlphaHSinBeta_{0}
@@ -93,11 +94,12 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell)
 	, phiToDx_{0}
 #endif
 {
-	dontCreateBody_ = true;
-
-	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
-	registerAttribute(GENE_ATTRIB_ASPECT_RATIO, initData->aspectRatio);
-	registerAttribute(GENE_ATTRIB_VMS_COORD, initData->inputVMSCoord);
+	auto &mapMuscleAttr = isRightSide ? cell.mapRightMuscleAttribs_ : cell.mapLeftMuscleAttribs_;
+	mapMuscleAttr[GENE_MUSCLE_ATTR_ASPECT_RATIO].changeAbs(BodyConst::initialMuscleAspectRatio);
+	aspectRatio_ = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].clamp(
+				BodyConst::MaxBodyPartAspectRatioInv,
+				BodyConst::MaxBodyPartAspectRatio);
+	inputVMSCoord_ = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
 }
 
 Muscle::~Muscle() {
@@ -113,15 +115,13 @@ void Muscle::setJoint(JointPivot* joint, int motorDirSign) {
 }
 
 void Muscle::die() {
-	if (context_)
-		context_->updateList.remove(this);
+	context_.updateList.remove(this);
 }
 
 void Muscle::onJointDied(BodyPart* joint) {
 	assertDbg(joint == joint_);
 	joint_ = nullptr;
-	if (context_)
-		context_->updateList.remove(this);
+	context_.updateList.remove(this);
 }
 
 /*void Muscle::onAddedToParent() {
@@ -175,7 +175,7 @@ void Muscle::updateFixtures() {
 		bool useOY = false;
 		if (targetPart->getType() == BodyPartType::BONE) {
 			Bone* bone = dynamic_cast<Bone*>(targetPart);
-			if (bone->getAspectRatio() < 1.f)
+			if (bone->aspectRatio() < 1.f)
 				useOY = true;
 		}
 		// this is the world angle of insertion axis in default joint position:
@@ -246,12 +246,6 @@ void Muscle::updateFixtures() {
 }
 
 glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
-	if (!geneValuesCached_) {
-#ifdef DEBUG
-		World::getInstance()->assertOnMainThread();
-#endif
-		cacheInitializationData();
-	}
 	float w = sqrtf(size_ / aspectRatio_);
 	float l = aspectRatio_ * w;
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
@@ -260,29 +254,24 @@ glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
 }
 
 void Muscle::draw(RenderContext const& ctx) {
-	if (!geneValuesCached_) {
-		cacheInitializationData();
-	}
 	float crtAspect = aspectRatio_;
 #ifdef DEBUG_DRAW_MUSCLE
-	if (committed_) {
-		if (isDead())
-			return;
-		float w0 = sqrtf(size_ / aspectRatio_);
-		float l0 = aspectRatio_ * w0;
-		float dx = lerp_lookup(phiToDx_, nAngleSteps, getCurrentPhiSlice());
-		crtAspect *= sqr((l0 - dx) / l0);	// squeeze
-	}
+	if (isDead())
+		return;
+	float w0 = sqrtf(size_ / aspectRatio_);
+	float l0 = aspectRatio_ * w0;
+	float dx = lerp_lookup(phiToDx_, nAngleSteps, getCurrentPhiSlice());
+	crtAspect *= sqr((l0 - dx) / l0);	// squeeze
 #endif
 	float w = sqrtf(size_ / crtAspect);
 	float l = crtAspect * w;
 	glm::vec3 worldTransform = getWorldTransformation();
-	Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
-			glm::vec2(l, w), worldTransform.z, debug_color);
-	Shape3D::get()->drawLine(
-			{vec3xy(worldTransform), 0},
-			{vec3xy(worldTransform) + glm::rotate(getAttachmentPoint(0), worldTransform.z), 0},
-			debug_color);
+//	Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
+//			glm::vec2(l, w), worldTransform.z, debug_color);
+//	Shape3D::get()->drawLine(
+//			{vec3xy(worldTransform), 0},
+//			{vec3xy(worldTransform) + glm::rotate(getAttachmentPoint(0), worldTransform.z), 0},
+//			debug_color);
 #ifdef DEBUG_DRAW_MUSCLE
 	if (inputSocket_->value > 0)
 		Shape3D::get()->drawLine(

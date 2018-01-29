@@ -7,6 +7,7 @@
 
 #include "Mouth.h"
 #include "BodyConst.h"
+#include "BodyCell.h"
 #include "../entities/food/FoodChunk.h"
 #include "../ObjectTypesAndFlags.h"
 
@@ -66,7 +67,7 @@ glm::vec2 Mouth::getAttachmentPoint(float relativeAngle) {
 	return ret;
 }
 
-void Mouth::commit() {
+void Mouth::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
@@ -138,7 +139,8 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	case ObjectTypes::BPART_EGGLAYER:
 	case ObjectTypes::BPART_GRIPPER:
 	case ObjectTypes::BPART_MOUTH:
-	case ObjectTypes::BPART_TORSO:
+	case ObjectTypes::BPART_FATCELL:
+	case ObjectTypes::BPART_NOSE:
 		maxFoodAvailable = static_cast<BodyPart*>(pOther->userPointer_)->getFoodValue();
 		break;
 	case ObjectTypes::BPART_ZYGOTE:
@@ -165,7 +167,8 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	case ObjectTypes::BPART_EGGLAYER:
 	case ObjectTypes::BPART_GRIPPER:
 	case ObjectTypes::BPART_MOUTH:
-	case ObjectTypes::BPART_TORSO:
+	case ObjectTypes::BPART_FATCELL:
+	case ObjectTypes::BPART_NOSE:
 		static_cast<BodyPart*>(pOther->userPointer_)->consumeFoodValue(actualFoodAmountTransferred);
 		break;
 	}

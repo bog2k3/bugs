@@ -11,7 +11,9 @@ FatCell::~FatCell() {
 	// TODO Auto-generated destructor stub
 }
 
-FatCell::FatCell() {
+FatCell::FatCell(BodyPartContext const& context, BodyCell& cell)
+	: BodyPart(BodyPartType::FAT, context, cell)
+{
 	// TODO Auto-generated constructor stub
 
 }

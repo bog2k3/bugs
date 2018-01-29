@@ -460,8 +460,12 @@ void Ribosome::decodeJointAttrib(GeneJointAttribute const& g, BodyCell &cell, De
 }
 
 void Ribosome::decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
-	if (g.attrib > GENE_MUSCLE_ATTR_INVALID && g.attrib < GENE_MUSCLE_ATTR_END)
-		cell.mapMuscleAttribs_[g.attrib].changeAbs(g.value);
+	if (g.attrib > GENE_MUSCLE_ATTR_INVALID && g.attrib < GENE_MUSCLE_ATTR_END) {
+		if (g.side >= 0)
+			cell.mapLeftMuscleAttribs_[g.attrib].changeAbs(g.value);
+		if (g.side <= 0)
+			cell.mapRightMuscleAttribs_[g.attrib].changeAbs(g.value);
+	}
 }
 
 void Ribosome::decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx) {
