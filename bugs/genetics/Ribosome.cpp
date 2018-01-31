@@ -762,5 +762,52 @@ void Ribosome::resolveMuscleLinkage() {
 }
 
 bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {
-	throw std::runtime_error("Not implemented!");
+	BranchRestriction *r = nullptr;
+	switch (g.type) {
+	case gene_type::DIVISION_PARAM:
+		r = &g.data.gene_division_param.restriction;
+		break;
+	case gene_type::JOINT_ATTRIBUTE:
+		r = &g.data.gene_joint_attrib.restriction;
+		break;
+	case gene_type::MUSCLE_ATTRIBUTE:
+		r = &g.data.gene_muscle_attrib.restriction;
+		break;
+	case gene_type::OFFSET:
+		r = &g.data.gene_offset.restriction;
+		break;
+	case gene_type::PART_ATTRIBUTE:
+		r = &g.data.gene_attribute.restriction;
+		break;
+	case gene_type::PROTEIN:
+		r = &g.data.gene_protein.restriction;
+		break;
+	case gene_type::SKIP:
+		r = &g.data.gene_skip.restriction;
+		break;
+	case gene_type::VMS_OFFSET:
+		r = &g.data.gene_vms_offset.restriction;
+		break;
+	default:
+		break;
+	}
+	if (!r)
+		return true;
+	// check for propagation block down to the cell
+	for (uint i=0; i<c.branch_.size(); i++) {
+		bool block = c.branch_[i] == 'R' ? fBool(r->levels[i].stopRight) : fBool(r->levels[i].stopLeft);
+		if (block)
+			return false;
+	}
+	// check for apply restrictions at cell's level:
+	auto depth = c.branch_.size();
+	auto activeLevels = r->activeLevels.value % constants::MAX_DIVISION_DEPTH;
+	if (depth < activeLevels) {
+		char side = depth > 0 ? c.branch_.back() : '0';
+		bool block = side == 'R' ? fBool(r->levels[depth].skipRight) :
+					 (side == 'L' ? fBool(r->levels[depth].skipLeft) :
+							 fBool(r->levels[0].skipLeft) || fBool(r->levels[0].skipRight));
+		return !block;
+	}
+	return true;
 }

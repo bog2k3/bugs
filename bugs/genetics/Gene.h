@@ -53,6 +53,8 @@ struct Atom {
 	Atom(Atom const& a) = default;
 };
 
+constexpr bool fBool(Atom<float> const& f) { return f.value > 0; }
+
 /*
  * This holds a sequence of values indicating the branch-and-depth based restrictions for another gene.
  * activeLevels holds the number of levels from levels[] that are to be used. Any level that is unused is considered by default least restrictive.
@@ -67,6 +69,8 @@ struct BranchRestriction {
 		Atom<float> skipRight;		// restricts application if >0 and current cell is right-handed
 		Atom<float> stopLeft;		// if >0 blocks gene propagation down the left subtree
 		Atom<float> stopRight;		// if >0 blocks gene propagation down the right subtree
+
+		// for level 0, application is restricted if either skipLeft or skipRight is >0
 	};
 	levelRule levels[constants::MAX_DIVISION_DEPTH];	// default value for each level is most permissive due to strict >0 comparison above ^
 	Atom<unsigned> activeLevels;

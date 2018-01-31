@@ -239,6 +239,9 @@ int main(int argc, char* argv[]) {
 		PhysDestroyListener destroyListener;
 		physWld.SetDestructionListener(&destroyListener);
 
+		WorldConfig cfg;
+		cfg.disableParallelProcessing = true;
+		World::setConfig(cfg);
 		World &world = World::getInstance();
 
 		world.setPhysics(&physWld);
