@@ -47,7 +47,7 @@ Cell* BodyCell::createChild(float size, glm::vec2 position, float rotation, bool
 	return new BodyCell(size, position, rotation, mirror, rightSide, branch);
 }
 
-std::pair<Cell*, Cell*> BodyCell::divide() {
+std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 	float ratio = mapDivisionParams_[GENE_DIVISION_RATIO].clamp(
 			BodyConst::minDivisionRatio,
 			1.f / BodyConst::minDivisionRatio);

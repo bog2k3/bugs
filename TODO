@@ -7,8 +7,12 @@
 	- [ ] all indexes (for inputs/outputs) are floats and integer part is used
 * [ ] new Neuron gene creates a neuron in VMS at specified location
 	- [ ] neurons are only created by the new Neuron gene and will be housed inside the current cell
+	- [ ] neuron actual VMS coordinate is affected by the VMS offset of the cell that created it
+		-- neuron is instantiated right before cell divides, so its final VMS offset is knowni
+	- [ ] when a cell splits, neurons from the cell are distributed between its children
+		-- odd neurons to left and even neurons to right; these neurons are not further affected by the children cells' VMS offsets
 	- [ ] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
-		-- [ ] thus no more neuron indexes
+		-- thus no more neuron indexes
 	- [ ] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
 	- [ ] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
 
@@ -21,8 +25,8 @@
 	- [X] new division parameter genes: angle, ratio, mirror?, reorientate?, level restrictions
 		-- [X] ^ these boolean values are encoded in floats +/-
 	- [X] cell divides at an angle but its children keep the same orientation, unless reorientate is specified in the division, in which case the children will be reoriented by this angle
-	- [ ] proteins accumulate per cell, not per segment - no more segments 
-	- [ ] if proteins yield x*y*z*w = 0, the cell specializes into default type - fat cell body part
+	- [X] proteins accumulate per cell, not per segment - no more segments 
+	- [X] if proteins yield x*y*z*w = 0, the cell specializes into default type - fat cell body part
 	- [X] proteins should have a float weight instead of current int 1
 	- [ ] division creates bond between child cells (weld/pivot joint)
 	- [ ] when dividing, each existing bond is either split or inherited by one side:
@@ -66,7 +70,6 @@
 		-- [ ] also if some of the cells become isolated from energy sources they die
 		-- [ ] after a split, each of the two parts may live on if they have energy
 		-- [ ] must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
-	- [ ] when a cell splits, neurons from the cell are randomly distributed between its children
 	- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
 

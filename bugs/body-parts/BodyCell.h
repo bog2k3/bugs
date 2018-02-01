@@ -45,7 +45,7 @@ public:
 
 	float density() const { return density_; }
 
-	std::pair<Cell*, Cell*> divide();
+	std::pair<BodyCell*, BodyCell*> divide();
 
 	std::map<gene_joint_attribute_type, CumulativeValue> mapJointAttribs_;
 	std::map<gene_muscle_attribute_type, CumulativeValue> mapLeftMuscleAttribs_;

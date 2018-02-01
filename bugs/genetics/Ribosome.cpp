@@ -192,6 +192,12 @@ bool Ribosome::step() {
 			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f) {
 				// divide
 				auto pair = cell->divide();
+				cells_.push_back(pair.first);
+				cells_.push_back(pair.second);
+				DecodeContext leftCtx(activeSet_[i].second.startGenomePos + activeSet_[i].second.childOffsets[0]);
+				DecodeContext rightCtx(activeSet_[i].second.startGenomePos + activeSet_[i].second.childOffsets[1]);
+				activeSet_.push_back({pair.first, leftCtx});
+				activeSet_.push_back({pair.second, rightCtx});
 			}
 //			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
 //				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
