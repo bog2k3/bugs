@@ -188,7 +188,11 @@ bool Ribosome::step() {
 				|| (g1 && g1->type == gene_type::STOP)
 				|| (g2 && g2->type == gene_type::STOP)) {
 			// so much for this development path;
-			// TODO we must decide if cell will divide or specialize
+			// decide if cell will divide or specialize
+			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f) {
+				// divide
+				auto pair = cell->divide();
+			}
 //			for (unsigned k=0; k<BodyPart::MAX_CHILDREN; k++)
 //				growBodyPart(p, k, activeSet_[i].second.hyperPositions[k],
 //						activeSet_[i].second.startGenomePos + activeSet_[i].second.offsets[k]);

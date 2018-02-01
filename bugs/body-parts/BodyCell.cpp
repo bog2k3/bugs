@@ -8,6 +8,7 @@
 #include "BodyCell.h"
 #include "BodyConst.h"
 #include "../genetics/constants.h"
+#include "../genetics/Gene.h"
 
 void BodyCell::initializeGeneValues() {
 	mapDivisionParams_[GENE_DIVISION_RATIO] = CumulativeValue(1.f);			// default to 50%-50%
@@ -41,5 +42,17 @@ float BodyCell::radius(float angle) const {
 }
 
 Cell* BodyCell::createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const {
-	throw std::runtime_error("implement!"); // also compute child's branch to pass on ctor
+	auto branch = branch_;
+	branch.push_back(rightSide ? 'R' : 'L');
+	return new BodyCell(size, position, rotation, mirror, rightSide, branch);
+}
+
+std::pair<Cell*, Cell*> BodyCell::divide() {
+	float ratio = mapDivisionParams_[GENE_DIVISION_RATIO].clamp(
+			BodyConst::minDivisionRatio,
+			1.f / BodyConst::minDivisionRatio);
+	bool reorient = mapDivisionParams_[GENE_DIVISION_REORIENT] > 0.f;
+	bool mirror = mapDivisionParams_[GENE_DIVISION_MIRROR] > 0.f;
+	auto p = Cell::divide(ratio, reorient, mirror);
+	return {static_cast<BodyCell*>(p.first), static_cast<BodyCell*>(p.second)};
 }

@@ -17,6 +17,7 @@ public:
 	static constexpr float SizeThresholdToCommit_inv = 1.f / SizeThresholdToCommit;
 
 	// fixed values:
+	static constexpr float minDivisionRatio					= 0.1f;			// [*]
 	static constexpr float MinBodyPartSize					= 1.e-4f;		// [m^2]
 	static constexpr float MinBodyPartDensity				= 0.5f;			// [kg/m^2]
 	static constexpr float MaxBodyPartDensity				= 100.f;		// [kg/m^2]
