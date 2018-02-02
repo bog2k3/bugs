@@ -133,7 +133,7 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 
 	// build visual representation
 	struct threadData {
-		std::vector<std::stringstream> str;
+		std::vector<std::unique_ptr<std::stringstream>> str;
 		std::vector<int> strOffs;
 		std::map<std::string, uint> legend;
 		std::vector<unsigned> callsEndTime;
@@ -176,10 +176,10 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 		}
 		int frameID = td.legend[f.name_];
 		while (td.str.size() < td.callsEndTime.size()) {
-			td.str.push_back(std::stringstream());
+			td.str.push_back(std::make_unique<std::stringstream>());
 			td.strOffs.push_back(0);
 		}
-		auto& crtStr = td.str[td.callsEndTime.size()-1];
+		auto& crtStr = *td.str[td.callsEndTime.size()-1].get();
 		auto& crtStrOffs = td.strOffs[td.callsEndTime.size()-1];
 		// add spaces before this call:
 		int startOffs = relativeNano(f.startTime_) * cellsPerNanosec;
@@ -207,7 +207,7 @@ void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data) {
 				<< "] >>>>>>>>>>>>>>>>>\n";
 		// print calls:
 		for (int i=t.str.size()-1; i>=0; --i)
-			std::cout << t.str[i].str() << "\n";
+			std::cout << t.str[i]->str() << "\n";
 	}
 	// print legend
 	std::cout << ioModif::RESET << "\n";
