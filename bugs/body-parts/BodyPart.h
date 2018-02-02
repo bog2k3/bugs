@@ -60,7 +60,7 @@ public:
 	// must return the actual amount deduced from mass argument
 	virtual float addFood(float mass) { throw std::runtime_error("not implemented"); /*if (parent_) return parent_->addFood(mass); else return 0;*/ }
 
-	Bug* getOwner() const { context_.owner; }
+	Bug* getOwner() const { return &context_.owner; }
 
 	/*
 	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
