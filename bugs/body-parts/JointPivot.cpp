@@ -116,7 +116,7 @@ void JointPivot::destroyPhysJoint() {
 	physJoint_ = nullptr;
 }
 
-glm::vec3 JointPivot::getWorldTransformation() {
+glm::vec3 JointPivot::getWorldTransformation() const {
 	if (physJoint_) {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
 			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());

@@ -281,26 +281,26 @@ void Bug::update(float dt) {
 }
 
 void Bug::draw(RenderContext const &ctx) {
-	/*if (zygoteShell_)
-		zygoteShell_->draw_tree(ctx);
-	else if (body_)
-		body_->draw_tree(ctx);*/
+	if (zygoteShell_) {
+		zygoteShell_->draw(ctx);
+		// TODO draw cells
+	} else
+		for (auto bp : bodyParts_)
+			bp->draw(ctx);
 	for (auto bp : deadBodyParts_)
 		if (bp)
 			bp->draw(ctx);
 
 	// draw debug data:
-	if (ctx.enabledLayers.bugDebug /*&& body_*/) {
+	if (ctx.enabledLayers.bugDebug) {
 		auto x = [this](Viewport* vp) {
-			glm::vec3 wldPos {0}; // TODO = body_->getWorldTransformation();
-			wldPos.z = 0; // z was rotation before
-			glm::vec3 viewpPos = vp->project(wldPos);
+			glm::vec2 wldPos = getAABB().center();
+			glm::vec3 viewpPos = vp->project({wldPos, 0.f});
 			return viewpPos.x;
 		};
 		auto y = [this](Viewport* vp) {
-			glm::vec3 wldPos {0}; //TODO = body_->getWorldTransformation();
-			wldPos.z = 0; // z was rotation before
-			glm::vec3 viewpPos = vp->project(wldPos);
+			glm::vec2 wldPos = getAABB().center();
+			glm::vec3 viewpPos = vp->project({wldPos, 0.f});
 			return viewpPos.y;
 		};
 
@@ -389,15 +389,15 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0), 1);
 }
 
-glm::vec2 Bug::getVelocity() const {
-	if (zygoteShell_)
-		return b2g(zygoteShell_->getBody().b2Body_->GetLinearVelocity());
-//	if (body_)
-//		b2g(body_->getBody().b2Body_->GetLinearVelocity());
-	// TODO
-	throw std::runtime_error("Implement this!");
-	return glm::vec2(0);
-}
+//glm::vec2 Bug::getVelocity() const {
+//	if (zygoteShell_)
+//		return b2g(zygoteShell_->getBody().b2Body_->GetLinearVelocity());
+////	if (body_)
+////		b2g(body_->getBody().b2Body_->GetLinearVelocity());
+//	// TODO
+//	throw std::runtime_error("Implement this!");
+//	return glm::vec2(0);
+//}
 
 float Bug::getMass() const {
 	return 1.f;//zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
@@ -408,10 +408,12 @@ float Bug::getMass() const {
 void Bug::serialize(BinaryStream &stream) const {
 	if (!isAlive_)
 		return;
-	glm::vec2 pos = getPosition();
-	stream << pos.x << pos.y;
-	glm::vec2 vel = getVelocity();
-	stream << vel.x << vel.y;
+	// TODO
+	throw std::runtime_error("Implement this!");
+//	glm::vec2 pos = getPosition();
+//	stream << pos.x << pos.y;
+//	glm::vec2 vel = getVelocity();
+//	stream << vel.x << vel.y;
 	float mass = getMass();
 	assertDbg(mass > 0);
 	stream << mass;
@@ -422,8 +424,10 @@ void Bug::serialize(BinaryStream &stream) const {
 void Bug::deserialize(BinaryStream &stream) {
 	if (stream.getSize() == 0)
 		return; // this was a dead bug
+	// TODO
+	throw std::runtime_error("Implement this!");
 	float posx, posy, velx, vely, mass;
-	stream >> posx >> posy >> velx >> vely >> mass;
+	stream >> /*posx >> posy >> velx >> vely >>*/ mass;
 	unsigned generation;
 	stream >> generation;
 	Genome genome;
@@ -438,26 +442,26 @@ float Bug::getNeuronValue(int neuronIndex) const {
 	return neuralNet_->neurons[neuronIndex]->getValue();
 }
 
-glm::vec3 Bug::getWorldTransform() const {
-	//return body_ ? body_->getWorldTransformation() : zygoteShell_ ? zygoteShell_->getWorldTransformation() : glm::vec3(0);
-	// TODO
-	throw std::runtime_error("Implement this!");
-}
+//glm::vec3 Bug::getWorldTransform() const {
+//	//return body_ ? body_->getWorldTransformation() : zygoteShell_ ? zygoteShell_->getWorldTransformation() : glm::vec3(0);
+//	// TODO
+//	throw std::runtime_error("Implement this!");
+//}
 
 aabb Bug::getAABB() const {
 	PERF_MARKER_FUNC;
 	static constexpr float maxSqDeviation = sqr(5.e-2f);
 	static constexpr float maxAngleDeviation = PI / 8;
-	glm::vec3 tr = getWorldTransform();
+
 	if (cachedAABB_.empty()
-			|| vec2lenSq(vec3xy(cachedWorldTransform_ - tr)) > maxSqDeviation
-			|| abs(tr.z - cachedWorldTransform_.z) > maxAngleDeviation ) {
+			/*|| vec2lenSq(vec3xy(cachedWorldTransform_ - tr)) > maxSqDeviation
+			|| abs(tr.z - cachedWorldTransform_.z) > maxAngleDeviation*/ ) {
 		// update cached
 		/*if (zygoteShell_)
 			cachedAABB_ = zygoteShell_->getAABBRecursive();
 		else
 			cachedAABB_ = body_ ? body_->getAABBRecursive() : aabb();*/
-		cachedWorldTransform_ = tr;
+//		cachedWorldTransform_ = tr;
 	}
 	return cachedAABB_;
 }

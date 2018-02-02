@@ -259,7 +259,7 @@ void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
 	assertDbg(!std::isnan(cachedProps_.angle));
 }*/
 
-glm::vec3 BodyPart::getWorldTransformation() {
+glm::vec3 BodyPart::getWorldTransformation() const {
 	if (physBody_.b2Body_ /*&& !noFixtures_*/) {
 		return glm::vec3(b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle());
 	} else {
@@ -267,7 +267,7 @@ glm::vec3 BodyPart::getWorldTransformation() {
 		return glm::vec3(0);
 		// if not committed yet, must compute these values on the fly
 //		glm::vec3 parentTransform(/*parent_ ? parent_->getWorldTransformation() :*/ glm::vec3(0));
-//		glm::vec2 pos {0}; //= getParentSpacePosition(); // this will temporarily cache gene values as well - that's ok because
+//		glm::vec2 pos = getParentSpacePosition(); // this will temporarily cache gene values as well - that's ok because
 //													// we're not committed yet, so we're invisible to other threads
 //		return parentTransform + glm::vec3(
 //				glm::rotate(pos, parentTransform.z),
@@ -485,9 +485,6 @@ Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
 	return &pPart->context_.owner;
 }
 
-/*aabb BodyPart::getAABBRecursive() {
-	aabb X = physBody_.getAABB();
-	for (int i=0; i<nChildren_; i++)
-		X = X.reunion(children_[i]->getAABBRecursive());
-	return X;
-}*/
+aabb BodyPart::getAABB() const {
+	return physBody_.getAABB();
+}

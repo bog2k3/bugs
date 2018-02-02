@@ -60,13 +60,13 @@ void Wall::serialize(BinaryStream &stream) const {
 	stream << width_;
 }
 
-glm::vec3 Wall::getWorldTransform() const {
-	if (body_.b2Body_) {
-		auto pos = body_.b2Body_->GetPosition();
-		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
-	} else
-		return glm::vec3(0);
-}
+//glm::vec3 Wall::getWorldTransform() const {
+//	if (body_.b2Body_) {
+//		auto pos = body_.b2Body_->GetPosition();
+//		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
+//	} else
+//		return glm::vec3(0);
+//}
 
 Entity* Wall::getEntityFromWallPhysBody(PhysicsBody const& body) {
 	Wall* pWall = static_cast<Wall*>(body.userPointer_);

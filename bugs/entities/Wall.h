@@ -27,7 +27,7 @@ public:
 
 	static constexpr EntityType entityType = EntityType::WALL;
 	EntityType getEntityType() const override { return entityType; }
-	glm::vec3 getWorldTransform() const override;
+//	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
 	int getSerializationType() const override { return SerializationObjectTypes::WALL; }

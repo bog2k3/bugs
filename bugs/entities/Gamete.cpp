@@ -148,13 +148,13 @@ void Gamete::deserialize(BinaryStream &stream) {
 	//TODO...
 }
 
-glm::vec3 Gamete::getWorldTransform() const {
-	if (body_.b2Body_) {
-		auto pos = body_.b2Body_->GetPosition();
-		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
-	} else
-		return glm::vec3(0);
-}
+//glm::vec3 Gamete::getWorldTransform() const {
+//	if (body_.b2Body_) {
+//		auto pos = body_.b2Body_->GetPosition();
+//		return glm::vec3(b2g(pos), body_.b2Body_->GetAngle());
+//	} else
+//		return glm::vec3(0);
+//}
 
 Entity* Gamete::getEntityFromGametePhysBody(PhysicsBody const& body) {
 	Gamete* pGamete = static_cast<Gamete*>(body.userPointer_);

@@ -142,13 +142,13 @@ void Nose::update(float dt) {
 			if (ent == dynamic_cast<Entity*>(getOwner()))
 				continue;	// don't count ourselves as food :-)
 
-			glm::vec3 otherPosRot = ent->getWorldTransform();
+			glm::vec2 otherPos = ent->getAABB().center();
 
-			float relativeDirection = pointDirection(glm::vec2(otherPosRot) - pos);
+			float relativeDirection = pointDirection(otherPos - pos);
 			float cosphi = cosf(angleDiff(posRot.z, relativeDirection));	// direction factor
 			if (cosphi <= 0)
 				continue;
-			float minDistSq = vec2lenSq(vec3xy(otherPosRot) - pos);
+			float minDistSq = vec2lenSq(otherPos - pos);
 			float s0 = 1.f / (minDistSq + 1) * max(0.f, cosphi);	// raw signal
 			float sizeScaling = 1 - 1.f / (1 + size_ * ks);
 			float s1 = s0 * sizeScaling;		// modulated signal

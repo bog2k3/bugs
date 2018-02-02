@@ -31,7 +31,6 @@
 class NeuralNet;
 class InputSocket;
 class Ribosome;
-class Torso;
 class ZygoteShell;
 class EggLayer;
 class BodyPart;
@@ -52,7 +51,7 @@ public:
 	}
 	static constexpr EntityType entityType = EntityType::BUG;
 	virtual EntityType getEntityType() const override { return entityType; }
-	glm::vec3 getWorldTransform() const override;
+//	glm::vec3 getWorldTransform() const override;
 	aabb getAABB() const override;
 
 	// deserialize a Bug from the stream and add it to the world
@@ -64,7 +63,7 @@ public:
 	int getSerializationType() const override { return SerializationObjectTypes::BUG; }
 
 	const Genome& getGenome() const { return genome_; }
-	glm::vec2 getVelocity() const;
+	//glm::vec2 getVelocity() const;
 	float getMass() const;
 	unsigned getGeneration() const { return generation_; }
 	bool isAlive() const { return isAlive_; }
@@ -73,19 +72,20 @@ public:
 
 	void kill();
 
+	uint64_t getId() { return id; }
+
 	/**
 	 * creates a new basic bug out of a default genome
 	 */
 	static Bug* newBasicBug(glm::vec2 position);
 	/**
-	 * creates a mutant descendant from the default bug genome
+	 * creates a mutant from the default bug genome
 	 */
 	static Bug* newBasicMutantBug(glm::vec2 position);
 
 	static int getPopulationCount() { return population.load(std::memory_order_relaxed); }
 	static int getZygotesCount() { return freeZygotes.load(std::memory_order_relaxed); }
 	static int getMaxGeneration() { return maxGeneration.load(std::memory_order_relaxed); }
-	uint64_t getId() { return id; }
 
 protected:
 	Bug(Bug const& orig) = delete; // no implementation because no usage
@@ -106,6 +106,7 @@ protected:
 	float tRibosomeStep_; // time since last ribosome step
 //	Torso* body_;
 	ZygoteShell* zygoteShell_;
+	std::vector<BodyPart*> bodyParts_;
 	UpdateList bodyPartsUpdateList_;
 	float growthMassBuffer_;	// stores processed food to be used for growth (at the speed dictated by genes)
 	float maxGrowthMassBuffer_;	// max growth buffer capacity (depends on max growth speed)
@@ -142,7 +143,7 @@ private:
 	uint64_t id = nextId++;
 
 	mutable aabb cachedAABB_;
-	mutable glm::vec3 cachedWorldTransform_;
+//	mutable glm::vec3 cachedWorldTransform_;
 };
 
 #endif /* ENTITIES_BUG_H_ */

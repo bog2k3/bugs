@@ -55,7 +55,9 @@ public:
 	 */
 	virtual glm::vec2 getAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
 
-	virtual glm::vec3 getWorldTransformation();
+	virtual glm::vec3 getWorldTransformation() const;
+
+	aabb getAABB() const;
 
 	// must return the actual amount deduced from mass argument
 	virtual float addFood(float mass) { throw std::runtime_error("not implemented"); /*if (parent_) return parent_->addFood(mass); else return 0;*/ }
