@@ -1,7 +1,6 @@
 .metadata
 .settings
 RemoteSystemsTempFiles/
-bugs/Debug/bugs
 watchdog/Debug/watchdog
 bugs-tests/Debug/bugs-tests
 bugs/Release/bugs
@@ -13,6 +12,6 @@ bugs-tests/Release/bugs-tests
 *.obj
 *.d
 *.bin
-
 eclipse.sh
-
+bugs/.cproject
+bugs/Debug/

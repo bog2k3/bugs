@@ -61,6 +61,7 @@ private:
 
 	std::vector<char> branch_;
 	float density_ = BodyConst::FatDensity;
+	float (*radiusFn)(BodyCell const& cell, float angle) = nullptr;
 
 	glm::vec4 proteinValues_ {0}; // hyper-space position for current cell
 	CumulativeValue VMSOffset_;  // VMS offset for all other VMS coordinates specified in this cell (neuron position, neuron in/out coords, sensor/motor coords)

@@ -157,6 +157,8 @@ bool Ribosome::step() {
 			return false;
 		}
 
+		// TODO update cells' density, then set radiusFn in all cells, then call fixOverlap on each of them
+
 		// link all muscles to joints:
 		resolveMuscleLinkage();
 

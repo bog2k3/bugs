@@ -37,8 +37,10 @@ void BodyCell::initializeGeneValues() {
 }
 
 float BodyCell::radius(float angle) const {
-	// TODO cell radius - use map to call static methods to get attachment points ?
-	throw std::runtime_error("Implement this!");
+	if (radiusFn)
+		return radiusFn(*this, angle);
+	else
+		return Cell::radius(angle);
 }
 
 Cell* BodyCell::createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const {
