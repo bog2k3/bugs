@@ -8,6 +8,5 @@ RemoteSystemsTempFiles/
 *.bin
 eclipse.sh
 .cproject
-Debug/
-Release/
-Profile/
+.boglfw_path
+build/

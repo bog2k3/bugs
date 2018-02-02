@@ -82,7 +82,8 @@
 	- [X] partition the world in a matrix and cache entities in each cell; query cells overlaping the box requested
 	- [X] cache only for the duration of the frame, so for each cell at most 1 call will be made per frame
 * [ ] must test aabb.intersect() and spatial cache
-* [ ] write a proper build config (make or cmake) - don't rely on eclipse any more
+* [X] write a proper build config (make or cmake) - don't rely on eclipse any more
+	- migrated to CMake
 * [X] Logger must be thread-safe!
 * [ ] velocity & angular velocity sensors
 * [ ] eyes
