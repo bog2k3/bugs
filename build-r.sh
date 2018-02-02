@@ -23,10 +23,13 @@ make -j4
 
 RESULT=$?
 
+cd ../..
+
 if [ $RESULT -eq 0 ]; then
 	printf "\n Done. \n\n"
+	exit 0
 else
 	printf "\n Errors encountered. \n\n"
+	exit 1
 fi
-cd ../..
 
