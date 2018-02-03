@@ -28,7 +28,7 @@ public:
 	static constexpr EntityType entityType = EntityType::WALL;
 	EntityType getEntityType() const override { return entityType; }
 //	glm::vec3 getWorldTransform() const override;
-	aabb getAABB() const override;
+	aabb getAABB(bool requirePrecise=false) const override;
 
 	int getSerializationType() const override { return SerializationObjectTypes::WALL; }
 	// deserialize a Wall from the stream and add it to the world

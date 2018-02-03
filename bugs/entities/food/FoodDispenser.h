@@ -23,7 +23,7 @@ public:
 	static constexpr EntityType entityType = EntityType::FOOD_DISPENSER;
 	virtual EntityType getEntityType() const override { return entityType; }
 //	glm::vec3 getWorldTransform() const override;
-	aabb getAABB() const override;
+	aabb getAABB(bool requirePrecise=false) const override;
 
 	FunctionalityFlags getFunctionalityFlags() const override { return
 			FunctionalityFlags::UPDATABLE |

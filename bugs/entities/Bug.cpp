@@ -42,8 +42,9 @@
 #include <dmalloc.h>
 #endif
 
-const float DECODE_FREQUENCY = 5.f; // genes per second
-const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
+static const float DECODE_FREQUENCY = 5.f; // genes per second
+static const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
+static const uint AABB_CACHE_MAX_FRAMES = 15;
 
 std::atomic<uint> Bug::population {0};
 std::atomic<uint> Bug::maxGeneration {0};
@@ -71,6 +72,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, reproductiveMassRatio_(BodyConst::initialReproductiveMassRatio)
 	, eggMass_(BodyConst::initialEggMass)
 	, generation_(generation)
+	, cachedAABBFramesOld_(randi(AABB_CACHE_MAX_FRAMES))
 {
 	LOGPREFIX("BUG");
 	LOGLN("new embryo [id="<<id<<"]; printing chromosomes:");
@@ -233,6 +235,8 @@ void Bug::update(float dt) {
 		return;
 	}
 
+	cachedAABBFramesOld_++;
+
 	lifeTimeSensor_.update(dt);
 	{
 		PERF_MARKER("update-bodyParts");
@@ -283,7 +287,7 @@ void Bug::update(float dt) {
 void Bug::draw(RenderContext const &ctx) {
 	if (zygoteShell_) {
 		zygoteShell_->draw(ctx);
-		// TODO draw cells
+		ribosome_->drawCells(ctx);
 	} else
 		for (auto bp : bodyParts_)
 			bp->draw(ctx);
@@ -442,26 +446,19 @@ float Bug::getNeuronValue(int neuronIndex) const {
 	return neuralNet_->neurons[neuronIndex]->getValue();
 }
 
-//glm::vec3 Bug::getWorldTransform() const {
-//	//return body_ ? body_->getWorldTransformation() : zygoteShell_ ? zygoteShell_->getWorldTransformation() : glm::vec3(0);
-//	// TODO
-//	throw std::runtime_error("Implement this!");
-//}
-
-aabb Bug::getAABB() const {
+// if precise, compute bbox from all body parts, no cache
+// otherwise compute bbox from only bones and cache it, updating every N frames
+aabb Bug::getAABB(bool requirePrecise) const {
 	PERF_MARKER_FUNC;
-	static constexpr float maxSqDeviation = sqr(5.e-2f);
-	static constexpr float maxAngleDeviation = PI / 8;
+	if (zygoteShell_)
+		return zygoteShell_->getAABB();
 
-	if (cachedAABB_.empty()
-			/*|| vec2lenSq(vec3xy(cachedWorldTransform_ - tr)) > maxSqDeviation
-			|| abs(tr.z - cachedWorldTransform_.z) > maxAngleDeviation*/ ) {
+	if (cachedAABB_.empty() || cachedAABBFramesOld_ < AABB_CACHE_MAX_FRAMES) {
 		// update cached
-		/*if (zygoteShell_)
-			cachedAABB_ = zygoteShell_->getAABBRecursive();
-		else
-			cachedAABB_ = body_ ? body_->getAABBRecursive() : aabb();*/
-//		cachedWorldTransform_ = tr;
+		cachedAABB_ = aabb();
+		for (auto bp : bodyParts_)
+			if (bp->getType() == BodyPartType::BONE)	// only treat bones for a coarser but faster computation
+				cachedAABB_ = cachedAABB_.reunion(bp->getAABB());
 	}
 	return cachedAABB_;
 }

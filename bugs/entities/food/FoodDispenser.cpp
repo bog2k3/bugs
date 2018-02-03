@@ -94,6 +94,6 @@ Entity* FoodDispenser::getEntityFromFoodDispenserPhysBody(PhysicsBody const& bod
 	return pDisp;
 }
 
-aabb FoodDispenser::getAABB() const {
+aabb FoodDispenser::getAABB(bool requirePrecise) const {
 	return physBody_.getAABB();
 }

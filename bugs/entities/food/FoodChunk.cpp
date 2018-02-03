@@ -90,6 +90,6 @@ Entity* FoodChunk::getEntityFromFoodChunkPhysBody(PhysicsBody const& body) {
 	return pChunk;
 }
 
-aabb FoodChunk::getAABB() const {
+aabb FoodChunk::getAABB(bool requirePrecise) const {
 	return physBody_.getAABB();
 }

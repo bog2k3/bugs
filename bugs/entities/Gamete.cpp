@@ -162,6 +162,6 @@ Entity* Gamete::getEntityFromGametePhysBody(PhysicsBody const& body) {
 	return pGamete;
 }
 
-aabb Gamete::getAABB() const {
+aabb Gamete::getAABB(bool requirePrecise) const {
 	return body_.getAABB();
 }

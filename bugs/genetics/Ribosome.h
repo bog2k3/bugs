@@ -80,6 +80,8 @@ public:
 	 */
 	bool step();
 
+	void drawCells(RenderContext const &ctx);
+
 private:
 	Bug* bug_;
 	std::vector<BodyCell*> cells_;

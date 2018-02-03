@@ -26,7 +26,7 @@ public:
 	static constexpr EntityType entityType = EntityType::GAMETE;
 	EntityType getEntityType() const override { return entityType; }
 //	glm::vec3 getWorldTransform() const override;
-	aabb getAABB() const override;
+	aabb getAABB(bool requirePrecise=false) const override;
 
 	// deserialize a Gamete from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);

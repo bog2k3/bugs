@@ -60,6 +60,8 @@ protected:
 	virtual Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const;
 
 private:
+	friend class Ribosome;
+
 	bool active_ = true;
 	glm::vec2 position_;
 	float angle_;

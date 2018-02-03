@@ -28,6 +28,12 @@
 #include <boglfw/utils/rand.h>
 #include <boglfw/utils/log.h>
 
+#include <boglfw/renderOpenGL/Shape3D.h>
+#include <boglfw/renderOpenGL/Viewport.h>
+#include <boglfw/renderOpenGL/ViewportCoord.h>
+#include <boglfw/renderOpenGL/RenderContext.h>
+#include <boglfw/renderOpenGL/GLText.h>
+
 #include <utility>
 #include <algorithm>
 #include "../body-parts/JointPivot.h"
@@ -212,7 +218,6 @@ bool Ribosome::step() {
 //				activeSet_.push_back(std::make_pair(joint, activeSet_[i].second.startGenomePos + jOffset));
 //			}
 			// and remove this branch:
-			cell->deactivate();
 			activeSet_.erase(activeSet_.begin()+i);
 			i--, nCrtBranches--;
 			continue;
@@ -822,4 +827,47 @@ bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {
 		return !block;
 	}
 	return true;
+}
+
+void Ribosome::drawCells(RenderContext const &ctx) {
+	if (!ctx.enabledLayers.bodyDebug)
+		return;
+	for (auto c : cells_) {
+		if (!c->isActive())
+			continue;
+		// outline
+		Shape3D::get()->drawCircleXOY(c->position_, c->radius(0), 12, {0.8f, 0.8f, 0.8f});
+		// properties
+		auto xc = [c] (Viewport* viewp) -> float {
+			return viewp->project({c->position_, 0}).x;
+		};
+		auto yc = [c] (Viewport* viewp) -> float {
+			return viewp->project({c->position_, 0}).y;
+		};
+		if (ctx.enabledLayers.bugDebug)
+			GLText::get()->print(c->rightSide_ ? "R" : "L", {xc, yc}, 0, 22, {0, 1, 1});
+		if (ctx.enabledLayers.bugDebug && c->mirror_)
+			GLText::get()->print("M", ViewportCoord{xc, yc} + ViewportCoord{10, 10}, 0, 22, {0, 1, 1});
+		// orientation
+		glm::vec2 v2 = c->position_;
+		v2.x += cosf(c->angle_) * c->radius(0);
+		v2.y += sinf(c->angle_) * c->radius(0);
+		Shape3D::get()->drawLine({c->position_, 0}, {v2, 0}, {1, 1, 0, 0.7f});
+		// division axis
+		v2 = c->position_;
+		v2.x += cosf(c->wangle(c->division_angle_)) * c->radius(0) * 1.2f;
+		v2.y += sinf(c->wangle(c->division_angle_)) * c->radius(0) * 1.2f;
+		glm::vec2 v1 = c->position_ - (v2 - c->position_) * 0.7f;
+		Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {1, 0, 0, 0.5f});
+
+		// bonds
+		for (auto l : c->neighbours_) {
+			glm::vec2 v1 = c->position_;
+			glm::vec2 v2 = v1;
+			v2.x += cosf(c->wangle(l.angle)) * c->radius(0);
+			v2.y += sinf(c->wangle(l.angle)) * c->radius(0);
+			v1 += (v2-v1) * 0.9f;
+			Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 1, 1});
+		}
+	}
 }

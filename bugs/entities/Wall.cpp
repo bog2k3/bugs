@@ -74,6 +74,6 @@ Entity* Wall::getEntityFromWallPhysBody(PhysicsBody const& body) {
 	return pWall;
 }
 
-aabb Wall::getAABB() const {
+aabb Wall::getAABB(bool requirePrecise) const {
 	return body_.getAABB();
 }

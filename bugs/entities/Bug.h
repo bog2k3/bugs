@@ -52,7 +52,7 @@ public:
 	static constexpr EntityType entityType = EntityType::BUG;
 	virtual EntityType getEntityType() const override { return entityType; }
 //	glm::vec3 getWorldTransform() const override;
-	aabb getAABB() const override;
+	aabb getAABB(bool requirePrecise=false) const override;
 
 	// deserialize a Bug from the stream and add it to the world
 	static void deserialize(BinaryStream &stream);
@@ -143,6 +143,7 @@ private:
 	uint64_t id = nextId++;
 
 	mutable aabb cachedAABB_;
+	mutable uint cachedAABBFramesOld_;
 //	mutable glm::vec3 cachedWorldTransform_;
 };
 
