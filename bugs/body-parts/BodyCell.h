@@ -22,12 +22,10 @@
 class BodyCell: public Cell {
 public:
 
-	BodyCell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide, std::vector<char> const& branch = {})
+	BodyCell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide, std::vector<char> branch = {})
 		: Cell(size, position, rotation, mirror, rightSide)
 	{
-		branch_ = branch;
-		branch_.push_back(rightSide ? 'R' : 'L');
-
+		branch_.swap(branch);
 		initializeGeneValues();
 	}
 
