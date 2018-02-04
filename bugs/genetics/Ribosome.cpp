@@ -12,6 +12,7 @@
 #include "../body-parts/Mouth.h"
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/sensors/Nose.h"
+#include "../body-parts/JointPivot.h"
 #include "../neuralnet/functions.h"
 #include "../neuralnet/Network.h"
 #include "../neuralnet/Neuron.h"
@@ -34,9 +35,10 @@
 #include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/GLText.h>
 
+#include <glm/gtx/transform.hpp>
+
 #include <utility>
 #include <algorithm>
-#include "../body-parts/JointPivot.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -832,17 +834,24 @@ bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {
 void Ribosome::drawCells(RenderContext const &ctx) {
 	if (!ctx.enabledLayers.bodyDebug)
 		return;
+	auto tr = bug_->zygoteShell_->getWorldTransformation();
+	glm::mat4 m = glm::translate(glm::vec3{tr.x, tr.y, 0.f});
+	m *= glm::rotate(tr.z, glm::vec3{0.f, 0.f, 1.f});
+	const float scale = 0.3f;
+	m *= glm::scale(glm::vec3{scale, scale, scale});
+	Shape3D::get()->setTransform(m);
 	for (auto c : cells_) {
 		if (!c->isActive())
 			continue;
 		// outline
 		Shape3D::get()->drawCircleXOY(c->position_, c->radius(0), 12, {0.8f, 0.8f, 0.8f});
 		// properties
-		auto xc = [c] (Viewport* viewp) -> float {
-			return viewp->project({c->position_, 0}).x;
+		glm::vec3 cpos = vec4xyz(m * glm::vec4{c->position_, 0, 1});
+		auto xc = [cpos] (Viewport* viewp) -> float {
+			return viewp->project(cpos).x;
 		};
-		auto yc = [c] (Viewport* viewp) -> float {
-			return viewp->project({c->position_, 0}).y;
+		auto yc = [cpos] (Viewport* viewp) -> float {
+			return viewp->project(cpos).y;
 		};
 		if (ctx.enabledLayers.bugDebug)
 			GLText::get()->print(c->rightSide_ ? "R" : "L", {xc, yc}, 0, 22, {0, 1, 1});
@@ -870,4 +879,5 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 			Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 1, 1});
 		}
 	}
+	Shape3D::get()->resetTransform();
 }
