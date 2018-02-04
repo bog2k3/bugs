@@ -1,13 +1,5 @@
-.metadata
-.settings
+workspace/
 RemoteSystemsTempFiles/
-*.o
-*.a
-*.obj
-*.d
-*.bin
 eclipse.sh
-.cproject
-.project
 .boglfw_path
 build/
