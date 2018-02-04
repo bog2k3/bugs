@@ -863,9 +863,10 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 		v2.y += sinf(c->angle_) * c->radius(0);
 		Shape3D::get()->drawLine({c->position_, 0}, {v2, 0}, {1, 1, 0, 0.7f});
 		// division axis
+		float angle = limitAngle(c->mapDivisionParams_[GENE_DIVISION_ANGLE].get(), PI);
 		v2 = c->position_;
-		v2.x += cosf(c->wangle(c->division_angle_)) * c->radius(0) * 1.2f;
-		v2.y += sinf(c->wangle(c->division_angle_)) * c->radius(0) * 1.2f;
+		v2.x += cosf(c->wangle(angle)) * c->radius(0) * 1.2f;
+		v2.y += sinf(c->wangle(angle)) * c->radius(0) * 1.2f;
 		glm::vec2 v1 = c->position_ - (v2 - c->position_) * 0.7f;
 		Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {1, 0, 0, 0.5f});
 

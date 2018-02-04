@@ -50,7 +50,7 @@ public:
 	 * reorientate: true to align the newly spawned cells with the division axis, false to keep parent orientation
 	 * mirror: true to mirror the right side - it's orientation will be mirrored with respect to division axis, and it's angles will be CW
 	 */
-	std::pair<Cell*, Cell*> divide(float ratio, bool reorientate, bool mirror);
+	std::pair<Cell*, Cell*> divide(float division_angle, float ratio, bool reorientate, bool mirror);
 
 	void deactivate() { active_ = false; }
 
@@ -66,7 +66,6 @@ private:
 	glm::vec2 position_;
 	float angle_;
 	float size_; // area
-	float division_angle_;	// relative to cell orientation angle
 	bool mirror_ = false;
 	bool rightSide_ = false;
 	std::vector<link> neighbours_;

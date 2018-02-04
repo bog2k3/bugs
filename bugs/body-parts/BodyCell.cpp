@@ -10,6 +10,8 @@
 #include "../genetics/constants.h"
 #include "../genetics/Gene.h"
 
+#include <boglfw/math/math3D.h>
+
 void BodyCell::initializeGeneValues() {
 	mapDivisionParams_[GENE_DIVISION_RATIO] = CumulativeValue(1.f);			// default to 50%-50%
 	mapDivisionParams_[GENE_DIVISION_SEPARATE] = CumulativeValue(constants::FBOOL_false);	// default to sticky
@@ -50,11 +52,12 @@ Cell* BodyCell::createChild(float size, glm::vec2 position, float rotation, bool
 }
 
 std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
+	float angle = limitAngle(mapDivisionParams_[GENE_DIVISION_ANGLE].get(), PI);
 	float ratio = mapDivisionParams_[GENE_DIVISION_RATIO].clamp(
 			BodyConst::minDivisionRatio,
 			1.f / BodyConst::minDivisionRatio);
 	bool reorient = mapDivisionParams_[GENE_DIVISION_REORIENT] > 0.f;
 	bool mirror = mapDivisionParams_[GENE_DIVISION_MIRROR] > 0.f;
-	auto p = Cell::divide(ratio, reorient, mirror);
+	auto p = Cell::divide(angle, ratio, reorient, mirror);
 	return {static_cast<BodyCell*>(p.first), static_cast<BodyCell*>(p.second)};
 }

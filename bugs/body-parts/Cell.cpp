@@ -15,7 +15,7 @@
 Cell::Cell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide)
 	: position_(position)
 	, angle_(limitAngle(rotation, 2*PI))
-	, size_(size), division_angle_(randf() * 2*PI), mirror_(mirror), rightSide_(rightSide)
+	, size_(size), mirror_(mirror), rightSide_(rightSide)
 {
 }
 
@@ -87,17 +87,17 @@ void Cell::updateBonds() {
  * reorientate: true to align the newly spawned cells with the division axis, false to keep parent orientation
  * mirror: true to mirror the right side - it's orientation will be mirrored with respect to division axis, and it's angles will be CW
  */
-std::pair<Cell*, Cell*> Cell::divide(float ratio, bool reorientate, bool mirror) {
+std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reorientate, bool mirror) {
 	float ls = size_ * ratio / (ratio + 1);
 	float rs = size_ / (ratio + 1);
 	float lr = sqrtf(ls / PI);
 	float rr = sqrtf(rs / PI);
-	float offset_angle = wangle(division_angle_ + PI/2);
+	float offset_angle = wangle(division_angle + PI/2);
 	glm::vec2 offsetDir = {cosf(offset_angle), sinf(offset_angle)};
 	glm::vec2 lC = position_ + offsetDir * lr;
 	glm::vec2 rC = position_ - offsetDir * rr;
-	float la = reorientate ? wangle(division_angle_) : angle_;
-	float ra = reorientate ? wangle(division_angle_) : (mirror ? angle_ + 2*division_angle_ : angle_);
+	float la = reorientate ? wangle(division_angle) : angle_;
+	float ra = reorientate ? wangle(division_angle) : (mirror ? angle_ + 2*division_angle : angle_);
 
 	Cell* cl = createChild(ls, lC, la, mirror_, false);
 	Cell* cr = createChild(rs, rC, ra, mirror != mirror_, true);
@@ -113,7 +113,7 @@ std::pair<Cell*, Cell*> Cell::divide(float ratio, bool reorientate, bool mirror)
 			return l.other == this;
 		}));
 		constexpr float maxTolerrance = PI/16;
-		float diff = angleDiff(division_angle_, n.angle);
+		float diff = angleDiff(division_angle, n.angle);
 		if ( abs(diff) <= maxTolerrance || PI - abs(diff) <= maxTolerrance) {
 			// bond will be split
 			other->bond(cl);
