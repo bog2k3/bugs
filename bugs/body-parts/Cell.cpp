@@ -112,20 +112,26 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reo
 		other->neighbours_.erase(std::find_if(other->neighbours_.begin(), other->neighbours_.end(), [this](link& l) {
 			return l.other == this;
 		}));
+		// compute offsetted division axis intersection point angles
+		float offsDist = 1 - 2 * ls / size_; // offset / R
+		float offsFactor = acos(offsDist);
+		float w1 = division_angle + PI/2 - offsFactor;
+		float w2 = division_angle + PI/2 + offsFactor;
 		constexpr float maxTolerrance = PI/16;
-		float diff = angleDiff(division_angle, n.angle);
-		if ( abs(diff) <= maxTolerrance || PI - abs(diff) <= maxTolerrance) {
+		float diff1 = angleDiff(n.angle, w1);
+		float diff2 = angleDiff(n.angle, w2);
+
+		if (diff1 > maxTolerrance && diff2 < maxTolerrance) {
+			// bond will be inherited only by left side
+			other->bond(cl);
+		} else if (diff1 < -maxTolerrance && diff2 > -maxTolerrance) {
+			// bond will be inherited only by right side
+			other->bond(cr);
+		} else {
 			// bond will be split
 			other->bond(cl);
 			other->bond(cr);
-
-			continue;
 		}
-		// bond will be inherited by only one side
-		if (diff > 0)
-			other->bond(cl);
-		else
-			other->bond(cr);
 	}
 
 	deactivate(); // this cell is no longer active (it's out of the graph of cells)
