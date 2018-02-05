@@ -24,6 +24,7 @@ public:
 
 	BodyCell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide, std::vector<char> branch = {})
 		: Cell(size, position, rotation, mirror, rightSide)
+		, initialAngle_(rotation)
 	{
 		branch_.swap(branch);
 		initializeGeneValues();
@@ -43,6 +44,8 @@ public:
 
 	float density() const { return density_; }
 
+	void updateRotation();
+
 	std::pair<BodyCell*, BodyCell*> divide();
 
 	std::map<gene_joint_attribute_type, CumulativeValue> mapJointAttribs_;
@@ -61,6 +64,7 @@ private:
 	float density_ = BodyConst::FatDensity;
 	float (*radiusFn)(BodyCell const& cell, float angle) = nullptr;
 
+	float initialAngle_;
 	glm::vec4 proteinValues_ {0}; // hyper-space position for current cell
 	CumulativeValue VMSOffset_;  // VMS offset for all other VMS coordinates specified in this cell (neuron position, neuron in/out coords, sensor/motor coords)
 	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;

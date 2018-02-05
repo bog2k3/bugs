@@ -13,8 +13,8 @@
 #include <algorithm>
 
 Cell::Cell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide)
-	: position_(position)
-	, angle_(limitAngle(rotation, 2*PI))
+	: angle_(limitAngle(rotation, 2*PI))
+	, position_(position)
 	, size_(size), mirror_(mirror), rightSide_(rightSide)
 {
 }
@@ -88,14 +88,15 @@ void Cell::updateBonds() {
  * mirror: true to mirror the right side - it's orientation will be mirrored with respect to division axis, and it's angles will be CW
  */
 std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reorientate, bool mirror) {
+	division_angle = limitAngle(division_angle, PI);
 	float ls = size_ * ratio / (ratio + 1);
 	float rs = size_ / (ratio + 1);
 	float lr = sqrtf(ls / PI);
 	float rr = sqrtf(rs / PI);
 	float offset_angle = wangle(division_angle + PI/2);
 	glm::vec2 offsetDir = {cosf(offset_angle), sinf(offset_angle)};
-	glm::vec2 lC = position_ + offsetDir * lr;
-	glm::vec2 rC = position_ - offsetDir * rr;
+	glm::vec2 lC = position_ + offsetDir * rr;
+	glm::vec2 rC = position_ - offsetDir * lr;
 	float la = reorientate ? wangle(division_angle) : angle_;
 	float ra = reorientate ? wangle(division_angle) : (mirror ? angle_ + 2*division_angle : angle_);
 
@@ -105,6 +106,13 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reo
 	// create bond between siblings:
 	cl->bond(cr);
 
+	// compute offsetted division axis intersection point angles
+	float offsDist = 1 - 2 * ls / size_; // offset / R    E[-1, 1]
+	float offsFactor = acos(offsDist); // E[0, PI]
+	float w1 = division_angle + PI/2 - offsFactor;
+	float w2 = division_angle + PI/2 + offsFactor;
+	constexpr float maxTolerrance = PI/16;
+
 	// inherit parent's bonds:
 	for (auto &n : neighbours_) {
 		// 1. remove old bond
@@ -112,14 +120,9 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reo
 		other->neighbours_.erase(std::find_if(other->neighbours_.begin(), other->neighbours_.end(), [this](link& l) {
 			return l.other == this;
 		}));
-		// compute offsetted division axis intersection point angles
-		float offsDist = 1 - 2 * ls / size_; // offset / R
-		float offsFactor = acos(offsDist);
-		float w1 = division_angle + PI/2 - offsFactor;
-		float w2 = division_angle + PI/2 + offsFactor;
-		constexpr float maxTolerrance = PI/16;
-		float diff1 = angleDiff(w1, n.angle);
-		float diff2 = angleDiff(w2, n.angle);
+
+		float diff1 = limitAngle(angleDiff(w1, n.angle), w2-w1);
+		float diff2 = limitAngle(angleDiff(w2, n.angle), 2*PI-w2+w1);
 
 		if (diff1 > maxTolerrance && diff2 < -maxTolerrance) {
 			// bond will be inherited only by left side

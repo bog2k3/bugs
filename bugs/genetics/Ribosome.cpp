@@ -471,6 +471,8 @@ void Ribosome::decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, D
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
 	if (g.attribute > GENE_ATTRIB_INVALID && g.attribute < GENE_ATTRIB_END)
 		cell.mapAttributes_[g.attribute].changeAbs(g.value);
+	if (g.attribute == GENE_ATTRIB_LOCAL_ROTATION)
+		cell.updateRotation();
 }
 
 void Ribosome::decodeJointAttrib(GeneJointAttribute const& g, BodyCell &cell, DecodeContext &ctx) {

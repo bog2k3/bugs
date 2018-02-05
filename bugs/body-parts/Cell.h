@@ -39,6 +39,7 @@ public:
 	const glm::vec2& position() const { return position_; }
 	float angle() const { return angle_; }
 	float size() const { return size_; }
+	bool isMirrored() const { return mirror_; }
 
 	unsigned neighbourCount() const { return neighbours_.size(); }
 	link neighbour(unsigned index) const { return neighbours_[index]; }
@@ -58,13 +59,13 @@ public:
 
 protected:
 	virtual Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const;
+	float angle_;
 
 private:
 	friend class Ribosome;
 
 	bool active_ = true;
 	glm::vec2 position_;
-	float angle_;
 	float size_; // area
 	bool mirror_ = false;
 	bool rightSide_ = false;

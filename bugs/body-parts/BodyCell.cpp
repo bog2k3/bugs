@@ -52,7 +52,7 @@ Cell* BodyCell::createChild(float size, glm::vec2 position, float rotation, bool
 }
 
 std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
-	float angle = limitAngle(mapDivisionParams_[GENE_DIVISION_ANGLE].get(), PI);
+	float angle = mapDivisionParams_[GENE_DIVISION_ANGLE];
 	float ratio = mapDivisionParams_[GENE_DIVISION_RATIO].clamp(
 			BodyConst::minDivisionRatio,
 			1.f / BodyConst::minDivisionRatio);
@@ -60,4 +60,10 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 	bool mirror = mapDivisionParams_[GENE_DIVISION_MIRROR] > 0.f;
 	auto p = Cell::divide(angle, ratio, reorient, mirror);
 	return {static_cast<BodyCell*>(p.first), static_cast<BodyCell*>(p.second)};
+}
+
+void BodyCell::updateRotation() {
+	float prevAngle = angle_;
+	angle_ = initialAngle_ + mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION] * (isMirrored() ? -1 : 1);
+	updateBonds();
 }
