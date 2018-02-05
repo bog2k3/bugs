@@ -118,13 +118,13 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reo
 		float w1 = division_angle + PI/2 - offsFactor;
 		float w2 = division_angle + PI/2 + offsFactor;
 		constexpr float maxTolerrance = PI/16;
-		float diff1 = angleDiff(n.angle, w1);
-		float diff2 = angleDiff(n.angle, w2);
+		float diff1 = angleDiff(w1, n.angle);
+		float diff2 = angleDiff(w2, n.angle);
 
-		if (diff1 > maxTolerrance && diff2 < maxTolerrance) {
+		if (diff1 > maxTolerrance && diff2 < -maxTolerrance) {
 			// bond will be inherited only by left side
 			other->bond(cl);
-		} else if (diff1 < -maxTolerrance && diff2 > -maxTolerrance) {
+		} else if (diff1 < -maxTolerrance && diff2 > maxTolerrance) {
 			// bond will be inherited only by right side
 			other->bond(cr);
 		} else {
