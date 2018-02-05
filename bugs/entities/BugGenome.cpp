@@ -120,6 +120,11 @@ Chromosome Bug::createBasicChromosome() {
 
 	OFFSET_MARKER(C1)	//------------------------------- MARKER ----------------
 
+	gdp.param = GENE_DIVISION_ANGLE;
+	gdp.value.set(3*PI/2);
+	gdp.restriction = BranchRestriction("0v L-");
+	PUSH(gdp);
+
 	go.side.set(constants::FBOOL_true);
 	go.restriction = BranchRestriction("0v");	// don't apply to C0
 	INSERT_OFFSET(C2a, C1);
