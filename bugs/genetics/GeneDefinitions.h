@@ -65,7 +65,8 @@ constexpr gene_division_param_type GENE_DIVISION_RATIO = 3;				// division ratio
 constexpr gene_division_param_type GENE_DIVISION_MIRROR = 4;			// if >0 right side will be mirrored
 constexpr gene_division_param_type GENE_DIVISION_REORIENT = 5;			// if >0 children will be reoriented by the division axis
 constexpr gene_division_param_type GENE_DIVISION_SEPARATE = 6;			// if >0 children will be separated (not connected by a joint), otherwise a joint is created
-constexpr gene_division_param_type GENE_DIVISION_END = 7;
+constexpr gene_division_param_type GENE_DIVISION_BOND_BIAS = 7;			// >0 biases bonds to the left, <0 to the right (tanh value maps to [-1,_1])
+constexpr gene_division_param_type GENE_DIVISION_END = 8;
 
 // ----------------------------------- gene_joint_attribute_type_type -------------------------------//
 

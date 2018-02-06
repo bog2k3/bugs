@@ -58,11 +58,12 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float gripper_signal_phase_offset = 1.0f * PI;
 	constexpr float mouth_size_ratio = 0.25f;		// mouth to head ratio (M3/#3a)
 	constexpr float nose_size_ratio = 0.1f;			// nose to head ratio (N5/#4a)
-	constexpr float egglayer_size_ratio = 0.005f;	// egglayer to body ratio (E1/#1)
+	constexpr float egglayer_size_ratio = 0.01f;	// egglayer to body ratio (E1/#1)
 	constexpr float head_size_ratio = 0.2f;			// head to body ratio (#2b/#2a)
 	constexpr float leg_size_ratio = 2.5f;			// leg to torso ratio (#5b/B5)
 	constexpr float legJoint_mass_ratio = 0.1f;		// joint ratio to parent cell
 	constexpr float legMuscle_mass_ratio = 0.1f;	// muscle mass ratio relative to parent cell
+	constexpr float fat_torso_ratio = 0.3f;			// fat to torso ratio (#4f/#4c)
 
 	constexpr float sfu = constants::small_gene_value;	// small float unit
 
@@ -103,7 +104,7 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_RATIO;
-	gdp.value.set(1.f / egglayer_size_ratio);
+	gdp.value.set(2.f / egglayer_size_ratio - 1.f);
 	gdp.restriction.clear();
 	PUSH(gdp);
 
@@ -283,8 +284,13 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_ANGLE;
-	gdp.value.set(0.f);
+	gdp.value.set(0);
 	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_ANGLE;
+	gdp.value.set(-PI/4);
+	gdp.restriction = BranchRestriction("*v *< 0v");
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_REORIENT;
@@ -293,8 +299,13 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_RATIO;
-	gdp.value.set(0.5f);
+	gdp.value.set(1.f);
 	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_RATIO;
+	gdp.value.set(2*fat_torso_ratio - 1.f);
+	gdp.restriction = BranchRestriction("*v *< 0v");
 	PUSH(gdp);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
@@ -317,7 +328,7 @@ Chromosome Bug::createBasicChromosome() {
 	OFFSET_MARKER(C4f)	//------------------------------- MARKER ----------------
 
 	gdp.param = GENE_DIVISION_ANGLE;
-	gdp.value.set(PI/2);
+	gdp.value.set(PI/2.5);
 	gdp.restriction.clear();
 	PUSH(gdp);
 
@@ -381,12 +392,12 @@ Chromosome Bug::createBasicChromosome() {
 	OFFSET_MARKER(C4e)	//------------------------------- MARKER ----------------
 
 	gdp.param = GENE_DIVISION_ANGLE;
-	gdp.value.set(PI/4);
+	gdp.value.set(PI/2.5);
 	gdp.restriction.clear();
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_ANGLE;
-	gdp.value.set(3*PI/4);
+	gdp.value.set(1.5*PI/2.5);
 	gdp.restriction = BranchRestriction("0v 0v 0v 0v 0v");	// 3PI/4 averaged with the above value of PI/4 yield PI/2
 	PUSH(gdp);
 
@@ -402,6 +413,11 @@ Chromosome Bug::createBasicChromosome() {
 
 	gdp.param = GENE_DIVISION_MIRROR;
 	gdp.value.set(constants::FBOOL_false);
+	gdp.restriction.clear();
+	PUSH(gdp);
+
+	gdp.param = GENE_DIVISION_BOND_BIAS;
+	gdp.value.set(1.2f);
 	gdp.restriction.clear();
 	PUSH(gdp);
 

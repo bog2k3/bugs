@@ -19,6 +19,7 @@ void BodyCell::initializeGeneValues() {
 	mapDivisionParams_[GENE_DIVISION_ANGLE] = CumulativeValue();
 	mapDivisionParams_[GENE_DIVISION_MIRROR] = CumulativeValue();
 	mapDivisionParams_[GENE_DIVISION_REORIENT] = CumulativeValue();
+	mapDivisionParams_[GENE_DIVISION_BOND_BIAS] = CumulativeValue();
 
 	mapJointAttribs_[GENE_JOINT_ATTR_HIGH_LIMIT] = CumulativeValue(BodyConst::initialJointMaxPhi);
 	mapJointAttribs_[GENE_JOINT_ATTR_LOW_LIMIT] = CumulativeValue(BodyConst::initialJointMinPhi);
@@ -58,7 +59,8 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 			1.f / BodyConst::minDivisionRatio);
 	bool reorient = mapDivisionParams_[GENE_DIVISION_REORIENT] > 0.f;
 	bool mirror = mapDivisionParams_[GENE_DIVISION_MIRROR] > 0.f;
-	auto p = Cell::divide(angle, ratio, reorient, mirror);
+	float bondBias = tanh(mapDivisionParams_[GENE_DIVISION_BOND_BIAS].get() / 2.f);
+	auto p = Cell::divide(angle, ratio, bondBias, reorient, mirror);
 	return {static_cast<BodyCell*>(p.first), static_cast<BodyCell*>(p.second)};
 }
 

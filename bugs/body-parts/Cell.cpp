@@ -87,7 +87,7 @@ void Cell::updateBonds() {
  * reorientate: true to align the newly spawned cells with the division axis, false to keep parent orientation
  * mirror: true to mirror the right side - it's orientation will be mirrored with respect to division axis, and it's angles will be CW
  */
-std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reorientate, bool mirror) {
+std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, float bondBias, bool reorientate, bool mirror) {
 	division_angle = limitAngle(division_angle, PI);
 	float ls = size_ * ratio / (ratio + 1);
 	float rs = size_ / (ratio + 1);
@@ -108,6 +108,8 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, bool reo
 
 	// compute offsetted division axis intersection point angles
 	float offsDist = 1 - 2 * ls / size_; // offset / R    E[-1, 1]
+	// apply bond bias:
+	offsDist = clamp(offsDist - bondBias, -1.f, +1.f);
 	float offsFactor = acos(offsDist); // E[0, PI]
 	float w1 = division_angle + PI/2 - offsFactor;
 	float w2 = division_angle + PI/2 + offsFactor;
