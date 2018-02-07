@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "serialization/objectTypes.h"
 #include "session/SessionManager.h"
 #include "session/PopulationManager.h"
@@ -48,6 +46,7 @@
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
 
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <functional>
