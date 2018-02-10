@@ -200,6 +200,18 @@ bool Ribosome::step() {
 			// so much for this development path;
 			// decide if cell will divide or specialize
 			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f) {
+				// check if division will create pivot joint, and if so, we need to subtract the mass required to make the joint and muscles
+				if (cell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f) {
+					float cellMass = cell->density() * cell->size();
+					float jointMass = cellMass * cell->mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO].clamp(
+							BodyConst::MinJointMassRatio, BodyConst::MaxJointMassRatio);
+					cell->muscleMassLeft_ = (cellMass-jointMass) * cell->mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO].clamp(
+							BodyConst::MinMuscleMassRatio, BodyConst::MaxMuscleMassRatio);
+					cell->muscleMassRight_ = (cellMass-jointMass) * cell->mapRightMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO].clamp(
+							BodyConst::MinMuscleMassRatio, BodyConst::MaxMuscleMassRatio);
+					cell->size_ *= (cellMass - jointMass - cell->muscleMassLeft_ - cell->muscleMassRight_) / cellMass;
+					cell->setJointSize(jointMass / cellMass * cell->size_);
+				}
 				// divide
 				auto pair = cell->divide();
 				cells_.push_back(pair.first);
@@ -874,12 +886,22 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 
 		// bonds
 		for (auto l : c->neighbours_) {
-			glm::vec2 v1 = c->position_;
-			glm::vec2 v2 = v1;
-			v2.x += cosf(c->wangle(l.angle)) * c->radius(0);
-			v2.y += sinf(c->wangle(l.angle)) * c->radius(0);
-			v1 += (v2-v1) * 0.9f;
-			Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 1, 1});
+			if (l.offset == 0) {
+				// weld joint
+				glm::vec2 v1 = c->position_;
+				glm::vec2 v2 = v1;
+				v2.x += cosf(c->wangle(l.angle)) * c->radius(0);
+				v2.y += sinf(c->wangle(l.angle)) * c->radius(0);
+				v1 += (v2-v1) * 0.9f;
+				Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 1, 1});
+			} else {
+				// pivot joint
+				float jr = l.offset/2;
+				glm::vec2 jc = c->position_;
+				jc.x += cosf(c->wangle(l.angle)) * (c->radius(0) + jr);
+				jc.y += sinf(c->wangle(l.angle)) * (c->radius(0) + jr);
+				Shape3D::get()->drawCircleXOY(jc, jr, 8, {1.f, 0.2f, 0.1f});
+			}
 		}
 	}
 	Shape3D::get()->resetTransform();

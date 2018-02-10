@@ -33,11 +33,11 @@ float Cell::rangle(float angle) {
 	return angleDiff(angle_, angle) * (mirror_ ? -1 : 1);
 }
 
-void Cell::bond(Cell* other) {
+void Cell::bond(Cell* other, float jointDiameter, Cell* jointParent) {
 	float angle = rangle(limitAngle(pointDirection(other->position_ - position_), 2*PI));
-	neighbours_.push_back({angle, other});
+	neighbours_.push_back({angle, jointDiameter, other, jointParent});
 	float oAngle = other->rangle(limitAngle(pointDirection(position_ - other->position_), 2*PI));
-	other->neighbours_.push_back({oAngle, this});
+	other->neighbours_.push_back({oAngle, jointDiameter, this, jointParent});
 }
 
 std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
@@ -57,7 +57,7 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 				float angle = pointDirection(diff);
 				float dist = glm::length(diff);
 				constexpr float tolerance = 1e-3f;
-				float overlap = (c->radius(c->rangle(angle)) + n.other->radius(n.other->rangle(angle+PI))) - dist;
+				float overlap = (c->radius(c->rangle(angle)) + n.other->radius(n.other->rangle(angle+PI)) + n.offset) - dist;
 				if (abs(overlap) <= tolerance)
 					continue;
 				glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap;
@@ -89,14 +89,15 @@ void Cell::updateBonds() {
  */
 std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, float bondBias, bool reorientate, bool mirror) {
 	division_angle = limitAngle(division_angle, PI);
-	float ls = size_ * ratio / (ratio + 1);
-	float rs = size_ / (ratio + 1);
-	float lr = sqrtf(ls / PI);
-	float rr = sqrtf(rs / PI);
+	float ls = size_ * ratio / (ratio + 1);	// left size
+	float rs = size_ / (ratio + 1);			// right size
+	float lr = sqrtf(ls / PI);				// left radius
+	float rr = sqrtf(rs / PI);				// right radius
+	float jr = sqrtf(jointSize_ / PI);		// joint radius
 	float offset_angle = wangle(division_angle + PI/2);
 	glm::vec2 offsetDir = {cosf(offset_angle), sinf(offset_angle)};
-	glm::vec2 lC = position_ + offsetDir * rr;
-	glm::vec2 rC = position_ - offsetDir * lr;
+	glm::vec2 lC = position_ + offsetDir * (rr + jr);
+	glm::vec2 rC = position_ - offsetDir * (lr + jr);
 	float la = reorientate ? wangle(division_angle) : angle_;
 	float ra = reorientate ? wangle(division_angle) : (mirror ? angle_ + 2*division_angle : angle_);
 
@@ -104,7 +105,7 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, float bo
 	Cell* cr = createChild(rs, rC, ra, mirror != mirror_, true);
 
 	// create bond between siblings:
-	cl->bond(cr);
+	cl->bond(cr, jr*2, this);
 
 	// compute offsetted division axis intersection point angles
 	float offsDist = 1 - 2 * ls / size_; // offset / R    E[-1, 1]
@@ -128,14 +129,14 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, float bo
 
 		if (diff1 > maxTolerrance && diff2 < -maxTolerrance) {
 			// bond will be inherited only by left side
-			other->bond(cl);
+			other->bond(cl, n.offset, n.jointParent);
 		} else if (diff1 < -maxTolerrance && diff2 > maxTolerrance) {
 			// bond will be inherited only by right side
-			other->bond(cr);
+			other->bond(cr, n.offset, n.jointParent);
 		} else {
 			// bond will be split
-			other->bond(cl);
-			other->bond(cr);
+			other->bond(cl, n.offset, n.jointParent);
+			other->bond(cr, n.offset, n.jointParent);
 		}
 	}
 

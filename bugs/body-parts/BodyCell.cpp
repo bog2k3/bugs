@@ -65,7 +65,6 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 }
 
 void BodyCell::updateRotation() {
-	float prevAngle = angle_;
 	angle_ = initialAngle_ + mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION] * (isMirrored() ? -1 : 1);
 	updateBonds();
 }

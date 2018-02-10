@@ -48,7 +48,11 @@ public:
 	static constexpr float JointTorqueToleranceFactor		= 3.5e+1f;		// [Nm/kg] how much torque a joint can take, relative to its size
 	static constexpr float MaxJointResetTorque				= 1.e+3f;		// [N*m] max joint snap-back torque
 	static constexpr float SensorSizeScalingConstant		= 0.5e+4f;		// [*]
-	static constexpr float SensorNoiseThreshConstant		= 6.5e+4f;		// [*]	bigger makes lower noise threshold
+	static constexpr float SensorNoiseThreshConstant		= 6.5e+4f;		// [*] bigger makes lower noise threshold
+	static constexpr float MinJointMassRatio				= 0.1e-1f;		// [*] relative to parent cell's initial mass
+	static constexpr float MaxJointMassRatio				= 0.25f;		// [*] relative to parent cell's initial mass
+	static constexpr float MinMuscleMassRatio				= 0.1e-1f;		// [*] relative to parent cell's initial mass minus joint's mass
+	static constexpr float MaxMuscleMassRatio				= 0.15f; 		// [*] relative to parent cell's initial mass minus joint's mass
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
