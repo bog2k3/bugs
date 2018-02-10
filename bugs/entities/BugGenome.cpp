@@ -392,15 +392,9 @@ Chromosome Bug::createBasicChromosome() {
 	OFFSET_MARKER(C4e)	//------------------------------- MARKER ----------------
 
 	gdp.param = GENE_DIVISION_ANGLE;
-//	gdp.value.set(PI/2.5);
 	gdp.value.set(PI/2);
 	gdp.restriction.clear();
 	PUSH(gdp);
-
-//	gdp.param = GENE_DIVISION_ANGLE;
-//	gdp.value.set(1.5*PI/2.5);
-//	gdp.restriction = BranchRestriction("0v 0v 0v 0v 0v");	// 3PI/4 averaged with the above value of PI/4 yield PI/2
-//	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_AFFINITY;
 	gdp.value.set(constants::FBOOL_true);
