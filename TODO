@@ -29,38 +29,39 @@
 	- [X] if proteins yield x*y*z*w = 0, the cell specializes into default type - fat cell body part
 	- [X] proteins should have a float weight instead of current int 1
 	- [ ] division creates bond between child cells (weld/pivot joint)
-	- [ ] when dividing, each existing bond is either split or inherited by one side:
-		-- [ ] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
-		-- [ ] otherwise each side inherits bonds on its side of the division axis
+	- [X] when dividing, each existing bond is either split or inherited by one side:
+		-- [X] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
+		-- [X] otherwise each side inherits bonds on its side of the division axis
+		-- [X] new BondBias gene that biases the bond inheritance axis towards one side
 		-- [ ] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
 	- [ ] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
 		-- [ ] (pivot only) joint's default (rest) orientation is perpendicular to the division axis, going from left child cell to right child cell; it's angle direction is the same as the parent cell (so joint can be mirrored as well)
 		-- [ ] left and right muscles are defined with respect to the joint's zero-axis (left muscle on the positive side); mirrored joints have left/right switched 
 	- [ ] when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
 		-- [ ] original cell is kept for joint/muscle genes and its size is changed to joint size - it's used on the ctor of PivotJoint
-	- [ ] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
+	- [X] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
 	- [ ] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
 	- [ ] new VMS offset gene to control offset for a division branch (mirrored trees with same genes must have different coordinates to enable control by different neurons)
-	- [ ] division happens when gene decoding reaches the end, so all genes have a chance of being read
-		-- [ ] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
+	- [X] division happens when gene decoding reaches the end, so all genes have a chance of being read
+		-- [X] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
 	- [ ] each cell specializes into a body part depending on hyperspace position or turns into a FatCell (for unused or incomplete positions)
 		-- [X] ^ maps of gene-types/values in BodyCell that accumulates the values
 		-- [ ] once the decoding is done, the body part type is determined and following actions take place:
 		-- [ ] a map of body-part-type/static methods is used to call the correct method to update the cell's density
 		-- [ ] another similar map is used to retrieve the future body part's shape and connection points, and all neighbour link positions are updated so that cells will be in the correct position
 		-- [ ] the correct body part is now instantiated while the cell's position, size, density and shape are all correct.
-		-- [ ] BodyPart base class uses the cell to retrieve size, density, position, rotation and velocity for PhysicalBody
-		-- [ ] derived body part classes use the cell's gene maps to retrieve various specific attributes 
+		-- [X] BodyPart base class uses the cell to retrieve size, density, position, rotation and velocity for PhysicalBody
+		-- [X] derived body part classes use the cell's gene maps to retrieve various specific attributes 
 		-- [ ] unspecialized cells will instantiate a FatCell body part which acts as an energy storage
 	- [X] joints and muscles are not created explicitly any more - remove them from hyperspace
 	- [ ] must rethink muscle linkange and body part hierarchies
 	- [ ] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
-		-- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
-	- [ ] !!! proteins are NOT inherited !!!
-	- [ ] default child cell genome offset is 0 - same genes as parent
-	- [ ] new gene child offset left/right which changes the default offset (relatively) of the child cells once the division takes place
-	- [ ] each cell knows if it's left or right and if it's mirrored
-	- [ ] new restrictions on genes for left/right
+	- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
+	- [X] !!! proteins are NOT inherited !!!
+	- [X] default child cell genome offset is 0 - same genes as parent
+	- [X] new gene child offset left/right which changes the default offset (relatively) of the child cells once the division takes place
+	- [X] each cell knows if it's left or right and if it's mirrored
+	- [X] new restrictions on genes for left/right
 	- [X] all unused positions in hyperspace should be filled up with FatCell
 	- [X] no more start marker genes in order to allow for easy variation in offsets
 	- [ ] if decoding starts on a STOP gene, it moves forward until the 1st valid gene
