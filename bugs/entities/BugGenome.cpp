@@ -61,7 +61,7 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float egglayer_size_ratio = 0.01f;	// egglayer to body ratio (E1/#1)
 	constexpr float head_size_ratio = 0.2f;			// head to body ratio (#2b/#2a)
 	constexpr float leg_size_ratio = 2.5f;			// leg to torso ratio (#5b/B5)
-	constexpr float legJoint_mass_ratio = 0.1f;		// joint ratio to parent cell
+	constexpr float legJoint_mass_ratio = 0.03f;		// joint ratio to parent cell
 	constexpr float legMuscle_mass_ratio = 0.1f;	// muscle mass ratio relative to parent cell
 	constexpr float fat_torso_ratio = 0.3f;			// fat to torso ratio (#4f/#4c)
 
@@ -392,14 +392,15 @@ Chromosome Bug::createBasicChromosome() {
 	OFFSET_MARKER(C4e)	//------------------------------- MARKER ----------------
 
 	gdp.param = GENE_DIVISION_ANGLE;
-	gdp.value.set(PI/2.5);
+//	gdp.value.set(PI/2.5);
+	gdp.value.set(PI/2);
 	gdp.restriction.clear();
 	PUSH(gdp);
 
-	gdp.param = GENE_DIVISION_ANGLE;
-	gdp.value.set(1.5*PI/2.5);
-	gdp.restriction = BranchRestriction("0v 0v 0v 0v 0v");	// 3PI/4 averaged with the above value of PI/4 yield PI/2
-	PUSH(gdp);
+//	gdp.param = GENE_DIVISION_ANGLE;
+//	gdp.value.set(1.5*PI/2.5);
+//	gdp.restriction = BranchRestriction("0v 0v 0v 0v 0v");	// 3PI/4 averaged with the above value of PI/4 yield PI/2
+//	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_AFFINITY;
 	gdp.value.set(constants::FBOOL_true);
@@ -437,13 +438,8 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gdp);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	ga.value.set(PI);
+	ga.value.set(PI/1.1);
 	ga.restriction = BranchRestriction("0v 0v 0v 0v *-");
-	PUSH(ga);
-
-	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	ga.value.set(-PI/4);
-	ga.restriction = BranchRestriction("0v 0v 0v 0v 0v R-");
 	PUSH(ga);
 
 	GeneJointAttribute gja;
@@ -501,16 +497,6 @@ Chromosome Bug::createBasicChromosome() {
 	gp.weight.set(+sfu);
 	gp.restriction.clear();
 	PUSH(gdp);
-
-	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	ga.value.set(PI);
-	ga.restriction = BranchRestriction("0v 0v 0v 0v R-");
-	PUSH(ga);
-
-	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	ga.value.set(-PI/4);
-	ga.restriction = BranchRestriction("0v 0v 0v 0v 0> R-");
-	PUSH(ga);
 
 	GeneMuscleAttribute gma;
 	gma.attrib = GENE_MUSCLE_ATTR_ASPECT_RATIO;

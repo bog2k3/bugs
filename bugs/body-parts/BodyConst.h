@@ -49,9 +49,9 @@ public:
 	static constexpr float MaxJointResetTorque				= 1.e+3f;		// [N*m] max joint snap-back torque
 	static constexpr float SensorSizeScalingConstant		= 0.5e+4f;		// [*]
 	static constexpr float SensorNoiseThreshConstant		= 6.5e+4f;		// [*] bigger makes lower noise threshold
-	static constexpr float MinJointMassRatio				= 0.1e-1f;		// [*] relative to parent cell's initial mass
+	static constexpr float MinJointMassRatio				= 0.01f;		// [*] relative to parent cell's initial mass
 	static constexpr float MaxJointMassRatio				= 0.25f;		// [*] relative to parent cell's initial mass
-	static constexpr float MinMuscleMassRatio				= 0.1e-1f;		// [*] relative to parent cell's initial mass minus joint's mass
+	static constexpr float MinMuscleMassRatio				= 0.01f;		// [*] relative to parent cell's initial mass minus joint's mass
 	static constexpr float MaxMuscleMassRatio				= 0.15f; 		// [*] relative to parent cell's initial mass minus joint's mass
 
 	// default initial values for cummulative properties:
@@ -62,7 +62,7 @@ public:
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.6f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
-	static constexpr float initialJointMassRatio			= 0.1f;			// proportion of cell mass that goes into making the pivot joint
+	static constexpr float initialJointMassRatio			= 0.05f;			// proportion of cell mass that goes into making the pivot joint
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialMuscleMassRatio			= 0.1f;			// [m^2]
 	static constexpr float initialMuscleInsertOffset		= PI/5;			// [rad]
