@@ -288,11 +288,27 @@ BodyPartType Ribosome::specializationType(BodyCell const& c) const {
 }
 
 void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
-	// update cells' density, then set radiusFn in all cells, then call fixOverlap on each of them
+	// first run: update cells' density, then set radiusFn in all cells, then call fixOverlap on each of them
+	std::set<BodyCell*> activeCells;
 	for (auto c : cells_) {
 		if (!c->isActive())
 			continue;
+		// update cell's density:
 		updateCellDensity(*c);
+		// adjust the cell's shape:
+		c->radiusFn = mapRadiusFunctions[specializationType(*c)];
+		activeCells.insert(c);
+	}
+
+	// fix all cell's positioning (affected by changing shape and size above)
+	std::set<Cell*> cellSet;
+	cellSet.insert(activeCells.begin(), activeCells.end());
+	BodyCell::fixOverlap(cellSet);
+	for (auto c : activeCells)
+		c->updateBonds();
+
+	// second run: instantiate body parts:
+	for (auto c : activeCells) {
 		switch (specializationType(*c)) {
 		case BodyPartType::MOUTH:
 			hasMouth = true;
@@ -325,8 +341,6 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 	cell.density_ = fn(cell);
 	// must adjust cell size to conserve mass
 	cell.size_ *= oldDensity / cell.density_;
-	// adjust the cell's shape:
-	cell.radiusFn = mapRadiusFunctions[specializationType(cell)];
 }
 
 /*void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {
