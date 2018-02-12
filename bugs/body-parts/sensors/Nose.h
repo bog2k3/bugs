@@ -40,6 +40,8 @@ public:
 	OutputSocket* getOutputSocket(unsigned index) const override { return index<NoseDetectableFlavoursCount ? outputSocket_[index] : nullptr; }
 	float getOutputVMSCoord(unsigned index) const override;
 
+	static float getDensity(BodyCell const& cell);
+
 protected:
 	OutputSocket* outputSocket_[NoseDetectableFlavoursCount];
 

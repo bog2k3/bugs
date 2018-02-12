@@ -13,6 +13,7 @@
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/sensors/Nose.h"
 #include "../body-parts/JointPivot.h"
+#include "../body-parts/FatCell.h"
 #include "../neuralnet/functions.h"
 #include "../neuralnet/Network.h"
 #include "../neuralnet/Neuron.h"
@@ -23,6 +24,7 @@
 #include "Genome.h"
 #include "GeneDefinitions.h"
 #include "CumulativeValue.h"
+#include "ProteinHyperspace.h"
 
 #include <boglfw/math/math3D.h>
 #include <boglfw/utils/log.h>
@@ -43,6 +45,17 @@
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
 #endif
+
+static std::map<BodyPartType, std::function<float(BodyCell const&)>> mapDensityFunctions {
+	{ BodyPartType::BONE,				Bone::getDensity },
+	{ BodyPartType::EGGLAYER,			EggLayer::getDensity },
+	{ BodyPartType::FAT, 				FatCell::getDensity },
+	{ BodyPartType::GRIPPER, 			Gripper::getDensity },
+	{ BodyPartType::MOUTH, 				Mouth::getDensity },
+//	{ BodyPartType::SENSOR_COMPASS, 	SensorCompass::getDensity },
+	{ BodyPartType::SENSOR_PROXIMITY,	Nose::getDensity },
+//	{ BodyPartType::SENSOR_SIGHT, 		Eye::getDensity },
+};
 
 Ribosome::Ribosome(Bug* bug)
 	: bug_{bug}
@@ -144,20 +157,12 @@ void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves) {
 bool Ribosome::step() {
 	LOGPREFIX("Ribosome");
 	if (activeSet_.empty()) {
-		// finished division and specialization;
-		// TODO must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
+		// finished division and specialization
 
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
-		/*bug_->body_->applyRecursive([&hasMouth, &hasEggLayer, this] (BodyPart* p) {
-			if (p->getType() == BodyPartType::MOUTH)
-				hasMouth = true;
-			if (p->getType() == BodyPartType::EGGLAYER) {
-				hasEggLayer = true;
-				((EggLayer*)p)->setTargetEggMass(bug_->eggMass_);
-			}
-			return hasMouth && hasEggLayer;
-		});*/
+		specializeCells(hasMouth, hasEggLayer);
+
 		if (!hasMouth || !hasEggLayer) {
 			// here mark the embryo as dead and return
 			bug_->isAlive_ = false;
@@ -165,7 +170,7 @@ bool Ribosome::step() {
 			return false;
 		}
 
-		// TODO update cells' density, then set radiusFn in all cells, then call fixOverlap on each of them
+		// TODO must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
 
 		// link all muscles to joints:
 		resolveMuscleLinkage();
@@ -263,13 +268,52 @@ bool Ribosome::step() {
 	return true;
 }
 
+BodyPartType Ribosome::specializationType(BodyCell const& c) const {
+	return proteinHyperspace
+			[c.proteinValues_.x > 0 ? 1 : 0]
+			[c.proteinValues_.y > 0 ? 1 : 0]
+			[c.proteinValues_.z > 0 ? 1 : 0]
+			[c.proteinValues_.w > 0 ? 1 : 0];
+}
+
+void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
+	// update cells' density, then set radiusFn in all cells, then call fixOverlap on each of them
+	for (auto c : cells_) {
+		if (!c->isActive())
+			continue;
+		updateCellDensity(*c);
+		switch (specializationType(*c)) {
+		case BodyPartType::MOUTH:
+			hasMouth = true;
+			break;
+		case BodyPartType::EGGLAYER:
+			hasEggLayer = true;
+			break;
+		case BodyPartType::BONE:
+			break;
+		case BodyPartType::FAT:
+			break;
+		case BodyPartType::GRIPPER:
+			break;
+		case BodyPartType::SENSOR_COMPASS:
+			break;
+		case BodyPartType::SENSOR_PROXIMITY:
+			break;
+		case BodyPartType::SENSOR_SIGHT:
+			break;
+		default:
+			throw std::runtime_error("invalid specialization type!");
+		};
+	}
+}
+
 // call this before instantiating the body part in order to update to correct density and size
 void Ribosome::updateCellDensity(BodyCell &cell) {
-//	auto fn = mapDensityFunctions[specializationType(cell)];	// undefined function and map -> implement with static methods for density in bodyparts
-//	auto oldDensity = cell.density;
-//	cell.density_ = fn(cell);
+	auto fn = mapDensityFunctions[specializationType(cell)];	// undefined function and map -> implement with static methods for density in bodyparts
+	auto oldDensity = cell.density_;
+	cell.density_ = fn(cell);
 	// must adjust cell size to conserve mass
-//	cell.size_ *= oldDensity / cell.density_;
+	cell.size_ *= oldDensity / cell.density_;
 	// TODO must update link positions
 	throw std::runtime_error("Implement this!");
 }

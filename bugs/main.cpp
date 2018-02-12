@@ -213,6 +213,8 @@ int main(int argc, char* argv[]) {
 		GLFWInput::initialize(gltGetWindow());
 		GLFWInput::onInputEvent.add(onInputEventHandler);
 
+		GLText::disableMipMaps(true);
+
 		Renderer renderer(winW, winH);
 		auto vp = std::make_unique<Viewport>(0, 0, winW, winH);
 		auto vp1 = vp.get();

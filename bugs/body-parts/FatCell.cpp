@@ -6,6 +6,7 @@
  */
 
 #include "FatCell.h"
+#include "BodyConst.h"
 
 FatCell::~FatCell() {
 	// TODO Auto-generated destructor stub
@@ -16,5 +17,9 @@ FatCell::FatCell(BodyPartContext const& context, BodyCell& cell)
 {
 	// TODO Auto-generated constructor stub
 
+}
+
+float FatCell::getDensity(BodyCell const& cell) {
+	return BodyConst::FatDensity;
 }
 

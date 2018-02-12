@@ -248,3 +248,6 @@ void Nose::die() {
 	getUpdateList()->add(this);
 }*/
 
+float Nose::getDensity(BodyCell const& cell) {
+	return BodyConst::ZygoteDensity;
+}

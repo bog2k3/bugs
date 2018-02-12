@@ -14,6 +14,8 @@ class FatCell: public BodyPart {
 public:
 	FatCell(BodyPartContext const& context, BodyCell& cell);
 	virtual ~FatCell();
+
+	static float getDensity(BodyCell const& cell);
 };
 
 #endif /* BODY_PARTS_FATCELL_H_ */

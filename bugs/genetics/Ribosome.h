@@ -128,6 +128,7 @@ private:
 
 	void initializeNeuralNetwork();
 	void decodeDeferredGenes();
+	void specializeCells(bool &hasMouth, bool &hasEggLayer);
 //	void checkAndAddNeuronMapping(int virtualIndex);
 //	void updateNeuronConstant(int virtualIndex, float constant);
 //	bool hasNeuron(int virtualIndex, bool physical); // checks whether a virtual neuron exists and, if requested, its physical equivalent too
@@ -152,6 +153,7 @@ private:
 	bool geneQualifies(Gene& g, BodyCell& c);
 
 	void updateCellDensity(BodyCell &cell);
+	BodyPartType specializationType(BodyCell const& c) const;
 
 	void cleanUp();
 };
