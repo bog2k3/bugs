@@ -35,6 +35,7 @@ public:
 #endif
 
 	static float getDensity(BodyCell const& cell);
+	static float getRadius(BodyCell const& cell, float angle);
 
 protected:
 	InputSocket* inputSocket_;

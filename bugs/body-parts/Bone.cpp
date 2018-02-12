@@ -31,10 +31,7 @@ Bone::Bone(BodyPartContext const& context, BodyCell& cell)
 	, length_(0)
 	, width_(0)
 {
-	cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].changeAbs(BodyConst::initialBoneAspectRatio);
-	float aspectRatio = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].clamp(
-				BodyConst::MaxBodyPartAspectRatioInv,
-				BodyConst::MaxBodyPartAspectRatio);
+	float aspectRatio = extractAspectRatio(cell);
 	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
 	width_ = length_ / aspectRatio;			// w = l/a
 
@@ -75,10 +72,15 @@ void Bone::updateFixtures() {
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
+
+static glm::vec2 getBoneAttachmentPoint(float length, float width, float angle) {
+	glm::vec2 ret(rayIntersectBox(length, width, angle));
+	return ret;
+}
+
 glm::vec2 Bone::getAttachmentPoint(float relativeAngle)
 {
-	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
-	return ret;
+	return getBoneAttachmentPoint(length_, width_, relativeAngle);
 }
 
 void Bone::draw(RenderContext const& ctx) {
@@ -92,4 +94,22 @@ void Bone::draw(RenderContext const& ctx) {
 			glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5, 0, 1));
 	}
 #endif
+}
+
+float Bone::getRadius(BodyCell const& cell, float angle) {
+	float aspectRatio = extractAspectRatio(cell);
+	float length = sqrtf(cell.size() * aspectRatio);	// l = sqrt(s*a)
+	float width = length / aspectRatio;			// w = l/a
+	glm::vec2 p = getBoneAttachmentPoint(length, width, angle);
+	return glm::length(p);
+}
+
+float Bone::extractAspectRatio(BodyCell const& cell) {
+	auto it = cell.mapAttributes_.find(GENE_ATTRIB_ASPECT_RATIO);
+	auto aspVal = it != cell.mapAttributes_.end() ? it->second : CumulativeValue();
+	aspVal.changeAbs(BodyConst::initialBoneAspectRatio);
+	float aspectRatio = aspVal.clamp(
+				BodyConst::MaxBodyPartAspectRatioInv,
+				BodyConst::MaxBodyPartAspectRatio);
+	return aspectRatio;
 }

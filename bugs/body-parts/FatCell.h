@@ -10,12 +10,17 @@
 
 #include "BodyPart.h"
 
+#include <glm/vec2.hpp>
+
 class FatCell: public BodyPart {
 public:
 	FatCell(BodyPartContext const& context, BodyCell& cell);
 	virtual ~FatCell();
 
+	glm::vec2 getAttachmentPoint(float relativeAngle) override;
+
 	static float getDensity(BodyCell const& cell);
+	static float getRadius(BodyCell const& cell, float angle);
 };
 
 #endif /* BODY_PARTS_FATCELL_H_ */

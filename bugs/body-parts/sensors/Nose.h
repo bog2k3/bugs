@@ -12,6 +12,8 @@
 #include "../../entities/Bug/ISensor.h"
 #include "../../entities/enttypes.h"
 
+#include <glm/vec2.hpp>
+
 static constexpr EntityType NoseDetectableFlavours[] {
 	EntityType::	FOOD_CHUNK,
 	EntityType::	BUG,
@@ -41,6 +43,7 @@ public:
 	float getOutputVMSCoord(unsigned index) const override;
 
 	static float getDensity(BodyCell const& cell);
+	static float getRadius(BodyCell const& cell, float angle);
 
 protected:
 	OutputSocket* outputSocket_[NoseDetectableFlavoursCount];

@@ -86,14 +86,23 @@ void EggLayer::draw(RenderContext const& ctx) {
 #endif // DEBUG_DRAW_EGGLAYER
 }
 
-glm::vec2 EggLayer::getAttachmentPoint(float relativeAngle) {
-	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
+static glm::vec2 getEggLayerAttachmentPoint(float size, float angle) {
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), angle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
 }
 
+glm::vec2 EggLayer::getAttachmentPoint(float relativeAngle) {
+	return getEggLayerAttachmentPoint(size_, relativeAngle);
+}
+
 float EggLayer::getDensity(BodyCell const& cell) {
 	return BodyConst::ZygoteDensity;
+}
+
+float EggLayer::getRadius(BodyCell const& cell, float angle) {
+	glm::vec2 p = getEggLayerAttachmentPoint(cell.size(), angle);
+	return glm::length(p);
 }
 
 void EggLayer::update(float dt) {

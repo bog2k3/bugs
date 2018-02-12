@@ -10,6 +10,8 @@
 
 #include "BodyPart.h"
 
+#include <glm/vec2.hpp>
+
 class Mouth: public BodyPart {
 public:
 	Mouth(BodyPartContext const& context, BodyCell& cell);
@@ -20,6 +22,7 @@ public:
 	void update(float dt);
 
 	static float getDensity(BodyCell const& cell);
+	static float getRadius(BodyCell const& cell, float angle);
 
 protected:
 	float length_;
@@ -32,6 +35,8 @@ protected:
 	void updateFixtures() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
 	void die() override;
+
+	static float extractAspectRatio(BodyCell const& cell);
 };
 
 #endif /* OBJECTS_BODY_PARTS_MOUTH_H_ */

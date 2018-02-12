@@ -37,10 +37,7 @@ Mouth::Mouth(BodyPartContext const& context, BodyCell& cell)
 	, bufferSize_(0)
 	, usedBuffer_(0)
 {
-	cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].changeAbs(BodyConst::initialMouthAspectRatio);
-	float aspectRatio = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].clamp(
-				BodyConst::MaxBodyPartAspectRatioInv,
-				BodyConst::MaxBodyPartAspectRatio);
+	float aspectRatio = extractAspectRatio(cell);
 	length_ = sqrtf(size_ * aspectRatio);	// l = sqrt(s*a)
 	width_ = length_ / aspectRatio;			// w = l/a
 
@@ -61,10 +58,14 @@ void Mouth::die() {
 	physBody_.collisionEventMask_ = 0;
 }
 
-glm::vec2 Mouth::getAttachmentPoint(float relativeAngle) {
-	glm::vec2 ret(rayIntersectBox(length_, width_, relativeAngle));
+static glm::vec2 getMouthAttachmentPoint(float length, float width, float angle) {
+	glm::vec2 ret(rayIntersectBox(length, width, angle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
+}
+
+glm::vec2 Mouth::getAttachmentPoint(float relativeAngle) {
+	return getMouthAttachmentPoint(length_, width_, relativeAngle);
 }
 
 void Mouth::updateFixtures() {
@@ -189,4 +190,22 @@ void Mouth::update(float dt) {
 
 float Mouth::getDensity(BodyCell const& cell) {
 	return BodyConst::MouthDensity;
+}
+
+float Mouth::getRadius(BodyCell const& cell, float angle) {
+	float aspectRatio = extractAspectRatio(cell);
+	float length = sqrtf(cell.size() * aspectRatio);	// l = sqrt(s*a)
+	float width = length / aspectRatio;			// w = l/a
+	glm::vec2 p = getMouthAttachmentPoint(length, width, angle);
+	return glm::length(p);
+}
+
+float Mouth::extractAspectRatio(BodyCell const& cell) {
+	auto it = cell.mapAttributes_.find(GENE_ATTRIB_ASPECT_RATIO);
+	auto aspVal = it != cell.mapAttributes_.end() ? it->second : CumulativeValue();
+	aspVal.changeAbs(BodyConst::initialMouthAspectRatio);
+	float aspectRatio = aspVal.clamp(
+				BodyConst::MaxBodyPartAspectRatioInv,
+				BodyConst::MaxBodyPartAspectRatio);
+	return aspectRatio;
 }

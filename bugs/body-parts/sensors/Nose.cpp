@@ -10,6 +10,7 @@
 #include "../../ObjectTypesAndFlags.h"
 #include "../../entities/Bug.h"
 #include "../../neuralnet/OutputSocket.h"
+#include "../BodyCell.h"
 
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
@@ -78,11 +79,14 @@ void Nose::draw(RenderContext const& ctx) {
 	}
 }
 
-
-glm::vec2 Nose::getAttachmentPoint(float relativeAngle) {
-	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
+static glm::vec2 getNoseAttachmentPoint(float size, float angle) {
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), angle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
+}
+
+glm::vec2 Nose::getAttachmentPoint(float relativeAngle) {
+	return getNoseAttachmentPoint(size_, relativeAngle);
 }
 
 
@@ -250,4 +254,9 @@ void Nose::die() {
 
 float Nose::getDensity(BodyCell const& cell) {
 	return BodyConst::ZygoteDensity;
+}
+
+float Nose::getRadius(BodyCell const& cell, float angle) {
+	glm::vec2 p = getNoseAttachmentPoint(cell.size(), angle);
+	return glm::length(p);
 }

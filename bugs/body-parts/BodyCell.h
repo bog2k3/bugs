@@ -34,12 +34,6 @@ public:
 	// that is distance from center to cell's outline - it may be non-uniform for non-circle cells
 	float radius(float angle) const override;
 
-	// TODO when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
-	// TODO at the end of decoding, accumulated rotation attribute gene value must be used to alter the rotation of the cell
-	// 		effectively the cell's orientation should become
-	//			angle_ + mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION]
-	//		this means also altering all links relative angles in order to keep them in the same physical positions
-
 	void initializeGeneValues();
 
 	float density() const { return density_; }

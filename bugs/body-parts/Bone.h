@@ -23,12 +23,15 @@ public:
 	float aspectRatio() const { return length_ / width_; }
 
 	static float getDensity(BodyCell const& cell);	// return the density of the future body part created from this cell
+	static float getRadius(BodyCell const& cell, float angle);
 
 protected:
 	float length_;
 	float width_;
 
 	void updateFixtures() override;
+
+	static float extractAspectRatio(BodyCell const& cell);
 };
 
 #endif /* OBJECTS_BODY_PARTS_BONE_H_ */

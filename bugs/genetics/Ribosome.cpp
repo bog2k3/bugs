@@ -46,7 +46,7 @@
 #include <dmalloc.h>
 #endif
 
-static std::map<BodyPartType, std::function<float(BodyCell const&)>> mapDensityFunctions {
+static std::map<BodyPartType, float (*)(BodyCell const&)> mapDensityFunctions {
 	{ BodyPartType::BONE,				Bone::getDensity },
 	{ BodyPartType::EGGLAYER,			EggLayer::getDensity },
 	{ BodyPartType::FAT, 				FatCell::getDensity },
@@ -55,6 +55,17 @@ static std::map<BodyPartType, std::function<float(BodyCell const&)>> mapDensityF
 //	{ BodyPartType::SENSOR_COMPASS, 	SensorCompass::getDensity },
 	{ BodyPartType::SENSOR_PROXIMITY,	Nose::getDensity },
 //	{ BodyPartType::SENSOR_SIGHT, 		Eye::getDensity },
+};
+
+static std::map<BodyPartType, float (*)(BodyCell const& cell, float angle)> mapRadiusFunctions {
+	{ BodyPartType::BONE,				Bone::getRadius },
+	{ BodyPartType::EGGLAYER,			EggLayer::getRadius },
+	{ BodyPartType::FAT, 				FatCell::getRadius },
+	{ BodyPartType::GRIPPER, 			Gripper::getRadius },
+	{ BodyPartType::MOUTH, 				Mouth::getRadius },
+//	{ BodyPartType::SENSOR_COMPASS, 	SensorCompass::getRadius },
+	{ BodyPartType::SENSOR_PROXIMITY,	Nose::getRadius },
+//	{ BodyPartType::SENSOR_SIGHT, 		Eye::getRadius },
 };
 
 Ribosome::Ribosome(Bug* bug)
@@ -314,8 +325,8 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 	cell.density_ = fn(cell);
 	// must adjust cell size to conserve mass
 	cell.size_ *= oldDensity / cell.density_;
-	// TODO must update link positions
-	throw std::runtime_error("Implement this!");
+	// adjust the cell's shape:
+	cell.radiusFn = mapRadiusFunctions[specializationType(cell)];
 }
 
 /*void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {

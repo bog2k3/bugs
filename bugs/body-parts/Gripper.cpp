@@ -113,11 +113,15 @@ void Gripper::draw(RenderContext const& ctx) {
 #endif
 }
 
-glm::vec2 Gripper::getAttachmentPoint(float relativeAngle)
-{
-	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
+static glm::vec2 getGripperAttachmentPoint(float size, float angle) {
+	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), angle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;
+}
+
+glm::vec2 Gripper::getAttachmentPoint(float relativeAngle)
+{
+	return getGripperAttachmentPoint(size_, relativeAngle);
 }
 
 void Gripper::die() {
@@ -127,4 +131,9 @@ void Gripper::die() {
 
 float Gripper::getDensity(BodyCell const& cell) {
 	return BodyConst::GripperDensity;
+}
+
+float Gripper::getRadius(BodyCell const& cell, float angle) {
+	glm::vec2 p = getGripperAttachmentPoint(cell.size(), angle);
+	return glm::length(p);
 }
