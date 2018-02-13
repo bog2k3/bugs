@@ -20,13 +20,6 @@ static constexpr EntityType NoseDetectableFlavours[] {
 };
 static constexpr size_t NoseDetectableFlavoursCount = sizeof(NoseDetectableFlavours)/sizeof(NoseDetectableFlavours[0]);
 
-/*struct NoseInitializationData : public BodyPartInitializationData {
-	virtual ~NoseInitializationData() noexcept = default;
-	NoseInitializationData() = default;
-
-	CumulativeValue outputVMSCoord[NoseDetectableFlavoursCount]; // output nerve VMS coordinate
-};*/
-
 class Nose : public BodyPart, public ISensor {
 public:
 	Nose(BodyPartContext const& context, BodyCell& cell);
@@ -40,13 +33,14 @@ public:
 	// ISensor::
 	unsigned getOutputCount() const override { return NoseDetectableFlavoursCount; }
 	OutputSocket* getOutputSocket(unsigned index) const override { return index<NoseDetectableFlavoursCount ? outputSocket_[index] : nullptr; }
-	float getOutputVMSCoord(unsigned index) const override;
+	float getOutputVMSCoord(unsigned index) const override { return index > NoseDetectableFlavoursCount ? 0 : outputVMSCoord_[index]; }
 
 	static float getDensity(BodyCell const& cell);
 	static float getRadius(BodyCell const& cell, float angle);
 
 protected:
 	OutputSocket* outputSocket_[NoseDetectableFlavoursCount];
+	float outputVMSCoord_[NoseDetectableFlavoursCount];
 
 	void updateFixtures() override;
 	void die() override;

@@ -9,6 +9,10 @@
 #include "BodyConst.h"
 #include "BodyCell.h"
 
+#include <boglfw/World.h>
+
+#include <Box2D/Box2D.h>
+
 #include <glm/gtx/rotate_vector.hpp>
 
 FatCell::~FatCell() {
@@ -39,4 +43,22 @@ glm::vec2 FatCell::getAttachmentPoint(float relativeAngle) {
 float FatCell::getRadius(BodyCell const& cell, float angle) {
 	glm::vec2 p = getFatCellAttachmentPoint(cell.size(), angle);
 	return glm::length(p);
+}
+
+void FatCell::updateFixtures() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
+	// create fixture....
+	b2CircleShape shape;
+	shape.m_p.Set(0, 0);
+	shape.m_radius = sqrtf((size_)/PI);
+
+	b2FixtureDef fixDef;
+	fixDef.density = density_;
+	fixDef.friction = 0.2f;
+	fixDef.restitution = 0.3f;
+	fixDef.shape = &shape;
+
+	physBody_.b2Body_->CreateFixture(&fixDef);
 }

@@ -41,11 +41,8 @@ Nose::Nose(BodyPartContext const& context, BodyCell& cell)
 	physBody_.userObjectType_ = ObjectTypes::BPART_NOSE;
 	physBody_.userPointer_ = this;
 
-//	auto data = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
-//	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
-//		registerAttribute(GENE_ATTRIB_VMS_COORD, i, data->outputVMSCoord[i]);
-	// TODO
-	throw std::runtime_error("Implement this!");
+	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
+		outputVMSCoord_[i] = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1 + i].clamp(0, BodyConst::MaxVMSCoordinateValue);
 
 	context_.updateList.add(this);
 }
@@ -174,19 +171,6 @@ void Nose::update(float dt) {
 		}
 		outputSocket_[i]->push_value(cummulatedSignal);
 	}
-}
-
-
-float Nose::getOutputVMSCoord(unsigned index) const {
-	if (index >= getOutputCount())
-		return 0;
-//	auto initData = std::dynamic_pointer_cast<NoseInitializationData>(getInitializationData());
-//	if (initData)
-//		return initData->outputVMSCoord[index].clamp(0, BodyConst::MaxVMSCoordinateValue);
-//	else
-//		return 0;
-	// TODO
-	throw std::runtime_error("Implement this!");
 }
 
 

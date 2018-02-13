@@ -159,7 +159,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 //			body_->setInitialFatMass(fatMass);
 //			cachedLeanMass_ = zygMass - fatMass;
 
-			zygoteShell_->updateCachedDynamicPropsFromBody();
+//			zygoteShell_->updateCachedDynamicPropsFromBody();
 			// commit all changes and create the physics bodys and fixtures:
 			//body_->commit_tree(cachedLeanMass_/currentMass);
 

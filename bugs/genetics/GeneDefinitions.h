@@ -104,7 +104,10 @@ constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC1 = 3;			// generic attrib
 constexpr gene_part_attribute_type GENE_ATTRIB_GENERIC2 = 4;			// generic attribute - meaning depends on specific type of body part
 constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD1 = 5;			// input/output (depends on motor/sensor) coord in VMS;
 constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD2 = 6;			// input/output (depends on motor/sensor) coord in VMS;
-constexpr gene_part_attribute_type GENE_ATTRIB_END = 7;
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD3 = 7;			// input/output (depends on motor/sensor) coord in VMS;
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD4 = 8;			// input/output (depends on motor/sensor) coord in VMS;
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD6 = 9;			// input/output (depends on motor/sensor) coord in VMS;
+constexpr gene_part_attribute_type GENE_ATTRIB_END = 10;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//
 

@@ -18,6 +18,7 @@ public:
 	virtual ~FatCell();
 
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
+	void updateFixtures() override;
 
 	static float getDensity(BodyCell const& cell);
 	static float getRadius(BodyCell const& cell, float angle);

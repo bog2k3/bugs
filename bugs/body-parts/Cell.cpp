@@ -51,7 +51,6 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 
 	while (!marked.empty()) {
 		for (Cell* c : marked) {
-			allAffected.insert(c);
 			for (auto &n : c->neighbours_) {
 				auto diff = n.other->position_ - c->position_;
 				float angle = pointDirection(diff);
@@ -68,6 +67,8 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 
 				newMarked.insert(c);
 				newMarked.insert(n.other);
+				allAffected.insert(c);
+				allAffected.insert(n.other);
 			}
 		}
 		marked.swap(newMarked);

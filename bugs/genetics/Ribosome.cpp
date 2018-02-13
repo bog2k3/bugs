@@ -89,6 +89,9 @@ Ribosome::~Ribosome() {
 void Ribosome::cleanUp() {
 	neuralGenes_.clear();
 	activeSet_.clear();
+	for (auto c : cells_)
+		delete c;
+	cells_.clear();
 //	mapNeurons_.clear();
 //	mapSynapses_.clear();
 //	outputNeurons_.clear();
@@ -97,7 +100,7 @@ void Ribosome::cleanUp() {
 	sensors_.clear();
 	mapInputNerves_.clear();
 
-	throw std::runtime_error("make sure this is complete");
+#warning "make sure this is complete";
 }
 
 // compares two unsigned longs as if they were expressed as coordinates in a circular scale
@@ -173,6 +176,7 @@ bool Ribosome::step() {
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
 		specializeCells(hasMouth, hasEggLayer);
+		return false;
 
 		if (!hasMouth || !hasEggLayer) {
 			// here mark the embryo as dead and return
@@ -308,29 +312,46 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		c->updateBonds();
 
 	// second run: instantiate body parts:
+	BodyPart* bp = nullptr;
+	IMotor* pMotor = nullptr;
+	ISensor* pSensor = nullptr;
 	for (auto c : activeCells) {
 		switch (specializationType(*c)) {
 		case BodyPartType::MOUTH:
 			hasMouth = true;
+			bp = new Mouth(bug_->context_, *c);
 			break;
 		case BodyPartType::EGGLAYER:
 			hasEggLayer = true;
+			bp = new EggLayer(bug_->context_, *c);
 			break;
 		case BodyPartType::BONE:
+			bp = new Bone(bug_->context_, *c);
 			break;
 		case BodyPartType::FAT:
+			bp = new FatCell(bug_->context_, *c);
 			break;
 		case BodyPartType::GRIPPER:
+			bp = new Gripper(bug_->context_, *c);
 			break;
 		case BodyPartType::SENSOR_COMPASS:
+			bp = new Gripper(bug_->context_, *c);
 			break;
 		case BodyPartType::SENSOR_PROXIMITY:
+			bp = new Nose(bug_->context_, *c);
 			break;
 		case BodyPartType::SENSOR_SIGHT:
 			break;
 		default:
 			throw std::runtime_error("invalid specialization type!");
 		};
+
+		if (bp)
+			bug_->bodyParts_.push_back(bp);
+		if (pMotor)
+			addMotor(pMotor, bp);
+		if (pSensor)
+			addSensor(pSensor);
 	}
 }
 
