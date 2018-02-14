@@ -32,7 +32,7 @@ bool parseConfigFile(std::string const& filePath, std::map<std::string, std::str
 			std::getline(ss, value);
 
 			if (equalSign != "=") {
-				std::cerr << "Invalid line in config file:\n\t\"" << line << "\"";
+				std::cerr << "Invalid line in config file:\n\t\"" << line << "\"\n";
 			}
 
 			opts[tokenName] = value;

@@ -64,6 +64,18 @@ namespace configNames {
 	static auto constexpr disableMipMaps = "DISABLE_MIP_MAPS";
 	static auto constexpr screenWidth = "screen_width";
 	static auto constexpr screenHeight = "screen_height";
+
+/*
+ * EXAMPLE CONFIG FILE - save as ~/.bugs.conf
+
+# set to non-zero to disable mip-map generation (to avoid crashing in virtualBox VM)
+# this will also disable text rendering
+DISABLE_MIP_MAPS = 0
+
+screen_width = 1024
+screen_height = 720
+
+ */
 };
 
 #define ENABLE_PROTOTYPING false
