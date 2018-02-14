@@ -348,11 +348,6 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 	return committed_now;
 }*/
 
-void BodyPart::consumeEnergy(float amount) {
-	/*if (parent_)
-		parent_->consumeEnergy(amount);*/
-}
-
 /*void BodyPart::die_tree() {
 #ifdef DEBUG
 	World::assertOnMainThread();

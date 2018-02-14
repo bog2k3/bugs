@@ -70,6 +70,9 @@ public:
 	float getNeuronValue(int neuronIndex) const;
 //	Torso* getBody() { return body_; }
 
+	// returns the actual amount used
+	float addFood(float amount);
+
 	void kill();
 
 	uint64_t getId() { return id; }

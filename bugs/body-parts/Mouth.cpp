@@ -56,6 +56,7 @@ void Mouth::die() {
 	context_.updateList.remove(this);
 	physBody_.onCollision.remove(onCollisionEventHandle_);
 	physBody_.collisionEventMask_ = 0;
+	lastDt_ = 0;
 }
 
 static glm::vec2 getMouthAttachmentPoint(float length, float width, float angle) {
@@ -156,6 +157,7 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 
 	// compute food amount that will be transfered:
 	float maxSwallow = min(maxFoodAvailable, maxSwallowRatio * maxFoodAvailable); // how much mass could we swallow if buffer allowed it?
+	maxSwallow = min(maxSwallow, BodyConst::FoodSwallowSpeedDensity * size_ * lastDt_);	// mouth can only swallow so much in a given time
 	float bufferAvail = bufferSize_ - usedBuffer_;
 	float actualFoodAmountTransferred = min(bufferAvail, maxSwallow);
 	usedBuffer_ += actualFoodAmountTransferred;
@@ -185,10 +187,9 @@ void Mouth::update(float dt) {
 	PERF_MARKER_FUNC;
 	if (isDead())
 		return;
-	/*if (usedBuffer_ > 0)
-		usedBuffer_ -= parent_->addFood(usedBuffer_);*/
-	// TODO food addition
-	throw std::runtime_error("Implement this!");
+	lastDt_ = dt;
+	if (usedBuffer_ > 0)
+		usedBuffer_ -= context_.owner.addFood(usedBuffer_);
 }
 
 float Mouth::getDensity(BodyCell const& cell) {

@@ -462,3 +462,7 @@ aabb Bug::getAABB(bool requirePrecise) const {
 	}
 	return cachedAABB_;
 }
+
+float Bug::addFood(float amount, float dt) {
+
+}

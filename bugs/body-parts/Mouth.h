@@ -32,6 +32,8 @@ protected:
 //	b2WeldJoint* pJoint;
 	int onCollisionEventHandle_;
 
+	float lastDt_ = 0;
+
 	void updateFixtures() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
 	void die() override;

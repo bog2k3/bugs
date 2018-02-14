@@ -75,6 +75,7 @@
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
 
 * [ ] !!! New gene mutation method: Flip-Sign (with much lower probability) -> will avoid boolean float genes becoming too stable by being too far away from zero
+* [ ] FatCells also function as food processing facilities, taking over this function from Torso
 
 * [ ] World must also be serializable and save the general world properties (extents and other things)
 	- [ ] create spatial cache (call setExtents) also when loading

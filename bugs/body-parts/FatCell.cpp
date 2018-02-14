@@ -8,6 +8,7 @@
 #include "FatCell.h"
 #include "BodyConst.h"
 #include "BodyCell.h"
+#include "../ObjectTypesAndFlags.h"
 
 #include <boglfw/World.h>
 
@@ -21,9 +22,16 @@ FatCell::~FatCell() {
 
 FatCell::FatCell(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::FAT, context, cell)
+	, frameUsedEnergy_(0)
+	, energyBuffer_(0)
+	, foodBuffer_(0)
 {
-	// TODO Auto-generated constructor stub
+	maxEnergyBuffer_ = size_ * BodyConst::FatEnergyDensity;
+	foodProcessingSpeed_ = size_ * BodyConst::FoodProcessingSpeedDensity;
+	foodBufferSize_ = foodProcessingSpeed_; // enough for 1 second
 
+	physBody_.userObjectType_ = ObjectTypes::BPART_FATCELL;
+	physBody_.userPointer_ = this;
 }
 
 float FatCell::getDensity(BodyCell const& cell) {
@@ -43,6 +51,10 @@ glm::vec2 FatCell::getAttachmentPoint(float relativeAngle) {
 float FatCell::getRadius(BodyCell const& cell, float angle) {
 	glm::vec2 p = getFatCellAttachmentPoint(cell.size(), angle);
 	return glm::length(p);
+}
+
+float FatCell::consumeEnergy(float amount) {
+	frameUsedEnergy_ += amount;
 }
 
 void FatCell::updateFixtures() {

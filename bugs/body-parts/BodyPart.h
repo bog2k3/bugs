@@ -177,7 +177,6 @@ protected:
 	 * The physicsProperties of the body are in world coordinates at this time;
 	 */
 	virtual void updateFixtures() = 0;
-	virtual void consumeEnergy(float amount);
 	virtual void die() {}
 	//virtual void onAddedToParent() {}
 	//virtual void onDetachedFromParent() {}
