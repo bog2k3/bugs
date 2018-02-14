@@ -171,7 +171,8 @@ void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves) {
 bool Ribosome::step() {
 	LOGPREFIX("Ribosome");
 	if (activeSet_.empty()) {
-		// finished division and specialization
+		// finished division
+		// TODO must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
 
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
