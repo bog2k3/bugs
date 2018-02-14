@@ -72,6 +72,7 @@ public:
 
 	// returns the actual amount used
 	float addFood(float amount);
+	void consumeEnergy(float amount);
 
 	void kill();
 

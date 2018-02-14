@@ -2,6 +2,7 @@
 #include "session/SessionManager.h"
 #include "session/PopulationManager.h"
 #include "Prototype.h"
+#include "configFile.h"
 
 #ifdef DEBUG
 #include "entities/Bug.h"
@@ -58,6 +59,12 @@
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
 #endif
+
+namespace configNames {
+	static auto constexpr disableMipMaps = "DISABLE_MIP_MAPS";
+	static auto constexpr screenWidth = "screen_width";
+	static auto constexpr screenHeight = "screen_height";
+};
 
 #define ENABLE_PROTOTYPING false
 
@@ -205,15 +212,32 @@ int main(int argc, char* argv[]) {
 		skipRendering = false;
 	#endif
 
+		std::map<std::string, std::string> configOpts {
+			{configNames::disableMipMaps, "0"},
+			{configNames::screenWidth, "1024"},
+			{configNames::screenHeight, "720"},
+		};
+		// read config options from file:
+		const char* pHomeDir = getenv("HOME");
+		if (!pHomeDir) {
+			ERROR("Could not access HOME directory! Config file will not be read!");
+		} else {
+			if (!parseConfigFile(std::string(pHomeDir) + "/.bugs.conf", configOpts, {})) {
+				ERROR("Config file could not be read.");
+			}
+		}
+
 		// initialize stuff:
-		int winW = 1024, winH = 768;
+		int winW = std::stoi(configOpts[configNames::screenWidth]);
+		int winH = std::stoi(configOpts[configNames::screenHeight]);
+		bool disableMipMaps = std::stoi(configOpts[configNames::disableMipMaps]) != 0;
 		if (!gltInit(winW, winH, "Bugs"))
 			return -1;
 
 		GLFWInput::initialize(gltGetWindow());
 		GLFWInput::onInputEvent.add(onInputEventHandler);
 
-		GLText::disableMipMaps(true);
+		GLText::disableMipMaps(disableMipMaps);
 
 		Renderer renderer(winW, winH);
 		auto vp = std::make_unique<Viewport>(0, 0, winW, winH);

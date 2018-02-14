@@ -38,6 +38,7 @@
 #include "BodyConst.h"
 #include "BodyCell.h"
 #include "../neuralnet/InputSocket.h"
+#include "../entities/Bug.h"
 
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
@@ -314,5 +315,5 @@ void Muscle::update(float dt) {
 
 	// compute energy consumption
 	float usedEnergy = maxForce_ * signal_strength * BodyConst::MuscleEnergyConstant * dt;
-	consumeEnergy(usedEnergy);
+	context_.owner.consumeEnergy(usedEnergy);
 }
