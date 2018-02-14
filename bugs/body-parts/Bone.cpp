@@ -61,11 +61,14 @@ void Bone::updateFixtures() {
 		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 	}
 
+	float fRatio;
+	auto fSize = adjustFixtureValues({length_, width_}, fRatio);
+
 	// create fixture:
 	b2PolygonShape shape;
-	shape.SetAsBox(length_ * 0.5f, width_ * 0.5f); // our x and y mean length and width (because length is parallel to OX axis)
+	shape.SetAsBox(fSize.first * 0.5f, fSize.second * 0.5f); // our x and y mean length and width (because length is parallel to OX axis)
 	b2FixtureDef fixDef;
-	fixDef.density = density_;
+	fixDef.density = density_ / fRatio;
 	fixDef.friction = 0.2f;		// TODO replace with BodyConst::constant
 	fixDef.restitution = 0.3f;	// same
 	fixDef.shape = &shape;

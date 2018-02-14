@@ -151,10 +151,13 @@ void EggLayer::updateFixtures() {
 //		pJoint = nullptr;
 	}
 
+	float fRatio;
+	auto fSize = adjustFixtureValues({size_, 0.f}, fRatio);
+
 	b2CircleShape shape;
-	shape.m_radius = sqrtf(size_ * PI_INV);
+	shape.m_radius = sqrtf(fSize.first * PI_INV);
 	b2FixtureDef fdef;
-	fdef.density = density_;
+	fdef.density = density_ / fRatio;
 	fdef.friction = 0.3f;
 	fdef.restitution = 0.2f;
 	fdef.shape = &shape;

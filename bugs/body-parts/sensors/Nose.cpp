@@ -194,12 +194,10 @@ void Nose::updateFixtures() {
 	float base = 2 * sqA3;
 	float height = 3 * sqA3;
 
-	if (base*height < b2_linearSlop) {
-//		noFixtures_ = true;
-		// TODO
-		throw std::runtime_error("Implement this!");
-		return;
-	}
+	float fRatio;
+	auto fSize = adjustFixtureValues({base, height}, fRatio);
+	base = fSize.first;
+	height = fSize.second;
 
 	b2Vec2 points[] {
 			{-height/2, -base/2},
@@ -208,7 +206,7 @@ void Nose::updateFixtures() {
 	};
 	shape.Set(points, sizeof(points)/sizeof(points[0]));
 	b2FixtureDef fixDef;
-	fixDef.density = BodyConst::NoseDensity;
+	fixDef.density = density_ / fRatio;
 	fixDef.friction = 0.2f;
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;

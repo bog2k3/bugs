@@ -49,13 +49,16 @@ void FatCell::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
+	float fRatio;
+	auto fSize = adjustFixtureValues({size_, 0.f}, fRatio);
+
 	// create fixture....
 	b2CircleShape shape;
 	shape.m_p.Set(0, 0);
-	shape.m_radius = sqrtf((size_)/PI);
+	shape.m_radius = sqrtf((fSize.first)/PI);
 
 	b2FixtureDef fixDef;
-	fixDef.density = density_;
+	fixDef.density = density_ / fRatio;
 	fixDef.friction = 0.2f;
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;

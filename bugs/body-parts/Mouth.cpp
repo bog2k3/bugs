@@ -79,13 +79,16 @@ void Mouth::updateFixtures() {
 //		pJoint = nullptr;
 	}
 
+	float fRatio;
+	auto fSize = adjustFixtureValues({width_, length_}, fRatio);
+
 	bufferSize_ = size_ * BodyConst::MouthBufferDensity;
 
 	// create fixture:
 	b2PolygonShape shape;
-	shape.SetAsBox(length_ * 0.5f, width_ * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
+	shape.SetAsBox(fSize.second * 0.5f, fSize.first * 0.5f); // our x and y mean length and width, so are reversed (because length is parallel to OX axis)
 	b2FixtureDef fixDef;
-	fixDef.density = BodyConst::MouthDensity;
+	fixDef.density = density_ / fRatio;
 	fixDef.friction = 0.2f;
 	fixDef.restitution = 0.3f;
 	fixDef.shape = &shape;

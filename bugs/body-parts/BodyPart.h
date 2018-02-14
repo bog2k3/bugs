@@ -199,6 +199,15 @@ protected:
 
 	void buildDebugName(std::stringstream &out_stream) const;
 
+	/*
+	 * Adjusts a pair of values used for fixture size in order to avoid too small fixtures which would cause trouble with box2D.
+	 * the values are assumed to be multiplied together (as width*length for example) yielding a fixture whose area is proportional to this product.
+	 * If pair.second is 0.0, it is ignored and the first value is considered to be an area size and adjusted accordingly.
+	 * outTotalRatio returns the final adjustment ratio (finalValuesMultiplied / initialValuesMultiplied).
+	 * Use this ratio to adjust the fixture's density in order to keep the same mass.
+	 */
+	static std::pair<float, float> adjustFixtureValues(std::pair<float, float> const& val, float &outTotalRatio);
+
 private:
 	//void reverseUpdateCachedProps();
 	//glm::vec2 getParentSpacePosition();
