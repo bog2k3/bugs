@@ -69,7 +69,7 @@ namespace configNames {
  * EXAMPLE CONFIG FILE - save as ~/.bugs.conf
 
 # set to non-zero to disable mip-map generation (to avoid crashing in virtualBox VM)
-# this will also disable text rendering
+# this will make text rendering lower quality
 DISABLE_MIP_MAPS = 0
 
 screen_width = 1024
