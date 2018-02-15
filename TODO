@@ -75,7 +75,12 @@
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
 
 * [ ] !!! New gene mutation method: Flip-Sign (with much lower probability) -> will avoid boolean float genes becoming too stable by being too far away from zero
-* [ ] FatCells also function as food processing facilities, taking over this function from Torso
+* [ ] Mouth also function as food processing facility, taking over this function from Torso
+* [ ] FatCells have an energy buffer proportional to their size, apart from the fat mass
+	- [ ] when energy is used in the body, it is subtracted from this buffer
+	- [ ] when food is processed by mouth, first thing to fill up is the energy buffer, then the excess goes into fat mass
+	- [ ] if the energy buffer is depleted, fat mass will be used to fill it up
+* [ ] when energy is required, it will be subtracted uniformly from all existing fat cells, as much as possible, to keep them balanced.
 
 * [ ] World must also be serializable and save the general world properties (extents and other things)
 	- [ ] create spatial cache (call setExtents) also when loading

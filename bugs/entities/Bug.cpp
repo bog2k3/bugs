@@ -323,6 +323,7 @@ void Bug::onFoodProcessed(float mass) {
 	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
 	if (cachedMassDirty_)
 		return;
+#warning "return above loses some food mass"
 	float fatMassRatio = 0; //TODO body_->getFatMass() / (cachedLeanMass_ + body_->getFatMass());
 	throw std::runtime_error("Implement this!");
 	float growthMass = 0;
@@ -351,9 +352,9 @@ void Bug::onFoodProcessed(float mass) {
 		}
 	}
 	// use the left food to make fat and energy:
-	// body_->replenishEnergyFromMass(mass - eggMass - growthMass);
-	// TODO
 	throw std::runtime_error("Implement this!");
+	// distribute the remaining mass to all fatCells, proportional to each one's size
+	//...
 }
 
 void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
@@ -463,10 +464,6 @@ aabb Bug::getAABB(bool requirePrecise) const {
 	return cachedAABB_;
 }
 
-float Bug::addFood(float amount) {
-
-}
-
 void Bug::consumeEnergy(float amount) {
-
+	// TODO try to balance all fat cells by using energy from each one proportional to their size
 }

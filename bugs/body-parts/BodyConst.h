@@ -17,7 +17,7 @@ public:
 	static constexpr float SizeThresholdToCommit_inv = 1.f / SizeThresholdToCommit;
 
 	// fixed values:
-	static constexpr float minDivisionRatio					= 0.01f;			// [*]
+	static constexpr float minDivisionRatio					= 0.01f;		// [*]
 	static constexpr float MinBodyPartSize					= 1.e-4f;		// [m^2]
 	static constexpr float MinBodyPartDensity				= 0.5f;			// [kg/m^2]
 	static constexpr float MaxBodyPartDensity				= 100.f;		// [kg/m^2]
@@ -30,7 +30,7 @@ public:
 	static constexpr float ZygoteDensityInv					= 1.f / ZygoteDensity; // [m^2/kg]
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
 	static constexpr float MuscleDensity					= 13.f;			// [kg/m^2]
-//	static constexpr float TorsoEnergyDensity				= 100.f;		// [J/m^2] how much ready-to-use energy the torso can store
+	static constexpr float FatCellReadyEnergyDensity		= 100.f;		// [J/m^2] how much ready-to-use energy the cells can store
 	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*]
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
 	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.6f;			// [m/s] max meters/second linear contraction speed
@@ -38,13 +38,14 @@ public:
 	static constexpr float FatDensityInv					= 1.f/FatDensity;	// [m^2/kg]
 	static constexpr float FatEnergyDensity					= 0.5e+4f;		// [J/kg]
 	static constexpr float FatEnergyDensityInv				= 1.f / FatEnergyDensity;	// [kg/J]
+	static constexpr float FatEnergyBufferDensity			= 1.e2f;		// [J/m^2] energy buffer size for a unit sized fatCell
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
 	static constexpr float MuscleEnergyConstant				= 1.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float NoseDensity						= 3.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodSwallowSpeedDensity			= 2.0f;			// [kg/(m^2*s)] how much food can a unit sized Mouth swallow in a second?
-	static constexpr float FoodProcessingSpeedDensity		= 0.5f;			// [kg/(m^2*s)] how much food can a unit sized FatCell process in a second?
+	static constexpr float FoodProcessingSpeedDensity		= 0.5f;			// [kg/(m^2*s)] how much food can a unit sized Mouth process in a second?
 	static constexpr float JointForceToleranceFactor		= 4.e+4f;		// [N/kg] how much force a joint can take, relative to its size
 	static constexpr float JointTorqueToleranceFactor		= 3.5e+1f;		// [Nm/kg] how much torque a joint can take, relative to its size
 	static constexpr float MaxJointResetTorque				= 1.e+3f;		// [N*m] max joint snap-back torque
@@ -63,7 +64,7 @@ public:
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.6f;		// [rad]
 	static constexpr float initialJointResetTorque			= 0.6e-3f;		// [Nm]
-	static constexpr float initialJointMassRatio			= 0.05f;			// proportion of cell mass that goes into making the pivot joint
+	static constexpr float initialJointMassRatio			= 0.05f;		// proportion of cell mass that goes into making the pivot joint
 	static constexpr float initialMuscleAspectRatio			= 2.0f;			// [*]  length/width
 	static constexpr float initialMuscleMassRatio			= 0.1f;			// [m^2]
 	static constexpr float initialMuscleInsertOffset		= PI/5;			// [rad]
