@@ -59,9 +59,6 @@ public:
 
 	aabb getAABB() const;
 
-	// must return the actual amount deduced from mass argument
-	virtual float addFood(float mass) { throw std::runtime_error("not implemented"); /*if (parent_) return parent_->addFood(mass); else return 0;*/ }
-
 	Bug* getOwner() const { return &context_.owner; }
 
 	/*

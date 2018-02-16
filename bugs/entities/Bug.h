@@ -70,9 +70,8 @@ public:
 	float getNeuronValue(int neuronIndex) const;
 //	Torso* getBody() { return body_; }
 
-	// returns the actual amount used
-	float addFood(float amount);
 	void consumeEnergy(float amount);
+	void onFoodProcessed(float mass);
 
 	void kill();
 
@@ -137,7 +136,6 @@ protected:
 
 	void updateEmbryonicDevelopment(float dt);
 	void updateDeadDecaying(float dt);
-	void onFoodProcessed(float mass);
 	void onMotorLinesDetached(std::vector<unsigned> const& lines);
 	void fixAllGeneValues();
 	static Chromosome createBasicChromosome();

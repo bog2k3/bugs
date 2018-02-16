@@ -22,8 +22,7 @@ public:
 
 	// returns the actual energy consumed (less than requested if running low)
 	float consumeEnergy(float amount);
-
-	Event<void(float mass)> onFoodProcessed;
+	void replenishFromMass(float mass);
 
 	static float getDensity(BodyCell const& cell);
 	static float getRadius(BodyCell const& cell, float angle);
@@ -32,9 +31,7 @@ private:
 	float frameUsedEnergy_;
 	float energyBuffer_;
 	float maxEnergyBuffer_;
-	float foodProcessingSpeed_;
-	float foodBufferSize_;
-	float foodBuffer_;
+	float fixtureSizeInv_;
 };
 
 #endif /* BODY_PARTS_FATCELL_H_ */

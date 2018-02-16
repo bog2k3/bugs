@@ -189,8 +189,12 @@ void Mouth::update(float dt) {
 	if (isDead())
 		return;
 	lastDt_ = dt;
-	if (usedBuffer_ > 0)
-		usedBuffer_ -= context_.owner.addFood(usedBuffer_);
+	if (usedBuffer_ > 0) {
+		// process food
+		float amountProcessed = min(usedBuffer_, BodyConst::FoodProcessingSpeedDensity * size_ * dt);
+		usedBuffer_ -= amountProcessed;
+		context_.owner.onFoodProcessed(amountProcessed);
+	}
 }
 
 float Mouth::getDensity(BodyCell const& cell) {

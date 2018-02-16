@@ -24,11 +24,9 @@ FatCell::FatCell(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::FAT, context, cell)
 	, frameUsedEnergy_(0)
 	, energyBuffer_(0)
-	, foodBuffer_(0)
+	, fixtureSizeInv_(0)
 {
-	maxEnergyBuffer_ = size_ * BodyConst::FatEnergyDensity;
-	foodProcessingSpeed_ = size_ * BodyConst::FoodProcessingSpeedDensity;
-	foodBufferSize_ = foodProcessingSpeed_; // enough for 1 second
+	maxEnergyBuffer_ = size_ * BodyConst::FatEnergyBufferDensity;
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_FATCELL;
 	physBody_.userPointer_ = this;
@@ -54,13 +52,55 @@ float FatCell::getRadius(BodyCell const& cell, float angle) {
 }
 
 float FatCell::consumeEnergy(float amount) {
-	frameUsedEnergy_ += amount;
+	float consumedFromBuffer = min(energyBuffer_, amount);
+	float totalConsumed = consumedFromBuffer;
+	if (consumedFromBuffer < amount && size_ > 0) {
+		// buffer is depleted, must use fat mass to refill
+		float massRequired = BodyConst::FatEnergyDensityInv * (maxEnergyBuffer_ + amount - consumedFromBuffer);
+		float sizeRequired = massRequired * BodyConst::FatDensityInv;
+		float sizeUsed = min(sizeRequired, size_);
+		size_ -= sizeUsed;
+		float convertedEnergy = sizeUsed * BodyConst::FatDensity * BodyConst::FatEnergyDensity;
+		float extraConsumed = min(amount - consumedFromBuffer, convertedEnergy);
+		totalConsumed += extraConsumed;
+		energyBuffer_ += convertedEnergy - extraConsumed;
+
+		if (size_ * fixtureSizeInv_ > BodyConst::SizeThresholdToCommit
+				|| size_ * fixtureSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
+			World::getInstance().queueDeferredAction([this] {
+				updateFixtures();
+				//reattachChildren();
+#warning "must recreate joints"
+			});
+		}
+	}
+	return totalConsumed;
+}
+
+void FatCell::replenishFromMass(float mass) {
+	float massToFillBuffer = (maxEnergyBuffer_ - energyBuffer_) * BodyConst::FatEnergyDensityInv;
+	float massUsed = min(mass, massToFillBuffer);
+	energyBuffer_ += massUsed * BodyConst::FatEnergyDensity;
+	mass -= massUsed;
+	if (mass > 0) {
+		// this mass will be stored as fat
+		size_ += mass / BodyConst::FatDensity;
+		if (size_ * fixtureSizeInv_ > BodyConst::SizeThresholdToCommit
+				|| size_ * fixtureSizeInv_ < BodyConst::SizeThresholdToCommit_inv) {
+			World::getInstance().queueDeferredAction([this] {
+				updateFixtures();
+				//reattachChildren();
+#warning "must recreate joints"
+			});
+		}
+	}
 }
 
 void FatCell::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
+	fixtureSizeInv_ = 1.f / size_;
 	float fRatio;
 	auto fSize = adjustFixtureValues({size_, 0.f}, fRatio);
 
