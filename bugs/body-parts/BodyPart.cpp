@@ -47,8 +47,10 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 	, dead_(false)
 {
 	if (!suppressPhysicalBody) {
-		World::getInstance().queueDeferredAction([this, &cell] {
-			PhysicsProperties props(cell.position(), cell.angle(), true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
+		auto pos = cell.position();
+		auto angle = cell.angle();
+		World::getInstance().queueDeferredAction([this, pos, angle] {
+			PhysicsProperties props(pos, angle, true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
 			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
 			physBody_.create(props);
