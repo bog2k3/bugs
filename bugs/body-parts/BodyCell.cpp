@@ -68,3 +68,10 @@ void BodyCell::updateRotation() {
 	angle_ = initialAngle_ + mapAttributes_[GENE_ATTRIB_LOCAL_ROTATION] * (isMirrored() ? -1 : 1);
 	updateBonds();
 }
+
+void BodyCell::transform(glm::mat4 const& m, float rot) {
+	glm::vec4 pos {position_, 0, 1};
+	pos = m * pos;
+	position_ = {pos.x, pos.y};
+	angle_ += rot;
+}

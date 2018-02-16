@@ -15,6 +15,7 @@
 
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 
 #include <map>
 #include <vector>
@@ -41,6 +42,8 @@ public:
 	void updateRotation();
 
 	std::pair<BodyCell*, BodyCell*> divide();
+
+	void transform(glm::mat4 const& m, float rot);
 
 	std::map<gene_joint_attribute_type, CumulativeValue> mapJointAttribs_;
 	std::map<gene_muscle_attribute_type, CumulativeValue> mapLeftMuscleAttribs_;

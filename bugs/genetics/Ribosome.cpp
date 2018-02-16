@@ -177,7 +177,6 @@ bool Ribosome::step() {
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
 		specializeCells(hasMouth, hasEggLayer);
-		return false;
 
 		if (!hasMouth || !hasEggLayer) {
 			// here mark the embryo as dead and return
@@ -312,11 +311,16 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 	for (auto c : activeCells)
 		c->updateBonds();
 
+	auto tr = bug_->zygoteShell_->getWorldTransformation();
+	glm::mat4 m = glm::translate(glm::vec3{tr.x, tr.y, 0.f});
+	m *= glm::rotate(tr.z, glm::vec3{0.f, 0.f, 1.f});
+
 	// second run: instantiate body parts:
-	BodyPart* bp = nullptr;
-	IMotor* pMotor = nullptr;
-	ISensor* pSensor = nullptr;
 	for (auto c : activeCells) {
+		c->transform(m, tr.z);
+		BodyPart* bp = nullptr;
+		IMotor* pMotor = nullptr;
+		ISensor* pSensor = nullptr;
 		switch (specializationType(*c)) {
 		case BodyPartType::MOUTH:
 			hasMouth = true;
@@ -332,16 +336,21 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		case BodyPartType::FAT:
 			bp = new FatCell(bug_->context_, *c);
 			break;
-		case BodyPartType::GRIPPER:
-			bp = new Gripper(bug_->context_, *c);
-			break;
+		case BodyPartType::GRIPPER: {
+			auto g = new Gripper(bug_->context_, *c);
+			bp = g;
+			pMotor = g;
+		} break;
 		case BodyPartType::SENSOR_COMPASS:
-			bp = new Gripper(bug_->context_, *c);
+//			pSensor = bp;
 			break;
-		case BodyPartType::SENSOR_PROXIMITY:
-			bp = new Nose(bug_->context_, *c);
-			break;
+		case BodyPartType::SENSOR_PROXIMITY: {
+			auto n = new Nose(bug_->context_, *c);
+			bp = n;
+			pSensor = n;
+		} break;
 		case BodyPartType::SENSOR_SIGHT:
+//			pSensor = bp;
 			break;
 		default:
 			throw std::runtime_error("invalid specialization type!");
