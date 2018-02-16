@@ -17,6 +17,7 @@
 #include "../body-parts/BodyConst.h"
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/BodyPart.h"
+#include "../body-parts/FatCell.h"
 #include "../serialization/GenomeSerialization.h"
 #include "Bug/IMotor.h"
 #include "Bug/ISensor.h"
@@ -224,6 +225,7 @@ void Bug::kill() {
 			isAlive_ = false;
 			//body_->die_tree();
 //			body_ = nullptr;
+			throw std::runtime_error("implement!");
 		}
 	});
 }
@@ -314,48 +316,6 @@ void Bug::draw(RenderContext const &ctx) {
 	}
 }
 
-void Bug::onFoodProcessed(float mass) {
-	/*
-	 * if fat is below critical ratio, all food goes to replenish it
-	 * else if not at full size, a fraction of food is used for filling up the growth buffer.
-	 * the rest of the food turns into energy and fat.
-	 */
-	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
-	if (cachedMassDirty_)
-		return;
-#warning "return above loses some food mass"
-	float fatMassRatio = 0; //TODO body_->getFatMass() / (cachedLeanMass_ + body_->getFatMass());
-	throw std::runtime_error("Implement this!");
-	float growthMass = 0;
-	float eggMass = 0;
-	if (fatMassRatio >= minFatMasRatio_) {
-		// use some food to make eggs:
-		eggMass = mass * reproductiveMassRatio_;
-		float totalFoodRequired = 0;
-		for (int i=0; i<(int)eggLayers_.size(); i++)
-			totalFoodRequired += eggLayers_[i]->getFoodRequired();
-		if (totalFoodRequired > 0) {
-			float availPerTotal = eggMass / totalFoodRequired;
-			for (int i=0; i<(int)eggLayers_.size(); i++)
-				eggLayers_[i]->useFood(eggLayers_[i]->getFoodRequired() * availPerTotal);
-		} else
-			eggMass = 0;
-		// use some food to grow the body:
-		if (cachedLeanMass_ < adultLeanMass_) {
-			growthMass = mass - eggMass;
-			float transferedMass = maxGrowthMassBuffer_ - growthMassBuffer_;
-			if (growthMass < transferedMass)
-				transferedMass = growthMass;
-			else
-				growthMass = transferedMass;
-			growthMassBuffer_ += transferedMass;
-		}
-	}
-	// use the left food to make fat and energy:
-	throw std::runtime_error("Implement this!");
-	// distribute the remaining mass to all fatCells, proportional to each one's size
-	//...
-}
 
 void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
 	if (!isAlive_ || !lines.size())
@@ -464,6 +424,94 @@ aabb Bug::getAABB(bool requirePrecise) const {
 	return cachedAABB_;
 }
 
-void Bug::consumeEnergy(float amount) {
-	// TODO try to balance all fat cells by using energy from each one proportional to their size
+float Bug::getTotalMass() const {
+	// TODO optimize by caching
+	float totalMass = 0;
+	for (BodyPart* p : bodyParts_) {
+		totalMass += p->mass();
+	}
+	return totalMass;
+}
+
+float Bug::getTotalFatMass() const {
+	// TODO optimize by caching
+	float totalFatMass = 0;
+	for (BodyPart* p : bodyParts_) {
+		if (p->getType() == BodyPartType::FAT)
+			totalFatMass += p->mass();
+	}
+	return totalFatMass;
+}
+
+void Bug::consumeEnergy(float totalAmount) {
+	// TODO optimize by accumulating all consumed energy during the frame and processing only once at the end (on update)
+	float amountConsumed = 0;
+	while (amountConsumed < totalAmount - EPS) {
+		// try to balance all fat cells by using energy from each one proportional to their size
+		float remainingDebt = totalAmount - amountConsumed;
+		float totalFatMass = getTotalFatMass();
+		if (totalFatMass < EPS) {
+			// we've run out of fat, bug dies
+			kill();
+			return;
+		}
+		for (BodyPart* p : bodyParts_) {
+			if (p->getType() != BodyPartType::FAT)
+				continue;
+			FatCell* f = static_cast<FatCell*>(p);
+			float amountToConsume = f->mass() / totalFatMass * remainingDebt;
+			amountConsumed += f->consumeEnergy(amountToConsume);
+		}
+	}
+}
+
+void Bug::onFoodProcessed(float mass) {
+	/*
+	 * if fat is below critical ratio, all food goes to replenish it
+	 * else if not at full size, a fraction of food is used for filling up the growth buffer.
+	 * the rest of the food turns into energy and fat.
+	 */
+	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
+	if (cachedMassDirty_)
+		return;
+#warning "return above loses some food mass"
+	float fatMassRatio = getTotalFatMass() / getTotalMass();
+	float growthMass = 0;
+	float eggMass = 0;
+	if (fatMassRatio >= minFatMasRatio_) {
+		// use some food to make eggs:
+		eggMass = mass * reproductiveMassRatio_;
+		float totalFoodRequired = 0;
+		for (int i=0; i<(int)eggLayers_.size(); i++)
+			totalFoodRequired += eggLayers_[i]->getFoodRequired();
+		if (totalFoodRequired > 0) {
+			float availPerTotal = eggMass / totalFoodRequired;
+			for (int i=0; i<(int)eggLayers_.size(); i++)
+				eggLayers_[i]->useFood(eggLayers_[i]->getFoodRequired() * availPerTotal);
+		} else
+			eggMass = 0;
+		// use some food to grow the body:
+		if (cachedLeanMass_ < adultLeanMass_) {
+			growthMass = mass - eggMass;
+			float transferedMass = maxGrowthMassBuffer_ - growthMassBuffer_;
+			if (growthMass < transferedMass)
+				transferedMass = growthMass;
+			else
+				growthMass = transferedMass;
+			growthMassBuffer_ += transferedMass;
+		}
+	}
+	// use the left food to make fat and energy:
+	// distribute the remaining mass to all fatCells, proportional to each one's size
+	float massRemaining = mass - eggMass - growthMass;
+	if (massRemaining < EPS)
+		return;
+	float totalFatMass = getTotalFatMass();
+	for (BodyPart* p : bodyParts_) {
+		if (p->getType() != BodyPartType::FAT)
+			continue;
+		FatCell* f = static_cast<FatCell*>(p);
+		float amountToDistribute = f->mass() / totalFatMass * massRemaining;
+		f->replenishFromMass(amountToDistribute);
+	}
 }

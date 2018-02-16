@@ -129,6 +129,8 @@ public:
 
 	Event<void(BodyPart* part)> onDied;
 
+	float mass() const { return size_ * density_; }
+
 	static Entity* getEntityFromBodyPartPhysBody(PhysicsBody const& body);
 
 #ifdef DEBUG

@@ -69,6 +69,9 @@ public:
 	bool isAlive() const { return isAlive_; }
 	float getNeuronValue(int neuronIndex) const;
 //	Torso* getBody() { return body_; }
+	float getTotalFatMass() const;
+	float getTotalMass() const;
+	float getLeanMass() const { return getTotalMass() - getTotalFatMass(); }
 
 	void consumeEnergy(float amount);
 	void onFoodProcessed(float mass);
