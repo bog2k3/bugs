@@ -30,23 +30,10 @@
 
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
-//JointInitializationData::JointInitializationData()
-//	: phiMin(BodyConst::initialJointMinPhi)
-//	, phiMax(BodyConst::initialJointMaxPhi)
-//	, resetTorque(BodyConst::initialJointResetTorque) {
-//	size.reset(BodyConst::initialJointSize);
-//}
-
-//void JointPivot::cacheInitializationData() {
-//	BodyPart::cacheInitializationData();
-//	auto initData = std::dynamic_pointer_cast<JointInitializationData>(getInitializationData());
-//	phiMin_ = initData->phiMin.clamp(-PI*0.9f, 0);
-//	phiMax_ = initData->phiMax.clamp(0, limitAngle(initData->phiMax, PI*0.9f));
-//	resetTorque_ = initData->resetTorque.clamp(0, 1.e3f);
-//}
-
-JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell)
-	: BodyPart(BodyPartType::JOINT, context, cell, true)
+JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor)
+	: BodyPart(BodyPartType::JOINT_PIVOT, context, cell, true)
+	, leftAnchor_(leftAnchor)
+	, rightAnchor_(rightAnchor)
 	, physJoint_(nullptr)
 {
 
@@ -68,15 +55,9 @@ void JointPivot::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	//assertDbg(nChildren_ <= 1);
-
 	if (physJoint_) {
 		destroyPhysJoint();
-	}
-
-	/*if (nChildren_ == 0) {
-		detach(true);
-		return;
+		physJoint_ = nullptr;
 	}
 
 	b2RevoluteJointDef def;
@@ -104,7 +85,7 @@ void JointPivot::updateFixtures() {
 
 	physJoint_ = (b2RevoluteJoint*)World::getInstance().getPhysics()->CreateJoint(&def);
 	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
-			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));*/
+			std::bind(&JointPivot::onPhysJointDestroyed, this, std::placeholders::_1));
 }
 
 void JointPivot::destroyPhysJoint() {

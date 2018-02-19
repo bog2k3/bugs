@@ -15,7 +15,8 @@ enum class BodyPartType {
 
 	FAT,					// is created from unspecialized cells
 	BONE,
-	JOINT,
+	JOINT_PIVOT,
+	JOINT_WELD,
 	MUSCLE,
 	GRIPPER,
 	ZYGOTE_SHELL,

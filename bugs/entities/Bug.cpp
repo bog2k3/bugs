@@ -150,8 +150,8 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			population++; // new member of the bug population
 
-			float currentMass = 1.f;//body_->getMass_tree();
-			float zygMass = zygoteShell_->getMass();
+//			float currentMass = 1.f;//body_->getMass_tree();
+//			float zygMass = zygoteShell_->getMass();
 
 			fixAllGeneValues();
 
@@ -161,7 +161,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 //			cachedLeanMass_ = zygMass - fatMass;
 
 //			zygoteShell_->updateCachedDynamicPropsFromBody();
-			// commit all changes and create the physics bodys and fixtures:
+			// commit all changes and create the physics bodies and fixtures:
 			//body_->commit_tree(cachedLeanMass_/currentMass);
 
 			// delete embryo shell

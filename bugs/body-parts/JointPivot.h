@@ -14,20 +14,11 @@
 
 #define DEBUG_DRAW_JOINT
 
-//struct JointInitializationData : public BodyPartInitializationData {
-//	virtual ~JointInitializationData() noexcept = default;
-//	JointInitializationData();
-//
-//	CumulativeValue phiMin;
-//	CumulativeValue phiMax;
-//	CumulativeValue resetTorque;
-//};
-
 class b2RevoluteJoint;
 
 class JointPivot : public BodyPart {
 public:
-	JointPivot(BodyPartContext const& context, BodyCell& cell);	// use the parent cell (that has divided) for the joint
+	JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor);	// use the parent cell (that has divided) for the joint
 	virtual ~JointPivot() override;
 
 	void draw(RenderContext const& ctx) override;
@@ -46,6 +37,8 @@ public:
 	static float getDensity(BodyCell const& cell);
 
 protected:
+	BodyPart* leftAnchor_;
+	BodyPart* rightAnchor_;
 	b2RevoluteJoint* physJoint_;
 	float phiMin_;
 	float phiMax_;
