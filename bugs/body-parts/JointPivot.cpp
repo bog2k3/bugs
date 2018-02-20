@@ -31,10 +31,7 @@
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
 
 JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor)
-	: BodyPart(BodyPartType::JOINT_PIVOT, context, cell, true)
-	, leftAnchor_(leftAnchor)
-	, rightAnchor_(rightAnchor)
-	, physJoint_(nullptr)
+	: Joint(context, cell, leftAnchor, rightAnchor, BodyPartType::JOINT_PIVOT)
 {
 
 	phiMin_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_LOW_LIMIT].clamp(-PI*0.9f, 0);
@@ -45,65 +42,50 @@ JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart*
 }
 
 JointPivot::~JointPivot() {
-	if (physJoint_) {
-		destroyPhysJoint();
-	}
 	context_.updateList.remove(this);
 }
 
-void JointPivot::updateFixtures() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	if (physJoint_) {
-		destroyPhysJoint();
-		physJoint_ = nullptr;
-	}
+b2JointDef* JointPivot::createJointDef(b2Body* left, b2Body* right) {
 
-	b2RevoluteJointDef def;
-	def.bodyA = parent_->getBody().b2Body_;
-	def.bodyB = children_[0]->getBody().b2Body_;
-	def.enableLimit = true;
-	def.lowerAngle = phiMin_;
-	def.upperAngle = phiMax_;
-	def.userData = (void*)this;
-	def.enableMotor = true;
-	def.referenceAngle = getDefaultAngle() + children_[0]->getDefaultAngle();
+	b2RevoluteJointDef* def = new b2RevoluteJointDef();
+	def->Initialize(left, right, g2b(vec3xy(getWorldTransformation())));
+	def->enableLimit = true;
+	def->lowerAngle = phiMin_;
+	def->upperAngle = phiMax_;
+	def->enableMotor = true;
+	def->referenceAngle = 0; // TODO fix this; getDefaultAngle() + children_[0]->getDefaultAngle();
+	return def;
 
-	float radius = sqrtf(size_*PI_INV);
-	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
-	float parentAnchorLength = glm::length(parentAnchor);
-	parentAnchor *= 1 + radius/parentAnchorLength;	// move away from the edge by joint radius
-	def.localAnchorA = g2b(parentAnchor);
-
-	glm::vec2 childAnchor = children_[0]->getAttachmentPoint(PI - children_[0]->getLocalRotation());
-	float childAnchorLength = glm::length(childAnchor);
-	childAnchor *= 1 + radius/childAnchorLength;
-	def.localAnchorB = g2b(childAnchor);
+//	float radius = sqrtf(size_*PI_INV);
+//	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
+//	float parentAnchorLength = glm::length(parentAnchor);
+//	parentAnchor *= 1 + radius/parentAnchorLength;	// move away from the edge by joint radius
+//	def.localAnchorA = g2b(parentAnchor);
+//
+//	glm::vec2 childAnchor = children_[0]->getAttachmentPoint(PI - children_[0]->getLocalRotation());
+//	float childAnchorLength = glm::length(childAnchor);
+//	childAnchor *= 1 + radius/childAnchorLength;
+//	def.localAnchorB = g2b(childAnchor);
 
 	//def.collideConnected = true;
-
-	physJoint_ = (b2RevoluteJoint*)World::getInstance().getPhysics()->CreateJoint(&def);
-	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
-			std::bind(&JointPivot::onPhysJointDestroyed, this, std::placeholders::_1));
 }
 
-void JointPivot::destroyPhysJoint() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	World::getInstance().getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
-	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
-	physJoint_ = nullptr;
-}
-
-glm::vec3 JointPivot::getWorldTransformation() const {
-	if (physJoint_) {
-		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
-			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());
-	} else
-		throw std::runtime_error("Implement this!");
-}
+//void JointPivot::destroyPhysJoint() {
+//#ifdef DEBUG
+//	World::assertOnMainThread();
+//#endif
+//	World::getInstance().getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
+//	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
+//	physJoint_ = nullptr;
+//}
+//
+//glm::vec3 JointPivot::getWorldTransformation() const {
+//	if (physJoint_) {
+//		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
+//			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());
+//	} else
+//		throw std::runtime_error("Implement this!");
+//}
 
 void JointPivot::draw(RenderContext const& ctx) {
 #ifndef DEBUG_DRAW_JOINT
@@ -237,10 +219,6 @@ void JointPivot::die() {
 		physJoint_ = nullptr;
 	}
 }*/
-
-void JointPivot::onPhysJointDestroyed(b2Joint* joint) {
-	physJoint_ = nullptr;
-}
 
 float JointPivot::getDensity(BodyCell const& cell) {
 	auto it = cell.mapJointAttribs_.find(GENE_JOINT_ATTR_DENSITY);

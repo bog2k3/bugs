@@ -8,14 +8,14 @@
 #ifndef BODY_PARTS_JOINTWELD_H_
 #define BODY_PARTS_JOINTWELD_H_
 
-#include "BodyPart.h"
+#include "Joint.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 class b2WeldJoint;
 
-class JointWeld: public BodyPart {
+class JointWeld: public Joint {
 public:
 	JointWeld(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor);	// use the parent cell (that has divided) for the joint
 	virtual ~JointWeld() override;
@@ -25,15 +25,10 @@ public:
 	glm::vec3 getWorldTransformation() const override;
 
 protected:
-	BodyPart* leftAnchor_;
-	BodyPart* rightAnchor_;
-	b2WeldJoint* physJoint_;
-
-	void updateFixtures() override;
+//	void updateFixtures() override;
 //	void die() override;
 
-	void onPhysJointDestroyed(b2Joint* joint);
-	void destroyPhysJoint();
+	b2JointDef* createJointDef(b2Body* left, b2Body* right) override;
 
 private:
 	unsigned jointListenerHandle_ = 0;

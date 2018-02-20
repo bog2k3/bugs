@@ -8,15 +8,11 @@
 #ifndef OBJECTS_BODY_PARTS_JOINT_H_
 #define OBJECTS_BODY_PARTS_JOINT_H_
 
-#include "BodyPart.h"
-#include <glm/fwd.hpp>
-#include <memory>
+#include "Joint.h"
 
 #define DEBUG_DRAW_JOINT
 
-class b2RevoluteJoint;
-
-class JointPivot : public BodyPart {
+class JointPivot : public Joint {
 public:
 	JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor);	// use the parent cell (that has divided) for the joint
 	virtual ~JointPivot() override;
@@ -37,23 +33,17 @@ public:
 	static float getDensity(BodyCell const& cell);
 
 protected:
-	BodyPart* leftAnchor_;
-	BodyPart* rightAnchor_;
-	b2RevoluteJoint* physJoint_;
 	float phiMin_;
 	float phiMax_;
 	float resetTorque_;			// torque that resets the joint into repause position
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
 	void getNormalizedLimits(float &low, float &high);
-	void updateFixtures() override;
+//	void updateFixtures() override;
 	void die() override;
 	//void onDetachedFromParent() override;
-	void onPhysJointDestroyed(b2Joint* joint);
-	void destroyPhysJoint();
 
-private:
-	unsigned jointListenerHandle_ = 0;
+	b2JointDef* createJointDef(b2Body* left, b2Body* right) override;
 };
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

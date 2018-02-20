@@ -18,10 +18,7 @@
 #include <Box2D/Box2D.h>
 
 JointWeld::JointWeld(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor)
-	: BodyPart(BodyPartType::JOINT_WELD, context, cell, true)
-	, leftAnchor_(leftAnchor)
-	, rightAnchor_(rightAnchor)
-	, physJoint_(nullptr)
+	: Joint(context, cell, leftAnchor, rightAnchor, BodyPartType::JOINT_WELD)
 {
 }
 
@@ -29,10 +26,6 @@ JointWeld::~JointWeld() {
 	if (physJoint_) {
 		destroyPhysJoint();
 	}
-}
-
-void JointWeld::onPhysJointDestroyed(b2Joint* joint) {
-	physJoint_ = nullptr;
 }
 
 void JointWeld::draw(RenderContext const& ctx) {
@@ -51,15 +44,6 @@ void JointWeld::draw(RenderContext const& ctx) {
 #endif
 }
 
-void JointWeld::destroyPhysJoint() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	World::getInstance().getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
-	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
-	physJoint_ = nullptr;
-}
-
 glm::vec3 JointWeld::getWorldTransformation() const {
 	if (physJoint_) {
 		float angle = 0;
@@ -69,32 +53,38 @@ glm::vec3 JointWeld::getWorldTransformation() const {
 		throw std::runtime_error("This should never happen");
 }
 
-void JointWeld::updateFixtures() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	if (physJoint_) {
-		destroyPhysJoint();
-		physJoint_ = nullptr;
-	}
+//void JointWeld::updateFixtures() {
+//#ifdef DEBUG
+//	World::assertOnMainThread();
+//#endif
+//	if (physJoint_) {
+//		destroyPhysJoint();
+//		physJoint_ = nullptr;
+//	}
+//
+//	b2WeldJointDef def;
+//	def.bodyA = leftAnchor_->getBody().b2Body_;
+//	def.bodyB = rightAnchor_->getBody().b2Body_;
+//	def.userData = (void*)this;
+//	def.referenceAngle = 0; // TODO fix this
+//
+//	// TODO determine angles for anchor points
+//	glm::vec2 leftAnchorPoint = leftAnchor_->getAttachmentPoint(0);
+//	def.localAnchorA = g2b(leftAnchorPoint);
+//
+//	// TODO fix angle for anchor points
+//	glm::vec2 rightAnchorPoint = rightAnchor_->getAttachmentPoint(PI - 0);
+//	def.localAnchorB = g2b(rightAnchorPoint);
+//
+//	//def.collideConnected = true;
+//
+//	physJoint_ = (b2WeldJoint*)World::getInstance().getPhysics()->CreateJoint(&def);
+//	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
+//			std::bind(&JointWeld::onPhysJointDestroyed, this, std::placeholders::_1));
+//}
 
-	b2WeldJointDef def;
-	def.bodyA = leftAnchor_->getBody().b2Body_;
-	def.bodyB = rightAnchor_->getBody().b2Body_;
-	def.userData = (void*)this;
-	def.referenceAngle = 0; // TODO fix this
-
-	// TODO determine angles for anchor points
-	glm::vec2 leftAnchorPoint = leftAnchor_->getAttachmentPoint(0);
-	def.localAnchorA = g2b(leftAnchorPoint);
-
-	// TODO fix angle for anchor points
-	glm::vec2 rightAnchorPoint = rightAnchor_->getAttachmentPoint(PI - 0);
-	def.localAnchorB = g2b(rightAnchorPoint);
-
-	//def.collideConnected = true;
-
-	physJoint_ = (b2WeldJoint*)World::getInstance().getPhysics()->CreateJoint(&def);
-	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
-			std::bind(&JointWeld::onPhysJointDestroyed, this, std::placeholders::_1));
+b2JointDef* JointWeld::createJointDef(b2Body* left, b2Body* right) {
+	b2WeldJointDef *def = new b2WeldJointDef();
+	def->Initialize(left, right, g2b(vec3xy(getWorldTransformation())));
+	return def;
 }
