@@ -17,15 +17,16 @@
 
 #include <Box2D/Box2D.h>
 
+#include <glm/gtx/rotate_vector.hpp>
+
+static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
+
 JointWeld::JointWeld(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor)
 	: Joint(context, cell, leftAnchor, rightAnchor, BodyPartType::JOINT_WELD)
 {
 }
 
 JointWeld::~JointWeld() {
-	if (physJoint_) {
-		destroyPhysJoint();
-	}
 }
 
 void JointWeld::draw(RenderContext const& ctx) {
@@ -51,6 +52,13 @@ glm::vec3 JointWeld::getWorldTransformation() const {
 		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f, angle);
 	} else
 		throw std::runtime_error("This should never happen");
+}
+
+glm::vec2 JointWeld::getAttachmentPoint(float relativeAngle) {
+	return vec3xy(getWorldTransformation());
+//	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
+//	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+//	return ret;
 }
 
 //void JointWeld::updateFixtures() {

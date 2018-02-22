@@ -10,6 +10,8 @@
 
 #include "Joint.h"
 
+class b2RevoluteJoint;
+
 #define DEBUG_DRAW_JOINT
 
 class JointPivot : public Joint {
@@ -44,6 +46,7 @@ protected:
 	//void onDetachedFromParent() override;
 
 	b2JointDef* createJointDef(b2Body* left, b2Body* right) override;
+	b2RevoluteJoint* b2PJoint() const;
 };
 
 #endif /* OBJECTS_BODY_PARTS_JOINT_H_ */

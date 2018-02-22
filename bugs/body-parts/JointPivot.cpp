@@ -79,13 +79,20 @@ b2JointDef* JointPivot::createJointDef(b2Body* left, b2Body* right) {
 //	physJoint_ = nullptr;
 //}
 //
-//glm::vec3 JointPivot::getWorldTransformation() const {
+glm::vec3 JointPivot::getWorldTransformation() const {
 //	if (physJoint_) {
 //		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
 //			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());
 //	} else
-//		throw std::runtime_error("Implement this!");
-//}
+		throw std::runtime_error("Implement this!");
+}
+
+glm::vec2 JointPivot::getAttachmentPoint(float relativeAngle) {
+	return vec3xy(getWorldTransformation());
+//	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
+//	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
+//	return ret;
+}
 
 void JointPivot::draw(RenderContext const& ctx) {
 #ifndef DEBUG_DRAW_JOINT
@@ -103,16 +110,9 @@ void JointPivot::draw(RenderContext const& ctx) {
 #endif
 }
 
-glm::vec2 JointPivot::getAttachmentPoint(float relativeAngle)
-{
-	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
-	return ret;
-}
-
 float JointPivot::getJointAngle() const {
 	if (physJoint_) {
-		float ret = physJoint_->GetJointAngle();
+		float ret = b2PJoint()->GetJointAngle();
 		if (std::isnan(ret))
 			ret = 0;
 		else
@@ -133,9 +133,9 @@ void JointPivot::update(float dt) {
 	if (!physJoint_ || dt == 0)
 		return;
 	float invdt = 1.f / dt;
-	float reactionTorque = physJoint_->GetReactionTorque(invdt);
-	float motorTorque = physJoint_->GetMotorTorque(invdt);
-	float reactionForce = physJoint_->GetReactionForce(invdt).Length();
+	float reactionTorque = b2PJoint()->GetReactionTorque(invdt);
+	float motorTorque = b2PJoint()->GetMotorTorque(invdt);
+	float reactionForce = b2PJoint()->GetReactionForce(invdt).Length();
 	bool jointIsFUBAR = std::isnan(reactionTorque) || std::isnan(reactionForce);
 	bool excessForce = reactionForce > size_ * density_ * BodyConst::JointForceToleranceFactor;
 	bool excessRTorque = abs(reactionTorque) > size_ * density_ * BodyConst::JointTorqueToleranceFactor;
@@ -194,8 +194,8 @@ void JointPivot::update(float dt) {
 	assertDbg(!std::isnan(torque));
 
 	// apply the torque and max speed:
-	physJoint_->SetMotorSpeed(speed);
-	physJoint_->SetMaxMotorTorque(abs(torque));
+	b2PJoint()->SetMotorSpeed(speed);
+	b2PJoint()->SetMaxMotorTorque(abs(torque));
 	// reset pending torques
 	vecTorques.clear();
 
@@ -210,7 +210,7 @@ void JointPivot::update(float dt) {
 
 void JointPivot::die() {
 	if (physJoint_)
-		physJoint_->EnableMotor(false);
+		b2PJoint()->EnableMotor(false);
 }
 
 /*void Joint::onDetachedFromParent() {
@@ -225,4 +225,8 @@ float JointPivot::getDensity(BodyCell const& cell) {
 	auto value = it != cell.mapJointAttribs_.end() ? it->second : CumulativeValue();
 	value.changeAbs(BodyConst::initialJointDensity);
 	return value.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
+}
+
+b2RevoluteJoint* JointPivot::b2PJoint() const {
+	return static_cast<b2RevoluteJoint*>(physJoint_);
 }
