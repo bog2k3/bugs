@@ -135,9 +135,9 @@ void BodyPart::detach(bool die) {
 		onDetachedFromParent();
 		parent_->hierarchyMassChanged();
 	}
-	parent_ = nullptr;
+	parent_ = nullptr;*/
 	if (die && !dead_)
-		die_tree();*/
+		this->die();
 }
 
 void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {

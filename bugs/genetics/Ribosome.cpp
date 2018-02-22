@@ -302,6 +302,19 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		// adjust the cell's shape:
 		c->radiusFn = mapRadiusFunctions[specializationType(*c)];
 		activeCells.insert(c);
+
+		switch (specializationType(*c)) {
+		case BodyPartType::MOUTH:
+			hasMouth = true;
+			break;
+		case BodyPartType::EGGLAYER:
+			hasEggLayer = true;
+			break;
+		}
+	}
+
+	if (!hasMouth || !hasEggLayer) {
+		return;
 	}
 
 	// fix all cell's positioning (affected by changing shape and size above)
@@ -323,11 +336,9 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		ISensor* pSensor = nullptr;
 		switch (specializationType(*c)) {
 		case BodyPartType::MOUTH:
-			hasMouth = true;
 			bp = new Mouth(bug_->context_, *c);
 			break;
 		case BodyPartType::EGGLAYER:
-			hasEggLayer = true;
 			bp = new EggLayer(bug_->context_, *c);
 			break;
 		case BodyPartType::BONE:
