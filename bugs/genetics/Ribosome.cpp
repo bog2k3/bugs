@@ -285,10 +285,10 @@ bool Ribosome::step() {
 
 BodyPartType Ribosome::specializationType(BodyCell const& c) const {
 	return proteinHyperspace
-			[c.proteinValues_.x > 0 ? 1 : 0]
-			[c.proteinValues_.y > 0 ? 1 : 0]
+			[c.proteinValues_.w > 0 ? 1 : 0]
 			[c.proteinValues_.z > 0 ? 1 : 0]
-			[c.proteinValues_.w > 0 ? 1 : 0];
+			[c.proteinValues_.y > 0 ? 1 : 0]
+			[c.proteinValues_.x > 0 ? 1 : 0];
 }
 
 void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
@@ -301,6 +301,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		updateCellDensity(*c);
 		// adjust the cell's shape:
 		c->radiusFn = mapRadiusFunctions[specializationType(*c)];
+		assert(c->radiusFn != nullptr);
 		activeCells.insert(c);
 
 		switch (specializationType(*c)) {
@@ -379,6 +380,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 // call this before instantiating the body part in order to update to correct density and size
 void Ribosome::updateCellDensity(BodyCell &cell) {
 	auto fn = mapDensityFunctions[specializationType(cell)];	// undefined function and map -> implement with static methods for density in bodyparts
+	assert(fn != nullptr);
 	auto oldDensity = cell.density_;
 	cell.density_ = fn(cell);
 	// must adjust cell size to conserve mass

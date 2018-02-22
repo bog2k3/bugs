@@ -197,32 +197,32 @@ Chromosome Bug::createBasicChromosome() {
 	OFFSET_MARKER(MOUTH)		//------------------------------- MARKER ----------------
 
 	gp.protein = GENE_PROT_X;
-	gp.weight.set(-sfu);
+	gp.weight.set(+sfu);
 	gp.restriction.clear();
 	PUSH(gp);
 
 	gp.protein = GENE_PROT_Y;
-	gp.weight.set(+sfu);
+	gp.weight.set(-sfu);
 	gp.restriction.clear();
 	PUSH(gp);
 
 	gp.protein = GENE_PROT_Z;
-	gp.weight.set(+sfu);
+	gp.weight.set(-sfu);
 	gp.restriction.clear();
 	PUSH(gp);
 
 	gp.protein = GENE_PROT_W;
-	gp.weight.set(+sfu);
+	gp.weight.set(-sfu);
 	gp.restriction.clear();
 	PUSH(gp);
 
-	gp.protein = GENE_PROT_Z;					// move mouth from +z to -z
+	gp.protein = GENE_PROT_X;					// move mouth from +x to -x
 	gp.weight.set(-2*sfu);
 	gp.restriction = BranchRestriction("0v 0v");
 	PUSH(gp);
 
-	gp.protein = GENE_PROT_W;					// and from +w to -w
-	gp.weight.set(-2*sfu);
+	gp.protein = GENE_PROT_Y;					// and from -y to +y
+	gp.weight.set(+2*sfu);
 	gp.restriction = BranchRestriction("0v 0v");
 	PUSH(gp);
 
