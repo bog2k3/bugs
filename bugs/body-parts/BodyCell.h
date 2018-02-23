@@ -50,6 +50,17 @@ public:
 	std::map<gene_muscle_attribute_type, CumulativeValue> mapRightMuscleAttribs_;
 	std::map<gene_part_attribute_type, CumulativeValue> mapAttributes_;
 
+#ifdef DEBUG
+	bool matchBranch(const char* branchCode) {
+		int i=0;
+		for (; i<branch_.size(); i++) {
+			if (branch_[i] != branchCode[i])
+				return false;
+		}
+		return branchCode[i] == 0;
+	}
+#endif
+
 protected:
 	Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const override;
 

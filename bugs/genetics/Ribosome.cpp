@@ -186,6 +186,7 @@ bool Ribosome::step() {
 		}
 
 		// TODO must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
+		return false;
 
 		// link all muscles to joints:
 		resolveMuscleLinkage();
@@ -233,6 +234,11 @@ bool Ribosome::step() {
 					cell->setJointSize(jointMass / cellMass * cell->size_);
 				}
 				// divide
+//#ifdef DEBUG
+//				if (cell->matchBranch("LLRR")) {
+//					LOGLN("divide #4e; offsets: " << activeSet_[i].second.childOffsets[0] << " : " << activeSet_[i].second.childOffsets[1]);
+//				}
+//#endif
 				auto pair = cell->divide();
 				cells_.push_back(pair.first);
 				cells_.push_back(pair.second);
@@ -284,6 +290,8 @@ bool Ribosome::step() {
 }
 
 BodyPartType Ribosome::specializationType(BodyCell const& c) const {
+	if (c.proteinValues_.x * c.proteinValues_.y * c.proteinValues_.z * c.proteinValues_.w == 0.f)	// incomplete specialization -> FAT
+		return BodyPartType::FAT;
 	return proteinHyperspace
 			[c.proteinValues_.w > 0 ? 1 : 0]
 			[c.proteinValues_.z > 0 ? 1 : 0]
@@ -310,6 +318,8 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 			break;
 		case BodyPartType::EGGLAYER:
 			hasEggLayer = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -579,6 +589,33 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 
 void Ribosome::decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx) {
 	cell.proteinValues_[g.protein - GENE_PROT_X] += g.weight;
+
+//#ifdef DEBUG
+//	auto pname = [] (gene_protein_type p) {
+//		switch (p) {
+//		case GENE_PROT_X:
+//			return "X";
+//		case GENE_PROT_Y:
+//			return "Y";
+//		case GENE_PROT_Z:
+//			return "Z";
+//		case GENE_PROT_W:
+//			return "W";
+//		default:
+//			return "0";
+//		}
+//	};
+//	if (cell.matchBranch("LLRRR")) {
+//		LOGLN("new protein: " << pname(g.protein) << (g.weight > 0 ? '+' : '-') << "  " << g.weight
+//				<< "\tat offset " << ctx.crtGenomePos-1);
+//		LOGLN("position: "
+//				<< (cell.proteinValues_[0] > 0 ? "+" : "-") << " "
+//				<< (cell.proteinValues_[1] > 0 ? "+" : "-") << " "
+//				<< (cell.proteinValues_[2] > 0 ? "+" : "-") << " "
+//				<< (cell.proteinValues_[3] > 0 ? "+" : "-")
+//				<< "\ttype:" << specializationType(cell));
+//	}
+//#endif
 }
 
 void Ribosome::decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx) {

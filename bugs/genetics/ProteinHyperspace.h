@@ -14,7 +14,7 @@ static constexpr BodyPartType proteinHyperspace[2][2][2][2] = {
 	/* W- */ {
 		/* Z- */ {
 			/* Y- */ {
-				/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::EGGLAYER
+				/* X- */ BodyPartType::FAT, /* X+ */ BodyPartType::EGGLAYER
 			},
 			/* Y+ */ {
 				/* X- */ BodyPartType::MOUTH, /* X+ */ BodyPartType::FAT
@@ -22,7 +22,7 @@ static constexpr BodyPartType proteinHyperspace[2][2][2][2] = {
 		},
 		/* Z+ */ {
 			/* Y- */ {
-				/* X- */ BodyPartType::FAT, /* X+ */ BodyPartType::BONE
+				/* X- */ BodyPartType::SENSOR_PROXIMITY, /* X+ */ BodyPartType::BONE
 			},
 			/* Y+ */ {
 				/* X- */ BodyPartType::BONE, /* X+ */ BodyPartType::GRIPPER

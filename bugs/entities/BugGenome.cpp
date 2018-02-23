@@ -379,7 +379,7 @@ Chromosome Bug::createBasicChromosome() {
 
 	gp.protein = GENE_PROT_Z;
 	gp.restriction.clear();
-	gp.weight.set(+sfu);
+	gp.weight.set(-sfu);
 	PUSH(gp);
 
 	gp.protein = GENE_PROT_W;
@@ -470,27 +470,27 @@ Chromosome Bug::createBasicChromosome() {
 	gp.protein = GENE_PROT_X;
 	gp.weight.set(+sfu);
 	gp.restriction.clear();
-	PUSH(gdp);
+	PUSH(gp);
 
 	gp.protein = GENE_PROT_Y;
-	gp.weight.set(sfu);
+	gp.weight.set(+sfu);
 	gp.restriction.clear();
-	PUSH(gdp);
+	PUSH(gp);
 
 	gp.protein = GENE_PROT_Y;
 	gp.weight.set(-2*sfu);
 	gp.restriction = BranchRestriction("0v 0v 0v 0v 0v 0v 0>");
-	PUSH(gdp);
+	PUSH(gp);
 
 	gp.protein = GENE_PROT_Z;
 	gp.weight.set(-sfu);
 	gp.restriction.clear();
-	PUSH(gdp);
+	PUSH(gp);
 
 	gp.protein = GENE_PROT_W;
 	gp.weight.set(+sfu);
 	gp.restriction.clear();
-	PUSH(gdp);
+	PUSH(gp);
 
 	GeneMuscleAttribute gma;
 	gma.attrib = GENE_MUSCLE_ATTR_ASPECT_RATIO;
@@ -587,18 +587,13 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gp);
 
 	gp.protein = GENE_PROT_Z;
-	gp.weight.set(-sfu);
+	gp.weight.set(+sfu);
 	gp.restriction.clear();
 	PUSH(gp);
 
 	gp.protein = GENE_PROT_W;
 	gp.weight.set(-sfu);
 	gp.restriction.clear();
-	PUSH(gp);
-
-	gp.protein = GENE_PROT_Z;
-	gp.weight.set(2*sfu);
-	gp.restriction = BranchRestriction("*v *v *v *v *<");
 	PUSH(gp);
 
 	gp.protein = GENE_PROT_W;
@@ -609,10 +604,12 @@ Chromosome Bug::createBasicChromosome() {
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
 	ga.value.set(BodyConst::initialBoneAspectRatio);
 	ga.restriction.clear();
+	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_GENERIC1;
 	ga.value.set(BodyConst::initialBoneDensity);
 	ga.restriction.clear();
+	PUSH(ga);
 
 //  ------- finished genome; house-keeping from here on -----------------
 

@@ -30,7 +30,7 @@
 
 const glm::vec3 debug_color(1.f, 0.8f, 0.f);
 
-#define DEBUG_DRAW_NOSE
+//#define DEBUG_DRAW_NOSE
 
 Nose::Nose(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::SENSOR_PROXIMITY, context, cell)
