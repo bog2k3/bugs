@@ -13,6 +13,7 @@
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/sensors/Nose.h"
 #include "../body-parts/JointPivot.h"
+#include "../body-parts/JointWeld.h"
 #include "../body-parts/FatCell.h"
 #include "../neuralnet/functions.h"
 #include "../neuralnet/Network.h"
@@ -339,6 +340,8 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 	glm::mat4 m = glm::translate(glm::vec3{tr.x, tr.y, 0.f});
 	m *= glm::rotate(tr.z, glm::vec3{0.f, 0.f, 1.f});
 
+	std::map<Cell*, BodyPart*> mapBodyParts;
+
 	// second run: instantiate body parts:
 	for (auto c : activeCells) {
 		c->transform(m, tr.z);
@@ -378,12 +381,44 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 			throw std::runtime_error("invalid specialization type!");
 		};
 
-		if (bp)
+		if (bp) {
 			bug_->bodyParts_.push_back(bp);
+			mapBodyParts[c] = bp;
+		}
 		if (pMotor)
 			addMotor(pMotor, bp);
 		if (pSensor)
 			addSensor(pSensor);
+	}
+
+	// 3rd run: create joints
+	std::set<std::pair<Cell*, Cell*>> joints;
+	for (auto c : activeCells) {
+		for (auto &n : c->neighbours_) {
+			Cell *left = c, *right = n.other;
+			if (c->rightSide_) {
+				left = n.other;
+				right = c;
+			}
+			if (joints.insert(std::make_pair(left, right)).second) {
+				// only create each joint once - it will appear in both sides of the split
+				BodyPart* bpLeft = mapBodyParts[left];
+				BodyPart* bpRight = mapBodyParts[right];
+				assert(bpLeft && bpRight && "bodyparts for each side of the joint must exist!");
+				BodyCell* jointCell = static_cast<BodyCell*>(n.jointParent);
+				assert(jointCell && "joint cell must not be null!");
+				bool pivotJoint = jointCell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f;
+				Joint* j = nullptr;
+				if (pivotJoint) {
+					auto pj = new JointPivot(bug_->context_, *c, bpLeft, bpRight);
+					j = pj;
+				} else {
+					auto wj = new JointWeld(bug_->context_, *c, bpLeft, bpRight);
+					j = wj;
+				}
+				bug_->bodyParts_.push_back(j);
+			}
+		}
 	}
 }
 

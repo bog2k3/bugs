@@ -60,7 +60,8 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 	bool reorient = mapDivisionParams_[GENE_DIVISION_REORIENT] > 0.f;
 	bool mirror = mapDivisionParams_[GENE_DIVISION_MIRROR] > 0.f;
 	float bondBias = tanh(mapDivisionParams_[GENE_DIVISION_BOND_BIAS].get() / 2.f);
-	auto p = Cell::divide(angle, ratio, bondBias, reorient, mirror);
+	bool noBond = mapDivisionParams_[GENE_DIVISION_SEPARATE] > 0.f;
+	auto p = Cell::divide(angle, ratio, bondBias, reorient, mirror, noBond);
 	return {static_cast<BodyCell*>(p.first), static_cast<BodyCell*>(p.second)};
 }
 
