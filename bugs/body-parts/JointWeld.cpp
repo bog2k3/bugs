@@ -47,11 +47,12 @@ void JointWeld::draw(RenderContext const& ctx) {
 
 glm::vec3 JointWeld::getWorldTransformation() const {
 	if (physJoint_) {
-		float angle = 0;
-#warning "compute angle from anchorB - anchorA"
-		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f, angle);
+		auto anchorA = b2g(physJoint_->GetAnchorA());
+		auto anchorB = b2g(physJoint_->GetAnchorB());
+		float angle = pointDirection(anchorB - anchorA);
+		return glm::vec3((anchorA + anchorB)*0.5f, angle);
 	} else
-		throw std::runtime_error("This should never happen");
+		return {0.f, 0.f, 0.f};
 }
 
 glm::vec2 JointWeld::getAttachmentPoint(float relativeAngle) {

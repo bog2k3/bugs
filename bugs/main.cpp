@@ -488,6 +488,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		world.reset();
 		renderer.unload();
 		Infrastructure::shutDown();
 	} while (0);
