@@ -23,6 +23,9 @@ Joint::Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAncho
 	, physJoint_(nullptr)
 {
 	assert(type == BodyPartType::JOINT_PIVOT || type == BodyPartType::JOINT_WELD);
+	World::getInstance().queueDeferredAction([this] {
+		updateFixtures();
+	});
 }
 
 Joint::~Joint() {

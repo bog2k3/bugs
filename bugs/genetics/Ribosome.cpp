@@ -397,8 +397,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		for (auto &n : c->neighbours_) {
 			Cell *left = c, *right = n.other;
 			if (c->rightSide_) {
-				left = n.other;
-				right = c;
+				xchg(left, right);
 			}
 			if (joints.insert(std::make_pair(left, right)).second) {
 				// only create each joint once - it will appear in both sides of the split
@@ -407,6 +406,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 				assert(bpLeft && bpRight && "bodyparts for each side of the joint must exist!");
 				BodyCell* jointCell = static_cast<BodyCell*>(n.jointParent);
 				assert(jointCell && "joint cell must not be null!");
+				jointCell->size_ = jointCell->jointSize_;
 				bool pivotJoint = jointCell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f;
 				Joint* j = nullptr;
 				if (pivotJoint) {

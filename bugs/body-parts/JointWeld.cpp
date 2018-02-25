@@ -46,20 +46,16 @@ void JointWeld::draw(RenderContext const& ctx) {
 }
 
 glm::vec3 JointWeld::getWorldTransformation() const {
-	if (physJoint_) {
-		auto anchorA = b2g(physJoint_->GetAnchorA());
-		auto anchorB = b2g(physJoint_->GetAnchorB());
-		float angle = pointDirection(anchorB - anchorA);
-		return glm::vec3((anchorA + anchorB)*0.5f, angle);
-	} else
+	if (!physJoint_) {
 		return {0.f, 0.f, 0.f};
+	}
+	auto anchorA = b2g(physJoint_->GetAnchorA());
+	return glm::vec3(anchorA, 0.f);
 }
 
 glm::vec2 JointWeld::getAttachmentPoint(float relativeAngle) {
+	assert(false && "This is never used!");
 	return vec3xy(getWorldTransformation());
-//	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
-//	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
-//	return ret;
 }
 
 //void JointWeld::updateFixtures() {

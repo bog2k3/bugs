@@ -36,6 +36,8 @@ JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart*
 
 	phiMin_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_LOW_LIMIT].clamp(-PI*0.9f, 0);
 	phiMax_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_HIGH_LIMIT].clamp(0, PI*0.9f);
+	if (cell.isMirrored())
+		xchg(phiMin_, phiMax_);
 	resetTorque_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_RESET_TORQUE].clamp(0, BodyConst::MaxJointResetTorque);
 
 	context.updateList.add(this);
@@ -48,26 +50,30 @@ JointPivot::~JointPivot() {
 b2JointDef* JointPivot::createJointDef(b2Body* left, b2Body* right) {
 
 	b2RevoluteJointDef* def = new b2RevoluteJointDef();
-	def->Initialize(left, right, g2b(vec3xy(getWorldTransformation())));
+	def->bodyA = left;
+	def->bodyB = right;
 	def->enableLimit = true;
 	def->lowerAngle = phiMin_;
 	def->upperAngle = phiMax_;
 	def->enableMotor = true;
-	def->referenceAngle = 0; // TODO fix this; getDefaultAngle() + children_[0]->getDefaultAngle();
+
+	float radius = sqrtf(size_*PI_INV);
+	float dir = pointDirection(b2g(right->GetPosition() - left->GetPosition()));
+	glm::vec2 localAnchorA = leftAnchor_->getAttachmentPoint(dir - left->GetAngle());
+	float leftAnchorLength = glm::length(localAnchorA);
+	localAnchorA *= 1 + radius/leftAnchorLength;	// move away from the edge by joint radius
+	def->localAnchorA = g2b(localAnchorA);
+
+	glm::vec2 localAnchorB = rightAnchor_->getAttachmentPoint(dir + PI - right->GetAngle());
+	float rightAnchorLength = glm::length(localAnchorB);
+	localAnchorB *= 1 + radius/rightAnchorLength;	// move away from the edge by joint radius
+	def->localAnchorB = g2b(localAnchorB);
+
+	def->referenceAngle = dir;
+
+	//def->collideConnected = true;
+
 	return def;
-
-//	float radius = sqrtf(size_*PI_INV);
-//	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
-//	float parentAnchorLength = glm::length(parentAnchor);
-//	parentAnchor *= 1 + radius/parentAnchorLength;	// move away from the edge by joint radius
-//	def.localAnchorA = g2b(parentAnchor);
-//
-//	glm::vec2 childAnchor = children_[0]->getAttachmentPoint(PI - children_[0]->getLocalRotation());
-//	float childAnchorLength = glm::length(childAnchor);
-//	childAnchor *= 1 + radius/childAnchorLength;
-//	def.localAnchorB = g2b(childAnchor);
-
-	//def.collideConnected = true;
 }
 
 //void JointPivot::destroyPhysJoint() {
@@ -80,22 +86,22 @@ b2JointDef* JointPivot::createJointDef(b2Body* left, b2Body* right) {
 //}
 //
 glm::vec3 JointPivot::getWorldTransformation() const {
-//	if (physJoint_) {
-//		return glm::vec3(b2g(physJoint_->GetAnchorA()+physJoint_->GetAnchorB())*0.5f,
-//			physJoint_->GetBodyA()->GetAngle() + physJoint_->GetReferenceAngle() + physJoint_->GetJointAngle());
-//	} else
-		throw std::runtime_error("Implement this!");
+	if (!physJoint_) {
+		return {0.f, 0.f, 0.f};
+	}
+	auto anchorA = b2g(physJoint_->GetAnchorA());
+	auto anchorB = b2g(physJoint_->GetAnchorB());
+	float angle = pointDirection(anchorB - anchorA);
+	return glm::vec3((anchorA + anchorB)*0.5f, angle);
 }
 
 glm::vec2 JointPivot::getAttachmentPoint(float relativeAngle) {
+	assert(false && "This is never used!");
 	return vec3xy(getWorldTransformation());
-//	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), relativeAngle));
-//	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
-//	return ret;
 }
 
 void JointPivot::draw(RenderContext const& ctx) {
-#ifndef DEBUG_DRAW_JOINT
+#ifdef DEBUG_DRAW_JOINT
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
 	if (isDead()) {
