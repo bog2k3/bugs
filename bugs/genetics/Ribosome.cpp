@@ -407,7 +407,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 	for (auto c : activeCells) {
 		for (auto &n : c->neighbours_) {
 			Cell *left = c, *right = n.other;
-			if (c->rightSide_) {
+			if (n.isRightSide) {
 				xchg(left, right);
 			}
 			if (joints.insert(std::make_pair(left, right)).second) {
@@ -1047,7 +1047,7 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 	auto tr = bug_->zygoteShell_->getWorldTransformation();
 	glm::mat4 m = glm::translate(glm::vec3{tr.x, tr.y, 0.f});
 	m *= glm::rotate(tr.z, glm::vec3{0.f, 0.f, 1.f});
-	const float scale = 0.3f;
+	const float scale = 1.f; //0.3f;
 	m *= glm::scale(glm::vec3{scale, scale, scale});
 	Shape3D::get()->setTransform(m);
 	for (auto c : cells_) {
@@ -1089,8 +1089,9 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 				v2.x += cosf(c->wangle(l.angle)) * c->radius(0);
 				v2.y += sinf(c->wangle(l.angle)) * c->radius(0);
 				v1 += (v2-v1) * 0.9f;
-				Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {0, 1, 1});
-			} else {
+				glm::vec3 color = l.isRightSide ? glm::vec3{0, 0, 1} : glm::vec3{0, 1, 1};
+				Shape3D::get()->drawLine({v1, 0}, {v2, 0}, color);
+			} else if (!l.isRightSide) {
 				// pivot joint
 				float jr = l.offset/2;
 				glm::vec2 jc = c->position_;

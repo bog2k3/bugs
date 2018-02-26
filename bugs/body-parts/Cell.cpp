@@ -33,11 +33,11 @@ float Cell::rangle(float angle) {
 	return angleDiff(angle_, angle) * (mirror_ ? -1 : 1);
 }
 
-void Cell::bond(Cell* other, float jointDiameter, Cell* jointParent) {
+void Cell::bond(Cell* other, bool isRightSide, float jointDiameter, Cell* jointParent) {
 	float angle = rangle(limitAngle(pointDirection(other->position_ - position_), 2*PI));
-	neighbours_.push_back({angle, jointDiameter, other, jointParent});
+	neighbours_.push_back({angle, jointDiameter, isRightSide, other, jointParent});
 	float oAngle = other->rangle(limitAngle(pointDirection(position_ - other->position_), 2*PI));
-	other->neighbours_.push_back({oAngle, jointDiameter, this, jointParent});
+	other->neighbours_.push_back({oAngle, jointDiameter, !isRightSide, this, jointParent});
 }
 
 std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
@@ -107,7 +107,7 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, float bo
 
 	// create bond between siblings:
 	if (!dontBond)
-		cl->bond(cr, jr*2, this);
+		cl->bond(cr, false, jr*2, this);
 
 	// compute offsetted division axis intersection point angles
 	float offsDist = 1 - 2 * ls / size_; // offset / R    E[-1, 1]
@@ -122,23 +122,23 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, float bo
 	for (auto &n : neighbours_) {
 		// 1. remove old bond
 		Cell* other = n.other;
-		other->neighbours_.erase(std::find_if(other->neighbours_.begin(), other->neighbours_.end(), [this](link& l) {
+		other->neighbours_.erase(std::remove_if(other->neighbours_.begin(), other->neighbours_.end(), [this](link& l) {
 			return l.other == this;
-		}));
+		}), other->neighbours_.end());
 
 		float diff1 = limitAngle(angleDiff(w1, n.angle), w2-w1);
 		float diff2 = limitAngle(angleDiff(w2, n.angle), 2*PI-w2+w1);
 
 		if (diff1 > maxTolerrance && diff2 < -maxTolerrance) {
 			// bond will be inherited only by left side
-			other->bond(cl, n.offset, n.jointParent);
+			other->bond(cl, !n.isRightSide, n.offset, n.jointParent);
 		} else if (diff1 < -maxTolerrance && diff2 > maxTolerrance) {
 			// bond will be inherited only by right side
-			other->bond(cr, n.offset, n.jointParent);
+			other->bond(cr, !n.isRightSide, n.offset, n.jointParent);
 		} else {
 			// bond will be split
-			other->bond(cl, n.offset, n.jointParent);
-			other->bond(cr, n.offset, n.jointParent);
+			other->bond(cl, !n.isRightSide, n.offset, n.jointParent);
+			other->bond(cr, !n.isRightSide, n.offset, n.jointParent);
 		}
 	}
 

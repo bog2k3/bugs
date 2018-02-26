@@ -19,6 +19,7 @@ public:
 	struct link {
 		float angle;	// relative to cell orientation angle
 		float offset;	// distance between cells to accomodate for pivot joint
+		bool isRightSide;	// true if this side of the joint was initially the "right-side" of the splitting cell
 		Cell* other;
 		Cell* jointParent;	// this is the original cell that created the joint; it contains the joint's attributes
 	};
@@ -46,7 +47,7 @@ public:
 	unsigned neighbourCount() const { return neighbours_.size(); }
 	link neighbour(unsigned index) const { return neighbours_[index]; }
 
-	void bond(Cell* other, float jointDiameter, Cell* jointParent);
+	void bond(Cell* other, bool isRightSide, float jointDiameter, Cell* jointParent);
 	void updateBonds();
 
 	// set the size of the pivot joint bond that will be created between the children during division;
