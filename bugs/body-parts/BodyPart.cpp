@@ -488,20 +488,17 @@ aabb BodyPart::getAABB() const {
 
 std::pair<float, float> BodyPart::adjustFixtureValues(std::pair<float, float> const& val, float &outTotalRatio) {
 	float v1 = val.first, v2 = val.second;
-	bool ignoreV2 = v2 == 0;
-	if (ignoreV2) {
-		v2 = 1.f;
+	bool combined = val.second == 0;
+	if (combined)
+		v1 = sqrt(v1);
+	outTotalRatio = 1.f;
+	if (v1 < b2_linearSlop) {
+		outTotalRatio *= b2_linearSlop / v1;
+		v1 = b2_linearSlop;
 	}
-	while (v1 * v2 < b2_linearSlop) {
-		float *min = &v1;
-		if (!ignoreV2 && v1 > v2) {
-			min = &v2;
-		}
-		float ratio = ::min(2.f, b2_linearSlop / (v1*v2));
-		*min *= ratio;
+	if (!combined && v2 < b2_linearSlop) {
+		outTotalRatio *= b2_linearSlop / v2;
+		v2 = b2_linearSlop;
 	}
-	outTotalRatio = v1*v2 / (val.first * (ignoreV2 ? 1.f : val.second));
-	if (ignoreV2)
-		v2 = 0;
-	return {v1, v2};
+	return {combined ? sqr(v1) : v1, v2};
 }

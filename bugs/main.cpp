@@ -151,6 +151,15 @@ bool autosave(SessionManager &sessionMgr) {
 	}
 }
 
+void registerEventHandlers(World &world) {
+	world.registerEventHandler("pauseRequested", [](int val) {
+		updatePaused = val != 0;
+	});
+	world.registerEventHandler("slowMoRequested", [](int val) {
+		slowMo = val != 0;
+	});
+}
+
 // these are defined in perfPrint.cpp
 void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data);
 void printTopHits(std::vector<perf::sectionData> data);
@@ -280,6 +289,7 @@ int main(int argc, char* argv[]) {
 		cfg.disableParallelProcessing = true;
 		World::setConfig(cfg);
 		World &world = World::getInstance();
+		registerEventHandlers(world);
 
 		world.setPhysics(&physWld);
 		world.setDestroyListener(&destroyListener);

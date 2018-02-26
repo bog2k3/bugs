@@ -38,6 +38,10 @@
 #include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/GLText.h>
 
+#ifdef DEBUG
+#include <boglfw/World.h>
+#endif
+
 #include <glm/gtx/transform.hpp>
 
 #include <utility>
@@ -75,7 +79,7 @@ Ribosome::Ribosome(Bug* bug)
 	// there are no default body parts; they either get created by the genes, or the embryo
 	// is discarded at the end of development if it lacks critical parts such as mouth or egg-layer
 
-	float initialSize = bug->zygoteShell_->getMass() / BodyConst::FatDensity;	// because unspecialized cells have the density of fat
+	float initialSize = bug->zygoteShell_->size();
 	BodyCell* initialCell = new BodyCell(initialSize, glm::vec2(0, 0), 0, false, false);
 	cells_.push_back(initialCell);
 
@@ -178,6 +182,11 @@ bool Ribosome::step() {
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
 		specializeCells(hasMouth, hasEggLayer);
+
+#ifdef DEBUG
+		World::getInstance().triggerEvent("pauseRequested", 1);
+		World::getInstance().triggerEvent("slowMoRequested", 1);
+#endif
 
 		if (!hasMouth || !hasEggLayer) {
 			// here mark the embryo as dead and return
@@ -306,6 +315,9 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 	for (auto c : cells_) {
 		if (!c->isActive())
 			continue;
+//		if (c->matchBranch("LLRRRL")) {
+//			LOGLN("bone");
+//		}
 		// update cell's density:
 		updateCellDensity(*c);
 		// adjust the cell's shape:
@@ -330,8 +342,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 	}
 
 	// fix all cell's positioning (affected by changing shape and size above)
-	std::set<Cell*> cellSet;
-	cellSet.insert(activeCells.begin(), activeCells.end());
+	std::set<Cell*> cellSet { activeCells.begin(), activeCells.end() };
 	BodyCell::fixOverlap(cellSet);
 	for (auto c : activeCells)
 		c->updateBonds();

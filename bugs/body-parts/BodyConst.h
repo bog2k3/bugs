@@ -18,7 +18,7 @@ public:
 
 	// fixed values:
 	static constexpr float minDivisionRatio					= 0.01f;		// [*]
-	static constexpr float MinBodyPartSize					= 1.e-4f;		// [m^2]
+//	static constexpr float MinBodyPartSize					= 1.e-4f;		// [m^2]
 	static constexpr float MinBodyPartDensity				= 0.5f;			// [kg/m^2]
 	static constexpr float MaxBodyPartDensity				= 100.f;		// [kg/m^2]
 	static constexpr float MaxBodyPartAspectRatio			= 100.f;		// [*]
@@ -30,7 +30,7 @@ public:
 	static constexpr float ZygoteDensityInv					= 1.f / ZygoteDensity; // [m^2/kg]
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
 	static constexpr float MuscleDensity					= 13.f;			// [kg/m^2]
-	static constexpr float FatCellReadyEnergyDensity		= 100.f;		// [J/m^2] how much ready-to-use energy the cells can store
+//	static constexpr float FatCellReadyEnergyDensity		= 100.f;		// [J/m^2] how much ready-to-use energy the cells can store
 	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*]
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
 	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.6f;			// [m/s] max meters/second linear contraction speed

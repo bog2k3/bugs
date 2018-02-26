@@ -130,6 +130,7 @@ public:
 	Event<void(BodyPart* part)> onDied;
 
 	float mass() const { return size_ * density_; }
+	float size() const { return size_; }
 
 	static Entity* getEntityFromBodyPartPhysBody(PhysicsBody const& body);
 
@@ -190,7 +191,7 @@ protected:
 	//void reattachChildren();
 	//void computeBodyPhysProps();
 
-	friend class JointPivot;
+//	friend class JointPivot;
 
 	virtual void detachMotorLines(std::vector<unsigned> const& lines);
 	//virtual void hierarchyMassChanged();

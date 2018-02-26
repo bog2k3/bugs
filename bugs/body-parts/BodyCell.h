@@ -69,7 +69,7 @@ private:
 	friend class Ribosome;
 
 	std::vector<char> branch_;
-	float density_ = BodyConst::FatDensity;
+	float density_ = BodyConst::ZygoteDensity;
 	float (*radiusFn)(BodyCell const& cell, float angle) = nullptr;
 
 	float initialAngle_;

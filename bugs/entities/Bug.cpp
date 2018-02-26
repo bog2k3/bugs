@@ -290,9 +290,10 @@ void Bug::draw(RenderContext const &ctx) {
 	if (zygoteShell_) {
 		zygoteShell_->draw(ctx);
 		ribosome_->drawCells(ctx);
-	} else
+	} else {
 		for (auto bp : bodyParts_)
 			bp->draw(ctx);
+	}
 	for (auto bp : deadBodyParts_)
 		if (bp)
 			bp->draw(ctx);
