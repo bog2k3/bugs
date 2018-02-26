@@ -97,6 +97,7 @@ void Bone::draw(RenderContext const& ctx) {
 			glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5, 0, 1));
 	}
 #endif
+	BodyPart::draw(ctx);
 }
 
 float Bone::getRadius(BodyCell const& cell, float angle) {

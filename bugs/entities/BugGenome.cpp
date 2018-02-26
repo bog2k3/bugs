@@ -492,6 +492,21 @@ Chromosome Bug::createBasicChromosome() {
 	gp.restriction.clear();
 	PUSH(gp);
 
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(1.5f * BodyConst::initialBoneAspectRatio);
+	ga.restriction.clear();
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
+	ga.value.set(0.5f * BodyConst::initialBoneAspectRatio);
+	ga.restriction = BranchRestriction("*v *v *v *v *<");
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_GENERIC1;
+	ga.value.set(BodyConst::initialBoneDensity);
+	ga.restriction.clear();
+	PUSH(ga);
+
 	GeneMuscleAttribute gma;
 	gma.attrib = GENE_MUSCLE_ATTR_ASPECT_RATIO;
 	gma.side.set(0);

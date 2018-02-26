@@ -25,10 +25,9 @@ public:
 	glm::vec3 getWorldTransformation() const override;
 
 protected:
-//	void updateFixtures() override;
 //	void die() override;
 
-	b2JointDef* createJointDef(b2Body* left, b2Body* right) override;
+	b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) override;
 
 private:
 	unsigned jointListenerHandle_ = 0;

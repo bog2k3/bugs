@@ -31,7 +31,7 @@ protected:
 	void updateFixtures() override;
 //	void die() override;
 
-	virtual b2JointDef* createJointDef(b2Body* left, b2Body* right) = 0;
+	virtual b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) = 0;
 
 private:
 	unsigned jointListenerHandle_ = 0;

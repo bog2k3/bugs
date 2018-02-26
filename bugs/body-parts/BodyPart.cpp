@@ -278,11 +278,12 @@ glm::vec3 BodyPart::getWorldTransformation() const {
 }
 
 void BodyPart::draw(RenderContext const& ctx) {
-	return; // TODO do we need this here still?
 	glm::vec3 trans = getWorldTransformation();
 	glm::vec3 pos(trans.x, trans.y, 0);
-	Shape3D::get()->drawLine(pos + glm::vec3(-0.01f, 0, 0), pos + glm::vec3(0.01f, 0, 0), glm::vec3(0.2f, 0.2f, 1.f));
-	Shape3D::get()->drawLine(pos + glm::vec3(0, -0.01f, 0), pos + glm::vec3(0, 0.01f, 0), glm::vec3(1.f, 0.2f, 0.2f));
+	glm::vec3 u = {glm::rotate(glm::vec2(1.f, 0.f), trans.z), 0};
+	glm::vec3 v = {glm::rotate(glm::vec2(0.f, 1.f), trans.z), 0};
+	Shape3D::get()->drawLine(pos - 0.01f*u, pos + 0.05f*u, glm::vec3(0.2f, 0.2f, 1.f));
+	Shape3D::get()->drawLine(pos - 0.01f*v, pos + 0.01f*v, glm::vec3(1.f, 0.2f, 0.2f));
 }
 
 /*void BodyPart::registerAttribute(gene_part_attribute_type type, CumulativeValue& value) {

@@ -41,11 +41,10 @@ protected:
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
 	void getNormalizedLimits(float &low, float &high);
-//	void updateFixtures() override;
 	void die() override;
 	//void onDetachedFromParent() override;
 
-	b2JointDef* createJointDef(b2Body* left, b2Body* right) override;
+	b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) override;
 	b2RevoluteJoint* b2PJoint() const;
 };
 

@@ -20,6 +20,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 static const glm::vec3 debug_color(1.f, 0.3f, 0.1f);
+#define DEBUG_DRAW_JOINT
 
 JointWeld::JointWeld(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor)
 	: Joint(context, cell, leftAnchor, rightAnchor, BodyPartType::JOINT_WELD)
@@ -30,18 +31,12 @@ JointWeld::~JointWeld() {
 }
 
 void JointWeld::draw(RenderContext const& ctx) {
-#ifndef DEBUG_DRAW_JOINT
+#ifdef DEBUG_DRAW_JOINT
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
-	if (isDead()) {
-		float sizeLeft = getFoodValue() / density_;
-		Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV), 12, glm::vec3(0.5f,0,1));
-	} else {
-		Shape3D::get()->drawCircleXOY(pos, sqrtf(size_*PI_INV), 12, debug_color);
-		Shape3D::get()->drawLine({pos, 0},
-				{pos + glm::rotate(glm::vec2(sqrtf(size_*PI_INV), 0), transform.z), 0},
-				debug_color);
-	}
+	Shape3D::get()->drawLine({pos, 0},
+			{pos + glm::rotate(glm::vec2(0.01f, 0), transform.z), 0},
+			debug_color);
 #endif
 }
 
@@ -49,8 +44,10 @@ glm::vec3 JointWeld::getWorldTransformation() const {
 	if (!physJoint_) {
 		return {0.f, 0.f, 0.f};
 	}
-	auto anchorA = b2g(physJoint_->GetAnchorA());
-	return glm::vec3(anchorA, 0.f);
+	auto anchorA = physJoint_->GetAnchorA();
+	float localAngle = pointDirection(b2g(anchorA));
+	float bodyAngle = physJoint_->GetBodyA()->GetAngle();
+	return glm::vec3(b2g(anchorA), bodyAngle + localAngle);
 }
 
 glm::vec2 JointWeld::getAttachmentPoint(float relativeAngle) {
@@ -88,8 +85,12 @@ glm::vec2 JointWeld::getAttachmentPoint(float relativeAngle) {
 //			std::bind(&JointWeld::onPhysJointDestroyed, this, std::placeholders::_1));
 //}
 
-b2JointDef* JointWeld::createJointDef(b2Body* left, b2Body* right) {
+b2JointDef* JointWeld::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) {
 	b2WeldJointDef *def = new b2WeldJointDef();
-	def->Initialize(left, right, g2b(vec3xy(getWorldTransformation())));
+	def->localAnchorA = localAnchorA;
+	def->localAnchorB = localAnchorB;
+	def->referenceAngle = refAngle;
+//	def->collideConnected = true;
+
 	return def;
 }

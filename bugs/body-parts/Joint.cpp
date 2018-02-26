@@ -65,18 +65,24 @@ void Joint::updateFixtures() {
 		physJoint_ = nullptr;
 	}
 
-	b2JointDef *def = createJointDef(leftAnchor_->getBody().b2Body_, rightAnchor_->getBody().b2Body_);
-	/*if (type_ == BodyPartType::JOINT_PIVOT) {
-		def = &wdef;
-		wdef.Initialize(leftAnchor_->getBody().b2Body_, rightAnchor_->getBody().b2Body_, g2b(vec3xy(getWorldTransformation())));
-	} else {
-		def = &rdef;
-		rdef.Initialize(leftAnchor_->getBody().b2Body_, rightAnchor_->getBody().b2Body_, g2b(vec3xy(getWorldTransformation())));
-		rdef.referenceAngle = 0; // TODO fix this
-		rdef.
-	}*/
+	auto bodyA = leftAnchor_->getBody().b2Body_;
+	auto bodyB = rightAnchor_->getBody().b2Body_;
+
+	float radius = sqrtf(size_*PI_INV);
+	float dir = pointDirection(b2g(bodyB->GetPosition() - bodyA->GetPosition()));
+
+	glm::vec2 localAnchorA = leftAnchor_->getAttachmentPoint(dir - bodyA->GetAngle());
+	float leftAnchorLength = glm::length(localAnchorA);
+	localAnchorA *= 1 + radius/leftAnchorLength;	// move away from the edge by joint radius
+
+	glm::vec2 localAnchorB = rightAnchor_->getAttachmentPoint(dir + PI - bodyB->GetAngle());
+	float rightAnchorLength = glm::length(localAnchorB);
+	localAnchorB *= 1 + radius/rightAnchorLength;	// move away from the edge by joint radius
+
+	b2JointDef *def = createJointDef(g2b(localAnchorA), g2b(localAnchorB), dir);
+	def->bodyA = bodyA;
+	def->bodyB = bodyB;
 	def->userData = (void*)this;
-	//def->collideConnected = true;
 
 	physJoint_ = World::getInstance().getPhysics()->CreateJoint(def);
 	delete def;

@@ -47,30 +47,16 @@ JointPivot::~JointPivot() {
 	context_.updateList.remove(this);
 }
 
-b2JointDef* JointPivot::createJointDef(b2Body* left, b2Body* right) {
+b2JointDef* JointPivot::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) {
 
 	b2RevoluteJointDef* def = new b2RevoluteJointDef();
-	def->bodyA = left;
-	def->bodyB = right;
+	def->localAnchorA = localAnchorA;
+	def->localAnchorB = localAnchorB;
+	def->referenceAngle = refAngle;
 	def->enableLimit = true;
 	def->lowerAngle = phiMin_;
 	def->upperAngle = phiMax_;
 	def->enableMotor = true;
-
-	float radius = sqrtf(size_*PI_INV);
-	float dir = pointDirection(b2g(right->GetPosition() - left->GetPosition()));
-	glm::vec2 localAnchorA = leftAnchor_->getAttachmentPoint(dir - left->GetAngle());
-	float leftAnchorLength = glm::length(localAnchorA);
-	localAnchorA *= 1 + radius/leftAnchorLength;	// move away from the edge by joint radius
-	def->localAnchorA = g2b(localAnchorA);
-
-	glm::vec2 localAnchorB = rightAnchor_->getAttachmentPoint(dir + PI - right->GetAngle());
-	float rightAnchorLength = glm::length(localAnchorB);
-	localAnchorB *= 1 + radius/rightAnchorLength;	// move away from the edge by joint radius
-	def->localAnchorB = g2b(localAnchorB);
-
-	def->referenceAngle = dir;
-
 	//def->collideConnected = true;
 
 	return def;
