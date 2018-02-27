@@ -15,6 +15,7 @@
 #include <boglfw/utils/assert.h>
 
 #include <Box2D/Box2D.h>
+#include <glm/gtx/rotate_vector.hpp>
 
 Joint::Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor, BodyPartType type)
 	: BodyPart(type, context, cell, true)
@@ -69,6 +70,7 @@ void Joint::updateFixtures() {
 	auto bodyB = rightAnchor_->getBody().b2Body_;
 
 	float radius = sqrtf(size_*PI_INV);
+	assert(type_ != BodyPartType::JOINT_WELD || radius == 0);
 	float dir = pointDirection(b2g(bodyB->GetPosition() - bodyA->GetPosition()));
 
 	glm::vec2 localAnchorA = leftAnchor_->getAttachmentPoint(dir - bodyA->GetAngle());
@@ -79,7 +81,16 @@ void Joint::updateFixtures() {
 	float rightAnchorLength = glm::length(localAnchorB);
 	localAnchorB *= 1 + radius/rightAnchorLength;	// move away from the edge by joint radius
 
-	b2JointDef *def = createJointDef(g2b(localAnchorA), g2b(localAnchorB), dir);
+	// make sure we set the two anchors in the same position to avoid static stress on the structure
+	auto lTransform = leftAnchor_->getWorldTransformation();
+	auto wldAnchorA = glm::rotate(localAnchorA, lTransform.z) + vec3xy(lTransform);
+	auto rTransform = rightAnchor_->getWorldTransformation();
+	auto wldAnchorB = glm::rotate(localAnchorB, rTransform.z) + vec3xy(rTransform);
+	auto wldAnchor = (wldAnchorA + wldAnchorB) * 0.5f;
+	localAnchorA = glm::rotate(wldAnchor - vec3xy(lTransform), -lTransform.z);
+	localAnchorB = glm::rotate(wldAnchor - vec3xy(rTransform), -rTransform.z);
+
+	b2JointDef *def = createJointDef(g2b(localAnchorA), g2b(localAnchorB), bodyB->GetAngle() - bodyA->GetAngle());
 	def->bodyA = bodyA;
 	def->bodyB = bodyB;
 	def->userData = (void*)this;

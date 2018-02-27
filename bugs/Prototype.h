@@ -18,6 +18,8 @@ class Prototype {
 public:
 	void enable(bool enable) { enabled_ = enable; }
 
+	void initialize();
+	void terminate();
 	void draw(RenderContext const& ctx);
 	void update(float dt);
 

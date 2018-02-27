@@ -57,7 +57,6 @@ b2JointDef* JointPivot::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB,
 	def->lowerAngle = phiMin_;
 	def->upperAngle = phiMax_;
 	def->enableMotor = true;
-	//def->collideConnected = true;
 
 	return def;
 }

@@ -402,6 +402,8 @@ int main(int argc, char* argv[]) {
 	#endif
 
 		prototype.enable(ENABLE_PROTOTYPING);
+		if (ENABLE_PROTOTYPING)
+			prototype.initialize();
 
 		// initial update:
 		updateList.update(0);
@@ -497,6 +499,9 @@ int main(int argc, char* argv[]) {
 				perf::FrameCapture::cleanup();
 			}
 		}
+
+		if (ENABLE_PROTOTYPING)
+			prototype.terminate();
 
 		world.reset();
 		renderer.unload();

@@ -421,10 +421,10 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 				bool pivotJoint = jointCell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f;
 				Joint* j = nullptr;
 				if (pivotJoint) {
-					auto pj = new JointPivot(bug_->context_, *c, bpLeft, bpRight);
+					auto pj = new JointPivot(bug_->context_, *jointCell, bpLeft, bpRight);
 					j = pj;
 				} else {
-					auto wj = new JointWeld(bug_->context_, *c, bpLeft, bpRight);
+					auto wj = new JointWeld(bug_->context_, *jointCell, bpLeft, bpRight);
 					j = wj;
 				}
 				bug_->bodyParts_.push_back(j);

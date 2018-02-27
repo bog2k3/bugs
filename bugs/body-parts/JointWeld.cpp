@@ -34,9 +34,15 @@ void JointWeld::draw(RenderContext const& ctx) {
 #ifdef DEBUG_DRAW_JOINT
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
-	Shape3D::get()->drawLine({pos, 0},
-			{pos + glm::rotate(glm::vec2(0.01f, 0), transform.z), 0},
-			debug_color);
+	float angle = transform.z;
+	float o1 = 0.05f * sqrt(leftAnchor_->size());
+	float o2 = o1 * 0.4f;
+	Shape3D::get()->drawLine({pos - glm::rotate(glm::vec2(o1, 0), angle), 0},
+		{pos + glm::rotate(glm::vec2(o1, 0), angle), 0},
+		debug_color);
+	Shape3D::get()->drawLine({pos - glm::rotate(glm::vec2(0, o2), angle), 0},
+		{pos + glm::rotate(glm::vec2(0, o2), angle), 0},
+		debug_color);
 #endif
 }
 
@@ -45,14 +51,13 @@ glm::vec3 JointWeld::getWorldTransformation() const {
 		return {0.f, 0.f, 0.f};
 	}
 	auto anchorA = physJoint_->GetAnchorA();
-	float localAngle = pointDirection(b2g(anchorA));
-	float bodyAngle = physJoint_->GetBodyA()->GetAngle();
-	return glm::vec3(b2g(anchorA), bodyAngle + localAngle);
+	float angle = pointDirection(b2g(physJoint_->GetBodyB()->GetPosition() - physJoint_->GetBodyA()->GetPosition()));
+	return {b2g(anchorA), angle};
 }
 
 glm::vec2 JointWeld::getAttachmentPoint(float relativeAngle) {
 	assert(false && "This is never used!");
-	return vec3xy(getWorldTransformation());
+	return {0, 0};
 }
 
 //void JointWeld::updateFixtures() {
@@ -90,7 +95,8 @@ b2JointDef* JointWeld::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, 
 	def->localAnchorA = localAnchorA;
 	def->localAnchorB = localAnchorB;
 	def->referenceAngle = refAngle;
-//	def->collideConnected = true;
+	def->dampingRatio = 0.1f;
+	def->frequencyHz = 10;
 
 	return def;
 }
