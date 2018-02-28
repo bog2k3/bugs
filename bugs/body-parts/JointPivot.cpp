@@ -36,8 +36,11 @@ JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart*
 
 	phiMin_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_LOW_LIMIT].clamp(-PI*0.9f, 0);
 	phiMax_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_HIGH_LIMIT].clamp(0, PI*0.9f);
-	if (cell.isMirrored())
+	if (cell.isMirrored()) {
 		xchg(phiMin_, phiMax_);
+		phiMin_ *= -1;
+		phiMax_ *= -1;
+	}
 	resetTorque_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_RESET_TORQUE].clamp(0, BodyConst::MaxJointResetTorque);
 
 	context.updateList.add(this);
@@ -74,10 +77,9 @@ glm::vec3 JointPivot::getWorldTransformation() const {
 	if (!physJoint_) {
 		return {0.f, 0.f, 0.f};
 	}
-	auto anchorA = b2g(physJoint_->GetAnchorA());
-	auto anchorB = b2g(physJoint_->GetAnchorB());
-	float angle = pointDirection(anchorB - anchorA);
-	return glm::vec3((anchorA + anchorB)*0.5f, angle);
+	auto anchorA = physJoint_->GetAnchorA();
+	float angle = pointDirection(b2g(anchorA - physJoint_->GetBodyA()->GetPosition())) + b2PJoint()->GetJointAngle();
+	return {b2g(anchorA), angle};
 }
 
 glm::vec2 JointPivot::getAttachmentPoint(float relativeAngle) {
