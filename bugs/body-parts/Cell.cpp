@@ -10,7 +10,12 @@
 #include <boglfw/math/math3D.h>
 #include <boglfw/utils/rand.h>
 
+#include <glm/vec2.hpp>
+
 #include <algorithm>
+#include <numeric>
+#include <cmath>
+#include <map>
 
 Cell::Cell(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide)
 	: angle_(limitAngle(rotation, 2*PI))
@@ -49,9 +54,18 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 	std::set<Cell*> newMarked;
 	std::set<Cell*> allAffected;
 
-	while (!marked.empty()) {
+	constexpr float angleChangeTolerance = PI * 0.05f;
+
+	/*
+	 * while (!marked.empty()) {
+		std::map<Cell*, glm::vec2> totalCellOffsets;
+		std::set<std::pair<Cell*, Cell*>> affectedBonds;
 		for (Cell* c : marked) {
 			for (auto &n : c->neighbours_) {
+				if (affectedBonds.find({c, n.other}) != affectedBonds.end())
+					continue;	// we already treated this bond this round
+				affectedBonds.insert({n.other, c});
+
 				auto diff = n.other->position_ - c->position_;
 				float angle = pointDirection(diff);
 				float dist = glm::length(diff);
@@ -62,14 +76,125 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 				glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap;
 				float ratio = c->size_ / (c->size_ + n.other->size_);
 
-				c->position_ -= offset * (1-ratio);
-				n.other->position_ += offset * ratio;
+//				c->position_ -= offset * (1-ratio);
+//				n.other->position_ += offset * ratio;
+				totalCellOffsets[c] -= offset * (1-ratio);
+				totalCellOffsets[n.other] += offset * ratio;
 
 				newMarked.insert(c);
 				newMarked.insert(n.other);
 				allAffected.insert(c);
 				allAffected.insert(n.other);
 			}
+		}
+		for (Cell* c : marked) {
+			c->position_ += totalCellOffsets[c];
+		}
+		marked.swap(newMarked);
+		newMarked.clear();
+	}
+	 */
+
+	while (!marked.empty()) {
+		std::set<std::pair<Cell*, Cell*>> affectedBonds;
+		std::map<Cell*, glm::vec2> totalCellOffset;
+		// step 1: compute cell offsets to put the bonding points in contact
+		for (Cell* c : marked) {
+			for (auto &n : c->neighbours_) {
+				if (affectedBonds.find({c, n.other}) != affectedBonds.end())
+					continue;	// we already treated this bond this round
+				affectedBonds.insert({n.other, c});
+				auto it = std::find_if(n.other->neighbours_.begin(), n.other->neighbours_.end(), [c](link const& l) {
+					return l.other == c;
+				});
+				assert(it != n.other->neighbours_.end());
+				link &otherN = *it;
+
+				float thisBondRadius = c->radius(n.angle);
+				float thisWldBondAngle = c->wangle(n.angle);
+				glm::vec2 thisAnchor = c->position_ + glm::vec2(cos(thisWldBondAngle), sin(thisWldBondAngle)) * thisBondRadius;
+
+				float otherBondRadius = n.other->radius(otherN.angle);
+				float otherWldBondAngle = n.other->wangle(otherN.angle);
+				glm::vec2 otherAnchor = n.other->position_ + glm::vec2(cos(otherWldBondAngle), sin(otherWldBondAngle)) * otherBondRadius;
+
+				auto diff = otherAnchor - thisAnchor;
+				float dist = glm::length(diff);
+				constexpr float tolerance = 1e-3f;
+				if (dist <= tolerance)
+					continue;
+
+				float ratio = c->size_ / (c->size_ + n.other->size_);
+				auto thisOffs = diff * (1-ratio);
+				auto otherOffs = -diff * ratio;
+//				c->position_ += thisOffs;
+//				n.other->position_ += otherOffs;
+
+				diff = n.other->position_ - c->position_;
+				float angle = pointDirection(diff);
+				dist = glm::length(diff);
+				float overlap = (c->radius(c->rangle(angle)) + n.other->radius(n.other->rangle(angle+PI)) + n.offset) - dist;
+				if (abs(overlap) <= tolerance)
+					continue;
+				glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap;
+				thisOffs = -offset * (1-ratio);
+				otherOffs = offset * ratio;
+
+				totalCellOffset[c] += thisOffs;
+				totalCellOffset[n.other] += otherOffs;
+
+				newMarked.insert(c);
+				newMarked.insert(n.other);
+				allAffected.insert(c);
+				allAffected.insert(n.other);
+			}
+		}
+		// step 2: apply the computed offsets to cells
+		for (auto &p : totalCellOffset) {
+			p.first->position_ += p.second;
+		}
+		// step 3: offset the bond angles slightly toward the new positions - this is required because the new configuration may be
+		// unsolvable with the original bond angles
+		float totalAngleChange = 0;
+		affectedBonds.clear();
+		/*for (Cell* c : marked) {
+			for (auto &n : c->neighbours_) {
+				if (affectedBonds.find({c, n.other}) != affectedBonds.end())
+					continue;	// we already treated this bond this round
+				affectedBonds.insert({n.other, c});
+				auto it = std::find_if(n.other->neighbours_.begin(), n.other->neighbours_.end(), [c](link const& l) {
+					return l.other == c;
+				});
+				assert(it != n.other->neighbours_.end());
+				link &otherN = *it;
+
+				float wldBondAngle = pointDirection(n.other->position_ - c->position_);
+				float angleChangeRatio = 0.1f; // [0.0 .. 1.0] 0.0 keeps it in place, 1.0 moves it completely to the actual bond angle
+				float newAngle = lerp(n.angle, c->rangle(wldBondAngle), angleChangeRatio);
+				float newOtherAngle = lerp(otherN.angle, n.other->rangle(PI + wldBondAngle), angleChangeRatio);
+
+				float thisAngleChange = abs(newAngle - n.angle);
+				float otherAngleChange = abs(newOtherAngle - otherN.angle);
+				totalAngleChange += thisAngleChange + otherAngleChange;
+
+				if (thisAngleChange >= angleChangeTolerance)
+					newMarked.insert(c);
+				if (otherAngleChange >= angleChangeTolerance)
+					newMarked.insert(n.other);
+
+				n.angle = newAngle;
+				otherN.angle = newOtherAngle;
+			}
+		}*/
+		if (totalAngleChange < angleChangeTolerance) {
+			// check how much all the cells have been offsetted together to avoid infinite looping by moving them back and forth
+			glm::vec2 totalOffs = std::accumulate(totalCellOffset.begin(), totalCellOffset.end(), glm::vec2(0), [](glm::vec2 v, auto p) {
+				return v + p.second;
+			});
+			constexpr float perCellTolerance = 0.001f;
+			float totalTolerance = perCellTolerance * newMarked.size();
+			if (glm::length(totalOffs) < totalTolerance)
+				break;
 		}
 		marked.swap(newMarked);
 		newMarked.clear();
