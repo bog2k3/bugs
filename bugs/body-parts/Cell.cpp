@@ -130,7 +130,8 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 //				c->position_ += thisOffs;
 //				n.other->position_ += otherOffs;
 
-				diff = n.other->position_ - c->position_;
+// center-based push override ----------------------------
+				/*diff = n.other->position_ - c->position_;
 				float angle = pointDirection(diff);
 				dist = glm::length(diff);
 				float overlap = (c->radius(c->rangle(angle)) + n.other->radius(n.other->rangle(angle+PI)) + n.offset) - dist;
@@ -138,7 +139,8 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 					continue;
 				glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap;
 				thisOffs = -offset * (1-ratio);
-				otherOffs = offset * ratio;
+				otherOffs = offset * ratio;*/
+// ------------------------ end center-based push override
 
 				totalCellOffset[c] += thisOffs;
 				totalCellOffset[n.other] += otherOffs;
