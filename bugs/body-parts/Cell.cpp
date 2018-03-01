@@ -140,13 +140,14 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 				auto diff = n.other->position_ - c->position_;
 				float angle = pointDirection(diff);
 				auto dist = glm::length(diff);
-				float overlap = (c->radius(c->rangle(angle)) + n.other->radius(n.other->rangle(angle+PI)) + n.offset) - dist;
+				float overlap = c->radius(c->rangle(angle)) + n.other->radius(n.other->rangle(angle+PI)) + n.offset - dist;
 				if (abs(overlap) <= tolerance)
 					continue;
 				glm::vec2 offset = glm::normalize(diff) * overlap;
 				float ratio = c->size_ / (c->size_ + n.other->size_);
-				auto thisOffs = -offset * (1-ratio);
-				auto otherOffs = offset * ratio;
+				constexpr float overshootFactor = 1.f; // overshoot slightly to speed up convergence
+				auto thisOffs = -offset * (1-ratio) * overshootFactor;
+				auto otherOffs = offset * ratio * overshootFactor;
 // ------------------------ end center-based push override
 
 				totalCellOffset[c] += thisOffs;
@@ -197,13 +198,13 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 		}*/
 		/*if (totalAngleChange < angleChangeTolerance)*/ {
 			// check how much all the cells have been offsetted together to avoid infinite looping by moving them back and forth
-			glm::vec2 totalOffs = std::accumulate(totalCellOffset.begin(), totalCellOffset.end(), glm::vec2(0), [](glm::vec2 v, auto p) {
-				return v + glm::vec2{abs(p.second.x), abs(p.second.y)};
-			});
-			constexpr float perCellTolerance = 0.001f;
-			float totalTolerance = perCellTolerance * newMarked.size();
-			if (glm::length(totalOffs) < totalTolerance)
-				break;
+//			glm::vec2 totalOffs = std::accumulate(totalCellOffset.begin(), totalCellOffset.end(), glm::vec2(0), [](glm::vec2 v, auto p) {
+//				return v + glm::vec2{abs(p.second.x), abs(p.second.y)};
+//			});
+//			constexpr float perCellTolerance = 0.00005f;
+//			float totalTolerance = perCellTolerance * newMarked.size();
+//			if (glm::length(totalOffs) < totalTolerance)
+//				break;
 		}
 		marked.swap(newMarked);
 		newMarked.clear();
