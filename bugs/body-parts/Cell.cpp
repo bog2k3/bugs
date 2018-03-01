@@ -95,7 +95,9 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 	}
 	 */
 
-	while (!marked.empty()) {
+	constexpr int maxIterations = 10;
+	int nIterations = 0;
+	while (!marked.empty() && nIterations < maxIterations) {
 		std::set<std::pair<Cell*, Cell*>> affectedBonds;
 		std::map<Cell*, glm::vec2> totalCellOffset;
 		// step 1: compute cell offsets to put the bonding points in contact
@@ -104,6 +106,9 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 				if (affectedBonds.find({c, n.other}) != affectedBonds.end())
 					continue;	// we already treated this bond this round
 				affectedBonds.insert({n.other, c});
+				constexpr float tolerance = 1e-3f;
+// bond-contact based method ------------------------
+				/*
 				auto it = std::find_if(n.other->neighbours_.begin(), n.other->neighbours_.end(), [c](link const& l) {
 					return l.other == c;
 				});
@@ -120,7 +125,6 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 
 				auto diff = otherAnchor - thisAnchor;
 				float dist = glm::length(diff);
-				constexpr float tolerance = 1e-3f;
 				if (dist <= tolerance)
 					continue;
 
@@ -129,17 +133,20 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 				auto otherOffs = -diff * ratio;
 //				c->position_ += thisOffs;
 //				n.other->position_ += otherOffs;
+ */
+// ------------------- end bond-contact based
 
 // center-based push override ----------------------------
-				/*diff = n.other->position_ - c->position_;
+				auto diff = n.other->position_ - c->position_;
 				float angle = pointDirection(diff);
-				dist = glm::length(diff);
+				auto dist = glm::length(diff);
 				float overlap = (c->radius(c->rangle(angle)) + n.other->radius(n.other->rangle(angle+PI)) + n.offset) - dist;
 				if (abs(overlap) <= tolerance)
 					continue;
-				glm::vec2 offset = glm::normalize(n.other->position_ - c->position_) * overlap;
-				thisOffs = -offset * (1-ratio);
-				otherOffs = offset * ratio;*/
+				glm::vec2 offset = glm::normalize(diff) * overlap;
+				float ratio = c->size_ / (c->size_ + n.other->size_);
+				auto thisOffs = -offset * (1-ratio);
+				auto otherOffs = offset * ratio;
 // ------------------------ end center-based push override
 
 				totalCellOffset[c] += thisOffs;
@@ -157,9 +164,9 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 		}
 		// step 3: offset the bond angles slightly toward the new positions - this is required because the new configuration may be
 		// unsolvable with the original bond angles
-		float totalAngleChange = 0;
+		/*float totalAngleChange = 0;
 		affectedBonds.clear();
-		/*for (Cell* c : marked) {
+		for (Cell* c : marked) {
 			for (auto &n : c->neighbours_) {
 				if (affectedBonds.find({c, n.other}) != affectedBonds.end())
 					continue;	// we already treated this bond this round
@@ -188,10 +195,10 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 				otherN.angle = newOtherAngle;
 			}
 		}*/
-		if (totalAngleChange < angleChangeTolerance) {
+		/*if (totalAngleChange < angleChangeTolerance)*/ {
 			// check how much all the cells have been offsetted together to avoid infinite looping by moving them back and forth
 			glm::vec2 totalOffs = std::accumulate(totalCellOffset.begin(), totalCellOffset.end(), glm::vec2(0), [](glm::vec2 v, auto p) {
-				return v + p.second;
+				return v + glm::vec2{abs(p.second.x), abs(p.second.y)};
 			});
 			constexpr float perCellTolerance = 0.001f;
 			float totalTolerance = perCellTolerance * newMarked.size();
@@ -200,6 +207,7 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 		}
 		marked.swap(newMarked);
 		newMarked.clear();
+		nIterations++;
 	}
 	return allAffected;
 }
