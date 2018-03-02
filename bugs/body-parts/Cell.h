@@ -63,7 +63,7 @@ public:
 
 	void deactivate() { active_ = false; }
 
-	static std::set<Cell*> fixOverlap(std::set<Cell*> &marked);
+	static std::set<Cell*> fixOverlap(std::set<Cell*> &marked, bool extraPrecision=false);
 
 protected:
 	virtual Cell* createChild(float size, glm::vec2 position, float rotation, bool mirror, bool rightSide) const;

@@ -46,7 +46,7 @@ void Cell::bond(Cell* other, bool isRightSide, float jointDiameter, Cell* jointP
 	other->neighbours_.push_back({oAngle, jointDiameter, !isRightSide, this, jointParent});
 }
 
-std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
+std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 	// 1. push all overlapping cells away until they touch on the edges
 	// 2. pull all bonded cells inward until they touch on the edges
 	// 3. mark all cells that have been moved and their neighbors
@@ -57,20 +57,19 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 	std::map<Cell*, float> massRatios;	// this will hold mass ratios to adjust the apparent mass of each cell in order to control how much we push them
 										// cells which will have a lot of forces act on them but the resultant force is small, will have their mass ratio high
 										// in order to force the other cells to move around instead.
-	constexpr float MaxMassRatio = 20.f;
-	constexpr float RM = MaxMassRatio;
-	constexpr float r2 = sqrt(2.f);
-	constexpr float a = -(2.f*r2)*(1.f - 1.f/(r2*RM) - (1-1.f/r2)*RM);
-	constexpr float b = 1.f/RM - RM - a;
-	constexpr float c = RM;
+	const float MaxMassRatio = extraPrecision ? 10.f : 20.f;
+	const float RM = MaxMassRatio;
+	const float r2 = sqrt(2.f);
+	const float a = -(2.f*r2)*(1.f - 1.f/(r2*RM) - (1-1.f/r2)*RM);
+	const float b = 1.f/RM - RM - a;
+	const float c = RM;
 	auto massRatioFn = [a,b,c](float r) {		// 2nd order polynomial function - see "making-of/20 mass ratio function.jpg" for details
 		assert(r >= 0.f && r <= 1.f);
 		float y = a*r*r + b*r + c;
-		assert(y*1.1f >= 1.f/RM && y*0.9f <= RM+EPS);
 		return y;
 	};
 
-	constexpr int maxIterations = 20;
+	const int maxIterations = extraPrecision ? 500 : 20;
 	int nIterations = 0;
 	while (!marked.empty() && nIterations < maxIterations) {
 		std::set<std::pair<Cell*, Cell*>> affectedBonds;
@@ -82,7 +81,7 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked) {
 				if (affectedBonds.find({c, n.other}) != affectedBonds.end())
 					continue;	// we already treated this bond this round
 				affectedBonds.insert({n.other, c});
-				constexpr float toleranceFactor = 0.1f; // proportion of the smaller neighbor's radius
+				const float toleranceFactor = extraPrecision ? 0.02f : 0.1f; // proportion of the smaller neighbor's radius
 				auto diff = n.other->position_ - c->position_;
 				float angle = pointDirection(diff);
 				float cr = c->radius(c->rangle(angle));

@@ -289,7 +289,7 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gdp);
 
 	gdp.param = GENE_DIVISION_ANGLE;
-	gdp.value.set(-PI/4);
+	gdp.value.set(-PI/3);
 	gdp.restriction = BranchRestriction("*v *< 0v");
 	PUSH(gdp);
 
@@ -432,7 +432,8 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gdp);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
-	ga.value.set(PI/1.1);
+	//ga.value.set(PI/1.1);
+	ga.value.set(PI);
 	ga.restriction = BranchRestriction("0v 0v 0v 0v *-");
 	PUSH(ga);
 
@@ -493,12 +494,12 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gp);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
-	ga.value.set(1.5f * BodyConst::initialBoneAspectRatio);
+	ga.value.set(1.8f * BodyConst::initialBoneAspectRatio);
 	ga.restriction.clear();
 	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_ASPECT_RATIO;
-	ga.value.set(0.5f * BodyConst::initialBoneAspectRatio);
+	ga.value.set(0.4f * BodyConst::initialBoneAspectRatio);
 	ga.restriction = BranchRestriction("*v *v *v *v *<");
 	PUSH(ga);
 
