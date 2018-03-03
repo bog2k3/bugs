@@ -452,6 +452,7 @@ void Bug::consumeEnergy(float totalAmount) {
 		float remainingDebt = totalAmount - amountConsumed;
 		float totalFatMass = getTotalFatMass();
 		if (totalFatMass < EPS) {
+			throw std::runtime_error("fatCells may still have energy buffers regardless of fat mass");
 			// we've run out of fat, bug dies
 			kill();
 			return;
