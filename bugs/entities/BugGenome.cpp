@@ -60,7 +60,7 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float nose_size_ratio = 0.1f;			// nose to head ratio (N5/#4a)
 	constexpr float egglayer_size_ratio = 0.01f;	// egglayer to body ratio (E1/#1)
 	constexpr float head_size_ratio = 0.2f;			// head to body ratio (#2b/#2a)
-	constexpr float leg_size_ratio = 2.5f;			// leg to torso ratio (#5b/B5)
+	constexpr float leg_size_ratio = 2.0f;			// leg to torso ratio (#5b/B5)
 	constexpr float legJoint_mass_ratio = 0.03f;		// joint ratio to parent cell
 	constexpr float legMuscle_mass_ratio = 0.1f;	// muscle mass ratio relative to parent cell
 	constexpr float fat_torso_ratio = 0.3f;			// fat to torso ratio (#4f/#4c)
@@ -459,12 +459,12 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(gja);
 
 	gja.attrib = GENE_JOINT_ATTR_HIGH_LIMIT;
-	gja.value.set(BodyConst::initialJointMaxPhi);
+	gja.value.set(BodyConst::initialJointMaxPhi * 0.1f);
 	gja.restriction.clear();
 	PUSH(gja);
 
 	gja.attrib = GENE_JOINT_ATTR_LOW_LIMIT;
-	gja.value.set(BodyConst::initialJointMinPhi);
+	gja.value.set(BodyConst::initialJointMinPhi * 4.5f);
 	gja.restriction.clear();
 	PUSH(gja);
 

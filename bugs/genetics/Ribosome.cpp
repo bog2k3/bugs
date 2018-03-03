@@ -1047,7 +1047,7 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 	auto tr = bug_->zygoteShell_->getWorldTransformation();
 	glm::mat4 m = glm::translate(glm::vec3{tr.x, tr.y, 0.f});
 	m *= glm::rotate(tr.z, glm::vec3{0.f, 0.f, 1.f});
-	const float scale = 1.f; //0.3f;
+	const float scale = 0.3f;
 	m *= glm::scale(glm::vec3{scale, scale, scale});
 	Shape3D::get()->setTransform(m);
 	for (auto c : cells_) {
@@ -1063,9 +1063,10 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 		auto yc = [cpos] (Viewport* viewp) -> float {
 			return viewp->project(cpos).y;
 		};
-		if (ctx.enabledLayers.bugDebug)
-			GLText::get()->print(c->rightSide_ ? "R" : "L", {xc, yc}, 0, 22, {0, 1, 1});
-		if (ctx.enabledLayers.bugDebug && c->mirror_)
+		if (!ctx.enabledLayers.bugDebug)
+			continue;
+		GLText::get()->print(c->rightSide_ ? "R" : "L", {xc, yc}, 0, 22, {0, 1, 1});
+		if (c->mirror_)
 			GLText::get()->print("M", ViewportCoord{xc, yc} + ViewportCoord{10, 10}, 0, 22, {0, 1, 1});
 		// orientation
 		glm::vec2 v2 = c->position_;

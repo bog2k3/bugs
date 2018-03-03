@@ -265,6 +265,7 @@ int main(int argc, char* argv[]) {
 		auto vp1 = vp.get();
 		renderer.addViewport("main", std::move(vp));
 		RenderContext renderContext;
+		renderContext.enabledLayers.bugDebug = false;
 
 		b2ThreadPool b2tp(6);
 		b2World physWld(b2Vec2_zero, &b2tp);
