@@ -82,86 +82,81 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 				if (affectedBonds.find({c, n.other}) != affectedBonds.end())
 					continue;	// we already treated this bond this round
 				affectedBonds.insert({n.other, c});
+
+				// common constants and variables -------
 				const float toleranceFactor = extraPrecision ? 0.02f : 0.1f; // proportion of the smaller neighbor's radius
-				auto diff = n.other->position_ - c->position_;
-				float angle = pointDirection(diff);
-				float cr = c->radius(c->rangle(angle));
-				float nr = n.other->radius(n.other->rangle(angle+PI));
-				auto dist = glm::length(diff);
-				float overlap = cr + nr + n.offset - dist;
-				if (abs(overlap) <= toleranceFactor * min(cr, nr))
-					continue;
-				glm::vec2 offset = glm::normalize(diff) * overlap;
+				constexpr float maxDisplacementRatio = 2.f; // ratio of displacement to radius
 				// adjust for aparent mass alteration:
 				float mr1 = massRatios[c]; if (mr1 == 0) mr1 = 1.f;
 				float mr2 = massRatios[n.other]; if (mr2 == 0) mr2 = 1.f;
 				float cmass = c->size_ * mr1;
 				float omass = n.other->size_ * mr2;
 				float ratio = cmass / (cmass + omass);	// light cells move more than heavy ones
-				// compute displacements
-				constexpr float maxDisplacementRatio = 2.f; // ratio of displacement to radius
-				auto thisOffs = -offset * clamp(1-ratio, 0.f, cr*maxDisplacementRatio);
-				auto otherOffs = offset * clamp(ratio, 0.f, nr*maxDisplacementRatio);
+				bool affectedBond = false;
 
-				totalCellOffset[c] += thisOffs;
-				totalCellOffset[n.other] += otherOffs;
-
-				totalCellOffsetMod[c] += glm::length(thisOffs);
-				totalCellOffsetMod[n.other] += glm::length(otherOffs);
-
-				newMarked.insert(c);
-				newMarked.insert(n.other);
-				allAffected.insert(c);
-				allAffected.insert(n.other);
-			}
-		}
-		if (true || extraPrecision) {
-			// step 2: bond-contact based method ------------------------
-			affectedBonds.clear();
-			for (Cell* c : marked) {
-				for (auto &n : c->neighbours_) {
-					if (affectedBonds.find({c, n.other}) != affectedBonds.end())
-						continue;	// we already treated this bond this round
-					affectedBonds.insert({n.other, c});
-					auto it = std::find_if(n.other->neighbours_.begin(), n.other->neighbours_.end(), [c](link const& l) {
-						return l.other == c;
-					});
-					assert(it != n.other->neighbours_.end());
-					link &otherN = *it;
-
-					float thisBondRadius = c->radius(n.angle) + n.offset*0.5f;
-					float thisWldBondAngle = c->wangle(n.angle);
-					glm::vec2 thisAnchor = c->position_ + glm::vec2(cos(thisWldBondAngle), sin(thisWldBondAngle)) * thisBondRadius;
-
-					float otherBondRadius = n.other->radius(otherN.angle) + n.offset*0.5f;
-					float otherWldBondAngle = n.other->wangle(otherN.angle);
-					glm::vec2 otherAnchor = n.other->position_ + glm::vec2(cos(otherWldBondAngle), sin(otherWldBondAngle)) * otherBondRadius;
-
-					auto diff = otherAnchor - thisAnchor;
-					float dist = glm::length(diff);
-					const float toleranceFactor = extraPrecision ? 0.02f : 0.1f; // proportion of the smaller neighbor's radius
-					if (dist <= toleranceFactor * min(thisBondRadius, otherBondRadius))
-						continue;
-
-					float mr1 = massRatios[c]; if (mr1 == 0) mr1 = 1.f;
-					float mr2 = massRatios[n.other]; if (mr2 == 0) mr2 = 1.f;
-					float cmass = c->size_ * mr1;
-					float omass = n.other->size_ * mr2;
-					float ratio = cmass / (cmass + omass);	// light cells move more than heavy ones
+				// center-push method ----------------
+				auto diff = n.other->position_ - c->position_;
+				float angle = pointDirection(diff);
+				float cr = c->radius(c->rangle(angle));
+				float nr = n.other->radius(n.other->rangle(angle+PI));
+				auto dist = glm::length(diff);
+				float overlap = cr + nr + n.offset - dist;
+				if (abs(overlap) > toleranceFactor * min(cr, nr)) {
+					glm::vec2 offset = glm::normalize(diff) * overlap;
 					// compute displacements
-					constexpr float maxDisplacementRatio = 2.f; // ratio of displacement to radius
-					auto thisOffs = diff * clamp(1-ratio, 0.f, thisBondRadius*maxDisplacementRatio);
-					auto otherOffs = -diff * clamp(ratio, 0.f, otherBondRadius*maxDisplacementRatio);
+					auto thisOffs = -offset * clamp(1-ratio, 0.f, cr*maxDisplacementRatio);
+					auto otherOffs = offset * clamp(ratio, 0.f, nr*maxDisplacementRatio);
 
 					totalCellOffset[c] += thisOffs;
 					totalCellOffset[n.other] += otherOffs;
 
 					totalCellOffsetMod[c] += glm::length(thisOffs);
 					totalCellOffsetMod[n.other] += glm::length(otherOffs);
+
+					affectedBond = true;
+				}
+
+				// bond-contact based method ------------------------
+				auto it = std::find_if(n.other->neighbours_.begin(), n.other->neighbours_.end(), [c](link const& l) {
+					return l.other == c;
+				});
+				assert(it != n.other->neighbours_.end());
+				link &otherN = *it;
+
+				float thisBondRadius = c->radius(n.angle) + n.offset*0.5f;
+				float thisWldBondAngle = c->wangle(n.angle);
+				glm::vec2 thisAnchor = c->position_ + glm::vec2(cos(thisWldBondAngle), sin(thisWldBondAngle)) * thisBondRadius;
+
+				float otherBondRadius = n.other->radius(otherN.angle) + n.offset*0.5f;
+				float otherWldBondAngle = n.other->wangle(otherN.angle);
+				glm::vec2 otherAnchor = n.other->position_ + glm::vec2(cos(otherWldBondAngle), sin(otherWldBondAngle)) * otherBondRadius;
+
+				auto bdiff = otherAnchor - thisAnchor;
+				float bdist = glm::length(bdiff);
+				if (bdist > toleranceFactor * min(thisBondRadius, otherBondRadius)) {
+					// compute displacements
+					auto thisOffs = bdiff * clamp(1-ratio, 0.f, thisBondRadius * maxDisplacementRatio);
+					auto otherOffs = -bdiff * clamp(ratio, 0.f, otherBondRadius * maxDisplacementRatio);
+
+					totalCellOffset[c] += thisOffs;
+					totalCellOffset[n.other] += otherOffs;
+
+					totalCellOffsetMod[c] += glm::length(thisOffs);
+					totalCellOffsetMod[n.other] += glm::length(otherOffs);
+
+					affectedBond = true;
+				}
+
+				// house keeping
+				if (affectedBond) {
+					newMarked.insert(c);
+					newMarked.insert(n.other);
+					allAffected.insert(c);
+					allAffected.insert(n.other);
 				}
 			}
 		}
-		// step 3: apply the computed offsets to cells
+		// step 2: apply the computed offsets to cells
 		massRatios.clear();
 		for (auto &p : totalCellOffset) {
 			p.first->position_ += p.second;
