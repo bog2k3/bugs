@@ -20,7 +20,6 @@ public:
 	virtual ~JointPivot() override;
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	glm::vec3 getWorldTransformation() const override;
 
 	void update(float dt);

@@ -100,3 +100,7 @@ void Joint::updateFixtures() {
 	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
 			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));
 }
+
+glm::vec2 Joint::getAttachmentPoint(float relativeAngle) {
+	throw std::runtime_error("Should not be called");
+}

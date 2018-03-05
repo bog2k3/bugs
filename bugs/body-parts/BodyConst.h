@@ -31,7 +31,7 @@ public:
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
 	static constexpr float MuscleDensity					= 13.f;			// [kg/m^2]
 //	static constexpr float FatCellReadyEnergyDensity		= 100.f;		// [J/m^2] how much ready-to-use energy the cells can store
-	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*]
+	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*] ratio between muscle's fully contracted length and fully stretched length
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
 	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.6f;			// [m/s] max meters/second linear contraction speed
 	static constexpr float FatDensity						= 8.f;			// [kg/m^2]
@@ -54,7 +54,7 @@ public:
 	static constexpr float MinJointMassRatio				= 0.01f;		// [*] relative to parent cell's initial mass
 	static constexpr float MaxJointMassRatio				= 0.25f;		// [*] relative to parent cell's initial mass
 	static constexpr float MinMuscleMassRatio				= 0.01f;		// [*] relative to parent cell's initial mass minus joint's mass
-	static constexpr float MaxMuscleMassRatio				= 0.15f; 		// [*] relative to parent cell's initial mass minus joint's mass
+	static constexpr float MaxMuscleMassRatio				= 0.35f; 		// [*] relative to parent cell's initial mass minus joint's mass
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]

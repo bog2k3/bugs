@@ -515,7 +515,13 @@ Chromosome Bug::createBasicChromosome() {
 	gma.restriction.clear();
 	PUSH(gma);
 
-	gma.attrib = GENE_MUSCLE_ATTR_INSERT_OFFSET;
+	gma.attrib = GENE_MUSCLE_ATTR_INSERT_OFFSET1;
+	gma.side.set(0);
+	gma.value.set(BodyConst::initialMuscleInsertOffset);
+	gma.restriction.clear();
+	PUSH(gma);
+
+	gma.attrib = GENE_MUSCLE_ATTR_INSERT_OFFSET2;
 	gma.side.set(0);
 	gma.value.set(BodyConst::initialMuscleInsertOffset);
 	gma.restriction.clear();

@@ -82,11 +82,6 @@ glm::vec3 JointPivot::getWorldTransformation() const {
 	return {b2g(anchorA), angle};
 }
 
-glm::vec2 JointPivot::getAttachmentPoint(float relativeAngle) {
-	assert(false && "This is never used!");
-	return vec3xy(getWorldTransformation());
-}
-
 void JointPivot::draw(RenderContext const& ctx) {
 #ifdef DEBUG_DRAW_JOINT
 	glm::vec3 transform = getWorldTransformation();

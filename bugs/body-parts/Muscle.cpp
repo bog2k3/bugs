@@ -5,20 +5,28 @@
  *      Author: bog
  *
  *
- *  Muscle width determines its max effective torque
- *  Muscle length determines the insertion point which has an effect on the max torque and max speed of the joint.
+ *  Muscle's insertion points are dictated by the genes;
+ *  max Muscle length is determined by the distance between insertion points at max stretch angle;
+ *  	D(phiMax) = distance between insertion points at max angle
+ *  	D(phiMin) = dist between insertion points at min angle
+ *  	MaxMuscleLength = D(phiMax)
+ *  min Muscle length is either the distance at min angle or the maximum contracted length (whichever is larger)
+ *  	MinMuscleLength = max(D(phiMin), MaxMuscleLength * BodyConst::MaxMuscleContractionRatio)
+ *  	if the max contracted muscle length is larger than D(phiMin) then the muscle has no further effect on the joint below that angle (its force becomes zero),
+ *  	thus it cannot bring the joint to its min angle
+ *  Muscle's mass and density are directly set by genes
+ *  Muscle's aspect ratio is determined based on mass and length:
+ *  	Asp = MaxMuscleLength^2 * Density / Mass
+ *  Muscle width is determined from its max length and aspect ratio
+ *  	MuscleWidth = Mass / (MaxMuscleLength * Density)
+ *  Muscle width along with muscle density determine its max effective force
+ *  Muscle width is considered at longest stretch, since after contraction it will be increased (but this does not lead to an increased force)
  *  max muscle contraction (%) is constant -> longer muscle's length during a full contraction varies more.
  *  muscle contraction speed (m/s) is constant => a longer muscle (which needs to vary its length more) is slower.
- *  muscle length spectrum correlates 1:1 to the joint's rotation limits.
- *  	- minimum muscle length (max contraction) corresponds to the joint being at its closest limit
- *  	- max muscle length (min contraction) corresponds to the joint being wide open
- *  	=> this poses the problem to find the r (insertion point) that satisfies these conditions.
- *  the greater the ratio between muscle length variation and joint angle variation the greater the insertion point
- *  	(theoretical) of the muscle -> slower but more powerful coupling.
- *  muscle knows (by constructor) in which direction it actions the joint motor.
+ *  muscle knows (by constructor) in which direction it actuates the joint motor.
  *  muscle command signal is clamped to [0.0 : 1.0]
  *  joint motor speed is muscle's max angular speed
- *  joint max torque is signal.value * muscle's max torque
+ *  joint max torque is signal.value * muscle's max force * lateral offset for the current angle
  *
  *  formulas for muscle:
  *
@@ -247,11 +255,12 @@ void Muscle::updateFixtures() {
 }
 
 glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
-	float w = sqrtf(size_ / aspectRatio_);
+	throw std::runtime_error("Should not be called");
+	/*float w = sqrtf(size_ / aspectRatio_);
 	float l = aspectRatio_ * w;
 	glm::vec2 ret(rayIntersectBox(l, w, relativeAngle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
-	return ret;
+	return ret;*/
 }
 
 void Muscle::draw(RenderContext const& ctx) {

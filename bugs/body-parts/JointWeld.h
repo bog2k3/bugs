@@ -21,7 +21,6 @@ public:
 	virtual ~JointWeld() override;
 
 	void draw(RenderContext const& ctx) override;
-	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	glm::vec3 getWorldTransformation() const override;
 
 protected:

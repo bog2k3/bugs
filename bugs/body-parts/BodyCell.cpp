@@ -30,7 +30,8 @@ void BodyCell::initializeGeneValues() {
 
 	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_ASPECT_RATIO] = CumulativeValue(BodyConst::initialMuscleAspectRatio);
 	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO] = CumulativeValue(BodyConst::initialMuscleMassRatio);
-	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_INSERT_OFFSET] = CumulativeValue(BodyConst::initialMuscleInsertOffset);
+	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_INSERT_OFFSET1] = CumulativeValue(BodyConst::initialMuscleInsertOffset);
+	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_INSERT_OFFSET2] = CumulativeValue(BodyConst::initialMuscleInsertOffset);
 	mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_INPUT_COORD] = CumulativeValue();
 
 	mapRightMuscleAttribs_ = mapLeftMuscleAttribs_;

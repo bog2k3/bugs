@@ -55,11 +55,6 @@ glm::vec3 JointWeld::getWorldTransformation() const {
 	return {b2g(anchorA), angle};
 }
 
-glm::vec2 JointWeld::getAttachmentPoint(float relativeAngle) {
-	assert(false && "This is never used!");
-	return {0, 0};
-}
-
 //void JointWeld::updateFixtures() {
 //#ifdef DEBUG
 //	World::assertOnMainThread();
