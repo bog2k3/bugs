@@ -57,6 +57,7 @@ protected:
 	float phiToRSinAlphaHSinBeta_[nAngleSteps];	// r*sin(alpha)+h*sin(beta) = f(phi) table
 	float phiAngleStep_;						// angle increment for each step of the nAngleSteps slices of phi range
 	float cachedPhiMin_;
+	float insertionAngle[2];
 
 #ifdef DEBUG_DRAW_MUSCLE
 	float phiToDx_[nAngleSteps];

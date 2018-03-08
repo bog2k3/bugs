@@ -55,6 +55,8 @@ public:
 	static constexpr float MaxJointMassRatio				= 0.25f;		// [*] relative to parent cell's initial mass
 	static constexpr float MinMuscleMassRatio				= 0.01f;		// [*] relative to parent cell's initial mass minus joint's mass
 	static constexpr float MaxMuscleMassRatio				= 0.35f; 		// [*] relative to parent cell's initial mass minus joint's mass
+	static constexpr float MinMuscleInsertionOffset			= PI/32;		// [rad]
+	static constexpr float MaxMuscleInsertionOffset			= PI/2.1f;		// [rad]
 
 	// default initial values for cummulative properties:
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]

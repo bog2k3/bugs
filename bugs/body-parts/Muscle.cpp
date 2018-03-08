@@ -6,39 +6,44 @@
  *
  *
  *  Muscle's insertion points are dictated by the genes;
- *  max Muscle length is determined by the distance between insertion points at max stretch angle;
- *  	D(phiMax) = distance between insertion points at max angle
- *  	D(phiMin) = dist between insertion points at min angle
- *  	MaxMuscleLength = D(phiMax)
- *  min Muscle length is either the distance at min angle or the maximum contracted length (whichever is larger)
- *  	MinMuscleLength = max(D(phiMin), MaxMuscleLength * BodyConst::MaxMuscleContractionRatio)
- *  	if the max contracted muscle length is larger than D(phiMin) then the muscle has no further effect on the joint below that angle (its force becomes zero),
- *  	thus it cannot bring the joint to its min angle
+ *  Muscle length is determined by the distance between insertion points at max vs min stretch angles:
+ *  	D(phi) = distance between insertion points (I1 and I2) at joint angle phi
+ *  	D(phi) = |I1 - I2| where I1 is the insertion point on the left of the joint and I2 on the right, both expressed in C1 (cell on the left)'s space
+ *  	D(phi) = sqrt(dx^2 + dy^2) where:
+ *  		dx = R1 + Rj - R1*cos(i1) + (R2+Rj)*cos(phi) - R2*cos(phi - i2)
+ *  		dy =         - R1*sin(i1) + (R2+Rj)*sin(phi) - R2*sin(phi - i2)
+ *  	Dmax = D(phiMin) = distance between insertion points at min angle
+ *  	Dmin = D(phiMax) = dist between insertion points at max angle
+ *  	for right hand muscle the Dmax and Dmin are reversed
+ *  	if Dmax/Dmin < r (r=MuscleContractionRatio) then we need to add a tendon
+ *  		(in order to benefit from a shorter, more powerfull muscle that can still cover the required range)
+ *  		t (tendon length) = Dmin - (Dmax-Dmin)/(r-1)
+ *  		lMin (muscle min length) = Dmin - t
+ *  		lMax (muscle max length) = r * lMin = DMax - t = r*(Dmin - t)
+ *  	if Dmax/Dmin >= r no tendon is needed, but the muscle range will not be used fully
+ *  		(the muscle will not be at its shortest length when the joint is at max angle)
+ *  		lMax = DMax
+ *  		lMin = lMax/r < Dmin
+ *  	in both cases lMin=muscle max contracted length, lMax = muscle relaxed length
  *  Muscle's mass and density are directly set by genes
- *  Muscle's aspect ratio is determined based on mass and length:
- *  	Asp = MaxMuscleLength^2 * Density / Mass
- *  Muscle width is determined from its max length and aspect ratio
- *  	MuscleWidth = Mass / (MaxMuscleLength * Density)
+ *  Muscle's aspect ratio is determined based on mass and relaxed length:
+ *  	Asp = lMax^2 * Density / Mass
+ *  Muscle width is determined from its relaxed length and aspect ratio
+ *  	MuscleWidth = Mass / (lMax * Density)
  *  Muscle width along with muscle density determine its max effective force
- *  Muscle width is considered at longest stretch, since after contraction it will be increased (but this does not lead to an increased force)
+ *  Muscle width is considered in relaxed state, since after contraction it will be increased (but this does not lead to an increased force)
  *  max muscle contraction (%) is constant -> longer muscle's length during a full contraction varies more.
  *  muscle contraction speed (m/s) is constant => a longer muscle (which needs to vary its length more) is slower.
  *  muscle knows (by constructor) in which direction it actuates the joint motor.
  *  muscle command signal is clamped to [0.0 : 1.0]
  *  joint motor speed is muscle's max angular speed
  *  joint max torque is signal.value * muscle's max force * lateral offset for the current angle
+ *  lateral offset:
+ *  	H(phi) = cross(norm(I2(phi)-Cj), norm(I1-Cj)) / D(phi)
+ *  	H(phi) must be clamped on the low side in order to avoid the muscle pulling in the wrong direction when joint is angled too much
+ *  	min value for H(phi) = EPS + min(R1 * sin(i1), R2 * sin(i2)), i1 and i2 are clamped to [MinMuscleInsertOffset, MaxMuscleInsertOffset]
  *
- *  formulas for muscle:
- *
- *  l0 = muscle relaxed length												[m]
- *  l = muscle max contracted length < l									[m]
- *  contractionRatio = l/l0 < 1												[1]
- *  dx (length difference) = l0 - l = l0 * (1 - contractionRatio)			[m]
- *  h (distance from muscle's origin to joint)				 				[m]
- *  r (insertion distance from joint center)								[m]
- *  F (max muscle force) = constant * muscle.width							[N]
- *  tau (max torque) = F*sgn.val * r*sin(alpha) + F*sgn.val * h*sin(beta)	[Nm]
- *  r*sin(alpha) and h*sin(beta) are precomputed at commit time and stored into tables as functions of phi (joint angle) [1]
+ *  H(phi) is precomputed at commit time and stored in a table for quick look-up
  */
 
 #include "Muscle.h"
@@ -104,10 +109,15 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 #endif
 {
 	auto &mapMuscleAttr = isRightSide ? cell.mapRightMuscleAttribs_ : cell.mapLeftMuscleAttribs_;
-	mapMuscleAttr[GENE_MUSCLE_ATTR_ASPECT_RATIO].changeAbs(BodyConst::initialMuscleAspectRatio);
 	aspectRatio_ = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].clamp(
 				BodyConst::MaxBodyPartAspectRatioInv,
 				BodyConst::MaxBodyPartAspectRatio);
+	insertionAngle[0] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET1].clamp(
+				BodyConst::MinMuscleInsertionOffset,
+				BodyConst::MaxMuscleInsertionOffset);
+	insertionAngle[1] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET2].clamp(
+				BodyConst::MinMuscleInsertionOffset,
+				BodyConst::MaxMuscleInsertionOffset);
 	inputVMSCoord_ = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
 }
 
