@@ -98,24 +98,22 @@ static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
 Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	: BodyPart(BodyPartType::MUSCLE, context, cell, true) // suppress physical body
 	, inputSocket_(new InputSocket(nullptr, 1.f))
-//	, aspectRatio_(1.f)
+	, aspectRatio_(0)
+	, rotationSign_(isRightSide ? -1 : +1)
 	, maxForce_(0)
 	, maxJointAngularSpeed_(0)
-	, phiToRSinAlphaHSinBeta_{0}
+	, H_phi_{0}
 	, phiAngleStep_(0)
 	, cachedPhiMin_(0)
-#ifdef DEBUG_DRAW_MUSCLE
-	, phiToDx_{0}
-#endif
+//#ifdef DEBUG_DRAW_MUSCLE
+//	, phiToDx_{0}
+//#endif
 {
 	auto &mapMuscleAttr = isRightSide ? cell.mapRightMuscleAttribs_ : cell.mapLeftMuscleAttribs_;
-	aspectRatio_ = cell.mapAttributes_[GENE_ATTRIB_ASPECT_RATIO].clamp(
-				BodyConst::MaxBodyPartAspectRatioInv,
-				BodyConst::MaxBodyPartAspectRatio);
-	insertionAngle[0] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET1].clamp(
+	insertionAngle_[0] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET1].clamp(
 				BodyConst::MinMuscleInsertionOffset,
 				BodyConst::MaxMuscleInsertionOffset);
-	insertionAngle[1] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET2].clamp(
+	insertionAngle_[1] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET2].clamp(
 				BodyConst::MinMuscleInsertionOffset,
 				BodyConst::MaxMuscleInsertionOffset);
 	inputVMSCoord_ = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
@@ -125,11 +123,11 @@ Muscle::~Muscle() {
 	delete inputSocket_;
 }
 
-void Muscle::setJoint(JointPivot* joint, int motorDirSign) {
+void Muscle::setJoint(JointPivot* joint) {
 	assert(!joint_ && "only call this once per instance!");
 	assert(joint && "invalid arg (null)");
 	joint_ = joint;
-	rotationSign_ = motorDirSign;
+//	rotationSign_ = motorDirSign;
 	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
 }
 
@@ -141,6 +139,7 @@ void Muscle::onJointDied(BodyPart* joint) {
 	assertDbg(joint == joint_);
 	joint_ = nullptr;
 	context_.updateList.remove(this);
+	// TODO create fixture?
 }
 
 /*void Muscle::onAddedToParent() {
@@ -152,116 +151,93 @@ void Muscle::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (joint_) {
-		// here we compute the characteristics of the muscle
-		float w0 = sqrtf(size_ / aspectRatio_); // relaxed width
-		float l0 = aspectRatio_ * w0; // relaxed length
-		float dx = l0 * (1 - BodyConst::MuscleContractionRatio);
-
-		maxForce_ = w0 * BodyConst::MuscleForcePerWidthRatio;
-
-		/*
-		 * h is the vector from muscle to joint
-		 * r is the vector from the joint to insertion point
-		 * t is the vector from muscle to insertion point
-		 * alpha is the angle between r and t, the angle at which the muscle force is applied to the bone or gripper
-		 * beta is the angle between h and t, the angle at which the muscle pulls from its parent (reaction force)
-		 *
-		 *
-		 * equation to compute r:
-		 * dx^4+4*h^2*r^2*p^2 - 4*dx^2*h*r*p - 4*dx^2*(h^2+r^2-2*h*r*CM); = 0
-		 * delta = dx^2*(4*dx^2*h^2*CM^2 - 4*dx^2*h^2*p*CM + 4*h^4*p^2 - 4*dx^2*h^2 + dx^4)
-		 *
-		 *           dx^2*h*p - 2*dx^2*h*CM +/- sqrt(delta)
-		 * r1,2 = -------------------------------------
-		 *                 2*(h^2*p^2 - dx^2)
-		 *
-		 * where:
-		 * p = CM-Cm
-		 * CM = cos(phi_muscle - phi_MAX)
-		 * Cm = cos(phi_muscle - phi_min)
-		 *
-		 * phi_muscle is the angle between -h and r0(phi0)
-		 * phi_MAX is the maximum joint angle relative to phi0
-		 * phi_min is the minimum joint angle relative to phi0
-		 * phi0 is the angle insertion axis when the joint is at its 0 position.
-		 * it is defined as the child-bone's local OX or OY axis (depending on the bone's aspect ratio),
-		 * rotated into world space and translated into J (the joint position)
-		 */
-
-		// compute insertion axis (phi0):
-		BodyPart* targetPart = nullptr; //joint_->getChild(0);
-		bool useOY = false;
-		if (targetPart->getType() == BodyPartType::BONE) {
-			Bone* bone = dynamic_cast<Bone*>(targetPart);
-			if (bone->aspectRatio() < 1.f)
-				useOY = true;
-		}
-		// this is the world angle of insertion axis in default joint position:
-		float phi0 = targetPart->getWorldTransformation().z + (useOY ? PI/2 : 0) - joint_->getJointAngle();
-		glm::vec2 phi0_v(glm::rotate(glm::vec2(1, 0), phi0));
-
-		// compute the muscle angle (phi_muscle):
-		glm::vec2 M(vec3xy(getWorldTransformation()));
-		glm::vec2 J(vec3xy(joint_->getWorldTransformation()));
-		glm::vec2 h_v(J-M);
-		float h = glm::length(h_v);
-		// at this time, both M, J, h and phi0_v are expressed in world space
-		float phi_muscle = acosf(clamp(glm::dot(glm::normalize(-h_v), phi0_v), -1.f, +1.f));
-		// phi_muscle is now relative to phi0
-
-		// compute helper parameters:
-		float phi_min = joint_->getLowerLimit();	// relative to phi0
-		float phi_min_clamp = clamp(phi_min, phi_muscle - PI, 2*PI); // clamp to the angle which gives the greatest muscle length
-		float phi_MAX = joint_->getUpperLimit();	// relative to phi0
-		float phi_MAX_clamp = clamp(phi_MAX, -2*PI, phi_muscle); // clamp to the angle which gives the smallest muscle length
-		if (rotationSign_ < 0)
-			xchg(phi_min_clamp, phi_MAX_clamp);		// for negative rotation muscles, reverse the angles
-		float Cm = cosf((phi_muscle - phi_min_clamp) * rotationSign_);
-		float CM = cosf((phi_muscle - phi_MAX_clamp) * rotationSign_);
-		float p = CM-Cm;
-
-		cachedPhiMin_ = phi_min;
-
-		float D = 4*sqr(h)*(sqr(dx)*(sqr(CM)-p*CM-1) + sqr(h*p)) + sqr(sqr(dx));
-		if (D < 0)
-			D = 0;
-#warning "above if D<0 we should disable this muscle permanently"
-		float sqrtD = sqrt(D);
-		float bneg = -2*sqr(dx)*h*CM + sqr(dx)*h*p;
-		float denom = 1.f / (2*sqr(h*p) - 2*sqr(dx));
-		float r1 = (bneg + dx*sqrtD) * denom;
-		float r2 = (bneg - dx*sqrtD) * denom;
-		float r = r1 < 0 ? r2 : (r2 < 0 ? r1 : min(r1, r2));	// use the smaller non-negative value
-		assertDbg(!std::isnan(r));
-
-		// now compute the rsinalpha and hcosbeta tables for 10 intermediate steps:
-		phiAngleStep_ = (phi_MAX - phi_min) / nAngleSteps;
-		glm::vec2 h_v_norm(glm::normalize(h_v));
-#ifdef DEBUG_DRAW_MUSCLE
-		glm::vec2 t0_v(h_v + glm::rotate(phi0_v, phi_min_clamp) * r);	// longest tendon length
-		float t0 = glm::length(t0_v);
-#endif
-		for (int i=0; i<nAngleSteps; i++) {
-			float phi = phi_min + phiAngleStep_ * i;
-			glm::vec2 r_v_norm(glm::rotate(phi0_v, phi));
-			glm::vec2 t_v_norm(glm::normalize(h_v + r_v_norm*r));
-			float t_dot_v = glm::dot(t_v_norm, r_v_norm);
-			float alpha = acosf(clamp(t_dot_v, -1.f, 1.f));
-			float h_dot_t = glm::dot(h_v_norm, t_v_norm);
-			float beta = acosf(clamp(h_dot_t, -1.f, 1.f));
-			phiToRSinAlphaHSinBeta_[i] = r * sinf(alpha) + h * sinf(beta);
-#ifdef DEBUG_DRAW_MUSCLE
-			phiToDx_[i] = t0 - glm::length(h_v + r_v_norm*r);
-#endif
-		}
-
-		// must also compute max speed:
-		maxJointAngularSpeed_ = joint_->getTotalRange() / dx * BodyConst::MuscleMaxLinearContractionSpeed;
-	} else {
+	if (!joint_) {
 		// no joint
 		cachedPhiMin_ = 0;
+		// TODO must still set aspect ratio and width, length - maybe create a fixture?
+		return;
 	}
+	// here we compute the characteristics of the muscle
+
+//	float w0 = sqrtf(size_ / aspectRatio_); // relaxed width
+//	float l0 = aspectRatio_ * w0; // relaxed length
+//	float dx = l0 * (1 - BodyConst::MuscleContractionRatio);
+
+	auto Dfn = [this] (float phi) {
+
+	};
+
+	maxForce_ = w0 * BodyConst::MuscleForcePerWidthRatio;
+
+	// compute insertion axis (phi0):
+	BodyPart* targetPart = nullptr; //joint_->getChild(0);
+//	bool useOY = false;
+//	if (targetPart->getType() == BodyPartType::BONE) {
+//		Bone* bone = dynamic_cast<Bone*>(targetPart);
+//		if (bone->aspectRatio() < 1.f)
+//			useOY = true;
+//	}
+//	// this is the world angle of insertion axis in default joint position:
+//	float phi0 = targetPart->getWorldTransformation().z + (useOY ? PI/2 : 0) - joint_->getJointAngle();
+//	glm::vec2 phi0_v(glm::rotate(glm::vec2(1, 0), phi0));
+//
+//	// compute the muscle angle (phi_muscle):
+//	glm::vec2 M(vec3xy(getWorldTransformation()));
+//	glm::vec2 J(vec3xy(joint_->getWorldTransformation()));
+//	glm::vec2 h_v(J-M);
+//	float h = glm::length(h_v);
+//	// at this time, both M, J, h and phi0_v are expressed in world space
+//	float phi_muscle = acosf(clamp(glm::dot(glm::normalize(-h_v), phi0_v), -1.f, +1.f));
+//	// phi_muscle is now relative to phi0
+//
+//	// compute helper parameters:
+//	float phi_min = joint_->getLowerLimit();	// relative to phi0
+//	float phi_min_clamp = clamp(phi_min, phi_muscle - PI, 2*PI); // clamp to the angle which gives the greatest muscle length
+//	float phi_MAX = joint_->getUpperLimit();	// relative to phi0
+//	float phi_MAX_clamp = clamp(phi_MAX, -2*PI, phi_muscle); // clamp to the angle which gives the smallest muscle length
+//	if (rotationSign_ < 0)
+//		xchg(phi_min_clamp, phi_MAX_clamp);		// for negative rotation muscles, reverse the angles
+//	float Cm = cosf((phi_muscle - phi_min_clamp) * rotationSign_);
+//	float CM = cosf((phi_muscle - phi_MAX_clamp) * rotationSign_);
+//	float p = CM-Cm;
+
+	cachedPhiMin_ = phi_min;
+
+//	float D = 4*sqr(h)*(sqr(dx)*(sqr(CM)-p*CM-1) + sqr(h*p)) + sqr(sqr(dx));
+//	if (D < 0)
+//		D = 0;
+//#warning "above if D<0 we should disable this muscle permanently"
+//	float sqrtD = sqrt(D);
+//	float bneg = -2*sqr(dx)*h*CM + sqr(dx)*h*p;
+//	float denom = 1.f / (2*sqr(h*p) - 2*sqr(dx));
+//	float r1 = (bneg + dx*sqrtD) * denom;
+//	float r2 = (bneg - dx*sqrtD) * denom;
+//	float r = r1 < 0 ? r2 : (r2 < 0 ? r1 : min(r1, r2));	// use the smaller non-negative value
+//	assertDbg(!std::isnan(r));
+
+	// now compute the rsinalpha and hcosbeta tables for 10 intermediate steps:
+	phiAngleStep_ = (phi_MAX - phi_min) / nAngleSteps;
+//	glm::vec2 h_v_norm(glm::normalize(h_v));
+#ifdef DEBUG_DRAW_MUSCLE
+//	glm::vec2 t0_v(h_v + glm::rotate(phi0_v, phi_min_clamp) * r);	// longest tendon length
+//	float t0 = glm::length(t0_v);
+#endif
+	for (int i=0; i<nAngleSteps; i++) {
+		float phi = phi_min + phiAngleStep_ * i;
+//		glm::vec2 r_v_norm(glm::rotate(phi0_v, phi));
+//		glm::vec2 t_v_norm(glm::normalize(h_v + r_v_norm*r));
+//		float t_dot_v = glm::dot(t_v_norm, r_v_norm);
+//		float alpha = acosf(clamp(t_dot_v, -1.f, 1.f));
+//		float h_dot_t = glm::dot(h_v_norm, t_v_norm);
+//		float beta = acosf(clamp(h_dot_t, -1.f, 1.f));
+//		phiToRSinAlphaHSinBeta_[i] = r * sinf(alpha) + h * sinf(beta);
+//#ifdef DEBUG_DRAW_MUSCLE
+//		phiToDx_[i] = t0 - glm::length(h_v + r_v_norm*r);
+//#endif
+	}
+
+	// must also compute max speed:
+	maxJointAngularSpeed_ = joint_->getTotalRange() / dx * BodyConst::MuscleMaxLinearContractionSpeed;
 }
 
 glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {

@@ -509,11 +509,6 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(ga);
 
 	GeneMuscleAttribute gma;
-	gma.attrib = GENE_MUSCLE_ATTR_ASPECT_RATIO;
-	gma.side.set(0);
-	gma.value.set(BodyConst::initialMuscleAspectRatio);
-	gma.restriction.clear();
-	PUSH(gma);
 
 	gma.attrib = GENE_MUSCLE_ATTR_INSERT_OFFSET1;
 	gma.side.set(0);

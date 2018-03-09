@@ -87,11 +87,11 @@ typedef uint8_t gene_muscle_attribute_type;
 
 constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INVALID = 0;
 constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_MASS_RATIO = 1;		// proportion of parent cell mass that goes into making the muscle
-constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_ASPECT_RATIO = 2;		// length / width
-constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INPUT_COORD = 3;		// VMS input coordinate for muscle
-constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INSERT_OFFSET1 = 4;		// lateral insertion offset from joint in radians (left of joint) - clamped to [0, PI/2]
-constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INSERT_OFFSET2 = 5;		// lateral insertion offset from joint in radians (right of joint) - clamped to [0, PI/2]
-constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_END = 6;
+//constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_ASPECT_RATIO = 2;		// length / width
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INPUT_COORD = 2;		// VMS input coordinate for muscle
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INSERT_OFFSET1 = 3;		// lateral insertion offset from joint in radians (left of joint) - clamped to [0, PI/2]
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_INSERT_OFFSET2 = 4;		// lateral insertion offset from joint in radians (right of joint) - clamped to [0, PI/2]
+constexpr gene_muscle_attribute_type GENE_MUSCLE_ATTR_END = 5;
 
 
 // ----------------------------------- gene_part_attribute_type -------------------------------//

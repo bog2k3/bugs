@@ -30,7 +30,7 @@ public:
 	Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide);
 	virtual ~Muscle() override;
 
-	void setJoint(JointPivot* joint, int motorDirSign);
+	void setJoint(JointPivot* joint);
 
 	void draw(RenderContext const& ctx) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
@@ -51,17 +51,17 @@ protected:
 	JointPivot* joint_ = nullptr;
 	float inputVMSCoord_;
 	float aspectRatio_;
-	float rotationSign_ = 1.f;
+	float rotationSign_;
 	float maxForce_;
 	float maxJointAngularSpeed_;
-	float phiToRSinAlphaHSinBeta_[nAngleSteps];	// r*sin(alpha)+h*sin(beta) = f(phi) table
-	float phiAngleStep_;						// angle increment for each step of the nAngleSteps slices of phi range
+	float H_phi_[nAngleSteps];	// H(phi) table
+	float phiAngleStep_;		// angle increment for each step of the nAngleSteps slices of phi range
 	float cachedPhiMin_;
-	float insertionAngle[2];
+	float insertionAngle_[2];
 
-#ifdef DEBUG_DRAW_MUSCLE
-	float phiToDx_[nAngleSteps];
-#endif
+//#ifdef DEBUG_DRAW_MUSCLE
+//	float phiToDx_[nAngleSteps];
+//#endif
 
 	/**
 	 * returns a float.
