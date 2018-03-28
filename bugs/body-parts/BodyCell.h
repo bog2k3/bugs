@@ -38,6 +38,7 @@ public:
 	void initializeGeneValues();
 
 	float density() const { return density_; }
+	float muscleMass(bool right) { return right ? muscleMassRight_ : muscleMassLeft_; }
 
 	void updateRotation();
 

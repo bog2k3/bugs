@@ -435,7 +435,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 
 // call this before instantiating the body part in order to update to correct density and size
 void Ribosome::updateCellDensity(BodyCell &cell) {
-	auto fn = mapDensityFunctions[specializationType(cell)];	// undefined function and map -> implement with static methods for density in bodyparts
+	auto fn = mapDensityFunctions[specializationType(cell)];
 	assert(fn != nullptr);
 	auto oldDensity = cell.density_;
 	cell.density_ = fn(cell);

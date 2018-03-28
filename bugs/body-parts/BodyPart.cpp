@@ -505,17 +505,23 @@ std::pair<float, float> BodyPart::adjustFixtureValues(std::pair<float, float> co
 	return {combined ? sqr(v1) : v1, v2};
 }
 
-glm::vec3 BodyPart::worldToLocal(glm::vec3 v, bool isDirection) const {
+glm::vec2 BodyPart::worldToLocal(glm::vec2 v, bool isDirection) const {
 	auto tr = getWorldTransformation();
 	if (!isDirection)
 		v.x -= tr.x, v.y -= tr.y;
 	return glm::rotate(v, -tr.z);
 }
 
-glm::vec3 BodyPart::localToWorld(glm::vec3 const& v, bool isDirection) const {
+glm::vec2 BodyPart::localToWorld(glm::vec2 const& v, bool isDirection) const {
 	auto tr = getWorldTransformation();
-	glm::vec3 w = glm::rotate(v, tr.z);
+	glm::vec2 w = glm::rotate(v, tr.z);
 	if (!isDirection)
 		w.x += tr.x, w.y += tr.y;
 	return w;
+}
+
+void BodyPart::overrideSizeAndDensity(float newSize, float newDensity) {
+	assert(physBody_.b2Body_ == nullptr); // don't call this if you have a physical body already!
+	size_ = newSize;
+	density_ = newDensity;
 }

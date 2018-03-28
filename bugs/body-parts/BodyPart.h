@@ -30,7 +30,9 @@ class Entity;
 
 class BodyPart {
 public:
+	// general ctor
 	BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell, bool suppressPhysicalBody=false);
+	// ctor for ZygoteShell
 	BodyPart(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass, BodyPartContext const& context);
 	virtual ~BodyPart();
 
@@ -38,7 +40,7 @@ public:
 	void destroy();
 
 	// this will return the division-depth of the body-part
-	int getDepth() const { return 0; }
+	int getDepth() const { return 0; } // TODO use branch length
 
 	virtual void draw(RenderContext const& ctx);
 
@@ -58,9 +60,9 @@ public:
 	// returns the world transformation as {x, y, rotation}
 	virtual glm::vec3 getWorldTransformation() const;
 	// transform a vector from world coordinates to local coordinates; specify isDirection=true to not apply translation
-	glm::vec3 worldToLocal(glm::vec3 v, bool isDirection=false) const;
+	glm::vec2 worldToLocal(glm::vec2 v, bool isDirection=false) const;
 	// transform a vector from local coordinates to world coordinates; specify isDirection=true to not apply translation
-	glm::vec3 localToWorld(glm::vec3 const& v, bool isDirection=false) const;
+	glm::vec2 localToWorld(glm::vec2 const& v, bool isDirection=false) const;
 	// returns the bounding box of the body part
 	aabb getAABB() const;
 
@@ -211,6 +213,9 @@ protected:
 	 * Use this ratio to adjust the fixture's density in order to keep the same mass.
 	 */
 	static std::pair<float, float> adjustFixtureValues(std::pair<float, float> const& val, float &outTotalRatio);
+
+	// sets new values for size and density; Muscle should use this since it's size and density are not found in the Cell
+	void overrideSizeAndDensity(float newSize, float newDensity);
 
 private:
 	//void reverseUpdateCachedProps();

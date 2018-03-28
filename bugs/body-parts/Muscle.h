@@ -59,9 +59,9 @@ protected:
 	float cachedPhiMin_;
 	float insertionAngle_[2];
 
-//#ifdef DEBUG_DRAW_MUSCLE
-//	float phiToDx_[nAngleSteps];
-//#endif
+#ifdef DEBUG_DRAW_MUSCLE
+	float phiToDx_[nAngleSteps];
+#endif
 
 	/**
 	 * returns a float.
