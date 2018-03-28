@@ -20,6 +20,7 @@
 #include <boglfw/utils/log.h>
 #include <boglfw/utils/assert.h>
 #include <boglfw/World.h>
+
 #include <glm/gtx/rotate_vector.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 
@@ -502,4 +503,19 @@ std::pair<float, float> BodyPart::adjustFixtureValues(std::pair<float, float> co
 		v2 = b2_linearSlop;
 	}
 	return {combined ? sqr(v1) : v1, v2};
+}
+
+glm::vec3 BodyPart::worldToLocal(glm::vec3 v, bool isDirection) const {
+	auto tr = getWorldTransformation();
+	if (!isDirection)
+		v.x -= tr.x, v.y -= tr.y;
+	return glm::rotate(v, -tr.z);
+}
+
+glm::vec3 BodyPart::localToWorld(glm::vec3 const& v, bool isDirection) const {
+	auto tr = getWorldTransformation();
+	glm::vec3 w = glm::rotate(v, tr.z);
+	if (!isDirection)
+		w.x += tr.x, w.y += tr.y;
+	return w;
 }

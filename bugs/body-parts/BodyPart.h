@@ -49,14 +49,19 @@ public:
 	virtual void detach(bool die);
 
 	/**
-	 * return the attachment point for a neighbour of the current part, in the specified direction
+	 * return the attachment point for a neighbor of the current part, in the specified direction
 	 * (in current's part coordinate frame).
 	 * This is usually the point where the ray from the center intersects the edge of the body part.
 	 */
 	virtual glm::vec2 getAttachmentPoint(float relativeAngle) { return glm::vec2(0); }
 
+	// returns the world transformation as {x, y, rotation}
 	virtual glm::vec3 getWorldTransformation() const;
-
+	// transform a vector from world coordinates to local coordinates; specify isDirection=true to not apply translation
+	glm::vec3 worldToLocal(glm::vec3 v, bool isDirection=false) const;
+	// transform a vector from local coordinates to world coordinates; specify isDirection=true to not apply translation
+	glm::vec3 localToWorld(glm::vec3 const& v, bool isDirection=false) const;
+	// returns the bounding box of the body part
 	aabb getAABB() const;
 
 	Bug* getOwner() const { return &context_.owner; }

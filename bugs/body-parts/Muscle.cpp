@@ -99,7 +99,7 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	: BodyPart(BodyPartType::MUSCLE, context, cell, true) // suppress physical body
 	, inputSocket_(new InputSocket(nullptr, 1.f))
 	, aspectRatio_(0)
-	, rotationSign_(isRightSide ? -1 : +1)
+	, rotationSign_(isRightSide ? -1 : +1) // TODO if mirrored, must reverse
 	, maxForce_(0)
 	, maxJointAngularSpeed_(0)
 	, H_phi_{0}
@@ -109,7 +109,7 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 //	, phiToDx_{0}
 //#endif
 {
-	auto &mapMuscleAttr = isRightSide ? cell.mapRightMuscleAttribs_ : cell.mapLeftMuscleAttribs_;
+	auto &mapMuscleAttr = isRightSide ? cell.mapRightMuscleAttribs_ : cell.mapLeftMuscleAttribs_;  // TODO if mirrored, must reverse
 	insertionAngle_[0] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET1].clamp(
 				BodyConst::MinMuscleInsertionOffset,
 				BodyConst::MaxMuscleInsertionOffset);
@@ -163,8 +163,32 @@ void Muscle::updateFixtures() {
 //	float l0 = aspectRatio_ * w0; // relaxed length
 //	float dx = l0 * (1 - BodyConst::MuscleContractionRatio);
 
-	auto Dfn = [this] (float phi) {
+	BodyPart* left = joint_->getLeftAnchor();
+	BodyPart* right = joint_->getRightAnchor();
+	auto leftTr = left->getWorldTransformation();
+	auto rightTr = right->getWorldTransformation();
 
+	float alphaJ1 = pointDirection(vec3xy(joint_->getWorldTransformation() - leftTr)) - leftTr.z; // joint angle in left cell's coordinates
+	float alphaJ2 = pointDirection(vec3xy(joint_->getWorldTransformation() - rightTr)) - rightTr.z; // joint angle in right cell's coordinates
+
+	const glm::vec2 I1 = left->getAttachmentPoint(alphaJ1 + insertionAngle_[0]); // first insertion point in left cell's space
+	I1 = joint_->worldToLocal(left->localToWorld({I1, 0})); // transform into joint's space
+
+	const glm::vec2 I2zero = right->getAttachmentPoint(alphaJ2 - insertionAngle_[1]); // second insertion point in right cell's space at rest angle
+	I2zero = joint_->worldToLocal(right->localToWorld({I2zero, 0})); // transform into joint's space
+
+	const auto I2fn = [this] (float phi) {	// second insertion point in joint's space as a function of joint angle
+		return glm::rotate(I2zero, phi);
+	};
+
+	// linear distance function of joint angle (between I1 and I2)
+	const auto Dfn = [this, &I1, &I2fn] (float phi) {
+		return glm::length(I2fn(phi) - I1);
+	};
+
+	// muscle leverage (perpendicular distance from muscle fibre line to joint center) as function of joint angle
+	const auto Hfn = [this, &I1, &I2fn, &Dfn] (float phi) {
+		return cross2D(I1, I2fn(phi)) / Dfn(phi);
 	};
 
 	maxForce_ = w0 * BodyConst::MuscleForcePerWidthRatio;

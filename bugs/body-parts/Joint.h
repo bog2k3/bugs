@@ -21,7 +21,8 @@ public:
 	Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor, BodyPartType type);	// use the parent cell (that has divided) for the joint
 	virtual ~Joint() override;
 
-//	glm::vec3 getWorldTransformation() const override;
+	BodyPart* getLeftAnchor() const { return leftAnchor_; }
+	BodyPart* getRightAnchor() const { return rightAnchor_; }
 
 protected:
 	BodyPart* leftAnchor_;
@@ -30,7 +31,6 @@ protected:
 
 	void updateFixtures() override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
-//	void die() override;
 
 	virtual b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) = 0;
 
