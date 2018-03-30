@@ -16,14 +16,6 @@
 class JointPivot;
 class InputSocket;
 
-//struct MuscleInitializationData : public BodyPartInitializationData {
-//	virtual ~MuscleInitializationData() noexcept = default;
-//	MuscleInitializationData();
-//
-//	CumulativeValue aspectRatio;	// length/width
-//	CumulativeValue inputVMSCoord; // input nerve VMS coordinate
-//};
-
 class Muscle: public BodyPart, public IMotor {
 public:
 	// the position and rotation in props are relative to the parent:
@@ -64,7 +56,7 @@ protected:
 	glm::vec3 anchor_ {0};	// anchor (first insertion point) into left cell's coordinate frame
 
 #ifdef DEBUG_DRAW_MUSCLE
-	float phiToDx_[nAngleSteps];
+	float phiToL_[nAngleSteps];
 	bool isRightSide_;
 #endif
 

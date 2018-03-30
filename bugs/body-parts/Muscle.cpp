@@ -72,29 +72,10 @@
 #include <dmalloc.h>
 #endif
 
+//#define MUSCLE_DRAW_SIMPLIFIED
+
 static const glm::vec3 debug_color(1.f,0.2f, 0.6f);
 static const glm::vec3 debug_color_r(0.6f,0.2f, 1.f);
-
-//MuscleInitializationData::MuscleInitializationData()
-//	: aspectRatio(BodyConst::initialMuscleAspectRatio) {
-//	density.reset(BodyConst::MuscleDensity);
-//}
-//
-//void Muscle::cacheInitializationData() {
-//	BodyPart::cacheInitializationData();
-//	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
-//	aspectRatio_ = initData->aspectRatio.clamp(BodyConst::MaxBodyPartAspectRatioInv, BodyConst::MaxBodyPartAspectRatio);
-//}
-//
-//float Muscle::getInputVMSCoord(unsigned index) const {
-//	if (index != 0)
-//		return 0;
-//	auto initData = std::dynamic_pointer_cast<MuscleInitializationData>(getInitializationData());
-//	if (initData)
-//		return initData->inputVMSCoord.clamp(0, BodyConst::MaxVMSCoordinateValue);
-//	else
-//		return 0;
-//}
 
 Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	: BodyPart(BodyPartType::MUSCLE, context, cell, true) // suppress physical body
@@ -107,7 +88,7 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	, phiAngleStep_(0)
 	, cachedPhiMin_(0)
 #ifdef DEBUG_DRAW_MUSCLE
-	, phiToDx_{0}
+	, phiToL_{0}
 	, isRightSide_(isRightSide)
 #endif
 {
@@ -156,11 +137,6 @@ void Muscle::onJointDied(BodyPart* joint) {
 	context_.updateList.remove(this);
 	// TODO create fixture?
 }
-
-/*void Muscle::onAddedToParent() {
-	assertDbg(getUpdateList() && "update list should be available to the body at this time");
-	getUpdateList()->add(this);
-}*/
 
 void Muscle::updateFixtures() {
 #ifdef DEBUG
@@ -229,7 +205,7 @@ void Muscle::updateFixtures() {
 		float phi = phiMin + phiAngleStep_ * i;
 		H_phi_[i] = Hfn(phi);
 #ifdef DEBUG_DRAW_MUSCLE
-		phiToDx_[i] = clamp(Dfn(phi) - lMin, 0.f, INF);
+		phiToL_[i] = clamp(Dfn(phi) - t, 0.f, INF);
 #endif
 	}
 
@@ -242,30 +218,23 @@ glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
 }
 
 void Muscle::draw(RenderContext const& ctx) {
-	float crtAspect = aspectRatio_;
 #ifdef DEBUG_DRAW_MUSCLE
 	if (isDead() || !joint_)
 		return;
-	float w0 = sqrtf(size_ / aspectRatio_);
-	float l0 = aspectRatio_ * w0;
-	float dx = lerp_lookup(phiToDx_, nAngleSteps, getCurrentPhiSlice());
-	crtAspect = sqr(l0 + dx) / size_;	// squeeze
-#endif
+	float l = lerp_lookup(phiToL_, nAngleSteps, getCurrentPhiSlice());
+	float crtAspect = sqr(l) / size_;	// squeeze
 	float w = sqrtf(size_ / crtAspect);
-	float l = crtAspect * w;
 	glm::vec3 worldTransform = getWorldTransformation();
-//	Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
-//			glm::vec2(l, w), worldTransform.z, debug_color);
+#ifdef MUSCLE_DRAW_SIMPLIFIED
 	Shape3D::get()->drawLine(
 			{vec3xy(worldTransform), 0},
-			{vec3xy(worldTransform) + glm::rotate(glm::vec2{l0+dx, 0}, worldTransform.z), 0},
+			{vec3xy(worldTransform) + glm::rotate(glm::vec2{l, 0}, worldTransform.z), 0},
 			isRightSide_ ? debug_color_r : debug_color);
-#ifdef DEBUG_DRAW_MUSCLE
-	if (inputSocket_->value > 0)
-		Shape3D::get()->drawLine(
-			{vec3xy(worldTransform) + glm::rotate(glm::vec2(-l/2, 0), worldTransform.z + PI/2), 0},
-			{vec3xy(worldTransform) + glm::rotate(glm::vec2(+l/2, 0), worldTransform.z + PI/2), 0},
-			debug_color);
+#else
+	Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform) + glm::rotate(glm::vec2{l/2, 0}, worldTransform.z),
+			glm::vec2(l, w), worldTransform.z,
+			isRightSide_ ? debug_color_r : debug_color);
+#endif
 #endif
 }
 
