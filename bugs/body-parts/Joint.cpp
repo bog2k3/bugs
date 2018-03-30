@@ -104,3 +104,4 @@ void Joint::updateFixtures() {
 glm::vec2 Joint::getAttachmentPoint(float relativeAngle) {
 	throw std::runtime_error("Should not be called");
 }
+

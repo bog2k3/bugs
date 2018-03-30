@@ -72,7 +72,8 @@
 #include <dmalloc.h>
 #endif
 
-static const glm::vec3 debug_color(1.f,0.2f, 0.8f);
+static const glm::vec3 debug_color(1.f,0.2f, 0.6f);
+static const glm::vec3 debug_color_r(0.6f,0.2f, 1.f);
 
 //MuscleInitializationData::MuscleInitializationData()
 //	: aspectRatio(BodyConst::initialMuscleAspectRatio) {
@@ -99,17 +100,18 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	: BodyPart(BodyPartType::MUSCLE, context, cell, true) // suppress physical body
 	, inputSocket_(new InputSocket(nullptr, 1.f))
 	, aspectRatio_(0)
-	, rotationSign_(isRightSide ? -1 : +1) // TODO if mirrored, must reverse
+	, rotationSign_(isRightSide == cell.isMirrored() ? +1 : -1)
 	, maxForce_(0)
 	, maxJointAngularSpeed_(0)
 	, H_phi_{0}
 	, phiAngleStep_(0)
 	, cachedPhiMin_(0)
-//#ifdef DEBUG_DRAW_MUSCLE
-//	, phiToDx_{0}
-//#endif
+#ifdef DEBUG_DRAW_MUSCLE
+	, phiToDx_{0}
+	, isRightSide_(isRightSide)
+#endif
 {
-	auto &mapMuscleAttr = isRightSide ? cell.mapRightMuscleAttribs_ : cell.mapLeftMuscleAttribs_;  // TODO if mirrored, must reverse
+	auto &mapMuscleAttr = isRightSide ? cell.mapRightMuscleAttribs_ : cell.mapLeftMuscleAttribs_;
 	insertionAngle_[0] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET1].clamp(
 				BodyConst::MinMuscleInsertionOffset,
 				BodyConst::MaxMuscleInsertionOffset);
@@ -118,9 +120,19 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 				BodyConst::MaxMuscleInsertionOffset);
 	inputVMSCoord_ = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
 
-	float mass = cell.muscleMass(isRightSide);	// TODO switch if mirrored
+	// insertion angle values from genes are positive, but we need to interpret them in the local context (joint side and mirrored?)
+	if (rotationSign_ > 0)
+		insertionAngle_[1] *= -1;
+	else
+		insertionAngle_[0] *= -1;
+
+	float mass = cell.muscleMass(isRightSide);
 	float density = BodyConst::MuscleDensity;
 	overrideSizeAndDensity(mass / density, density);
+
+	World::getInstance().queueDeferredAction([this] {
+		updateFixtures();
+	});
 }
 
 Muscle::~Muscle() {
@@ -131,7 +143,6 @@ void Muscle::setJoint(JointPivot* joint) {
 	assert(!joint_ && "only call this once per instance!");
 	assert(joint && "invalid arg (null)");
 	joint_ = joint;
-//	rotationSign_ = motorDirSign;
 	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
 }
 
@@ -171,9 +182,10 @@ void Muscle::updateFixtures() {
 	float alphaJ2 = pointDirection(vec3xy(joint_->getWorldTransformation() - rightTr)) - rightTr.z; // joint angle in right cell's coordinates
 
 	glm::vec2 I1 = left->getAttachmentPoint(alphaJ1 + insertionAngle_[0]); // first insertion point in left cell's space
+	anchor_ = {I1, alphaJ1};
 	I1 = joint_->worldToLocal(left->localToWorld(I1)); // transform into joint's space
 
-	glm::vec2 I2zero = right->getAttachmentPoint(alphaJ2 - insertionAngle_[1]); // second insertion point in right cell's space at rest angle
+	glm::vec2 I2zero = right->getAttachmentPoint(alphaJ2 + insertionAngle_[1]); // second insertion point in right cell's space at rest angle
 	I2zero = joint_->worldToLocal(right->localToWorld(I2zero)); // transform into joint's space
 
 	const auto I2fn = [&, this] (float phi) {	// second insertion point in joint's space as a function of joint angle
@@ -193,10 +205,8 @@ void Muscle::updateFixtures() {
 	float phiMin = joint_->getLowerLimit();
 	float phiMax = joint_->getUpperLimit();
 	cachedPhiMin_ = phiMin;
-	float DMin = Dfn(phiMax);
-	float DMax = Dfn(phiMin);
-	if (rotationSign_ < 0)
-		xchg(DMin, DMax);
+	float DMin = Dfn(rotationSign_ < 0 ? phiMin : phiMax);
+	float DMax = Dfn(rotationSign_ < 0 ? phiMax : phiMin);
 	assert(DMax >= DMin);
 
 	// here we compute the characteristics of the muscle
@@ -234,7 +244,7 @@ glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
 void Muscle::draw(RenderContext const& ctx) {
 	float crtAspect = aspectRatio_;
 #ifdef DEBUG_DRAW_MUSCLE
-	if (isDead())
+	if (isDead() || !joint_)
 		return;
 	float w0 = sqrtf(size_ / aspectRatio_);
 	float l0 = aspectRatio_ * w0;
@@ -246,10 +256,10 @@ void Muscle::draw(RenderContext const& ctx) {
 	glm::vec3 worldTransform = getWorldTransformation();
 //	Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
 //			glm::vec2(l, w), worldTransform.z, debug_color);
-//	Shape3D::get()->drawLine(
-//			{vec3xy(worldTransform), 0},
-//			{vec3xy(worldTransform) + glm::rotate(getAttachmentPoint(0), worldTransform.z), 0},
-//			debug_color);
+	Shape3D::get()->drawLine(
+			{vec3xy(worldTransform), 0},
+			{vec3xy(worldTransform) + glm::rotate(glm::vec2{l0+dx, 0}, worldTransform.z), 0},
+			isRightSide_ ? debug_color_r : debug_color);
 #ifdef DEBUG_DRAW_MUSCLE
 	if (inputSocket_->value > 0)
 		Shape3D::get()->drawLine(
@@ -260,7 +270,9 @@ void Muscle::draw(RenderContext const& ctx) {
 }
 
 float Muscle::getCurrentPhiSlice() {
-	float angle = joint_ ? joint_->getJointAngle() : 0;
+	if (!joint_)
+		return 0;
+	float angle = joint_->getJointAngle();
 	float angleSlice = (angle - cachedPhiMin_) / phiAngleStep_;
 	int iAngleSlice = (int) angleSlice;
 	angleSlice -= iAngleSlice;
@@ -295,3 +307,8 @@ void Muscle::update(float dt) {
 	context_.owner.consumeEnergy(usedEnergy);
 }
 
+glm::vec3 Muscle::getWorldTransformation() const {
+	if (!joint_)
+		return anchor_;
+	return joint_->getLeftAnchor()->localToWorld(anchor_);
+}

@@ -59,10 +59,14 @@ public:
 
 	// returns the world transformation as {x, y, rotation}
 	virtual glm::vec3 getWorldTransformation() const;
+	// transform a vector+angle from world coordinates to local coordinates; specify isDirection=true to not apply translation
+	glm::vec3 worldToLocal(glm::vec3 tr, bool isDirection=false) const;
+	// transform a vector+angle from local coordinates to world coordinates; specify isDirection=true to not apply translation
+	glm::vec3 localToWorld(glm::vec3 const& tr, bool isDirection=false) const;
 	// transform a vector from world coordinates to local coordinates; specify isDirection=true to not apply translation
-	glm::vec2 worldToLocal(glm::vec2 v, bool isDirection=false) const;
+	glm::vec2 worldToLocal(glm::vec2 tr, bool isDirection=false) const;
 	// transform a vector from local coordinates to world coordinates; specify isDirection=true to not apply translation
-	glm::vec2 localToWorld(glm::vec2 const& v, bool isDirection=false) const;
+	glm::vec2 localToWorld(glm::vec2 const& tr, bool isDirection=false) const;
 	// returns the bounding box of the body part
 	aabb getAABB() const;
 

@@ -402,7 +402,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 			addSensor(pSensor);
 	}
 
-	// 3rd run: create joints
+	// 3rd run: create joints and muscles
 	std::set<std::pair<Cell*, Cell*>> joints;
 	for (auto c : activeCells) {
 		for (auto &n : c->neighbours_) {
@@ -423,6 +423,14 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 				if (pivotJoint) {
 					auto pj = new JointPivot(bug_->context_, *jointCell, bpLeft, bpRight);
 					j = pj;
+					Muscle *ml = new Muscle(bug_->context_, *jointCell, false);
+					ml->setJoint(pj);
+					Muscle *mr = new Muscle(bug_->context_, *jointCell, true);
+					mr->setJoint(pj);
+					bug_->bodyParts_.push_back(ml);
+					bug_->bodyParts_.push_back(mr);
+					addMotor(ml, ml);
+					addMotor(mr, mr);
 				} else {
 					auto wj = new JointWeld(bug_->context_, *jointCell, bpLeft, bpRight);
 					j = wj;

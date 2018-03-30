@@ -36,12 +36,14 @@ public:
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 
+	glm::vec3 getWorldTransformation() const override;
+
 	// IMotor::
 	unsigned getInputCount() const override { return 1; }
 	InputSocket* getInputSocket(unsigned index) const override { return index==0 ? inputSocket_ : nullptr; }
 	float getInputVMSCoord(unsigned index) const override { return inputVMSCoord_; }
 #ifdef DEBUG
-	//std::string getMotorDebugName() const override { return getDebugName(); }
+	std::string getMotorDebugName() const override { return getDebugName(); }
 #endif
 
 protected:
@@ -59,8 +61,11 @@ protected:
 	float cachedPhiMin_;
 	float insertionAngle_[2];
 
+	glm::vec3 anchor_ {0};	// anchor (first insertion point) into left cell's coordinate frame
+
 #ifdef DEBUG_DRAW_MUSCLE
 	float phiToDx_[nAngleSteps];
+	bool isRightSide_;
 #endif
 
 	/**

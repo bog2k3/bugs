@@ -505,19 +505,27 @@ std::pair<float, float> BodyPart::adjustFixtureValues(std::pair<float, float> co
 	return {combined ? sqr(v1) : v1, v2};
 }
 
-glm::vec2 BodyPart::worldToLocal(glm::vec2 v, bool isDirection) const {
+glm::vec3 BodyPart::worldToLocal(glm::vec3 in, bool isDirection) const {
 	auto tr = getWorldTransformation();
 	if (!isDirection)
-		v.x -= tr.x, v.y -= tr.y;
-	return glm::rotate(v, -tr.z);
+		in.x -= tr.x, in.y -= tr.y;
+	return { glm::rotate(vec3xy(in), -tr.z), in.z - tr.z };
 }
 
-glm::vec2 BodyPart::localToWorld(glm::vec2 const& v, bool isDirection) const {
+glm::vec2 BodyPart::worldToLocal(glm::vec2 tr, bool isDirection) const {
+	return vec3xy(worldToLocal(glm::vec3{tr, 0}, isDirection));
+}
+
+glm::vec3 BodyPart::localToWorld(glm::vec3 const& in, bool isDirection) const {
 	auto tr = getWorldTransformation();
-	glm::vec2 w = glm::rotate(v, tr.z);
+	glm::vec2 w = glm::rotate(vec3xy(in), tr.z);
 	if (!isDirection)
 		w.x += tr.x, w.y += tr.y;
-	return w;
+	return { w, in.z + tr.z };
+}
+
+glm::vec2 BodyPart::localToWorld(glm::vec2 const& tr, bool isDirection) const {
+	return vec3xy(localToWorld(glm::vec3{tr, 0}, isDirection));
 }
 
 void BodyPart::overrideSizeAndDensity(float newSize, float newDensity) {
