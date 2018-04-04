@@ -34,13 +34,13 @@
 		-- [X] otherwise each side inherits bonds on its side of the division axis
 		-- [X] new BondBias gene that biases the bond inheritance axis towards one side
 		-- [ ] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
-	- [ ] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
-		-- [ ] (pivot only) joint's default (rest) orientation is perpendicular to the division axis, going from left child cell to right child cell; it's angle direction is the same as the parent cell (so joint can be mirrored as well)
-		-- [ ] left and right muscles are defined with respect to the joint's zero-axis (left muscle on the positive side); mirrored joints have left/right switched 
+	- [X] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
+		-- [X] (pivot only) joint's default (rest) orientation is perpendicular to the division axis, going from left child cell to right child cell; it's angle direction is the same as the parent cell (so joint can be mirrored as well)
+		-- [X] left and right muscles are defined with respect to the joint's zero-axis (left muscle on the positive side); mirrored joints have left/right switched 
 	- [X] when cell splits, part of its mass must be used for joint and muscles (if pivot joint)
 		-- [X] original cell is kept for joint/muscle genes and its size is changed to joint size - it's used on the ctor of PivotJoint
 	- [X] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
-	- [ ] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
+	- [X] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
 	- [ ] new VMS offset gene to control offset for a division branch (mirrored trees with same genes must have different coordinates to enable control by different neurons)
 	- [X] division happens when gene decoding reaches the end, so all genes have a chance of being read
 		-- [X] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
@@ -54,7 +54,7 @@
 		-- [X] derived body part classes use the cell's gene maps to retrieve various specific attributes 
 		-- [X] unspecialized cells will instantiate a FatCell body part which acts as an energy storage
 	- [X] joints and muscles are not created explicitly any more - remove them from hyperspace
-	- [ ] must rethink muscle linkange and body part hierarchies
+	- [X] must rethink muscle linkange and body part hierarchies
 	- [ ] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
 	- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
 	- [X] !!! proteins are NOT inherited !!!
