@@ -90,8 +90,8 @@ b2JointDef* JointWeld::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, 
 	def->localAnchorA = localAnchorA;
 	def->localAnchorB = localAnchorB;
 	def->referenceAngle = refAngle;
-	def->dampingRatio = 0.1f;
-	def->frequencyHz = 10;
+	def->dampingRatio = 0.99f;
+	def->frequencyHz = 20;
 
 	return def;
 }

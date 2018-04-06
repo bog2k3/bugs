@@ -153,10 +153,7 @@ void JointPivot::update(float dt) {
 
 #endif
 		World::getInstance().queueDeferredAction([this] () {
-			/*BodyPart* downStream = children_[0];
-			downStream->detach(true); // this will be taken over by bug entity
-			detach(true);
-			destroyPhysJoint();*/
+			destroyPhysJoint();
 		});
 		return;
 	}

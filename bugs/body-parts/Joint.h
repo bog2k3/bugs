@@ -33,12 +33,12 @@ protected:
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 
 	virtual b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) = 0;
+	void destroyPhysJoint();
 
 private:
 	unsigned jointListenerHandle_ = 0;
 
 	void onPhysJointDestroyed(b2Joint* joint);
-	void destroyPhysJoint();
 };
 
 #endif /* BODY_PARTS_Joint_H_ */
