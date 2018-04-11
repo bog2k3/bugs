@@ -22,7 +22,7 @@ public:
 	void draw(RenderContext const& ctx) override;
 	glm::vec3 getWorldTransformation() const override;
 
-	void update(float dt);
+	void update(float dt) override;
 
 	inline float getTotalRange() const { return phiMax_ - phiMin_; } // returns the total angular range (in radians) of the joint.
 	inline float getLowerLimit() const { return phiMin_; }
@@ -42,6 +42,8 @@ protected:
 	void getNormalizedLimits(float &low, float &high);
 	void die() override;
 	//void onDetachedFromParent() override;
+	float breakForce() const override;
+	float breakTorque() const override;
 
 	b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) override;
 	b2RevoluteJoint* b2PJoint() const;

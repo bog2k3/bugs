@@ -95,3 +95,11 @@ b2JointDef* JointWeld::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, 
 
 	return def;
 }
+
+float JointWeld::breakForce() const {
+	return averageAnchorSize * BodyConst::JointForceToleranceFactor;
+}
+
+float JointWeld::breakTorque() const {
+	return averageAnchorSize * BodyConst::JointTorqueToleranceFactor;
+}

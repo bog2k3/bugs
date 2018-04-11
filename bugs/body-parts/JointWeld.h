@@ -25,6 +25,8 @@ public:
 
 protected:
 //	void die() override;
+	float breakForce() const override;
+	float breakTorque() const override;
 
 	b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) override;
 

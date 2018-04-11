@@ -24,6 +24,8 @@ public:
 	BodyPart* getLeftAnchor() const { return leftAnchor_; }
 	BodyPart* getRightAnchor() const { return rightAnchor_; }
 
+	virtual void update(float dt);
+
 protected:
 	BodyPart* leftAnchor_;
 	BodyPart* rightAnchor_;
@@ -34,6 +36,9 @@ protected:
 
 	virtual b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) = 0;
 	void destroyPhysJoint();
+
+	virtual float breakForce() const = 0;
+	virtual float breakTorque() const = 0;
 
 private:
 	unsigned jointListenerHandle_ = 0;

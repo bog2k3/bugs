@@ -114,8 +114,14 @@ public:
 	//inline float getLocalRotation() const { return localRotation_; }
 	//inline float getAttachmentAngle() const { return 0/*attachmentDirectionParent_*/; }
 
-	// return false from the predicate to continue or true to break out; the ORed return value is passed back to the caller as method return
-	//bool applyRecursive(std::function<bool(BodyPart* pCurrent)> pred);
+	// runs a given predicate on the current part and recursively on all of its neighbors and so on until the graph is completely covered,
+	// or the evaluation is stopped by the predicate.
+	// return false from the predicate to continue or true to stop evaluation.
+	// the return value of the method indicates whether the evaluation was forcefully stopped by the predicate:
+	//		- [true] means the evaluation was stopped by the predicate returning true.
+	//		- [false] means the predicate was applied to the entire graph and no positive was detected.
+	// UOID parameter is used internally, don't pass any value to it explicitly.
+	bool applyPredicateGraph(std::function<bool(BodyPart* pCurrent)> pred, uint32_t UOID=0);
 
 	// adds the motor line id into this node and all nodes above it recursively
 	// this id is the index of the nerve line from the neural network down to one of this motor's inputs
@@ -237,6 +243,8 @@ private:
 	bool destroyCalled_ = false;
 	bool dead_ = false;
 	float foodValueLeft_ = 0;
+
+	thread_local uint32_t UOID_ = 0; // Unique Operation IDentifier
 };
 
 #endif /* OBJECTS_BODY_PARTS_BODYPART_H_ */

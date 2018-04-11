@@ -17,7 +17,6 @@
 #include <boglfw/physics/PhysDestroyListener.h>
 #include <boglfw/utils/log.h>
 #include <boglfw/utils/assert.h>
-#include <boglfw/utils/UpdateList.h>
 #include <boglfw/perf/marker.h>
 
 #include <Box2D/Box2D.h>
@@ -42,12 +41,9 @@ JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart*
 		phiMax_ *= -1;
 	}
 	resetTorque_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_RESET_TORQUE].clamp(0, BodyConst::MaxJointResetTorque);
-
-	context.updateList.add(this);
 }
 
 JointPivot::~JointPivot() {
-	context_.updateList.remove(this);
 }
 
 b2JointDef* JointPivot::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) {
@@ -117,47 +113,7 @@ void JointPivot::addTorque(float t, float maxSpeed) {
 }
 
 void JointPivot::update(float dt) {
-	PERF_MARKER_FUNC;
-	if (!physJoint_ || dt == 0)
-		return;
-	float invdt = 1.f / dt;
-	float reactionTorque = b2PJoint()->GetReactionTorque(invdt);
-	float motorTorque = b2PJoint()->GetMotorTorque(invdt);
-	float reactionForce = b2PJoint()->GetReactionForce(invdt).Length();
-	bool jointIsFUBAR = std::isnan(reactionTorque) || std::isnan(reactionForce);
-	bool excessForce = reactionForce > size_ * density_ * BodyConst::JointForceToleranceFactor;
-	bool excessRTorque = abs(reactionTorque) > size_ * density_ * BodyConst::JointTorqueToleranceFactor;
-	bool excessMTorque = abs(motorTorque) > size_ * density_ * BodyConst::JointTorqueToleranceFactor;
-#ifdef DEBUG
-//	if (getOwner()->getId() == 1) {
-//		if (getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)" ||
-//				getDebugName() == "Torso::Joint(8)") {
-//			LOGLN(getDebugName() << " FORCE: " << reactionForce << "\t\tMTORQUE: " << motorTorque << "\t\tRTORQUE: " << reactionTorque);
-//		}
-//	}
-#endif
-	if (jointIsFUBAR || excessForce || excessMTorque || excessRTorque) {
-		// this joint is toast - must break free the downstream body parts
-#ifdef DEBUG
-		LOG("JOINT BREAK: " << /*getDebugName() <<*/ " (");
-		std::stringstream reason;
-		if (jointIsFUBAR)
-			reason << "FUBAR";
-		else if (excessForce)
-			reason << "EXCESS-FORCE: " << reactionForce << " [max:" << size_ * BodyConst::JointForceToleranceFactor<< "]";
-		else if (excessMTorque)
-			reason << "EXCESS-MTORQUE: " << motorTorque << " [max:" << size_ * BodyConst::JointTorqueToleranceFactor<< "]";
-		else if (excessRTorque)
-			reason << "EXCESS-RTORQUE: " << reactionTorque << " [max:" << size_ * BodyConst::JointTorqueToleranceFactor<< "]";
-		LOGNP(reason.str() << ")\n");
-
-#endif
-		World::getInstance().queueDeferredAction([this] () {
-			destroyPhysJoint();
-		});
-		return;
-	}
-
+	Joint::update(dt);
 	if (isDead())
 		return;
 
@@ -214,4 +170,12 @@ float JointPivot::getDensity(BodyCell const& cell) {
 
 b2RevoluteJoint* JointPivot::b2PJoint() const {
 	return static_cast<b2RevoluteJoint*>(physJoint_);
+}
+
+float JointPivot::breakForce() const {
+	return size_ * density_ * BodyConst::JointForceToleranceFactor;
+}
+
+float JointPivot::breakTorque() const {
+	return size_ * density_ * BodyConst::JointTorqueToleranceFactor;
 }

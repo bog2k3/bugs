@@ -13,6 +13,8 @@
 #include <boglfw/physics/PhysDestroyListener.h>
 #include <boglfw/utils/log.h>
 #include <boglfw/utils/assert.h>
+#include <boglfw/utils/UpdateList.h>
+#include <boglfw/perf/marker.h>
 
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
@@ -27,12 +29,14 @@ Joint::Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAncho
 	World::getInstance().queueDeferredAction([this] {
 		updateFixtures();
 	});
+	context.updateList.add(this);
 }
 
 Joint::~Joint() {
 	if (physJoint_) {
 		destroyPhysJoint();
 	}
+	context_.updateList.remove(this);
 }
 
 void Joint::onPhysJointDestroyed(b2Joint* joint) {
@@ -103,5 +107,66 @@ void Joint::updateFixtures() {
 
 glm::vec2 Joint::getAttachmentPoint(float relativeAngle) {
 	throw std::runtime_error("Should not be called");
+}
+
+void Joint::update(float dt) {
+	PERF_MARKER_FUNC;
+	if (!physJoint_ || dt == 0)
+		return;
+	float invdt = 1.f / dt;
+	float reactionTorque = physJoint_->GetReactionTorque(invdt);
+	//float motorTorque = physJoint_->GetMotorTorque(invdt);
+	float reactionForce = physJoint_->GetReactionForce(invdt).Length();
+	bool jointIsFUBAR = std::isnan(reactionTorque) || std::isnan(reactionForce);
+	bool excessForce = reactionForce > breakForce();
+	bool excessRTorque = abs(reactionTorque) > breakTorque();
+//	bool excessMTorque = abs(motorTorque) > size_ * density_ * BodyConst::JointTorqueToleranceFactor;
+#ifdef DEBUG
+//	if (getOwner()->getId() == 1) {
+//		if (getDebugName() == "Torso::Joint(8)::Bone(0)::Joint(0)" ||
+//				getDebugName() == "Torso::Joint(8)") {
+//			LOGLN(getDebugName() << " FORCE: " << reactionForce << "\t\tMTORQUE: " << motorTorque << "\t\tRTORQUE: " << reactionTorque);
+//		}
+//	}
+#endif
+	if (jointIsFUBAR || excessForce /*|| excessMTorque*/ || excessRTorque) {
+		// this joint is toast - must break free the downstream body parts
+#ifdef DEBUG
+		LOG("JOINT BREAK: " << /*getDebugName() <<*/ " (");
+		std::stringstream reason;
+		if (jointIsFUBAR)
+			reason << "FUBAR";
+		else if (excessForce)
+			reason << "EXCESS-FORCE: " << reactionForce << " [max:" << breakForce() << "]";
+		/*else if (excessMTorque)
+			reason << "EXCESS-MTORQUE: " << motorTorque << " [max:" << size_ * BodyConst::JointTorqueToleranceFactor<< "]";*/
+		else if (excessRTorque)
+			reason << "EXCESS-RTORQUE: " << reactionTorque << " [max:" << breakTorque() << "]";
+		LOGNP(reason.str() << ")\n");
+
+#endif
+		World::getInstance().queueDeferredAction([this] () {
+			destroyPhysJoint();
+		});
+
+		auto hasMouth = [&](BodyPart* bp) {
+			return bp->getType() == BodyPartType::MOUTH;
+		};
+		auto hasEggLayer = [&](BodyPart* bp) {
+			return bp->getType() == BodyPartType::EGGLAYER;
+		};
+		auto diePred = [](BodyPart* bp) {
+			bp->die();
+			return false;
+		};
+		if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
+			// left sub-graph must die
+			leftAnchor_->applyPredicateGraph(diePred);
+		}
+		if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
+			// right sub-graph must die
+			rightAnchor_->applyPredicateGraph(diePred);
+		}
+	}
 }
 

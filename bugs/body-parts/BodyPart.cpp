@@ -533,3 +533,19 @@ void BodyPart::overrideSizeAndDensity(float newSize, float newDensity) {
 	size_ = newSize;
 	density_ = newDensity;
 }
+
+bool BodyPart::applyPredicateGraph(std::function<bool(BodyPart* pCurrent)> pred, uint32_t UOID) {
+	while (UOID==0)
+		UOID = new_RID();
+	UOID_ = UOID;
+
+	if (pred(this))
+		return true;
+	for (auto n : neighbours_) {
+		if (n->UOID_ == UOID)
+			continue;
+		if (n->applyPredicateGraph(pred, UOID))
+			return true;
+	}
+	return false;
+}
