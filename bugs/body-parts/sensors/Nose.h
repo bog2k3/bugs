@@ -43,7 +43,6 @@ protected:
 	float outputVMSCoord_[NoseDetectableFlavoursCount];
 
 	void updateFixtures() override;
-	void die() override;
 	//void onAddedToParent() override;
 };
 

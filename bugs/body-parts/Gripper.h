@@ -45,7 +45,6 @@ protected:
 
 	void setActive(bool active);
 	void updateFixtures() override;
-	void die() override;
 	//void onAddedToParent() override;
 };
 

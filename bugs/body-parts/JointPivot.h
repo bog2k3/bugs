@@ -40,7 +40,6 @@ protected:
 	std::vector<std::pair<float, float>> vecTorques;	// holds torque|maxSpeed pairs
 
 	void getNormalizedLimits(float &low, float &high);
-	void die() override;
 	//void onDetachedFromParent() override;
 	float breakForce() const override;
 	float breakTorque() const override;

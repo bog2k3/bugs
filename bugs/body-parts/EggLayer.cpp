@@ -51,6 +51,10 @@ EggLayer::EggLayer(BodyPartContext const& context, BodyCell& cell)
 	physBody_.userPointer_ = this;
 
 	context.updateList.add(this);
+
+	onDied.add([this](BodyPart*) {
+		context_.updateList.remove(this);
+	});
 }
 
 EggLayer::~EggLayer() {
@@ -58,10 +62,6 @@ EggLayer::~EggLayer() {
 		delete i;
 		i = nullptr;
 	}
-}
-
-void EggLayer::die() {
-	context_.updateList.remove(this);
 }
 
 void EggLayer::draw(RenderContext const& ctx) {

@@ -114,6 +114,12 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	World::getInstance().queueDeferredAction([this] {
 		updateFixtures();
 	});
+
+	context_.updateList.add(this);
+
+	onDied.add([this](BodyPart*) {
+		context_.updateList.remove(this);
+	});
 }
 
 Muscle::~Muscle() {
@@ -125,10 +131,6 @@ void Muscle::setJoint(JointPivot* joint) {
 	assert(joint && "invalid arg (null)");
 	joint_ = joint;
 	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
-}
-
-void Muscle::die() {
-	context_.updateList.remove(this);
 }
 
 void Muscle::onJointDied(BodyPart* joint) {

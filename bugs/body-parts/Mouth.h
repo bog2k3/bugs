@@ -36,7 +36,6 @@ protected:
 
 	void updateFixtures() override;
 	void onCollision(PhysicsBody* pOther, float impulseMagnitude);
-	void die() override;
 
 	static float extractAspectRatio(BodyCell const& cell);
 };

@@ -45,6 +45,10 @@ Nose::Nose(BodyPartContext const& context, BodyCell& cell)
 		outputVMSCoord_[i] = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1 + i].clamp(0, BodyConst::MaxVMSCoordinateValue);
 
 	context_.updateList.add(this);
+
+	onDied.add([this](BodyPart*) {
+		context_.updateList.remove(this);
+	});
 }
 
 Nose::~Nose() {
@@ -221,11 +225,6 @@ void Nose::updateFixtures() {
 	glm::vec2 childAnchor = getAttachmentPoint(PI - localRotation_);
 	jdef.localAnchorB = g2b(childAnchor);
 	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);*/
-}
-
-
-void Nose::die() {
-	context_.updateList.remove(this);
 }
 
 

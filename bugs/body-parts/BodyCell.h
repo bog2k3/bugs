@@ -53,7 +53,7 @@ public:
 
 #ifdef DEBUG
 	bool matchBranch(const char* branchCode) {
-		int i=0;
+		uint i=0;
 		for (; i<branch_.size(); i++) {
 			if (branch_[i] != branchCode[i])
 				return false;

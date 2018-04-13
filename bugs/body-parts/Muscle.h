@@ -69,7 +69,6 @@ protected:
 //	void cacheInitializationData() override;
 	void updateFixtures() override;
 	//void onAddedToParent() override;
-	void die() override;
 
 private:
 	void onJointDied(BodyPart* j);

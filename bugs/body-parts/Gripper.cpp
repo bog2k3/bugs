@@ -43,6 +43,11 @@ Gripper::Gripper(BodyPartContext const& context, BodyCell& cell)
 	physBody_.userPointer_ = this;
 
 	context.updateList.add(this);
+
+	onDied.add([this](BodyPart*) {
+		setActive(false);
+		context_.updateList.remove(this);
+	});
 }
 
 Gripper::~Gripper() {
@@ -125,11 +130,6 @@ static glm::vec2 getGripperAttachmentPoint(float size, float angle) {
 glm::vec2 Gripper::getAttachmentPoint(float relativeAngle)
 {
 	return getGripperAttachmentPoint(size_, relativeAngle);
-}
-
-void Gripper::die() {
-	setActive(false);
-	context_.updateList.remove(this);
 }
 
 float Gripper::getDensity(BodyCell const& cell) {

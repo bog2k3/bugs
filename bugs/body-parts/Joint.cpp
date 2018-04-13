@@ -19,6 +19,8 @@
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
 
+#include <sstream>
+
 Joint::Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor, BodyPartType type)
 	: BodyPart(type, context, cell, true)
 	, leftAnchor_(leftAnchor)

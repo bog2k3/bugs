@@ -39,7 +39,6 @@ public:
 protected:
 	void updateFixtures() override;
 	//void onAddedToParent() override;
-	void die() override;
 	//void cacheInitializationData() override;
 
 //	b2WeldJoint* pJoint = nullptr;

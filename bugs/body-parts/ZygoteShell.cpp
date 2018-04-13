@@ -30,7 +30,6 @@ const glm::vec3 debug_color(0.5f, 0.5f, 0.5f);
 ZygoteShell::ZygoteShell(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass, BodyPartContext const& context)
 	: BodyPart(position, randf() * 2*PI, velocity, angularVelocity, mass, context)
 	, mass_(mass)
-	, dead_(false)
 {
 	//size_ = mass * BodyConst::ZygoteDensityInv;
 	//density_ = BodyConst::ZygoteDensity;
@@ -74,7 +73,7 @@ void ZygoteShell::updateFixtures() {
 void ZygoteShell::draw(RenderContext const& ctx) {
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
-	if (dead_) {
+	if (isDead()) {
 		Shape3D::get()->drawLine(
 			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), 3*PI/4 + transform.z), 0},
 			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -PI/4 + transform.z), 0},
@@ -99,6 +98,3 @@ void ZygoteShell::updateCachedDynamicPropsFromBody() {
 	throw std::runtime_error("Not implemented!");
 }
 
-void ZygoteShell::die() {
-	dead_ = true;
-}

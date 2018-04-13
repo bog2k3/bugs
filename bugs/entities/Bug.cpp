@@ -174,8 +174,8 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			delete ribosome_;
 			ribosome_ = nullptr;
 
-			/*body_->applyRecursive([this](BodyPart* part) {
-				part->onDied.add([this](BodyPart *dying) {
+			for (auto bp : bodyParts_) {
+				bp->onDied.add([this](BodyPart *dying) {
 					World::getInstance().queueDeferredAction([this, dying] {
 						dying->removeAllLinks();
 					});
@@ -185,8 +185,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 						eggLayers_.erase(std::remove(eggLayers_.begin(), eggLayers_.end(), dying));
 					}
 				});
-				return false;
-			});*/
+			}
 		}
 	}
 }

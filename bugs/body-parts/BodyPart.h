@@ -14,6 +14,7 @@
 #include "BodyPartContext.h"
 
 #include <boglfw/physics/PhysicsBody.h>
+#include <boglfw/utils/ThreadLocalValue.h>
 
 #include <glm/vec2.hpp>
 
@@ -96,9 +97,6 @@ public:
 	/* scale the part and all its children by a given amount */
 	//virtual void applyScale_tree(float scale);
 
-	// tells the entire hierarchy that the body died
-	//void die_tree();
-
 	// draws the whole tree of body-parts
 	//void draw_tree(RenderContext const& ctx);
 
@@ -138,6 +136,9 @@ public:
 	 * they don't get leaked.
 	 */
 	void removeAllLinks();
+
+	// dead body parts turn into food
+	void die();
 
 	inline bool isDead() const { return dead_; }
 
@@ -194,7 +195,6 @@ protected:
 	 * The physicsProperties of the body are in world coordinates at this time;
 	 */
 	virtual void updateFixtures() = 0;
-	virtual void die() {}
 	//virtual void onAddedToParent() {}
 	//virtual void onDetachedFromParent() {}
 
@@ -244,7 +244,7 @@ private:
 	bool dead_ = false;
 	float foodValueLeft_ = 0;
 
-	thread_local uint32_t UOID_ = 0; // Unique Operation IDentifier
+	ThreadLocalValue<uint32_t> UOID_ = 0; // Unique Operation IDentifier
 };
 
 #endif /* OBJECTS_BODY_PARTS_BODYPART_H_ */

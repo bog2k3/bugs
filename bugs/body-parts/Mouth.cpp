@@ -48,16 +48,16 @@ Mouth::Mouth(BodyPartContext const& context, BodyCell& cell)
 	physBody_.collisionEventMask_ = EventCategoryFlags::FOOD;
 
 	context.updateList.add(this);
+
+	onDied.add([this](BodyPart*) {
+		context_.updateList.remove(this);
+		physBody_.onCollision.remove(onCollisionEventHandle_);
+		physBody_.collisionEventMask_ = 0;
+		lastDt_ = 0;
+	});
 }
 
 Mouth::~Mouth() {
-}
-
-void Mouth::die() {
-	context_.updateList.remove(this);
-	physBody_.onCollision.remove(onCollisionEventHandle_);
-	physBody_.collisionEventMask_ = 0;
-	lastDt_ = 0;
 }
 
 static glm::vec2 getMouthAttachmentPoint(float length, float width, float angle) {

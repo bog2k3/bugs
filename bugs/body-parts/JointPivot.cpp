@@ -21,7 +21,6 @@
 
 #include <Box2D/Box2D.h>
 #include <glm/gtx/rotate_vector.hpp>
-#include <sstream>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -41,6 +40,11 @@ JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart*
 		phiMax_ *= -1;
 	}
 	resetTorque_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_RESET_TORQUE].clamp(0, BodyConst::MaxJointResetTorque);
+
+	onDied.add([this](BodyPart*) {
+		if (physJoint_)
+			b2PJoint()->EnableMotor(false);
+	});
 }
 
 JointPivot::~JointPivot() {
@@ -147,11 +151,6 @@ void JointPivot::update(float dt) {
 		if (abs(reset_speed) > 200)
 			LOGLN("reset speed: "<<reset_speed);
 	}
-}
-
-void JointPivot::die() {
-	if (physJoint_)
-		b2PJoint()->EnableMotor(false);
 }
 
 /*void Joint::onDetachedFromParent() {

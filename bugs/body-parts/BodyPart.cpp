@@ -352,20 +352,17 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 	return committed_now;
 }*/
 
-/*void BodyPart::die_tree() {
+void BodyPart::die() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
 	if (!dead_) {
-		die();
 		dead_ = true;
 		physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 		foodValueLeft_ = size_ * density_;
+		onDied.trigger(this);
 	}
-	for (int i=0; i<nChildren_; i++)
-		children_[i]->die_tree();
-	onDied.trigger(this);
-}*/
+}
 
 void BodyPart::consumeFoodValue(float amount) {
 	if (dead_) {
@@ -377,6 +374,7 @@ void BodyPart::removeAllLinks() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
+	throw std::runtime_error("implement!");
 	//parent_ = nullptr;
 	//nChildren_ = 0;
 }

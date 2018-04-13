@@ -6,6 +6,7 @@
  */
 
 #include "JointWeld.h"
+#include "BodyConst.h"
 
 #include <boglfw/World.h>
 #include <boglfw/math/box2glm.h>
@@ -97,9 +98,11 @@ b2JointDef* JointWeld::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, 
 }
 
 float JointWeld::breakForce() const {
+	float averageAnchorSize = (leftAnchor_->mass() + rightAnchor_->mass()) * 0.5f;
 	return averageAnchorSize * BodyConst::JointForceToleranceFactor;
 }
 
 float JointWeld::breakTorque() const {
+	float averageAnchorSize = (leftAnchor_->mass() + rightAnchor_->mass()) * 0.5f;
 	return averageAnchorSize * BodyConst::JointTorqueToleranceFactor;
 }
