@@ -29,7 +29,6 @@ protected:
 	float width_;
 	float bufferSize_;
 	float usedBuffer_;
-//	b2WeldJoint* pJoint;
 	int onCollisionEventHandle_;
 
 	float lastDt_ = 0;

@@ -31,6 +31,7 @@ Joint::Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAncho
 	World::getInstance().queueDeferredAction([this] {
 		updateFixtures();
 	});
+
 	context.updateList.add(this);
 }
 
@@ -148,27 +149,31 @@ void Joint::update(float dt) {
 
 #endif
 		World::getInstance().queueDeferredAction([this] () {
+			die();
 			destroyPhysJoint();
-		});
 
-		auto hasMouth = [&](BodyPart* bp) {
-			return bp->getType() == BodyPartType::MOUTH;
-		};
-		auto hasEggLayer = [&](BodyPart* bp) {
-			return bp->getType() == BodyPartType::EGGLAYER;
-		};
-		auto diePred = [](BodyPart* bp) {
-			bp->die();
-			return false;
-		};
-		if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
-			// left sub-graph must die
-			leftAnchor_->applyPredicateGraph(diePred);
-		}
-		if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
-			// right sub-graph must die
-			rightAnchor_->applyPredicateGraph(diePred);
-		}
+			leftAnchor_->removeNeighbor(rightAnchor_);
+			rightAnchor_->removeNeighbor(leftAnchor_);
+
+			auto hasMouth = [&](BodyPart* bp) {
+				return bp->getType() == BodyPartType::MOUTH;
+			};
+			auto hasEggLayer = [&](BodyPart* bp) {
+				return bp->getType() == BodyPartType::EGGLAYER;
+			};
+			auto diePred = [](BodyPart* bp) {
+				bp->die();
+				return false;
+			};
+			if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
+				// left sub-graph must die
+				leftAnchor_->applyPredicateGraph(diePred);
+			}
+			if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
+				// right sub-graph must die
+				rightAnchor_->applyPredicateGraph(diePred);
+			}
+		});
 	}
 }
 

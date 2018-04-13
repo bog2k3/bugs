@@ -135,7 +135,9 @@ public:
 	 * remove all links, to parent and children. Calling this makes you responsible for the children, make sure
 	 * they don't get leaked.
 	 */
-	void removeAllLinks();
+//	void removeAllLinks();
+
+	void removeNeighbor(BodyPart* n);
 
 	// dead body parts turn into food
 	void die();

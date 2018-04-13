@@ -176,9 +176,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			for (auto bp : bodyParts_) {
 				bp->onDied.add([this](BodyPart *dying) {
-					World::getInstance().queueDeferredAction([this, dying] {
-						dying->removeAllLinks();
-					});
+					bodyParts_.erase(std::remove(bodyParts_.begin(), bodyParts_.end(), dying));
 					deadBodyParts_.push_back(dying);
 					if (dying->getType() == BodyPartType::EGGLAYER) {
 						// must remove from eggLayers_ vector

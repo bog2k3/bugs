@@ -77,8 +77,6 @@ void Mouth::updateFixtures() {
 	if (physBody_.b2Body_->GetFixtureList()) {
 		physBody_.b2Body_->DestroyFixture(
 				&physBody_.b2Body_->GetFixtureList()[0]);
-//		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
-//		pJoint = nullptr;
 	}
 
 	float fRatio;
@@ -96,15 +94,6 @@ void Mouth::updateFixtures() {
 	fixDef.shape = &shape;
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
-
-	/*b2WeldJointDef jdef;
-	jdef.bodyA = parent_->getBody().b2Body_;
-	jdef.bodyB = physBody_.b2Body_;
-	glm::vec2 parentAnchor = parent_->getAttachmentPoint(attachmentDirectionParent_);
-	jdef.localAnchorA = g2b(parentAnchor);
-	glm::vec2 childAnchor = getAttachmentPoint(PI - localRotation_);
-	jdef.localAnchorB = g2b(childAnchor);
-	pJoint = (b2WeldJoint*) physBody_.b2Body_->GetWorld()->CreateJoint(&jdef);*/
 }
 
 void Mouth::draw(RenderContext const& ctx) {

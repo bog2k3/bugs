@@ -26,6 +26,7 @@
 
 #include <cassert>
 #include <sstream>
+#include <algorithm>
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -370,14 +371,14 @@ void BodyPart::consumeFoodValue(float amount) {
 	}
 }
 
-void BodyPart::removeAllLinks() {
+/*void BodyPart::removeAllLinks() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
 	throw std::runtime_error("implement!");
 	//parent_ = nullptr;
 	//nChildren_ = 0;
-}
+}*/
 
 /*void BodyPart::reattachChildren() {
 #ifdef DEBUG
@@ -546,4 +547,8 @@ bool BodyPart::applyPredicateGraph(std::function<bool(BodyPart* pCurrent)> pred,
 			return true;
 	}
 	return false;
+}
+
+void BodyPart::removeNeighbor(BodyPart* n) {
+	neighbours_.erase(std::find(neighbours_.begin(), neighbours_.end(), n), neighbours_.end());
 }
