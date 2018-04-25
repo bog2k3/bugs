@@ -315,25 +315,29 @@ void Bug::draw(RenderContext const &ctx) {
 }
 
 
-void Bug::onMotorLinesDetached(std::vector<unsigned> const& lines) {
-	if (!isAlive_ || !lines.size())
-		return;
-#ifdef DEBUG
-	LOGPREFIX("Bug");
-	LOG("motor lines detached: ");
-#endif
-	for (unsigned i : lines) {
-		if (motorLines_[i].second) {
-#ifdef DEBUG
-			LOGNP(i << ", ");
-#endif
-			motorLines_[i].second->removeTarget(motorLines_[i].first);
-		}
-		motorLines_[i] = std::make_pair(nullptr, nullptr);
-	}
-#ifdef DEBUG
-	LOGNP("\n");
-#endif
+void Bug::onJointBreak(Joint* joint) {
+//	if (!isAlive_ || !lines.size())
+//		return;
+//#ifdef DEBUG
+//	LOGPREFIX("Bug");
+//	LOG("motor lines detached: ");
+//#endif
+//	for (unsigned i : lines) {
+//		if (motorLines_[i].second) {
+//#ifdef DEBUG
+//			LOGNP(i << ", ");
+//#endif
+//			motorLines_[i].second->removeTarget(motorLines_[i].first);
+//		}
+//		motorLines_[i] = std::make_pair(nullptr, nullptr);
+//	}
+//#ifdef DEBUG
+//	LOGNP("\n");
+//#endif
+
+	// TODO detach all neural lines that pass through the joint
+	//throw std::runtime_error("Implement!");
+	ERROR("Implement detach all neural lines that pass through the joint\n" << __FUNCTION__);
 }
 
 Bug* Bug::newBasicBug(glm::vec2 position) {

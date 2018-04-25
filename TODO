@@ -56,6 +56,8 @@
 	- [X] joints and muscles are not created explicitly any more - remove them from hyperspace
 	- [X] must rethink muscle linkange and body part hierarchies
 	- [ ] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
+	- [ ] BodyParts hold a list of all their neighbours - Joints are treated as part of the graph as well, so the BodyParts will actually hold links to joints, not directly to other BodyParts (with the exception of Muscles which are attached directly to the left-side body part)
+		-- in this way the mass of the whole body can be easily computed (Joints have mass too) and the whole thing becomes more uniform
 	- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
 	- [X] !!! proteins are NOT inherited !!!
 	- [X] default child cell genome offset is 0 - same genes as parent

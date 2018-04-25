@@ -26,6 +26,10 @@ public:
 
 	virtual void update(float dt);
 
+	void breakJoint();
+
+	Event<void(Joint*)> jointBreak;
+
 protected:
 	BodyPart* leftAnchor_;
 	BodyPart* rightAnchor_;

@@ -34,6 +34,7 @@ class Ribosome;
 class ZygoteShell;
 class EggLayer;
 class BodyPart;
+class Joint;
 
 class Bug : public Entity {
 public:
@@ -139,7 +140,7 @@ protected:
 
 	void updateEmbryonicDevelopment(float dt);
 	void updateDeadDecaying(float dt);
-	void onMotorLinesDetached(std::vector<unsigned> const& lines);
+	void onJointBreak(Joint* joint);
 	void fixAllGeneValues();
 	static Chromosome createBasicChromosome();
 

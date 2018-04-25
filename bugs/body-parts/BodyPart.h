@@ -47,10 +47,6 @@ public:
 
 	inline BodyPartType getType() const { return type_; }
 
-	// detaches this body part along with all its children from the parent part, breaking all neural connections.
-	// this part and its children may die as a result of this operation if the parameter is true
-	virtual void detach(bool die);
-
 	/**
 	 * return the attachment point for a neighbor of the current part, in the specified direction
 	 * (in current's part coordinate frame).
@@ -137,7 +133,12 @@ public:
 	 */
 //	void removeAllLinks();
 
+	void addNeighbor(BodyPart* n);
+
 	void removeNeighbor(BodyPart* n);
+
+	// breaks all links with neighbors, disconnecting from both sides and removing joints if present
+	void disconnectAllNeighbors();
 
 	// dead body parts turn into food
 	void die();
@@ -212,7 +213,7 @@ protected:
 
 //	friend class JointPivot;
 
-	virtual void detachMotorLines(std::vector<unsigned> const& lines);
+	//virtual void detachMotorLines(std::vector<unsigned> const& lines);
 	//virtual void hierarchyMassChanged();
 
 	void buildDebugName(std::stringstream &out_stream) const;

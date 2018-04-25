@@ -52,6 +52,7 @@
 #include "BodyCell.h"
 #include "../neuralnet/InputSocket.h"
 #include "../entities/Bug.h"
+#include "../ObjectTypesAndFlags.h"
 
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
@@ -119,6 +120,7 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 
 	onDied.add([this](BodyPart*) {
 		context_.updateList.remove(this);
+		updateFixtures();
 	});
 }
 
@@ -136,8 +138,7 @@ void Muscle::setJoint(JointPivot* joint) {
 void Muscle::onJointDied(BodyPart* joint) {
 	assertDbg(joint == joint_);
 	joint_ = nullptr;
-	context_.updateList.remove(this);
-	// TODO create fixture?
+	die();
 }
 
 void Muscle::updateFixtures() {
@@ -145,9 +146,37 @@ void Muscle::updateFixtures() {
 	World::assertOnMainThread();
 #endif
 	if (!joint_) {
-		// no joint
+		// no joint, means we're dead
 		cachedPhiMin_ = 0;
-		// TODO must still set aspect ratio and width, length - maybe create a fixture?
+
+		// create fixture
+		float length = sqrtf(size_ * aspectRatio_);	// l = sqrt(s*a)
+		float width = length / aspectRatio_;		// w = l/a
+		float fRatio;
+		auto fSize = adjustFixtureValues({length, width}, fRatio);
+
+		// create fixture:
+		b2PolygonShape shape;
+		shape.SetAsBox(fSize.first * 0.5f, fSize.second * 0.5f); // our x and y mean length and width (because length is parallel to OX axis)
+		b2FixtureDef fixDef;
+		fixDef.density = density_ / fRatio;
+		fixDef.friction = 0.2f;		// TODO replace with BodyConst::constant
+		fixDef.restitution = 0.3f;	// same
+		fixDef.shape = &shape;
+
+		// create a physical body first
+		glm::vec3 wPos = getWorldTransformation();
+		PhysicsProperties props(vec3xy(wPos), wPos.z, true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
+		physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+		physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
+		physBody_.userPointer_ = this;
+		physBody_.userObjectType_ = ObjectTypes::BPART_MUSCLE;
+		physBody_.create(props);
+
+		physBody_.b2Body_->CreateFixture(&fixDef);
+
+		disconnectAllNeighbors();
+
 		return;
 	}
 
@@ -221,8 +250,15 @@ glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
 
 void Muscle::draw(RenderContext const& ctx) {
 #ifdef DEBUG_DRAW_MUSCLE
-	if (isDead() || !joint_)
+	if (isDead()) {
+		float ratio = sqrt((getFoodValue() / density_) / size_);
+		float length = sqrtf(size_ * aspectRatio_) * ratio;	// l = sqrt(s*a)
+		float width = length / aspectRatio_ * ratio;		// w = l/a
+		glm::vec3 worldTransform = getWorldTransformation();
+		Shape3D::get()->drawRectangleXOYCentered(vec3xy(worldTransform),
+			glm::vec2(length, width), worldTransform.z, glm::vec3(0.5, 0, 1));
 		return;
+	}
 	float l = lerp_lookup(phiToL_, nAngleSteps, getCurrentPhiSlice());
 	float crtAspect = sqr(l) / size_;	// squeeze
 	float w = sqrtf(size_ / crtAspect);
@@ -279,7 +315,11 @@ void Muscle::update(float dt) {
 }
 
 glm::vec3 Muscle::getWorldTransformation() const {
-	if (!joint_)
-		return anchor_;
-	return joint_->getLeftAnchor()->localToWorld(anchor_);
+	if (!neighbours_.size()) {
+		if (physBody_.b2Body_)
+			return { b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle() };
+		else
+			return anchor_;
+	}
+	return neighbours_[0]->localToWorld(anchor_);
 }

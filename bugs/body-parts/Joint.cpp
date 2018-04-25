@@ -114,8 +114,11 @@ glm::vec2 Joint::getAttachmentPoint(float relativeAngle) {
 
 void Joint::update(float dt) {
 	PERF_MARKER_FUNC;
-	if (!physJoint_ || dt == 0)
+	if (!physJoint_ || dt == 0) {
+		if (!physJoint_)
+			die();
 		return;
+	}
 	float invdt = 1.f / dt;
 	float reactionTorque = physJoint_->GetReactionTorque(invdt);
 	//float motorTorque = physJoint_->GetMotorTorque(invdt);
@@ -134,7 +137,6 @@ void Joint::update(float dt) {
 #endif
 	if (jointIsFUBAR || excessForce /*|| excessMTorque*/ || excessRTorque) {
 		// this joint is toast - must break free the downstream body parts
-#ifdef DEBUG
 		LOG("JOINT BREAK: " << /*getDebugName() <<*/ " (");
 		std::stringstream reason;
 		if (jointIsFUBAR)
@@ -147,33 +149,36 @@ void Joint::update(float dt) {
 			reason << "EXCESS-RTORQUE: " << reactionTorque << " [max:" << breakTorque() << "]";
 		LOGNP(reason.str() << ")\n");
 
-#endif
-		World::getInstance().queueDeferredAction([this] () {
-			die();
-			destroyPhysJoint();
-
-			leftAnchor_->removeNeighbor(rightAnchor_);
-			rightAnchor_->removeNeighbor(leftAnchor_);
-
-			auto hasMouth = [&](BodyPart* bp) {
-				return bp->getType() == BodyPartType::MOUTH;
-			};
-			auto hasEggLayer = [&](BodyPart* bp) {
-				return bp->getType() == BodyPartType::EGGLAYER;
-			};
-			auto diePred = [](BodyPart* bp) {
-				bp->die();
-				return false;
-			};
-			if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
-				// left sub-graph must die
-				leftAnchor_->applyPredicateGraph(diePred);
-			}
-			if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
-				// right sub-graph must die
-				rightAnchor_->applyPredicateGraph(diePred);
-			}
-		});
+		breakJoint();
 	}
 }
 
+void Joint::breakJoint() {
+	jointBreak.trigger(this);
+	World::getInstance().queueDeferredAction([this] () {
+		die();
+		destroyPhysJoint();
+
+		leftAnchor_->removeNeighbor(this);
+		rightAnchor_->removeNeighbor(this);
+
+		auto hasMouth = [&](BodyPart* bp) {
+			return bp->getType() == BodyPartType::MOUTH;
+		};
+		auto hasEggLayer = [&](BodyPart* bp) {
+			return bp->getType() == BodyPartType::EGGLAYER;
+		};
+		auto diePred = [](BodyPart* bp) {
+			bp->die();
+			return false;
+		};
+		if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
+			// left sub-graph must die
+			leftAnchor_->applyPredicateGraph(diePred);
+		}
+		if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
+			// right sub-graph must die
+			rightAnchor_->applyPredicateGraph(diePred);
+		}
+	});
+}

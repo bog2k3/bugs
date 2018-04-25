@@ -16,6 +16,7 @@ namespace ObjectTypes {
 enum values : uint32_t {
 	UNDEFINED		= 0,
 	BPART_BONE,
+	BPART_MUSCLE,
 	BPART_GRIPPER,
 	BPART_MOUTH,
 	BPART_FATCELL,

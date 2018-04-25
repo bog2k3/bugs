@@ -11,6 +11,7 @@
 #include "../entities/Bug.h"
 #include "../genetics/GeneDefinitions.h"
 #include "../ObjectTypesAndFlags.h"
+#include "Joint.h"
 
 #include <boglfw/math/box2glm.h>
 #include <boglfw/math/aabb.h>
@@ -84,8 +85,12 @@ BodyPart::~BodyPart() {
 }
 
 void BodyPart::destroy() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	destroyCalled_ = true;
-	detach(true);
+	die();
+	disconnectAllNeighbors();
 
 //	for (int i=0; i<nChildren_; i++)
 //		children_[i]->destroy();
@@ -126,7 +131,7 @@ void BodyPart::addMotorLine(int lineId) {
 //	return children_[bufferPos]->attachmentDirectionParent_;
 //}
 
-void BodyPart::detach(bool die) {
+/*void BodyPart::detach(bool die) {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
@@ -137,18 +142,18 @@ void BodyPart::detach(bool die) {
 		onDetachedFromParent();
 		parent_->hierarchyMassChanged();
 	}
-	parent_ = nullptr;*/
+	parent_ = nullptr;* /
 	if (die && !dead_)
 		this->die();
-}
+}*/
 
-void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
+/*void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
 //	if (parent_)
 //		parent_->detachMotorLines(lines);
-}
+}*/
 
 /*void BodyPart::remove(BodyPart* part) {
 #ifdef DEBUG
@@ -549,6 +554,29 @@ bool BodyPart::applyPredicateGraph(std::function<bool(BodyPart* pCurrent)> pred,
 	return false;
 }
 
+void BodyPart::addNeighbor(BodyPart* n) {
+#ifdef DEBUG
+	auto it = std::find(neighbours_.begin(), neighbours_.end(), n);
+	assert(it == neighbours_.end() && "Attempting to add the same neighbor twice");
+#endif
+	neighbours_.push_back(n);
+}
+
 void BodyPart::removeNeighbor(BodyPart* n) {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	neighbours_.erase(std::find(neighbours_.begin(), neighbours_.end(), n), neighbours_.end());
+}
+
+void BodyPart::disconnectAllNeighbors() {
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
+	for (auto n : neighbours_) {
+		n->removeNeighbor(this);
+		if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ == BodyPartType::JOINT_WELD)
+			static_cast<Joint*>(n)->breakJoint();
+	}
+	neighbours_.clear();
 }

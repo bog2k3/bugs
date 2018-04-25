@@ -431,11 +431,20 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 					bug_->bodyParts_.push_back(mr);
 					addMotor(ml, ml);
 					addMotor(mr, mr);
+
+					bpLeft->addNeighbor(ml);
+					ml->addNeighbor(bpLeft);
+					bpLeft->addNeighbor(mr);
+					mr->addNeighbor(bpLeft);
 				} else {
 					auto wj = new JointWeld(bug_->context_, *jointCell, bpLeft, bpRight);
 					j = wj;
 				}
 				bug_->bodyParts_.push_back(j);
+				j->jointBreak.add(std::bind(&Bug::onJointBreak, bug_, std::placeholders::_1));
+
+				bpLeft->addNeighbor(j);
+				bpRight->addNeighbor(j);
 			}
 		}
 	}
