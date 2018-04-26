@@ -143,6 +143,8 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 //					body_->destroy();
 //					body_ = nullptr;
 #warning "do whatever cleanup required here"
+					zygoteShell_->die();
+					deadBodyParts_.push_back(zygoteShell_);
 				});
 				return;
 #warning "this will live forever, must destroy bug instance and just leave a dummy zygote behind for food"
@@ -182,6 +184,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 						// must remove from eggLayers_ vector
 						eggLayers_.erase(std::remove(eggLayers_.begin(), eggLayers_.end(), dying));
 					}
+#warning "if all body parts are dead and expired, destroy bug entity"
 				});
 			}
 		}

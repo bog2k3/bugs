@@ -573,10 +573,15 @@ void BodyPart::disconnectAllNeighbors() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
+	std::vector<Joint*> jointsToBreak;
 	for (auto n : neighbours_) {
-		n->removeNeighbor(this);
 		if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ == BodyPartType::JOINT_WELD)
-			static_cast<Joint*>(n)->breakJoint();
+			jointsToBreak.push_back(static_cast<Joint*>(n));
+		else
+			n->removeNeighbor(this);
 	}
 	neighbours_.clear();
+	// break joints after the neighbor loop to avoid screwing iterators from recursively calling removeNeighbor
+	for (auto j : jointsToBreak)
+		j->breakJoint();
 }

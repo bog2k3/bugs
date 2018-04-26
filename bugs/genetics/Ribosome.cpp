@@ -363,9 +363,11 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		case BodyPartType::MOUTH:
 			bp = new Mouth(bug_->context_, *c);
 			break;
-		case BodyPartType::EGGLAYER:
-			bp = new EggLayer(bug_->context_, *c);
-			break;
+		case BodyPartType::EGGLAYER: {
+			auto e = new EggLayer(bug_->context_, *c);
+			bp = e;
+			bug_->eggLayers_.push_back(e);
+		} break;
 		case BodyPartType::BONE:
 			bp = new Bone(bug_->context_, *c);
 			break;
@@ -444,7 +446,9 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 				j->jointBreak.add(std::bind(&Bug::onJointBreak, bug_, std::placeholders::_1));
 
 				bpLeft->addNeighbor(j);
+				j->addNeighbor(bpLeft);
 				bpRight->addNeighbor(j);
+				j->addNeighbor(bpRight);
 			}
 		}
 	}
