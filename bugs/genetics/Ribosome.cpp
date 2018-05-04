@@ -443,7 +443,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 					j = wj;
 				}
 				bug_->bodyParts_.push_back(j);
-				j->jointBreak.add(std::bind(&Bug::onJointBreak, bug_, std::placeholders::_1));
+				j->onJointBreak.add(std::bind(&Bug::onJointBreak, bug_, std::placeholders::_1));
 
 				bpLeft->addNeighbor(j);
 				j->addNeighbor(bpLeft);

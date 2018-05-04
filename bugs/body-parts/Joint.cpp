@@ -43,7 +43,10 @@ Joint::~Joint() {
 }
 
 void Joint::onPhysJointDestroyed(b2Joint* joint) {
+	assertDbg(physJoint_ == joint);
 	physJoint_ = nullptr;
+	onJointBreak.trigger(this);
+	die();
 }
 
 void Joint::destroyPhysJoint() {
@@ -115,8 +118,6 @@ glm::vec2 Joint::getAttachmentPoint(float relativeAngle) {
 void Joint::update(float dt) {
 	PERF_MARKER_FUNC;
 	if (!physJoint_ || dt == 0) {
-		if (!physJoint_)
-			die();
 		return;
 	}
 	float invdt = 1.f / dt;
@@ -154,31 +155,31 @@ void Joint::update(float dt) {
 }
 
 void Joint::breakJoint() {
-	jointBreak.trigger(this);
-	World::getInstance().queueDeferredAction([this] () {
-		die();
-		destroyPhysJoint();
+	onJointBreak.trigger(this);
+	die();
 
+	auto hasMouth = [&](BodyPart* bp) {
+		return bp->getType() == BodyPartType::MOUTH;
+	};
+	auto hasEggLayer = [&](BodyPart* bp) {
+		return bp->getType() == BodyPartType::EGGLAYER;
+	};
+	auto diePred = [](BodyPart* bp) {
+		bp->die();
+		return false;
+	};
+	if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
+		// left sub-graph must die
+		leftAnchor_->applyPredicateGraph(diePred);
+	}
+	if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
+		// right sub-graph must die
+		rightAnchor_->applyPredicateGraph(diePred);
+	}
+
+	World::getInstance().queueDeferredAction([this] () {
+		destroyPhysJoint();
 		leftAnchor_->removeNeighbor(this);
 		rightAnchor_->removeNeighbor(this);
-
-		auto hasMouth = [&](BodyPart* bp) {
-			return bp->getType() == BodyPartType::MOUTH;
-		};
-		auto hasEggLayer = [&](BodyPart* bp) {
-			return bp->getType() == BodyPartType::EGGLAYER;
-		};
-		auto diePred = [](BodyPart* bp) {
-			bp->die();
-			return false;
-		};
-		if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
-			// left sub-graph must die
-			leftAnchor_->applyPredicateGraph(diePred);
-		}
-		if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
-			// right sub-graph must die
-			rightAnchor_->applyPredicateGraph(diePred);
-		}
 	});
 }

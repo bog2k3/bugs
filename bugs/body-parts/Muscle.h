@@ -13,6 +13,7 @@
 
 #define DEBUG_DRAW_MUSCLE
 
+class Joint;
 class JointPivot;
 class InputSocket;
 
@@ -54,6 +55,7 @@ protected:
 	float insertionAngle_[2];
 
 	glm::vec3 anchor_ {0};	// anchor (first insertion point) into left cell's coordinate frame
+	mutable glm::vec3 cachedWPos_;
 
 #ifdef DEBUG_DRAW_MUSCLE
 	float phiToL_[nAngleSteps];
@@ -71,7 +73,7 @@ protected:
 	//void onAddedToParent() override;
 
 private:
-	void onJointDied(BodyPart* j);
+	void onJointBreak(Joint* j);
 };
 
 #endif /* OBJECTS_BODY_PARTS_MUSCLE_H_ */

@@ -28,7 +28,7 @@ public:
 
 	void breakJoint();
 
-	Event<void(Joint*)> jointBreak;
+	Event<void(Joint*)> onJointBreak;
 
 protected:
 	BodyPart* leftAnchor_;

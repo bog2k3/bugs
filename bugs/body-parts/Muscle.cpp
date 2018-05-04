@@ -132,11 +132,12 @@ void Muscle::setJoint(JointPivot* joint) {
 	assert(!joint_ && "only call this once per instance!");
 	assert(joint && "invalid arg (null)");
 	joint_ = joint;
-	joint_->onDied.add(std::bind(&Muscle::onJointDied, this, std::placeholders::_1));
+	joint_->onJointBreak.add(std::bind(&Muscle::onJointBreak, this, std::placeholders::_1));
 }
 
-void Muscle::onJointDied(BodyPart* joint) {
-	assertDbg(joint == joint_);
+void Muscle::onJointBreak(Joint* j) {
+	assertDbg(j == joint_);
+	getWorldTransformation(); // update cachedWPos_
 	joint_ = nullptr;
 	die();
 }
@@ -165,7 +166,7 @@ void Muscle::updateFixtures() {
 		fixDef.shape = &shape;
 
 		// create a physical body first
-		glm::vec3 wPos = getWorldTransformation();
+		glm::vec3 wPos = cachedWPos_;
 		PhysicsProperties props(vec3xy(wPos), wPos.z, true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
 		physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 		physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
@@ -317,9 +318,8 @@ void Muscle::update(float dt) {
 glm::vec3 Muscle::getWorldTransformation() const {
 	if (!neighbours_.size()) {
 		if (physBody_.b2Body_)
-			return { b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle() };
-		else
-			return anchor_;
-	}
-	return neighbours_[0]->localToWorld(anchor_);
+			cachedWPos_ = glm::vec3{ b2g(physBody_.b2Body_->GetPosition()), physBody_.b2Body_->GetAngle() };
+	} else
+		cachedWPos_ = neighbours_[0]->localToWorld(anchor_);
+	return cachedWPos_;
 }

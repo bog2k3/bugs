@@ -21,6 +21,7 @@
 #include <vector>
 //#include <map>
 #include <memory>
+#include <atomic>
 //#include <ostream>
 
 class UpdateList;
@@ -143,7 +144,7 @@ public:
 	// dead body parts turn into food
 	void die();
 
-	inline bool isDead() const { return dead_; }
+	inline bool isDead() const { return dead_.load(std::memory_order_acquire); }
 
 	float getFoodValue() const { return foodValueLeft_; }
 	void consumeFoodValue(float amount);
@@ -244,7 +245,7 @@ private:
 	//UpdateList* updateList_;
 	float lastCommitSize_inv_ = 0;
 	bool destroyCalled_ = false;
-	bool dead_ = false;
+	std::atomic<bool> dead_ { false };
 	float foodValueLeft_ = 0;
 
 	ThreadLocalValue<uint32_t> UOID_ = 0; // Unique Operation IDentifier

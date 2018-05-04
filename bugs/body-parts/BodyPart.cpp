@@ -47,7 +47,6 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 	, density_(cell.density())
 	, lastCommitSize_inv_(0)
 	, destroyCalled_(false)
-	, dead_(false)
 {
 	if (!suppressPhysicalBody) {
 		auto pos = cell.position();
@@ -68,7 +67,6 @@ BodyPart::BodyPart(glm::vec2 position, float angle, glm::vec2 velocity, float an
 	, density_(BodyConst::ZygoteDensity)
 	, lastCommitSize_inv_(0)
 	, destroyCalled_(false)
-	, dead_(false)
 {
 	size_ = mass / density_;
 	World::getInstance().queueDeferredAction([this, position, velocity, angle, angularVelocity] {
@@ -359,11 +357,8 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 }*/
 
 void BodyPart::die() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	if (!dead_) {
-		dead_ = true;
+	if (!isDead()) {
+		dead_.store(true, std::memory_order_release);
 		physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 		foodValueLeft_ = size_ * density_;
 		onDied.trigger(this);
@@ -371,7 +366,7 @@ void BodyPart::die() {
 }
 
 void BodyPart::consumeFoodValue(float amount) {
-	if (dead_) {
+	if (isDead()) {
 		foodValueLeft_ -= amount;
 	}
 }
