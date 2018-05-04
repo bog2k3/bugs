@@ -184,7 +184,8 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 						// must remove from eggLayers_ vector
 						eggLayers_.erase(std::remove(eggLayers_.begin(), eggLayers_.end(), dying));
 					}
-#warning "if all body parts are dead and expired, destroy bug entity"
+					if (bodyParts_.size() == 0)
+						kill();
 				});
 			}
 		}
@@ -246,8 +247,17 @@ void Bug::update(float dt) {
 	}
 	updateDeadDecaying(dt); // this updates all dead body parts
 
-	if (!isAlive_)
+	if (!isAlive_) {
+		bool hasDeadParts = false;
+		for (auto p : deadBodyParts_)
+			if (p != nullptr) {
+				hasDeadParts = true;
+				break;
+			}
+		if (!hasDeadParts)
+			destroy();
 		return;
+	}
 
 	{
 		PERF_MARKER("update-neuralNet");

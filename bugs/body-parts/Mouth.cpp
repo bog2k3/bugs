@@ -98,12 +98,18 @@ void Mouth::updateFixtures() {
 
 void Mouth::draw(RenderContext const& ctx) {
 #ifdef DEBUG_DRAW_MOUTH
-	float ratio = sqrt((getFoodValue() / density_) / size_);
+	float ratio = sqrt(usedBuffer_ / bufferSize_);
+	glm::vec3 color(0.8f, 0.5f, 0.f);
+	if (isDead()) {
+		ratio = sqrt((getFoodValue() / density_) / size_);
+		color = glm::vec3(0.5f, 0, 1);
+	}
 	float widthLeft = width_ * ratio;
 	float lengthLeft = length_ * ratio;
 	glm::vec3 worldTransform = getWorldTransformation();
-	Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5f,0,1));
+	Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(lengthLeft, widthLeft), worldTransform.z, color);
 #endif
+	BodyPart::draw(ctx);
 }
 
 void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
