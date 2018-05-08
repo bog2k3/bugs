@@ -135,8 +135,8 @@ public:
 //	void removeAllLinks();
 
 	void addNeighbor(BodyPart* n);
-
 	void removeNeighbor(BodyPart* n);
+	std::vector<BodyPart*> neighbors() const { return neighbours_; }
 
 	// breaks all links with neighbors, disconnecting from both sides and removing joints if present
 	void disconnectAllNeighbors();
@@ -157,7 +157,7 @@ public:
 	static Entity* getEntityFromBodyPartPhysBody(PhysicsBody const& body);
 
 #ifdef DEBUG
-	std::string getDebugName() const { throw std::runtime_error("Implement this!"); }
+	std::string getDebugName() const;
 #endif
 
 protected:
@@ -217,8 +217,6 @@ protected:
 	//virtual void detachMotorLines(std::vector<unsigned> const& lines);
 	//virtual void hierarchyMassChanged();
 
-	void buildDebugName(std::stringstream &out_stream) const;
-
 	/*
 	 * Adjusts a pair of values used for fixture size in order to avoid too small fixtures which would cause trouble with box2D.
 	 * the values are assumed to be multiplied together (as width*length for example) yielding a fixture whose area is proportional to this product.
@@ -247,6 +245,10 @@ private:
 	bool destroyCalled_ = false;
 	std::atomic<bool> dead_ { false };
 	float foodValueLeft_ = 0;
+
+#ifdef DEBUG
+	std::string divisionPath_;
+#endif
 
 	ThreadLocalValue<uint32_t> UOID_ = 0; // Unique Operation IDentifier
 };

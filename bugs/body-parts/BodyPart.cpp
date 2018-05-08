@@ -47,6 +47,9 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 	, density_(cell.density())
 	, lastCommitSize_inv_(0)
 	, destroyCalled_(false)
+#ifdef DEBUG
+	, divisionPath_(cell.getBranchString())
+#endif
 {
 	if (!suppressPhysicalBody) {
 		auto pos = cell.position();
@@ -409,72 +412,6 @@ void BodyPart::consumeFoodValue(float amount) {
 		parent_->hierarchyMassChanged();
 }*/
 
-void BodyPart::buildDebugName(std::stringstream &out_stream) const {
-#ifndef DEBUG
-	throw "BodyPart::buildDebugName(): Don't call this on release builds because it's slow";
-#endif
-	/*if (parent_) {
-		parent_->buildDebugName(out_stream);
-		out_stream << "::";
-	}
-	// compute attachment slice:
-	int slice = -1;
-	if (parent_)
-		slice = (int)(getAttachmentAngle() / (2*PI) * MAX_CHILDREN);
-	// compute own name from type & slice:
-	switch (type_) {
-	case BodyPartType::BONE:
-		out_stream << "Bone";
-		break;
-	case BodyPartType::EGGLAYER:
-		out_stream << "EggLayer";
-		break;
-	case BodyPartType::GRIPPER:
-		out_stream << "Gripper";
-		break;
-	case BodyPartType::JOINT:
-		out_stream << "Joint";
-		break;
-	case BodyPartType::MOUTH:
-		out_stream << "Mouth";
-		break;
-	case BodyPartType::MUSCLE:
-		out_stream << "Muscle";
-		break;
-	case BodyPartType::SENSOR_COMPASS:
-		out_stream << "SensorCompass";
-		break;
-//	case BodyPartType::SENSOR_DIRECTION:
-//		out_stream << "SensorDirection";
-//		break;
-	case BodyPartType::SENSOR_PROXIMITY:
-		out_stream << "SensorProximity";
-		break;
-	case BodyPartType::SENSOR_SIGHT:
-		out_stream << "SensorSight";
-		break;
-	case BodyPartType::TORSO:
-		out_stream << "Torso";
-		break;
-	case BodyPartType::ZYGOTE_SHELL:
-		out_stream << "ZygoteShell";
-		break;
-
-	default:
-		out_stream << "UNKNOWN";
-		break;
-	}
-	if (slice >= 0) {
-		out_stream << "(" << slice << ")";
-	}*/
-}
-
-/*std::string BodyPart::getDebugName() const {
-	std::stringstream ss;
-	buildDebugName(ss);
-	return ss.str();
-}*/
-
 Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
 	BodyPart* pPart = static_cast<BodyPart*>(body.userPointer_);
 	assertDbg(pPart);
@@ -579,4 +516,56 @@ void BodyPart::disconnectAllNeighbors() {
 	// break joints after the neighbor loop to avoid screwing iterators from recursively calling removeNeighbor
 	for (auto j : jointsToBreak)
 		j->breakJoint();
+}
+
+std::string BodyPart::getDebugName() const {
+	// compute own name from type & division branch:
+	std::string type;
+	switch (type_) {
+	case BodyPartType::BONE:
+		type = "Bone";
+		break;
+	case BodyPartType::EGGLAYER:
+		type = "EggLayer";
+		break;
+	case BodyPartType::GRIPPER:
+		type = "Gripper";
+		break;
+	case BodyPartType::JOINT_PIVOT:
+		type = "JointPivot";
+		break;
+	case BodyPartType::JOINT_WELD:
+		type = "JointWeld";
+		break;
+	case BodyPartType::MOUTH:
+		type = "Mouth";
+		break;
+	case BodyPartType::MUSCLE:
+		type = "Muscle";
+		break;
+	case BodyPartType::SENSOR_COMPASS:
+		type = "SensorCompass";
+		break;
+//	case BodyPartType::SENSOR_DIRECTION:
+//		type = "SensorDirection";
+//		break;
+	case BodyPartType::SENSOR_PROXIMITY:
+		type = "SensorProximity";
+		break;
+	case BodyPartType::SENSOR_SIGHT:
+		type = "SensorSight";
+		break;
+	case BodyPartType::ZYGOTE_SHELL:
+		type = "ZygoteShell";
+		break;
+	case BodyPartType::FAT:
+		type = "Fat";
+		break;
+
+	default:
+		type = "UNKNOWN";
+		break;
+	}
+
+	return type + " [" + divisionPath_ + "]";
 }

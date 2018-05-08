@@ -188,6 +188,17 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 						kill();
 				});
 			}
+#ifdef DEBUG
+			LOGLN("Body Structure begin ---------------------------------");
+			// print body structure
+			for (auto bp : bodyParts_) {
+				LOGLN(bp->getDebugName());
+				for (auto n : bp->neighbors()) {
+					LOGLN("\t" << n->getDebugName());
+				}
+			}
+			LOGLN("Body Structure end -----------------------------------");
+#endif
 		}
 	}
 }

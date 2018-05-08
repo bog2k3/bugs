@@ -60,6 +60,10 @@ public:
 		}
 		return branchCode[i] == 0;
 	}
+
+	std::string getBranchString() const {
+		return std::string(branch_.begin(), branch_.end());
+	}
 #endif
 
 protected:
