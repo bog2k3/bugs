@@ -191,11 +191,14 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 #ifdef DEBUG
 			LOGLN("Body Structure begin ---------------------------------");
 			// print body structure
+			int i=0;
 			for (auto bp : bodyParts_) {
-				LOGLN(bp->getDebugName());
+				LOGLN("#" << i << " " << bp->getDebugName());
 				for (auto n : bp->neighbors()) {
-					LOGLN("\t" << n->getDebugName());
+					int j = std::find(bodyParts_.begin(), bodyParts_.end(), n) - bodyParts_.begin();
+					LOGLN("\t" << n->getDebugName() << "\t -> #" << j);
 				}
+				i++;
 			}
 			LOGLN("Body Structure end -----------------------------------");
 #endif

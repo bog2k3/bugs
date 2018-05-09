@@ -11,6 +11,7 @@
 #include "../ObjectTypesAndFlags.h"
 
 #include <boglfw/World.h>
+#include <boglfw/renderOpenGL/Shape3D.h>
 
 #include <Box2D/Box2D.h>
 
@@ -116,4 +117,13 @@ void FatCell::updateFixtures() {
 	fixDef.shape = &shape;
 
 	physBody_.b2Body_->CreateFixture(&fixDef);
+}
+
+void FatCell::draw(RenderContext const& ctx) {
+	if (!isDead())
+		return;
+	glm::vec3 transform = getWorldTransformation();
+	glm::vec3 pos = {vec3xy(transform), 0};
+	float sizeLeft = getFoodValue() / density_;
+	Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
 }

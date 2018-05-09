@@ -17,6 +17,8 @@ public:
 	FatCell(BodyPartContext const& context, BodyCell& cell);
 	virtual ~FatCell();
 
+	void draw(RenderContext const& ctx) override;
+
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void updateFixtures() override;
 

@@ -30,7 +30,7 @@
 
 const glm::vec3 debug_color(1.f, 0.8f, 0.f);
 
-//#define DEBUG_DRAW_NOSE
+#define DEBUG_DRAW_NOSE
 
 Nose::Nose(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::SENSOR_PROXIMITY, context, cell)
@@ -57,27 +57,25 @@ Nose::~Nose() {
 }
 
 void Nose::draw(RenderContext const& ctx) {
-//	if (!noFixtures_) {
-//		// nothing to draw, physics will draw for us
-//	} else
-	{
 #ifdef DEBUG_DRAW_NOSE
-		glm::vec3 worldTransform = getWorldTransformation();
-		glm::vec3 zero {vec3xy(worldTransform), 0};
-		float sqA3 = sqrt(size_/3);
-		float base = 2 * sqA3;
-		float height = 3 * sqA3;
-		glm::vec3 vert[] {
-			glm::vec3(-height/2, base/2, 0),
-			glm::vec3(height/2, 0, 0),
-			glm::vec3(-height/2, -base/2, 0),
-			glm::vec3(-height/2, base/2, 0)
-		};
-		for (int i=0; i<4; i++)
-			vert[i] = zero + glm::vec3(glm::rotate(vec3xy(vert[i]), worldTransform.z), 0);
-		Shape3D::get()->drawLineStrip(vert, 4, debug_color);
+	if (!isDead())
+		return;
+	glm::vec3 worldTransform = getWorldTransformation();
+	glm::vec3 zero {vec3xy(worldTransform), 0};
+	float ratio = sqrt((getFoodValue() / density_) / size_);
+	float sqA3 = sqrt(size_/3);
+	float base = 2 * sqA3 * ratio;
+	float height = 3 * sqA3 * ratio;
+	glm::vec3 vert[] {
+		glm::vec3(-height/2, base/2, 0),
+		glm::vec3(height/2, 0, 0),
+		glm::vec3(-height/2, -base/2, 0),
+		glm::vec3(-height/2, base/2, 0)
+	};
+	for (int i=0; i<4; i++)
+		vert[i] = zero + glm::vec3(glm::rotate(vec3xy(vert[i]), worldTransform.z), 0);
+	Shape3D::get()->drawLineStrip(vert, 4, glm::vec3(0.5, 0, 1));
 #endif
-	}
 }
 
 static glm::vec2 getNoseAttachmentPoint(float size, float angle) {
