@@ -4,6 +4,8 @@
 #include "Prototype.h"
 #include "configFile.h"
 
+#include "OperationBreakJoint.h"
+
 #ifdef DEBUG
 #include "entities/Bug.h"
 #include "body-parts/Torso.h"
@@ -307,6 +309,7 @@ int main(int argc, char* argv[]) {
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationPan(InputEvent::MB_RIGHT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
+		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationBreakJoint(InputEvent::MB_MIDDLE)));
 
 		randSeed(1517598343);
 		//randSeed(time(NULL));

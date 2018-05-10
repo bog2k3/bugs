@@ -189,18 +189,18 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				});
 			}
 #ifdef DEBUG
-			LOGLN("Body Structure begin ---------------------------------");
-			// print body structure
-			int i=0;
-			for (auto bp : bodyParts_) {
-				LOGLN("#" << i << " " << bp->getDebugName());
-				for (auto n : bp->neighbors()) {
-					int j = std::find(bodyParts_.begin(), bodyParts_.end(), n) - bodyParts_.begin();
-					LOGLN("\t" << n->getDebugName() << "\t -> #" << j);
-				}
-				i++;
-			}
-			LOGLN("Body Structure end -----------------------------------");
+//			LOGLN("Body Structure begin ---------------------------------");
+//			// print body structure
+//			int i=0;
+//			for (auto bp : bodyParts_) {
+//				LOGLN("#" << i << " " << bp->getDebugName());
+//				for (auto n : bp->neighbors()) {
+//					int j = std::find(bodyParts_.begin(), bodyParts_.end(), n) - bodyParts_.begin();
+//					LOGLN("\t" << n->getDebugName() << "\t -> #" << j);
+//				}
+//				i++;
+//			}
+//			LOGLN("Body Structure end -----------------------------------");
 #endif
 		}
 	}
