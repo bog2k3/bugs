@@ -108,18 +108,11 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 }
 
 Bug::~Bug() {
-	if (zygoteShell_) {
-		zygoteShell_->destroy();
-		zygoteShell_ = nullptr;
-	}
-#warning "Destroy body parts here"
-	/*else if (body_) {
-		body_->destroy();
-		body_ = nullptr;
-	}*/ else {
-		for (auto bp : deadBodyParts_)
-			if (bp != nullptr)
-				bp->destroy();
+	for (auto p : bodyParts_)
+		p->destroy();
+	for (auto bp : deadBodyParts_) {
+		if (bp != nullptr)
+			bp->destroy();
 	}
 	if (ribosome_)
 		delete ribosome_;
@@ -138,16 +131,12 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 				// embryo not viable, discarded.
 				LOGLN("Embryo not viable. DISCARDED.");
 				World::getInstance().queueDeferredAction([this] {
-					//zygoteShell_->die_tree();
-//					body_->detach(false);
-//					body_->destroy();
-//					body_ = nullptr;
-#warning "do whatever cleanup required here"
 					zygoteShell_->die();
 					deadBodyParts_.push_back(zygoteShell_);
+					zygoteShell_ = nullptr;
+					kill();
 				});
 				return;
-#warning "this will live forever, must destroy bug instance and just leave a dummy zygote behind for food"
 			}
 
 			population++; // new member of the bug population
@@ -221,7 +210,8 @@ void Bug::updateDeadDecaying(float dt) {
 	for (unsigned i=0; i<deadBodyParts_.size(); i++) {
 		if (!!!deadBodyParts_[i])
 			continue;
-		deadBodyParts_[i]->consumeFoodValue(dt * WorldConst::BodyDecaySpeed);
+		float decaySpeed = max((float)WorldConst::BodyDecaySpeedThresh, deadBodyParts_[i]->size() * WorldConst::BodyDecaySpeedDensity);
+		deadBodyParts_[i]->consumeFoodValue(dt * decaySpeed);
 		if (deadBodyParts_[i]->getFoodValue() <= 0) {
 			World::getInstance().queueDeferredAction([this, i] {
 				deadBodyParts_[i]->destroy();
@@ -238,9 +228,8 @@ void Bug::kill() {
 			LOGLN("bug DIED");
 			--population; // one less bug
 			isAlive_ = false;
-			//body_->die_tree();
-//			body_ = nullptr;
-			throw std::runtime_error("implement!");
+			for (auto b : bodyParts_)
+				b->die();
 		}
 	});
 }

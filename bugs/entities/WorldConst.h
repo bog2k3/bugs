@@ -27,7 +27,8 @@ public:
 	static constexpr float GameteAttractForceFactor				= 30;				// force between 2 1kg gametes [N]
 	static constexpr unsigned MaxGenomeLengthDifference			= 10;				// max length difference that is still compatible
 
-	static constexpr float BodyDecaySpeed						= 2.e-3f;			// [kg/s] speed at which mass is lost from dead bodies
+	static constexpr float BodyDecaySpeedThresh					= 0.5e-3f;			// [kg/s] minimum speed at which mass is lost from dead bodies
+	static constexpr float BodyDecaySpeedDensity				= 5e-2f;			// [kg/s/m^2] decay speed per surface area
 };
 
 #endif /* OBJECTS_WORLDCONST_H_ */
