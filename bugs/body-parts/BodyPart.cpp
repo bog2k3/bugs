@@ -498,7 +498,9 @@ void BodyPart::removeNeighbor(BodyPart* n) {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	neighbours_.erase(std::remove(neighbours_.begin(), neighbours_.end(), n), neighbours_.end());
+	auto it = std::find(neighbours_.begin(), neighbours_.end(), n);
+	if (it != neighbours_.end())
+		neighbours_.erase(it);
 }
 
 void BodyPart::disconnectAllNeighbors() {
