@@ -51,16 +51,17 @@ Joint::~Joint() {
 void Joint::onPhysJointDestroyed(b2Joint* joint) {
 	assertDbg(physJoint_ == joint);
 	physJoint_ = nullptr;
-	onJointBreak.trigger(this);
-	die();
+	breakJoint();
 }
 
 void Joint::destroyPhysJoint() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	World::getInstance().getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
-	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
+	if (physJoint_) {
+		World::getInstance().getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
+		physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
+	}
 	physJoint_ = nullptr;
 }
 
@@ -160,13 +161,15 @@ void Joint::update(float dt) {
 }
 
 void Joint::breakJoint() {
-	onJointBreak.trigger(this);
 	die();
+	onJointBreak.trigger(this);
 
 	World::getInstance().queueDeferredAction([this] () {
 		destroyPhysJoint();
 		leftAnchor_->removeNeighbor(this);
 		rightAnchor_->removeNeighbor(this);
+		removeNeighbor(leftAnchor_);
+		removeNeighbor(rightAnchor_);
 
 		auto hasMouth = [&](BodyPart* bp) {
 			return bp->getType() == BodyPartType::MOUTH;
@@ -186,5 +189,8 @@ void Joint::breakJoint() {
 			// right sub-graph must die
 			rightAnchor_->applyPredicateGraph(diePred);
 		}
+
+		// consume all food value left - this will cause the Bug to destroy the joint in the next frame
+		consumeFoodValue(getFoodValue());
 	});
 }

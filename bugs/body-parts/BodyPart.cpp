@@ -360,12 +360,13 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 }*/
 
 void BodyPart::die() {
-	if (!isDead()) {
-		dead_.store(true, std::memory_order_release);
-		physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
-		foodValueLeft_ = size_ * density_;
-		onDied.trigger(this);
+	bool expect = false;
+	if (!dead_.compare_exchange_strong(expect, true, std::memory_order_acq_rel, std::memory_order_relaxed)) {
+		return;
 	}
+	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
+	foodValueLeft_ = size_ * density_;
+	onDied.trigger(this);
 }
 
 void BodyPart::consumeFoodValue(float amount) {
