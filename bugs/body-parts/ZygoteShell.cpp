@@ -83,7 +83,7 @@ void ZygoteShell::draw(RenderContext const& ctx) {
 			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), -3*PI/4 + transform.z), 0},
 			debug_color);
 		float sizeLeft = getFoodValue() / density_;
-		Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV)*0.6f, 12, glm::vec3(0.5f,0,1));
+		Shape3D::get()->drawCircleXOY(pos, sqrtf(sizeLeft*PI_INV), 12, glm::vec3(0.5f,0,1));
 	} else {
 		Shape3D::get()->drawLine({pos, 0},
 			{pos + glm::rotate(glm::vec2(sqrtf(size_ * PI_INV), 0), transform.z), 0},
