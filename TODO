@@ -1,3 +1,5 @@
+* [ ] next: Metabolism, eating, growing, fat-burning and replenish, egg-laying
+* [ ] next2: nerves and neurons
 * [ ] change synapse linkage - VMS based for each input and output
 	- [ ] gene for number of neuron inputs - float, integer part is used
 	- [ ] gene for each input vms coord and output coord - these are based on i/o index
@@ -17,8 +19,8 @@
 	- [ ] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
 
 * [X] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
-* [ ] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
-	- [ ] a small change by itself must be able to benefit the bug - current model is not good at this
+* [X] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
+	- [X] a small change by itself must be able to benefit the bug - current model is not good at this
 	- [X] new cell division based system
 		-- [X] cell division working prototype
 		-- [X] !! implement new mechanism in Ribosome
@@ -56,7 +58,7 @@
 	- [X] joints and muscles are not created explicitly any more - remove them from hyperspace
 	- [X] must rethink muscle linkange and body part hierarchies
 	- [ ] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
-	- [ ] BodyParts hold a list of all their neighbours - Joints are treated as part of the graph as well, so the BodyParts will actually hold links to joints, not directly to other BodyParts (with the exception of Muscles which are attached directly to the left-side body part)
+	- [X] BodyParts hold a list of all their neighbours - Joints are treated as part of the graph as well, so the BodyParts will actually hold links to joints, not directly to other BodyParts (with the exception of Muscles which are attached directly to the left-side body part)
 		-- in this way the mass of the whole body can be easily computed (Joints have mass too) and the whole thing becomes more uniform
 	- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
 	- [X] !!! proteins are NOT inherited !!!
@@ -70,8 +72,10 @@
 	- [ ] body attribute genes are read at any depth but only interpreted once - see below
 	- [ ] neural genes are read at all depths (from all cells) but are added into a set (via pointers) and only interpreted once
 	- [ ] when a joint between cells breaks, all synapses, motor lines and sensor lines passing through it are disconnected
-		-- [ ] also if some of the cells become isolated from energy sources they die
-		-- [ ] after a split, each of the two parts may live on if they have energy
+		-- [X] also if some of the cells become isolated from energy sources they die
+			-- body parts die when isolated from mouth or egg-layer
+		-- [X] after a split, each of the two parts may live on if they have energy
+			-- and if they both have mouths and egg-layers
 		-- [ ] must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
 	- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
