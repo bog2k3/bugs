@@ -29,14 +29,16 @@ Joint::Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAncho
 	, physJoint_(nullptr)
 {
 	assert(type == BodyPartType::JOINT_PIVOT || type == BodyPartType::JOINT_WELD);
-	World::getInstance().queueDeferredAction([this] {
-		updateFixtures();
-	});
-
+	
 	float mass = cell.jointMass();
 	float density = cell.mapJointAttribs_[GENE_JOINT_ATTR_DENSITY].clamp(
 						BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
 	overrideSizeAndDensity(mass / density, density);
+
+	World::getInstance().queueDeferredAction([this] {
+		updateFixtures();
+	});
+
 
 	context.updateList.add(this);
 }

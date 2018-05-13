@@ -150,13 +150,13 @@ void Muscle::updateFixtures() {
 		// no joint, means we're dead
 		cachedPhiMin_ = 0;
 
-		// create fixture
+		// compute size
 		float length = sqrtf(size_ * aspectRatio_);	// l = sqrt(s*a)
 		float width = length / aspectRatio_;		// w = l/a
 		float fRatio;
 		auto fSize = adjustFixtureValues({length, width}, fRatio);
 
-		// create fixture:
+		// configure fixture shape:
 		b2PolygonShape shape;
 		shape.SetAsBox(fSize.first * 0.5f, fSize.second * 0.5f); // our x and y mean length and width (because length is parallel to OX axis)
 		b2FixtureDef fixDef;
@@ -174,6 +174,7 @@ void Muscle::updateFixtures() {
 		physBody_.userObjectType_ = ObjectTypes::BPART_MUSCLE;
 		physBody_.create(props);
 
+		// create fixture:
 		physBody_.b2Body_->CreateFixture(&fixDef);
 
 		disconnectAllNeighbors();
