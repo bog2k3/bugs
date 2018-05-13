@@ -66,6 +66,7 @@ namespace configNames {
 	static auto constexpr disableMipMaps = "DISABLE_MIP_MAPS";
 	static auto constexpr screenWidth = "screen_width";
 	static auto constexpr screenHeight = "screen_height";
+	static auto constexpr disableMultithreading = "DISABLE_MULTITHREADING";
 
 /*
  * EXAMPLE CONFIG FILE - save as ~/.bugs.conf
@@ -73,6 +74,9 @@ namespace configNames {
 # set to non-zero to disable mip-map generation (to avoid crashing in virtualBox VM)
 # this will make text rendering lower quality
 DISABLE_MIP_MAPS = 0
+
+# set to non-zero to disable parallel processing for debug purposes. Performance will be lowered
+DISABLE_MULTITHREADING = 0
 
 screen_width = 1024
 screen_height = 720
@@ -239,6 +243,7 @@ int main(int argc, char* argv[]) {
 			{configNames::disableMipMaps, "0"},
 			{configNames::screenWidth, "1024"},
 			{configNames::screenHeight, "720"},
+			{configNames::disableMultithreading, "0"},
 		};
 		// read config options from file:
 		const char* pHomeDir = getenv("HOME");
@@ -289,7 +294,7 @@ int main(int argc, char* argv[]) {
 		physWld.SetDestructionListener(&destroyListener);
 
 		WorldConfig cfg;
-		cfg.disableParallelProcessing = true;
+		cfg.disableParallelProcessing = std::stoi(configOpts[configNames::disableMultithreading]) != 0;
 		World::setConfig(cfg);
 		World &world = World::getInstance();
 		registerEventHandlers(world);
