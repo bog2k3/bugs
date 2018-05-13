@@ -38,7 +38,8 @@ public:
 	void initializeGeneValues();
 
 	float density() const { return density_; }
-	float muscleMass(bool right) { return right ? muscleMassRight_ : muscleMassLeft_; }
+	float muscleMass(bool right) const { return right ? muscleMassRight_ : muscleMassLeft_; }
+	float jointMass() const { return jointMass_; }
 
 	void updateRotation();
 
@@ -84,6 +85,7 @@ private:
 
 	float muscleMassLeft_ = 0;
 	float muscleMassRight_ = 0;
+	float jointMass_ = 0;
 };
 
 #endif /* BODY_PARTS_BODYCELL_H_ */

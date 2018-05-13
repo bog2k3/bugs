@@ -6,6 +6,7 @@
  */
 
 #include "Joint.h"
+#include "BodyCell.h"
 
 #include <boglfw/World.h>
 #include <boglfw/math/box2glm.h>
@@ -31,6 +32,11 @@ Joint::Joint(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAncho
 	World::getInstance().queueDeferredAction([this] {
 		updateFixtures();
 	});
+
+	float mass = cell.jointMass();
+	float density = cell.mapJointAttribs_[GENE_JOINT_ATTR_DENSITY].clamp(
+						BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
+	overrideSizeAndDensity(mass / density, density);
 
 	context.updateList.add(this);
 }
@@ -79,8 +85,7 @@ void Joint::updateFixtures() {
 	auto bodyA = leftAnchor_->getBody().b2Body_;
 	auto bodyB = rightAnchor_->getBody().b2Body_;
 
-	float radius = sqrtf(size_*PI_INV);
-	assert(type_ != BodyPartType::JOINT_WELD || radius == 0);
+	float radius = (type_ == BodyPartType::JOINT_WELD) ? 0 : sqrtf(size_*PI_INV);
 	float dir = pointDirection(b2g(bodyB->GetPosition() - bodyA->GetPosition()));
 
 	glm::vec2 localAnchorA = leftAnchor_->getAttachmentPoint(dir - bodyA->GetAngle());

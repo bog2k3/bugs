@@ -232,17 +232,20 @@ bool Ribosome::step() {
 			// decide if cell will divide or specialize
 			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f) {
 				// check if division will create pivot joint, and if so, we need to subtract the mass required to make the joint and muscles
+				float cellMass = cell->density() * cell->size();
+				float jointMass = cellMass * cell->mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO].clamp(
+						BodyConst::MinJointMassRatio, BodyConst::MaxJointMassRatio);
+				float muscleMass = 0;
 				if (cell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f) {
-					float cellMass = cell->density() * cell->size();
-					float jointMass = cellMass * cell->mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO].clamp(
-							BodyConst::MinJointMassRatio, BodyConst::MaxJointMassRatio);
-					cell->muscleMassLeft_ = (cellMass-jointMass) * cell->mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO].clamp(
+					muscleMass += cell->muscleMassLeft_ = (cellMass-jointMass) * cell->mapLeftMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO].clamp(
 							BodyConst::MinMuscleMassRatio, BodyConst::MaxMuscleMassRatio);
-					cell->muscleMassRight_ = (cellMass-jointMass) * cell->mapRightMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO].clamp(
+					muscleMass += cell->muscleMassRight_ = (cellMass-jointMass) * cell->mapRightMuscleAttribs_[GENE_MUSCLE_ATTR_MASS_RATIO].clamp(
 							BodyConst::MinMuscleMassRatio, BodyConst::MaxMuscleMassRatio);
-					cell->size_ *= (cellMass - jointMass - cell->muscleMassLeft_ - cell->muscleMassRight_) / cellMass;
-					cell->setJointSize(jointMass / cellMass * cell->size_);
+					cell->setJointSize(jointMass / cell->mapJointAttribs_[GENE_JOINT_ATTR_DENSITY].clamp(
+							BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity));
 				}
+				cell->size_ *= (cellMass - jointMass - muscleMass) / cellMass;
+				cell->jointMass_ = jointMass;
 				// divide
 //#ifdef DEBUG
 //				if (cell->matchBranch("LLRR")) {
@@ -315,9 +318,6 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 	for (auto c : cells_) {
 		if (!c->isActive())
 			continue;
-//		if (c->matchBranch("LLRRRL")) {
-//			LOGLN("bone");
-//		}
 		// update cell's density:
 		updateCellDensity(*c);
 		// adjust the cell's shape:
@@ -419,7 +419,6 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 				assert(bpLeft && bpRight && "bodyparts for each side of the joint must exist!");
 				BodyCell* jointCell = static_cast<BodyCell*>(n.jointParent);
 				assert(jointCell && "joint cell must not be null!");
-				jointCell->size_ = jointCell->jointSize_;
 				bool pivotJoint = jointCell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f;
 				Joint* j = nullptr;
 				if (pivotJoint) {
