@@ -54,6 +54,8 @@ EggLayer::EggLayer(BodyPartContext const& context, BodyCell& cell)
 
 	onDied.add([this](BodyPart*) {
 		context_.updateList.remove(this);
+		suppressGrowth_ = true;
+		suppressRelease_ = true;
 	});
 }
 
@@ -133,12 +135,10 @@ float EggLayer::getFoodRequired() {
 }
 
 void EggLayer::useFood(float food) {
-	if (!suppressGrowth_) {
-		eggMassBuffer_ += food;
-		size_ = initialSize_ + eggMassBuffer_ * BodyConst::ZygoteDensityInv;
-		//applyScale_tree(1.f);
-		NOT_IMPLEMENTED;
-	}
+	eggMassBuffer_ += food;
+	size_ = initialSize_ + eggMassBuffer_ * BodyConst::ZygoteDensityInv;
+	//applyScale_tree(1.f);
+	NOT_IMPLEMENTED;
 }
 
 void EggLayer::updateFixtures() {

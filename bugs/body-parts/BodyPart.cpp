@@ -59,6 +59,7 @@ BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell c
 			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
 			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
 			physBody_.create(props);
+			lastCommitSize_inv_ = 1.f / size_;
 			updateFixtures();
 		});
 	}
