@@ -115,7 +115,7 @@ void Mouth::draw(RenderContext const& ctx) {
 void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	if (impulseMagnitude > 1000) {
 		//TODO implement hurt
-		throw std::runtime_error("Implement this!");
+		NOT_IMPLEMENTED;
 		return;
 	}
 	b2AABB otherAABB;

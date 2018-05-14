@@ -137,7 +137,7 @@ void EggLayer::useFood(float food) {
 		eggMassBuffer_ += food;
 		size_ = initialSize_ + eggMassBuffer_ * BodyConst::ZygoteDensityInv;
 		//applyScale_tree(1.f);
-		throw std::runtime_error("Implement!");
+		NOT_IMPLEMENTED;
 	}
 }
 

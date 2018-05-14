@@ -364,9 +364,14 @@ void BodyPart::die() {
 	if (!dead_.compare_exchange_strong(expect, true, std::memory_order_acq_rel, std::memory_order_relaxed)) {
 		return;
 	}
+#ifdef DEBUG
+	LOGLN("BodyPart::die() : " << getDebugName());
+#endif
 	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 	foodValueLeft_ = size_ * density_;
-	onDied.trigger(this);
+	World::getInstance().queueDeferredAction([this] {
+		onDied.trigger(this);
+	});
 }
 
 void BodyPart::consumeFoodValue(float amount) {
@@ -379,7 +384,7 @@ void BodyPart::consumeFoodValue(float amount) {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	throw std::runtime_error("implement!");
+	NOT_IMPLEMENTED;
 	//parent_ = nullptr;
 	//nChildren_ = 0;
 }*/

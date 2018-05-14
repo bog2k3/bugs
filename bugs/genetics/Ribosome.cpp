@@ -137,7 +137,7 @@ void Ribosome::initializeNeuralNetwork() {
 //		}
 //	}
 //#endif
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 void Ribosome::decodeDeferredGenes() {
@@ -163,7 +163,7 @@ void Ribosome::decodeDeferredGenes() {
 //		if (n.second.param.hasValue())
 //			bug_->neuralNet_->neurons[n.second.index]->neuralParam = n.second.param;
 //	}
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 template <typename T>
@@ -208,7 +208,7 @@ bool Ribosome::step() {
 		resolveNerveLinkage();
 		// commit neuron properties:
 //		commitNeurons();
-		throw std::runtime_error("Not implemented!");
+		NOT_IMPLEMENTED;
 
 		// clean up:
 		cleanUp();
@@ -729,27 +729,27 @@ void Ribosome::decodeSynapse(GeneSynapse const& g) {
 //	assert(!std::isnan(g.weight.value));
 //	mapSynapses_[key].weight.changeAbs(g.weight);
 //	mapSynapses_[key].priority.changeAbs(g.priority);
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
 //	if (hasNeuron(g.targetNeuron, false))
 //		mapNeurons_[g.targetNeuron].transfer.changeAbs(g.functionID);
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 void Ribosome::decodeNeuralBias(GeneNeuralBias const& g) {
 	assert(!std::isnan(g.value.value));
 //	if (hasNeuron(g.targetNeuron, false))
 //		mapNeurons_[g.targetNeuron].bias.changeAbs(g.value);
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 void Ribosome::decodeNeuralParam(GeneNeuralParam const& g) {
 	assert(!std::isnan(g.value.value));
 //	if (hasNeuron(g.targetNeuron, false))
 //		mapNeurons_[g.targetNeuron].param.changeAbs(g.value);
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
@@ -757,7 +757,7 @@ void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
 //	mapNeurons_[g.srcNeuronVirtIndex].outputVMSCoord.changeAbs(g.outCoord);
 //	// add this neuron into the outputNeurons_ set:
 //	outputNeurons_.insert(g.srcNeuronVirtIndex);
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
@@ -765,7 +765,7 @@ void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 //	mapNeurons_[g.destNeuronVirtIndex].inputVMSCoord.changeAbs(g.inCoord);
 //	// add this neuron into the inputNeurons_ set:
 //	inputNeurons_.insert(g.destNeuronVirtIndex);
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 //void Ribosome::createSynapse(int from, int to, SynapseInfo const& info) {
@@ -778,7 +778,7 @@ void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
 //	InputSocket* i = new InputSocket(pTo, info.weight);
 //	pTo->addInput(std::unique_ptr<InputSocket>(i), info.priority);
 //	pFrom->addTarget(i);
-//	throw std::runtime_error("Not implemented!");
+//	NOT_IMPLEMENTED;
 //}
 
 // returns -1 if none found
@@ -847,7 +847,7 @@ void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& ord
 //						<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
 //						<< " {lineId:" << nerveLineId << "}");
 //			}
-			throw std::runtime_error("Not implemented!");
+			NOT_IMPLEMENTED;
 #endif
 		}
 	}
@@ -903,7 +903,7 @@ void Ribosome::resolveNerveLinkage() {
 			motorInputs.push_back(std::make_pair(motors_[i]->getInputSocket(j), motors_[i]->getInputVMSCoord(j)));
 #ifdef DEBUG
 //			mapSockMotorInfo[motors_[i]->getInputSocket(j)] = std::make_pair(motors_[i]->getMotorDebugName(), j);
-			throw std::runtime_error("Not implemented!");
+			NOT_IMPLEMENTED;
 #endif
 		}
 	}
@@ -944,7 +944,7 @@ void Ribosome::resolveNerveLinkage() {
 //	sensors_.clear();
 //	inputNeurons_.clear();
 //	outputNeurons_.clear();
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 //void Ribosome::commitNeurons() {
@@ -1007,7 +1007,7 @@ void Ribosome::resolveMuscleLinkage() {
 //		m->setJoint(targetJoint, angleDiff(m->getAttachmentAngle(), targetJoint->getAttachmentAngle()) > 0 ? -1 : +1);
 //	}
 //	muscles_.clear();
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 
 bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {

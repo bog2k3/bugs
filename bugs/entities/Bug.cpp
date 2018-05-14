@@ -385,14 +385,14 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 float Bug::getMass() const {
 	return 1.f;//zygoteShell_ ? zygoteShell_->getMass() : body_ ? body_->getMass_tree() : 0;
 	// TODO
-	throw std::runtime_error("Implement this!");
+	NOT_IMPLEMENTED;
 }
 
 void Bug::serialize(BinaryStream &stream) const {
 	if (!isAlive_)
 		return;
 	// TODO
-	throw std::runtime_error("Implement this!");
+	NOT_IMPLEMENTED;
 //	glm::vec2 pos = getPosition();
 //	stream << pos.x << pos.y;
 //	glm::vec2 vel = getVelocity();
@@ -408,7 +408,7 @@ void Bug::deserialize(BinaryStream &stream) {
 	if (stream.getSize() == 0)
 		return; // this was a dead bug
 	// TODO
-	throw std::runtime_error("Implement this!");
+	NOT_IMPLEMENTED;
 	float posx, posy, velx, vely, mass;
 	stream >> /*posx >> posy >> velx >> vely >>*/ mass;
 	unsigned generation;

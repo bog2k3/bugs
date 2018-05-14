@@ -97,6 +97,6 @@ void ZygoteShell::updateCachedDynamicPropsFromBody() {
 //	props.angularVelocity = physBody_.b2Body_->GetAngularVelocity();
 //	props.position = b2g(physBody_.b2Body_->GetPosition());
 //	props.velocity = b2g(physBody_.b2Body_->GetLinearVelocity());
-	throw std::runtime_error("Not implemented!");
+	NOT_IMPLEMENTED;
 }
 

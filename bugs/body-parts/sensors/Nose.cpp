@@ -186,7 +186,7 @@ void Nose::updateFixtures() {
 //		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
 //		pJoint = nullptr;
 		// TODO
-		throw std::runtime_error("Implement this!");
+		NOT_IMPLEMENTED;
 	}
 
 	// create fixture:

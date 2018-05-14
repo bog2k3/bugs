@@ -146,7 +146,7 @@ void Joint::update(float dt) {
 #endif
 	if (jointIsFUBAR || excessForce /*|| excessMTorque*/ || excessRTorque) {
 		// this joint is toast - must break free the downstream body parts
-		LOG("JOINT BREAK: " << /*getDebugName() <<*/ " (");
+		LOG("JOINT BREAK: " << getDebugName() << " (");
 		std::stringstream reason;
 		if (jointIsFUBAR)
 			reason << "FUBAR";
@@ -164,9 +164,9 @@ void Joint::update(float dt) {
 
 void Joint::breakJoint() {
 	die();
-	onJointBreak.trigger(this);
 
 	World::getInstance().queueDeferredAction([this] () {
+		onJointBreak.trigger(this);
 		destroyPhysJoint();
 		leftAnchor_->removeNeighbor(this);
 		rightAnchor_->removeNeighbor(this);

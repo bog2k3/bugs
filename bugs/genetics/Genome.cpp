@@ -290,7 +290,7 @@ bool alterAtom(Atom<T> &a, float mutationChanceFactor) {
 }
 
 int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
-	throw std::runtime_error("Implement!");
+	NOT_IMPLEMENTED;
 	int altered = 0;
 	switch (g.type) {
 	case gene_type::STOP:
@@ -360,7 +360,7 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 }
 
 void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, float& swapCh, float& deleteCh) {
-	throw std::runtime_error("Implement!");
+	NOT_IMPLEMENTED;
 	deleteCh = g.chance_to_delete.value;
 	swapCh = g.chance_to_swap.value;
 	mutationCh = 0;
