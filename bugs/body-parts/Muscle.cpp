@@ -120,6 +120,7 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 
 	onDied.add([this](BodyPart*) {
 		context_.updateList.remove(this);
+		getWorldTransformation(); // update cachedWPos_
 		updateFixtures();
 	});
 }
@@ -137,7 +138,6 @@ void Muscle::setJoint(JointPivot* joint) {
 
 void Muscle::onJointBreak(Joint* j) {
 	assertDbg(j == joint_);
-	getWorldTransformation(); // update cachedWPos_
 	joint_ = nullptr;
 	die();
 }
@@ -146,8 +146,7 @@ void Muscle::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (!joint_) {
-		// no joint, means we're dead
+	if (isDead()) {
 		cachedPhiMin_ = 0;
 
 		// compute size
