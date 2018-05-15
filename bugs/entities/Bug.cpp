@@ -64,7 +64,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, growthMassBuffer_(0)
 	, maxGrowthMassBuffer_(0)
 	, cachedLeanMass_(0)
-	, cachedMassDirty_(false)
+	, cachedMassDirty_(true)
 	, context_(*this, bodyPartsUpdateList_)
 //	, initialFatMassRatio_(BodyConst::initialFatMassRatio)
 	, minFatMasRatio_(BodyConst::initialMinFatMassRatio)
@@ -141,23 +141,25 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			population++; // new member of the bug population
 
-//			float currentMass = 1.f;//body_->getMass_tree();
-//			float zygMass = zygoteShell_->getMass();
-
 			fixAllGeneValues();
 
-			// compute fat amount and scale up the torso to the correct size
-//			float fatMass = zygMass * initialFatMassRatio_;
-//			body_->setInitialFatMass(fatMass);
-//			cachedLeanMass_ = zygMass - fatMass;
+			// compute fat amount and lean mass
+			float fatMass = 0;
+			bodyParts_[0]->applyPredicateGraph([&fatMass] (auto b) {
+				if (b->getType() == BodyPartType::FAT)
+					fatMass += b->mass();
+				return false;
+			});
+			float zygMass = zygoteShell_->getMass();
+			cachedLeanMass_ = zygMass - fatMass;
+			cachedMassDirty_ = false;
 
-//			zygoteShell_->updateCachedDynamicPropsFromBody();
-			// commit all changes and create the physics bodies and fixtures:
-			//body_->commit_tree(cachedLeanMass_/currentMass);
+			for (auto e : eggLayers_) {
+				e->setTargetEggMass(eggMass_);
+			}
 
 			// delete embryo shell
 			World::getInstance().queueDeferredAction([this] {
-//				body_->detach(false);
 				zygoteShell_->destroy();
 				zygoteShell_ = nullptr;
 			});
@@ -197,11 +199,12 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 void Bug::fixAllGeneValues() {
 //	initialFatMassRatio_.reset(clamp(initialFatMassRatio_.get(), 0.f, 1.f));
+#warning "move constants into BodyConst"
 	minFatMasRatio_.reset(clamp(minFatMasRatio_.get(), 0.f, 1.f));
 	adultLeanMass_.reset(clamp(adultLeanMass_.get(), 0.f, 1.e+20f));
 	growthSpeed_.reset(clamp(growthSpeed_.get(), 0.f, 1.e+20f));
 	reproductiveMassRatio_.reset(clamp(reproductiveMassRatio_.get(), 0.f, 1.f));
-	eggMass_.reset(clamp(eggMass_.get(), 0.f, 1.e+20f));
+	eggMass_.reset(clamp(eggMass_.get(), BodyConst::MinEggMass, BodyConst::MaxEggMass));
 	maxGrowthMassBuffer_ = growthSpeed_ * 100;	// can hold enough growth mass for 100 seconds
 }
 
@@ -291,9 +294,13 @@ void Bug::update(float dt) {
 		float massToGrow = growthSpeed_ * dt;
 		if (massToGrow > growthMassBuffer_)
 			massToGrow = growthMassBuffer_;
-		growthMassBuffer_ -= massToGrow;
-		cachedLeanMass_ += massToGrow;
-		//body_->applyScale_tree(cachedLeanMass_ / body_->getMass_tree());
+		if (massToGrow > 0) {
+			growthMassBuffer_ -= massToGrow;
+			cachedLeanMass_ += massToGrow;
+			for (auto b : bodyParts_)
+				if (b->getType() != BodyPartType::FAT)
+					b->applyScale(cachedLeanMass_ / (cachedLeanMass_ - massToGrow));
+		}
 	} else {
 		// adult life
 	}

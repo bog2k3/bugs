@@ -157,6 +157,7 @@ void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {
 	float bufferAvail = bufferSize_ - usedBuffer_;
 	float actualFoodAmountTransferred = min(bufferAvail, maxSwallow);
 	usedBuffer_ += actualFoodAmountTransferred;
+	assert(!std::isnan(usedBuffer_));
 
 	// LOGLN("eat " << (int)pOther->userObjectType_ << " in amount: " << actualFoodAmountTransferred);
 

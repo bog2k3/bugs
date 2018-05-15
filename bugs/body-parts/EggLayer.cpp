@@ -137,8 +137,7 @@ float EggLayer::getFoodRequired() {
 void EggLayer::useFood(float food) {
 	eggMassBuffer_ += food;
 	size_ = initialSize_ + eggMassBuffer_ * BodyConst::ZygoteDensityInv;
-	//applyScale_tree(1.f);
-	NOT_IMPLEMENTED;
+	applyScale(1.f);
 }
 
 void EggLayer::updateFixtures() {

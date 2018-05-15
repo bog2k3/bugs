@@ -183,10 +183,6 @@ void Nose::updateFixtures() {
 	if (physBody_.b2Body_->GetFixtureList()) {
 		physBody_.b2Body_->DestroyFixture(
 				&physBody_.b2Body_->GetFixtureList()[0]);
-//		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
-//		pJoint = nullptr;
-		// TODO
-		NOT_IMPLEMENTED;
 	}
 
 	// create fixture:

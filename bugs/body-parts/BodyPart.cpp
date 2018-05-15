@@ -324,41 +324,28 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 	return mass;
 }*/
 
-/*void BodyPart::applyScale_tree(float scale) {
-	applyScale_treeImpl(scale, false);
-}*/
-
-/*bool BodyPart::applyScale_treeImpl(float scale, bool parentChanged) {
+void BodyPart::applyScale(float scale) {
 	size_ *= scale;
-	bool committed_now = false, should_commit_joint = false;
-	if (committed_) {
-		if (size_ * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
-				|| size_ * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
-		{
-			lastCommitSize_inv_ = 1.f / size_;
-			if (type_ != BodyPartType::JOINT) {
-				World::getInstance().queueDeferredAction([this] {
-					commit();
-				});
-				committed_now = true;
-			} else
-				should_commit_joint = true;
+	if (size_ * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
+			|| size_ * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
+	{
+		lastCommitSize_inv_ = 1.f / size_;
+		World::getInstance().queueDeferredAction([this] {
+			updateFixtures();
+		});
+		if (type_ != BodyPartType::JOINT_PIVOT && type_ != BodyPartType::JOINT_WELD) {
+			// must update all neighbouring joints since the fixture has changed
+#warning "Optimize: Put all joints in a set and update them only once at the end- if more bodyparts get scaled in the same frame they will be update multiple times"
+			World::getInstance().queueDeferredAction([this] {
+				for (auto n : neighbours_) {
+					if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ != BodyPartType::JOINT_WELD) {
+						n->updateFixtures();
+					}
+				}
+			});
 		}
 	}
-	bool child_changed = false;
-	for (int i=0; i<nChildren_; i++) {
-		child_changed |= children_[i]->applyScale_treeImpl(scale, committed_now);
-	}
-	if (type_ == BodyPartType::JOINT && committed_ && (should_commit_joint || parentChanged || child_changed)) {
-		// must commit a joint whenever the threshold is reached, or parent or child has committed
-		World::getInstance().queueDeferredAction([this] {
-			commit();
-		});
-		committed_now = true;
-	}
-
-	return committed_now;
-}*/
+}
 
 void BodyPart::die() {
 	bool expect = false;

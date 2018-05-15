@@ -91,8 +91,8 @@ public:
 	/* returns the mass of the part and its entire subtree */
 	//virtual float getMass_tree();
 
-	/* scale the part and all its children by a given amount */
-	//virtual void applyScale_tree(float scale);
+	/* scale the part by a factor; the part's fixtures and all the connecting joints are updated when a scale threshold is reached */
+	virtual void applyScale(float scale);
 
 	// draws the whole tree of body-parts
 	//void draw_tree(RenderContext const& ctx);
@@ -232,7 +232,6 @@ protected:
 private:
 	//void reverseUpdateCachedProps();
 	//glm::vec2 getParentSpacePosition();
-	//bool applyScale_treeImpl(float scale, bool parentChanged);
 	//void purge_initializationData();
 	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
 	//inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
