@@ -78,7 +78,7 @@ glm::vec3 JointPivot::getWorldTransformation() const {
 		return {0.f, 0.f, 0.f};
 	}
 	auto anchorA = physJoint_->GetAnchorA();
-	float angle = pointDirection(b2g(anchorA - physJoint_->GetBodyA()->GetPosition())) + b2PJoint()->GetJointAngle();
+	float angle = pointDirection(b2g(anchorA - physJoint_->GetBodyA()->GetPosition()));
 	return {b2g(anchorA), angle};
 }
 

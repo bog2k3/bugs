@@ -76,11 +76,14 @@ public:
 
 	// default values for whole-body attributes:
 //	static constexpr float initialFatMassRatio				= 0.3f;			// [*] fraction of total mass that is fat
-	static constexpr float initialMinFatMassRatio			= 0.15f;		// [*] fat percentage of total body weight. below this fraction, growth is halted
+	static constexpr float initialMinFatMassRatio			= 0.15f;		// [*] fat percentage of total body weight. below this fraction, growth and egg production are halted
 	static constexpr float initialAdultLeanMass				= 6.f;			// [kg]
 	static constexpr float initialGrowthSpeed				= 20.e-3f;		// [kg/s] how fast lean mass can be added to the body
 	static constexpr float initialEggMass					= 0.5f;			// [kg] mass of egg
 	static constexpr float initialEggEjectSpeed				= 0.6f;			// [m/s]
+	static constexpr float initialDevelopmentMassThreshRatio= 0.5f;			// [*] fraction of adult lean mass after which egg production starts
+	static constexpr float minDevelopmentMassThreshRatio	= 0.2f;			// [*] minimum value for above
+	static constexpr float maxDevelopmentMassThreshRatio	= 0.99f;		// [*] maximum value for above
 	static constexpr float initialReproductiveMassRatio		= 0.35f;		// [*] fraction of growth mass that is invested in creating eggs
 
 	static constexpr float MaxVMSCoordinateValue			= 1000.f;		// Virtual Matching Space span

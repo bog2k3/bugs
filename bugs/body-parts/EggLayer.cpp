@@ -144,12 +144,6 @@ void EggLayer::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (physBody_.b2Body_->GetFixtureList()) {
-		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
-//		physBody_.b2Body_->GetWorld()->DestroyJoint(pJoint);
-//		pJoint = nullptr;
-	}
-
 	float fRatio;
 	auto fSize = adjustFixtureValues({size_, 0.f}, fRatio);
 

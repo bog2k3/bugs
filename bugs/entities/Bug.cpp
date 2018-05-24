@@ -71,6 +71,7 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, adultLeanMass_(BodyConst::initialAdultLeanMass)
 	, growthSpeed_(BodyConst::initialGrowthSpeed)
 	, reproductiveMassRatio_(BodyConst::initialReproductiveMassRatio)
+	, developmentMassThreshRatio_(BodyConst::initialDevelopmentMassThreshRatio)
 	, eggMass_(BodyConst::initialEggMass)
 	, generation_(generation)
 	, cachedAABBFramesOld_(randi(AABB_CACHE_MAX_FRAMES))
@@ -99,12 +100,24 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	mapBodyAttributes_[GENE_BODY_ATTRIB_GROWTH_SPEED] = &growthSpeed_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO] = &reproductiveMassRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_EGG_MASS] = &eggMass_;
+	mapBodyAttributes_[GENE_BODY_DEVELOPMENT_MASS_THRESH_RATIO] = &developmentMassThreshRatio_;
 
 	ribosome_->addDefaultSensor(&lifeTimeSensor_);
 
 	if (generation_ > maxGeneration)
 		maxGeneration = generation_;
 	freeZygotes++;
+
+#ifdef DEBUG
+	debugValueGetters_["growthMassBuffer"] = [this] { return growthMassBuffer_; };
+	debugValueGetters_["maxGrowthMassBuffer"] = [this] { return maxGrowthMassBuffer_; };
+	debugValueGetters_["cachedLeanMass"] = [this] { return cachedLeanMass_; };
+	debugValueGetters_["actualGrowthSpeed"] = [this] { return actualGrowthSpeed_; };
+	debugValueGetters_["eggGrowthSpeed"] = [this] { return eggGrowthSpeed_; };
+	debugValueGetters_["fatGrowthSpeed"] = [this] { return fatGrowthSpeed_; };
+	debugValueGetters_["frameFoodProcessed"] = [this] { return frameFoodProcessed_; };
+	debugValueGetters_["frameEnergyUsed"] = [this] { return frameEnergyUsed_; };
+#endif
 }
 
 Bug::~Bug() {
@@ -144,12 +157,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			fixAllGeneValues();
 
 			// compute fat amount and lean mass
-			float fatMass = 0;
-			bodyParts_[0]->applyPredicateGraph([&fatMass] (auto b) {
-				if (b->getType() == BodyPartType::FAT)
-					fatMass += b->mass();
-				return false;
-			});
+			float fatMass = getTotalFatMass();
 			float zygMass = zygoteShell_->getMass();
 			cachedLeanMass_ = zygMass - fatMass;
 			cachedMassDirty_ = false;
@@ -206,6 +214,7 @@ void Bug::fixAllGeneValues() {
 	reproductiveMassRatio_.reset(clamp(reproductiveMassRatio_.get(), 0.f, 1.f));
 	eggMass_.reset(clamp(eggMass_.get(), BodyConst::MinEggMass, BodyConst::MaxEggMass));
 	maxGrowthMassBuffer_ = growthSpeed_ * 100;	// can hold enough growth mass for 100 seconds
+	developmentMassThreshRatio_.reset(clamp(developmentMassThreshRatio_.get(), BodyConst::minDevelopmentMassThreshRatio, BodyConst::maxDevelopmentMassThreshRatio));
 }
 
 void Bug::updateDeadDecaying(float dt) {
@@ -244,6 +253,13 @@ void Bug::update(float dt) {
 		return;
 	}
 
+#ifdef DEBUG
+	eggGrowthSpeed_ = 0;
+	fatGrowthSpeed_ = 0;
+	frameFoodProcessed_ = 0;
+	frameEnergyUsed_ = 0;
+#endif
+
 	cachedAABBFramesOld_++;
 
 	lifeTimeSensor_.update(dt);
@@ -252,6 +268,11 @@ void Bug::update(float dt) {
 		bodyPartsUpdateList_.update(dt);
 	}
 	updateDeadDecaying(dt); // this updates all dead body parts
+
+#ifdef DEBUG
+	eggGrowthSpeed_ /= dt;
+	fatGrowthSpeed_ /= dt;
+#endif
 
 	if (!isAlive_) {
 		bool hasDeadParts = false;
@@ -300,6 +321,9 @@ void Bug::update(float dt) {
 			for (auto b : bodyParts_)
 				if (b->getType() != BodyPartType::FAT)
 					b->applyScale(cachedLeanMass_ / (cachedLeanMass_ - massToGrow));
+#ifdef DEBUG
+			actualGrowthSpeed_ = massToGrow / dt;
+#endif
 		}
 	} else {
 		// adult life
@@ -489,12 +513,14 @@ void Bug::consumeEnergy(float totalAmount) {
 			amountConsumed += f->consumeEnergy(amountToConsume);
 		}
 	}
+	frameEnergyUsed_ += totalAmount;
 }
 
 void Bug::onFoodProcessed(float mass) {
 	/*
 	 * if fat is below critical ratio, all food goes to replenish it
 	 * else if not at full size, a fraction of food is used for filling up the growth buffer.
+	 * if bigger than developmentMassThreshRatio_ * adultLeanMass_ some food is invested into making eggs
 	 * the rest of the food turns into energy and fat.
 	 */
 	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
@@ -505,17 +531,19 @@ void Bug::onFoodProcessed(float mass) {
 	float growthMass = 0;
 	float eggMass = 0;
 	if (fatMassRatio >= minFatMasRatio_) {
-		// use some food to make eggs:
-		eggMass = mass * reproductiveMassRatio_;
-		float totalFoodRequired = 0;
-		for (int i=0; i<(int)eggLayers_.size(); i++)
-			totalFoodRequired += eggLayers_[i]->getFoodRequired();
-		if (totalFoodRequired > 0) {
-			float availPerTotal = eggMass / totalFoodRequired;
+		if (cachedLeanMass_ >= adultLeanMass_ * developmentMassThreshRatio_) {
+			// use some food to make eggs:
+			eggMass = mass * reproductiveMassRatio_;
+			float totalFoodRequired = 0;
 			for (int i=0; i<(int)eggLayers_.size(); i++)
-				eggLayers_[i]->useFood(eggLayers_[i]->getFoodRequired() * availPerTotal);
-		} else
-			eggMass = 0;
+				totalFoodRequired += eggLayers_[i]->getFoodRequired();
+			if (totalFoodRequired > 0) {
+				float availPerTotal = eggMass / totalFoodRequired;
+				for (int i=0; i<(int)eggLayers_.size(); i++)
+					eggLayers_[i]->useFood(eggLayers_[i]->getFoodRequired() * availPerTotal);
+			} else
+				eggMass = 0;
+		}
 		// use some food to grow the body:
 		if (cachedLeanMass_ < adultLeanMass_) {
 			growthMass = mass - eggMass;
@@ -540,4 +568,18 @@ void Bug::onFoodProcessed(float mass) {
 		float amountToDistribute = f->mass() / totalFatMass * massRemaining;
 		f->replenishFromMass(amountToDistribute);
 	}
+#ifdef DEBUG
+	frameFoodProcessed_ += mass;
+	eggGrowthSpeed_ += eggMass;
+	fatGrowthSpeed_ += massRemaining;
+#endif
 }
+
+#ifdef DEBUG
+float Bug::getDebugValue(std::string const name) {
+	auto it = debugValueGetters_.find(name);
+	if (it == debugValueGetters_.end())
+		return NAN;
+	return it->second();
+}
+#endif

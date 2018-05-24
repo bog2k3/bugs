@@ -81,6 +81,10 @@ public:
 
 	uint64_t getId() { return id; }
 
+#ifdef DEBUG
+	float getDebugValue(std::string const name);
+#endif
+
 	/**
 	 * creates a new basic bug out of a default genome
 	 */
@@ -129,6 +133,7 @@ protected:
 	CumulativeValue adultLeanMass_;
 	CumulativeValue growthSpeed_;
 	CumulativeValue reproductiveMassRatio_;
+	CumulativeValue developmentMassThreshRatio_;
 	CumulativeValue eggMass_;
 
 	uint generation_=0;  // the generation this bug represents
@@ -143,6 +148,15 @@ protected:
 	void onJointBreak(Joint* joint);
 	void fixAllGeneValues();
 	static Chromosome createBasicChromosome();
+
+#ifdef DEBUG
+	std::map<std::string, std::function<float()>> debugValueGetters_;
+	float actualGrowthSpeed_ = 0;
+	float eggGrowthSpeed_ = 0;
+	float fatGrowthSpeed_ = 0;
+	float frameFoodProcessed_ = 0;
+	float frameEnergyUsed_ = 0;
+#endif
 
 private:
 	static std::atomic<uint64_t> nextId;

@@ -324,6 +324,18 @@ void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, 
 	return mass;
 }*/
 
+void BodyPart::destroyFixtures() {
+	World::getInstance().assertOnMainThread();
+	if (!physBody_.b2Body_)
+		return;
+	auto f = physBody_.b2Body_->GetFixtureList();
+	while (f) {
+		auto fn = f->GetNext();
+		physBody_.b2Body_->DestroyFixture(f);
+		f = fn;
+	}
+}
+
 void BodyPart::applyScale(float scale) {
 	size_ *= scale;
 	if (size_ * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
@@ -331,6 +343,7 @@ void BodyPart::applyScale(float scale) {
 	{
 		lastCommitSize_inv_ = 1.f / size_;
 		World::getInstance().queueDeferredAction([this] {
+			destroyFixtures();
 			updateFixtures();
 		});
 		if (type_ != BodyPartType::JOINT_PIVOT && type_ != BodyPartType::JOINT_WELD) {
@@ -339,6 +352,7 @@ void BodyPart::applyScale(float scale) {
 			World::getInstance().queueDeferredAction([this] {
 				for (auto n : neighbours_) {
 					if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ != BodyPartType::JOINT_WELD) {
+						n->destroyFixtures();
 						n->updateFixtures();
 					}
 				}

@@ -129,7 +129,8 @@ constexpr gene_body_attribute_type GENE_BODY_ATTRIB_ADULT_LEAN_MASS = 3;
 constexpr gene_body_attribute_type GENE_BODY_ATTRIB_GROWTH_SPEED = 4;				// [kg/s] speed at which growth happens
 constexpr gene_body_attribute_type GENE_BODY_ATTRIB_EGG_MASS = 5;					// [kg] how big eggs should be?
 constexpr gene_body_attribute_type GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO = 6;	// [*] what fraction of growth food goes into creating eggs?
+constexpr gene_body_attribute_type GENE_BODY_DEVELOPMENT_MASS_THRESH_RATIO = 7;		// [*] ratio from adult lean mass after which egg production starts
 
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_END = 7;
+constexpr gene_body_attribute_type GENE_BODY_ATTRIB_END = 8;
 
 #endif /* GENETICS_GENEDEFINITIONS_H_ */

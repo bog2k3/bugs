@@ -56,6 +56,10 @@ void Joint::onPhysJointDestroyed(b2Joint* joint) {
 	breakJoint();
 }
 
+void Joint::destroyFixtures() {
+	destroyPhysJoint();
+}
+
 void Joint::destroyPhysJoint() {
 #ifdef DEBUG
 	World::assertOnMainThread();
@@ -80,10 +84,7 @@ void Joint::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (physJoint_) {
-		destroyPhysJoint();
-		physJoint_ = nullptr;
-	}
+	assert(!physJoint_);
 
 	auto bodyA = leftAnchor_->getBody().b2Body_;
 	auto bodyB = rightAnchor_->getBody().b2Body_;

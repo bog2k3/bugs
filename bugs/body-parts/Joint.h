@@ -36,6 +36,7 @@ protected:
 	b2Joint* physJoint_;
 
 	void updateFixtures() override;
+	void destroyFixtures() override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 
 	virtual b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) = 0;

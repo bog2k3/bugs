@@ -58,10 +58,6 @@ void Gripper::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (physBody_.b2Body_->GetFixtureList()) {
-		physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
-	};
-
 	float fRatio;
 	auto fSize = adjustFixtureValues({size_, 0.f}, fRatio);
 

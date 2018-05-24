@@ -382,8 +382,20 @@ int main(int argc, char* argv[]) {
 		sigViewer.addSignal("population", [&] { return sessionMgr.getPopulationManager().getPopulationCount();},
 				glm::vec3(0.3f, 0.3f, 1.f), 30.f, 50, sessionMgr.getPopulationManager().getPopulationTarget()+1, 0, 0);
 
+
 	#ifdef DEBUG
-		// Bug* pB = dynamic_cast<Bug*>(world.getEntities(EntityType::BUG)[0]);
+		std::vector<Entity*> ents;
+		world.getEntities(ents, EntityType::BUG);
+		Bug* pB = dynamic_cast<Bug*>(ents[0]);
+		static constexpr float metabUpdateTime = 1.f;
+		static constexpr float quickMetabUpdateTime = 0.01f;
+		sigViewer.addSignal("cachedLeanMass", [pB]{return pB->getDebugValue("cachedLeanMass");}, {0.2f, 1.f, 0.2f}, metabUpdateTime, 50);
+		sigViewer.addSignal("growthMassBuffer", [pB]{return pB->getDebugValue("growthMassBuffer");}, {0.2f, 1.f, 0.2f}, quickMetabUpdateTime, 50, pB->getDebugValue("maxGrowthMassBuffer"));
+		sigViewer.addSignal("actualGrowthSpeed", [pB]{return pB->getDebugValue("actualGrowthSpeed");}, {0.2f, 1.f, 0.2f}, quickMetabUpdateTime, 50, 1.e-3f);
+		//sigViewer.addSignal("eggGrowthSpeed", [pB]{return pB->getDebugValue("eggGrowthSpeed");}, {0.2f, 1.f, 0.2f}, metabUpdateTime, 50);
+		sigViewer.addSignal("fatGrowthSpeed", [pB]{return pB->getDebugValue("fatGrowthSpeed");}, {0.2f, 1.f, 0.2f}, quickMetabUpdateTime, 50);
+		sigViewer.addSignal("frameFoodProcessed", [pB]{return pB->getDebugValue("frameFoodProcessed");}, {0.2f, 1.f, 0.2f}, quickMetabUpdateTime, 50);
+		sigViewer.addSignal("frameEnergyUsed", [pB]{return pB->getDebugValue("frameEnergyUsed");}, {0.2f, 1.f, 0.2f}, quickMetabUpdateTime, 50);
 		// static constexpr float neuronUpdateTime = 0.05f;
 	//	sigViewer.addSignal("NoseL", &nl_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);
 	//	sigViewer.addSignal("NoseR", &nr_out, glm::vec3(0.2f, 1.f, 0.2f), neuronUpdateTime, 50, 1.f, 0.f);

@@ -195,6 +195,9 @@ void Muscle::updateFixtures() {
 
 	glm::vec2 I2zero = right->getAttachmentPoint(alphaJ2 + insertionAngle_[1]); // second insertion point in right cell's space at rest angle
 	I2zero = joint_->worldToLocal(right->localToWorld(I2zero)); // transform into joint's space
+	I2zero = glm::rotate(I2zero, -joint_->getJointAngle()); // joint may be rotated at this time, so we need to nullify joint rotation effect on anchor
+
+	float jointRadius = sqrt(joint_->size() * PI_INV);
 
 	const auto I2fn = [&, this] (float phi) {	// second insertion point in joint's space as a function of joint angle
 		return glm::rotate(I2zero, phi);
@@ -202,12 +205,14 @@ void Muscle::updateFixtures() {
 
 	// linear distance function of joint angle (between I1 and I2)
 	const auto Dfn = [&, this] (float phi) {
-		return clamp(glm::length(I2fn(phi) - I1), EPS, INF);
+		float straightDist = clamp(glm::length(I2fn(phi) - I1), EPS, INF);
+		float jointRoundFactor = phi * rotationSign_ < 0 ? phi * jointRadius : 0;
+		return straightDist + jointRoundFactor;
 	};
 
 	// muscle leverage (perpendicular distance from muscle fibre line to joint center) as function of joint angle
 	const auto Hfn = [&, this] (float phi) {
-		return clamp(cross2D(I1, I2fn(phi)) / Dfn(phi), EPS, INF);
+		return max(jointRadius, clamp(cross2D(I1, I2fn(phi)) / Dfn(phi), EPS, INF));
 	};
 
 	float phiMin = joint_->getLowerLimit();
