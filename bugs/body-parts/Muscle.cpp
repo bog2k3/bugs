@@ -220,7 +220,8 @@ void Muscle::updateFixtures() {
 	cachedPhiMin_ = phiMin;
 	float DMin = Dfn(rotationSign_ < 0 ? phiMin : phiMax);
 	float DMax = Dfn(rotationSign_ < 0 ? phiMax : phiMin);
-	assert(DMax >= DMin);
+	if (DMax <= DMin * 1.1f)
+		DMax = DMin * 1.1f;
 
 	// here we compute the characteristics of the muscle
 	float r = BodyConst::MuscleContractionRatio;

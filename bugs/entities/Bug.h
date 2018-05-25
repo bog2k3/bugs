@@ -151,11 +151,11 @@ protected:
 
 #ifdef DEBUG
 	std::map<std::string, std::function<float()>> debugValueGetters_;
-	float actualGrowthSpeed_ = 0;
-	float eggGrowthSpeed_ = 0;
-	float fatGrowthSpeed_ = 0;
-	float frameFoodProcessed_ = 0;
-	float frameEnergyUsed_ = 0;
+	std::atomic<float> actualGrowthSpeed_ {0};
+	std::atomic<float> eggGrowthSpeed_ {0};
+	std::atomic<float> fatGrowthSpeed_ {0};
+	std::atomic<float> frameFoodProcessed_ {0};
+	std::atomic<float> frameEnergyUsed_ {0};
 #endif
 
 private:

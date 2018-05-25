@@ -254,10 +254,10 @@ void Bug::update(float dt) {
 	}
 
 #ifdef DEBUG
-	eggGrowthSpeed_ = 0;
-	fatGrowthSpeed_ = 0;
-	frameFoodProcessed_ = 0;
-	frameEnergyUsed_ = 0;
+	eggGrowthSpeed_.store(0);
+	fatGrowthSpeed_.store(0);
+	frameFoodProcessed_.store(0);
+	frameEnergyUsed_.store(0);
 #endif
 
 	cachedAABBFramesOld_++;
@@ -270,8 +270,8 @@ void Bug::update(float dt) {
 	updateDeadDecaying(dt); // this updates all dead body parts
 
 #ifdef DEBUG
-	eggGrowthSpeed_ /= dt;
-	fatGrowthSpeed_ /= dt;
+	eggGrowthSpeed_.store(eggGrowthSpeed_ / dt);
+	fatGrowthSpeed_.store(fatGrowthSpeed_ / dt);
 #endif
 
 	if (!isAlive_) {
@@ -322,7 +322,7 @@ void Bug::update(float dt) {
 				if (b->getType() != BodyPartType::FAT)
 					b->applyScale(cachedLeanMass_ / (cachedLeanMass_ - massToGrow));
 #ifdef DEBUG
-			actualGrowthSpeed_ = massToGrow / dt;
+			actualGrowthSpeed_.store(massToGrow / dt);
 #endif
 		}
 	} else {
