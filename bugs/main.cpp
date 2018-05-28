@@ -104,10 +104,6 @@ template<> void update(b2World* wld, float dt) {
 	wld->Step(dt, 5, 2);
 }
 
-template<> void update(std::function<void(float)> *fn, float dt) {
-	(*fn)(dt);
-}
-
 void onInputEventHandler(InputEvent& ev) {
 	if (ev.isConsumed())
 		return;
