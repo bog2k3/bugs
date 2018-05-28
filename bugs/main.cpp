@@ -8,7 +8,6 @@
 
 #ifdef DEBUG
 #include "entities/Bug.h"
-#include "body-parts/Torso.h"
 #include "body-parts/sensors/Nose.h"
 #include "neuralnet/OutputSocket.h"
 #endif
