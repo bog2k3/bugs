@@ -26,7 +26,7 @@
 #include <vector>
 #include <map>
 #include <atomic>
-
+#include <functional>
 
 class NeuralNet;
 class InputSocket;

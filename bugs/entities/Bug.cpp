@@ -112,11 +112,11 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	debugValueGetters_["growthMassBuffer"] = [this] { return growthMassBuffer_; };
 	debugValueGetters_["maxGrowthMassBuffer"] = [this] { return maxGrowthMassBuffer_; };
 	debugValueGetters_["cachedLeanMass"] = [this] { return cachedLeanMass_; };
-	debugValueGetters_["actualGrowthSpeed"] = [this] { return actualGrowthSpeed_; };
-	debugValueGetters_["eggGrowthSpeed"] = [this] { return eggGrowthSpeed_; };
-	debugValueGetters_["fatGrowthSpeed"] = [this] { return fatGrowthSpeed_; };
-	debugValueGetters_["frameFoodProcessed"] = [this] { return frameFoodProcessed_; };
-	debugValueGetters_["frameEnergyUsed"] = [this] { return frameEnergyUsed_; };
+	debugValueGetters_["actualGrowthSpeed"] = [this] { return actualGrowthSpeed_.load(); };
+	debugValueGetters_["eggGrowthSpeed"] = [this] { return eggGrowthSpeed_.load(); };
+	debugValueGetters_["fatGrowthSpeed"] = [this] { return fatGrowthSpeed_.load(); };
+	debugValueGetters_["frameFoodProcessed"] = [this] { return frameFoodProcessed_.load(); };
+	debugValueGetters_["frameEnergyUsed"] = [this] { return frameEnergyUsed_.load(); };
 #endif
 }
 
@@ -513,7 +513,7 @@ void Bug::consumeEnergy(float totalAmount) {
 			amountConsumed += f->consumeEnergy(amountToConsume);
 		}
 	}
-	frameEnergyUsed_ += totalAmount;
+	frameEnergyUsed_.store(frameEnergyUsed_ + totalAmount);
 }
 
 void Bug::onFoodProcessed(float mass) {
@@ -569,9 +569,9 @@ void Bug::onFoodProcessed(float mass) {
 		f->replenishFromMass(amountToDistribute);
 	}
 #ifdef DEBUG
-	frameFoodProcessed_ += mass;
-	eggGrowthSpeed_ += eggMass;
-	fatGrowthSpeed_ += massRemaining;
+	frameFoodProcessed_.store(frameFoodProcessed_ + mass);
+	eggGrowthSpeed_.store(eggGrowthSpeed_ + eggMass);
+	fatGrowthSpeed_.store(fatGrowthSpeed_ + massRemaining);
 #endif
 }
 

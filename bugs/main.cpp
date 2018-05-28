@@ -96,6 +96,7 @@ PhysicsDebugDraw *pPhysicsDraw = nullptr;
 Prototype prototype;
 
 template<> void draw(b2World* wld, RenderContext const &ctx) {
+	PERF_MARKER_FUNC;
 	wld->DrawDebugData();
 }
 
