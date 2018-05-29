@@ -21,7 +21,7 @@ public:
 	Torso();
 	~Torso() override;
 
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void setInitialFatMass(float fat);
 	void update(float dt);

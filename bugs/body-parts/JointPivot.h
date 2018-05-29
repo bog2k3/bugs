@@ -19,7 +19,7 @@ public:
 	JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart* leftAnchor, BodyPart* rightAnchor);	// use the parent cell (that has divided) for the joint
 	virtual ~JointPivot() override;
 
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 	glm::vec3 getWorldTransformation() const override;
 
 	void update(float dt) override;

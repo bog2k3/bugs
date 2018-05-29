@@ -35,7 +35,6 @@
 #include <boglfw/renderOpenGL/Shape3D.h>
 #include <boglfw/renderOpenGL/Viewport.h>
 #include <boglfw/renderOpenGL/ViewportCoord.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/GLText.h>
 
 #ifdef DEBUG
@@ -1061,9 +1060,7 @@ bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {
 	return true;
 }
 
-void Ribosome::drawCells(RenderContext const &ctx) {
-	if (!ctx.enabledLayers.bodyDebug)
-		return;
+void Ribosome::drawCells(Viewport* vp) {
 	auto tr = bug_->zygoteShell_->getWorldTransformation();
 	glm::mat4 m = glm::translate(glm::vec3{tr.x, tr.y, 0.f});
 	m *= glm::rotate(tr.z, glm::vec3{0.f, 0.f, 1.f});
@@ -1083,11 +1080,11 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 		auto yc = [cpos] (Viewport* viewp) -> float {
 			return viewp->project(cpos).y;
 		};
-		if (!ctx.enabledLayers.bugDebug)
-			continue;
-		GLText::get()->print(c->rightSide_ ? "R" : "L", {xc, yc}, 0, 22, {0, 1, 1});
-		if (c->mirror_)
-			GLText::get()->print("M", ViewportCoord{xc, yc} + ViewportCoord{10, 10}, 0, 22, {0, 1, 1});
+		if (false) {
+			GLText::get()->print(c->rightSide_ ? "R" : "L", {xc, yc}, 0, 22, {0, 1, 1});
+			if (c->mirror_)
+				GLText::get()->print("M", ViewportCoord{xc, yc} + ViewportCoord{10, 10}, 0, 22, {0, 1, 1});
+		}
 		// orientation
 		glm::vec2 v2 = c->position_;
 		v2.x += cosf(c->angle_) * c->radius(0);
@@ -1102,23 +1099,25 @@ void Ribosome::drawCells(RenderContext const &ctx) {
 		Shape3D::get()->drawLine({v1, 0}, {v2, 0}, {1, 0, 0, 0.5f});
 
 		// bonds
-		for (auto l : c->neighbours_) {
-			if (l.offset == 0) {
-				// weld joint
-				glm::vec2 v1 = c->position_;
-				glm::vec2 v2 = v1;
-				v2.x += cosf(c->wangle(l.angle)) * c->radius(0);
-				v2.y += sinf(c->wangle(l.angle)) * c->radius(0);
-				v1 += (v2-v1) * 0.9f;
-				glm::vec3 color = l.isRightSide ? glm::vec3{0, 0, 1} : glm::vec3{0, 1, 1};
-				Shape3D::get()->drawLine({v1, 0}, {v2, 0}, color);
-			} else if (!l.isRightSide) {
-				// pivot joint
-				float jr = l.offset/2;
-				glm::vec2 jc = c->position_;
-				jc.x += cosf(c->wangle(l.angle)) * (c->radius(0) + jr);
-				jc.y += sinf(c->wangle(l.angle)) * (c->radius(0) + jr);
-				Shape3D::get()->drawCircleXOY(jc, jr, 8, {1.f, 0.2f, 0.1f});
+		if (true) {
+			for (auto l : c->neighbours_) {
+				if (l.offset == 0) {
+					// weld joint
+					glm::vec2 v1 = c->position_;
+					glm::vec2 v2 = v1;
+					v2.x += cosf(c->wangle(l.angle)) * c->radius(0);
+					v2.y += sinf(c->wangle(l.angle)) * c->radius(0);
+					v1 += (v2-v1) * 0.9f;
+					glm::vec3 color = l.isRightSide ? glm::vec3{0, 0, 1} : glm::vec3{0, 1, 1};
+					Shape3D::get()->drawLine({v1, 0}, {v2, 0}, color);
+				} else if (!l.isRightSide) {
+					// pivot joint
+					float jr = l.offset/2;
+					glm::vec2 jc = c->position_;
+					jc.x += cosf(c->wangle(l.angle)) * (c->radius(0) + jr);
+					jc.y += sinf(c->wangle(l.angle)) * (c->radius(0) + jr);
+					Shape3D::get()->drawCircleXOY(jc, jr, 8, {1.f, 0.2f, 0.1f});
+				}
 			}
 		}
 	}

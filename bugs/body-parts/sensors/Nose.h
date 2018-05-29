@@ -25,7 +25,7 @@ public:
 	Nose(BodyPartContext const& context, BodyCell& cell);
 	~Nose() override;
 
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 
 	void update(float dt);

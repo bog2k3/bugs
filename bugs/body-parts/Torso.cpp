@@ -15,7 +15,6 @@
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/utils/UpdateList.h>
 #include <boglfw/utils/log.h>
 #include <boglfw/utils/assert.h>
@@ -88,7 +87,7 @@ void Torso::updateFixtures() {
 	cachedMassTree_ = 1.f; //BodyPart::getMass_tree();
 }
 
-void Torso::draw(RenderContext const& ctx) {
+void Torso::draw(Viewport* vp) {
 	if (committed_) {
 		// nothing, physics draws
 #ifdef DEBUG_DRAW_TORSO

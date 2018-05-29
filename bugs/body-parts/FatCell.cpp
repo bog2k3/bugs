@@ -103,7 +103,7 @@ void FatCell::updateFixtures() {
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 
-void FatCell::draw(RenderContext const& ctx) {
+void FatCell::draw(Viewport* vp) {
 	if (!isDead())
 		return;
 	glm::vec3 transform = getWorldTransformation();

@@ -18,7 +18,7 @@ public:
 	virtual ~Mouth() override;
 
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 	void update(float dt);
 
 	static float getDensity(BodyCell const& cell);

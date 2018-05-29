@@ -330,20 +330,20 @@ void Bug::update(float dt) {
 	}
 }
 
-void Bug::draw(RenderContext const &ctx) {
+void Bug::draw(Viewport* vp) {
 	if (zygoteShell_) {
-		zygoteShell_->draw(ctx);
-		ribosome_->drawCells(ctx);
+		zygoteShell_->draw(vp);
+		ribosome_->drawCells(vp);
 	} else {
 		for (auto bp : bodyParts_)
-			bp->draw(ctx);
+			bp->draw(vp);
 	}
 	for (auto bp : deadBodyParts_)
 		if (bp)
-			bp->draw(ctx);
+			bp->draw(vp);
 
 	// draw debug data:
-	if (ctx.enabledLayers.bugDebug) {
+	if (/*ctx.enabledLayers.bugDebug*/ false) {
 		auto x = [this](Viewport* vp) {
 			glm::vec2 wldPos = getAABB().center();
 			glm::vec3 viewpPos = vp->project({wldPos, 0.f});

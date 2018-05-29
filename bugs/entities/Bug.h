@@ -60,7 +60,7 @@ public:
 	void serialize(BinaryStream &stream) const override;
 
 	void update(float dt) override;
-	void draw(RenderContext const &ctx) override;
+	void draw(Viewport* vp) override;
 	int getSerializationType() const override { return SerializationObjectTypes::BUG; }
 
 	const Genome& getGenome() const { return genome_; }

@@ -15,7 +15,6 @@
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
 #include <boglfw/math/box2glm.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
 #include <boglfw/utils/log.h>
 #include <boglfw/utils/UpdateList.h>
@@ -91,7 +90,7 @@ void Mouth::updateFixtures() {
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 
-void Mouth::draw(RenderContext const& ctx) {
+void Mouth::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_MOUTH
 	float ratio = sqrt(usedBuffer_ / bufferSize_);
 	glm::vec3 color(0.8f, 0.5f, 0.f);
@@ -104,7 +103,7 @@ void Mouth::draw(RenderContext const& ctx) {
 	glm::vec3 worldTransform = getWorldTransformation();
 	Shape3D::get()->drawRectangleXOYCentered(glm::vec3(vec3xy(worldTransform), 0), glm::vec2(lengthLeft, widthLeft), worldTransform.z, color);
 #endif
-	BodyPart::draw(ctx);
+	BodyPart::draw(vp);
 }
 
 void Mouth::onCollision(PhysicsBody* pOther, float impulseMagnitude) {

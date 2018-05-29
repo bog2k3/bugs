@@ -57,7 +57,6 @@
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/utils/UpdateList.h>
 #include <boglfw/utils/assert.h>
 #include <boglfw/utils/log.h>
@@ -255,7 +254,7 @@ glm::vec2 Muscle::getAttachmentPoint(float relativeAngle) {
 	throw std::runtime_error("Should not be called");
 }
 
-void Muscle::draw(RenderContext const& ctx) {
+void Muscle::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_MUSCLE
 	if (isDead()) {
 		float ratio = sqrt((getFoodValue() / density_) / size_);

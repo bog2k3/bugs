@@ -16,7 +16,6 @@
 #include <boglfw/math/box2glm.h>
 #include <boglfw/math/aabb.h>
 #include <boglfw/math/math3D.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
 #include <boglfw/utils/log.h>
 #include <boglfw/utils/assert.h>
@@ -286,7 +285,7 @@ glm::vec3 BodyPart::getWorldTransformation() const {
 	}
 }
 
-void BodyPart::draw(RenderContext const& ctx) {
+void BodyPart::draw(Viewport* vp) {
 	glm::vec3 trans = getWorldTransformation();
 	glm::vec3 pos(trans.x, trans.y, 0);
 	glm::vec3 u = {glm::rotate(glm::vec2(1.f, 0.f), trans.z), 0};

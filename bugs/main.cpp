@@ -94,7 +94,7 @@ PhysicsDebugDraw *pPhysicsDraw = nullptr;
 
 Prototype prototype;
 
-template<> void draw(b2World* wld, Viewport*) {
+template<> void draw(b2World* wld, Viewport* vp) {
 	PERF_MARKER_FUNC;
 	wld->DrawDebugData();
 }
@@ -271,7 +271,7 @@ int main(int argc, char* argv[]) {
 		b2ThreadPool b2tp(6);
 		b2World physWld(b2Vec2_zero, &b2tp);
 		pPhysWld = &physWld;
-		PhysicsDebugDraw physicsDraw();
+		PhysicsDebugDraw physicsDraw;
 		pPhysicsDraw = &physicsDraw;
 		physicsDraw.SetFlags(
 					  b2Draw::e_shapeBit
@@ -333,10 +333,10 @@ int main(int argc, char* argv[]) {
 				ERROR("Could not save session to file \"" << saveFilename << "\"");
 		}
 
-		ScaleDisplay scale(glm::vec3(15, 25, 0), 300);
+		ScaleDisplay scale(glm::vec2(15, 25), 0, 300);
 		SignalViewer sigViewer(
 				{24, 4, ViewportCoord::percent, ViewportCoord::top|ViewportCoord::right},	// position
-				-0.1f, 																		// z
+				-1.f, 																		// z
 				{20, 10, ViewportCoord::percent}); 											// size
 
 		DrawList drawList;
@@ -420,7 +420,7 @@ int main(int argc, char* argv[]) {
 		if (ENABLE_PROTOTYPING)
 			prototype.initialize();
 
-		drawList.add([&] (Viewport*) {
+		auto infoTexts = [&] (Viewport*) {
 			GLText::get()->print("Salut Lume!\n[Powered by Box2D]",
 					{20, 20, ViewportCoord::absolute, ViewportCoord::bottom | ViewportCoord::left},
 					0, 16, glm::vec3(0.2f, 0.4, 1.0f));
@@ -435,7 +435,8 @@ int main(int argc, char* argv[]) {
 						{10, 45},
 						0, 18, glm::vec3(1.f, 0.5f, 0.1f));
 			}
-		});
+		};
+		drawList.add(&infoTexts);
 
 		// initial update:
 		updateList.update(0);
@@ -497,8 +498,11 @@ int main(int argc, char* argv[]) {
 
 				if (!skipRendering) {
 					PERF_MARKER("frame-draw");
-					// wait until previous frame finishes rendering and show frame output:
-					gltEnd();
+					{
+						PERF_MARKER_BLOCKED("GPU Sync Wait");
+						// wait until previous frame finishes rendering and show frame output:
+						gltEnd();
+					}
 					// do the drawing
 					gltBegin();
 					renderer.render(drawList);

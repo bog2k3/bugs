@@ -7,7 +7,6 @@
 
 #include "Prototype.h"
 
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
 #include <boglfw/renderOpenGL/GLText.h>
 #include <boglfw/renderOpenGL/Viewport.h>
@@ -67,7 +66,7 @@ void Prototype::terminate() {
 	joint = nullptr;
 }
 
-void Prototype::draw(RenderContext const& ctx) {
+void Prototype::draw(Viewport* vp) {
 	if (!enabled_)
 		return;
 	auto anchorA = joint->GetAnchorA();

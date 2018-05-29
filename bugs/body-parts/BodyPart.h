@@ -25,7 +25,7 @@
 //#include <ostream>
 
 class UpdateList;
-class RenderContext;
+class Viewport;
 class Bug;
 class BodyCell;
 class Entity;
@@ -44,7 +44,7 @@ public:
 	// this will return the division-depth of the body-part
 	int getDepth() const { return 0; } // TODO use branch length
 
-	virtual void draw(RenderContext const& ctx);
+	virtual void draw(Viewport* vp);
 
 	inline BodyPartType getType() const { return type_; }
 

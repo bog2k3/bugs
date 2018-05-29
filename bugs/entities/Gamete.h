@@ -40,7 +40,7 @@ public:
 
 	void update(float dt) override;
 #ifdef DEBUG_DRAW_GAMETE
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 #endif
 
 	void serialize(BinaryStream &stream) const override;

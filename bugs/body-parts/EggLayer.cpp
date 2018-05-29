@@ -16,7 +16,6 @@
 #include <boglfw/math/box2glm.h>
 #include <boglfw/math/math3D.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/World.h>
 #include <boglfw/utils/UpdateList.h>
 #include <boglfw/utils/log.h>
@@ -66,7 +65,7 @@ EggLayer::~EggLayer() {
 	}
 }
 
-void EggLayer::draw(RenderContext const& ctx) {
+void EggLayer::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_EGGLAYER
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec3 pos {vec3xy(transform), 0};

@@ -49,7 +49,7 @@ FoodDispenser::FoodDispenser(glm::vec2 const &position, float direction)
 FoodDispenser::~FoodDispenser() {
 }
 
-void FoodDispenser::draw(RenderContext const& ctx) {
+void FoodDispenser::draw(Viewport* vp) {
 
 }
 

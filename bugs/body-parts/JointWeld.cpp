@@ -31,7 +31,7 @@ JointWeld::JointWeld(BodyPartContext const& context, BodyCell& cell, BodyPart* l
 JointWeld::~JointWeld() {
 }
 
-void JointWeld::draw(RenderContext const& ctx) {
+void JointWeld::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_JOINT
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);

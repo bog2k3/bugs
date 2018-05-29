@@ -35,7 +35,7 @@ public:
 	void update(float dt) override;
 
 #ifdef DEBUG_DRAW_FOOD_CHUNK
-	void draw(RenderContext const& rc) override;
+	void draw(Viewport* vp) override;
 #endif
 
 	float getInitialMass() const { return initialMass_; }

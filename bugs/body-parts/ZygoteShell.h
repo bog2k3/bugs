@@ -17,7 +17,7 @@ public:
 	ZygoteShell(glm::vec2 position, float angle, glm::vec2 velocity, float angularVelocity, float mass, BodyPartContext const& context);
 	~ZygoteShell() override;
 
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 
 	/**
 	 * this updates the BodyPartInitializationData::cachedProps from the actual zygot physics body,

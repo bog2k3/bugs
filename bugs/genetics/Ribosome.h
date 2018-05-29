@@ -80,7 +80,7 @@ public:
 	 */
 	bool step();
 
-	void drawCells(RenderContext const &ctx);
+	void drawCells(Viewport* vp);
 
 private:
 	Bug* bug_;

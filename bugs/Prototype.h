@@ -12,7 +12,7 @@
  * Wrapper class for prototyping new features
  */
 
-class RenderContext;
+class Viewport;
 
 class Prototype {
 public:
@@ -20,7 +20,7 @@ public:
 
 	void initialize();
 	void terminate();
-	void draw(RenderContext const& ctx);
+	void draw(Viewport* vp);
 	void update(float dt);
 
 	void onKeyDown(int key);

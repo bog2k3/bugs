@@ -13,7 +13,6 @@
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/utils/log.h>
 #include <boglfw/utils/assert.h>
 
@@ -82,7 +81,7 @@ glm::vec2 Bone::getAttachmentPoint(float relativeAngle)
 	return getBoneAttachmentPoint(length_, width_, relativeAngle);
 }
 
-void Bone::draw(RenderContext const& ctx) {
+void Bone::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_BONE
 	if (isDead()) {
 		float ratio = sqrt((getFoodValue() / density_) / size_);
@@ -93,7 +92,7 @@ void Bone::draw(RenderContext const& ctx) {
 			glm::vec2(lengthLeft, widthLeft), worldTransform.z, glm::vec3(0.5, 0, 1));
 	}
 #endif
-	BodyPart::draw(ctx);
+	BodyPart::draw(vp);
 }
 
 float Bone::getRadius(BodyCell const& cell, float angle) {

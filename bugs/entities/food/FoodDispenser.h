@@ -36,7 +36,7 @@ public:
 	void serialize(BinaryStream &stream) const override;
 
 
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 	void update(float dt) override;
 
 protected:

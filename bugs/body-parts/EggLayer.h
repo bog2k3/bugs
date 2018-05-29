@@ -17,7 +17,7 @@ public:
 	EggLayer(BodyPartContext const& context, BodyCell& cell);
 	virtual ~EggLayer() override;
 
- 	void draw(RenderContext const& ctx) override;
+ 	void draw(Viewport* vp) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 

@@ -14,7 +14,6 @@
 #include <boglfw/math/box2glm.h>
 #include <boglfw/utils/rand.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/vec2.hpp>
@@ -70,7 +69,7 @@ void ZygoteShell::updateFixtures() {
 	physBody_.b2Body_->CreateFixture(&fixDef);
 }
 
-void ZygoteShell::draw(RenderContext const& ctx) {
+void ZygoteShell::draw(Viewport* vp) {
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);
 	if (isDead()) {

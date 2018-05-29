@@ -25,7 +25,7 @@ public:
 
 	void setJoint(JointPivot* joint);
 
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
 	void update(float dt);
 

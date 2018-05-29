@@ -14,7 +14,6 @@
 
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
 #include <boglfw/OSD/EntityLabeler.h>
 #include <boglfw/utils/UpdateList.h>
@@ -56,7 +55,7 @@ Nose::~Nose() {
 		delete outputSocket_[i];
 }
 
-void Nose::draw(RenderContext const& ctx) {
+void Nose::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_NOSE
 	if (!isDead())
 		return;

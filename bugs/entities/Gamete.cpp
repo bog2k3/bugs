@@ -14,7 +14,6 @@
 
 #include <boglfw/math/math3D.h>
 #include <boglfw/math/aabb.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
 #include <boglfw/World.h>
 #include <boglfw/utils/log.h>
@@ -119,7 +118,7 @@ void Gamete::update(float dt) {
 }
 
 #ifdef DEBUG_DRAW_GAMETE
-void Gamete::draw(RenderContext const& ctx) {
+void Gamete::draw(Viewport* vp) {
 	static constexpr int nSeg = 7;
 	static constexpr float lengthRatio = 0.8f;
 	static constexpr float widthRatio = 0.2f;

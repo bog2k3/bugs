@@ -82,7 +82,7 @@ glm::vec3 JointPivot::getWorldTransformation() const {
 	return {b2g(anchorA), angle};
 }
 
-void JointPivot::draw(RenderContext const& ctx) {
+void JointPivot::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_JOINT
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec2 pos = vec3xy(transform);

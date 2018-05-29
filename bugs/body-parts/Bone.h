@@ -18,7 +18,7 @@ public:
 	virtual ~Bone() override;
 
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
-	void draw(RenderContext const& ctx) override;
+	void draw(Viewport* vp) override;
 
 	float aspectRatio() const { return length_ / width_; }
 

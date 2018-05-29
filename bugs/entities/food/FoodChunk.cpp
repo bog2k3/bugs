@@ -12,7 +12,6 @@
 #include <boglfw/World.h>
 #include <boglfw/math/math3D.h>
 #include <boglfw/math/aabb.h>
-#include <boglfw/renderOpenGL/RenderContext.h>
 #include <boglfw/renderOpenGL/Shape3D.h>
 #include <boglfw/perf/marker.h>
 
@@ -56,7 +55,7 @@ FoodChunk::~FoodChunk() {
 }
 
 #ifdef DEBUG_DRAW_FOOD_CHUNK
-void FoodChunk::draw(RenderContext const& ctx) {
+void FoodChunk::draw(Viewport* vp) {
 	Shape3D::get()->drawCircleXOY(physBody_.getPosition(),
 			sqrtf(amountLeft_.load(std::memory_order_relaxed)*PI_INV*WorldConst::FoodChunkDensityInv),
 					8, glm::vec3(1.f, 0.5f, 0.f));

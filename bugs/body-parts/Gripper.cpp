@@ -104,7 +104,7 @@ void Gripper::setActive(bool active) {
 	}
 }
 
-void Gripper::draw(RenderContext const& ctx) {
+void Gripper::draw(Viewport* vp) {
 #ifdef DEBUG_DRAW_GRIPPER
 	glm::vec3 transform = getWorldTransformation();
 	glm::vec3 pos = {vec3xy(transform), 0};
