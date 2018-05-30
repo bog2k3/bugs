@@ -555,6 +555,10 @@ void Bug::onFoodProcessed(float mass) {
 			growthMassBuffer_ += transferedMass;
 		}
 	}
+#ifdef DEBUG
+	frameFoodProcessed_.store(frameFoodProcessed_ + mass);
+	eggGrowthSpeed_.store(eggGrowthSpeed_ + eggMass);
+#endif
 	// use the left food to make fat and energy:
 	// distribute the remaining mass to all fatCells, proportional to each one's size
 	float massRemaining = mass - eggMass - growthMass;
@@ -569,8 +573,6 @@ void Bug::onFoodProcessed(float mass) {
 		f->replenishFromMass(amountToDistribute);
 	}
 #ifdef DEBUG
-	frameFoodProcessed_.store(frameFoodProcessed_ + mass);
-	eggGrowthSpeed_.store(eggGrowthSpeed_ + eggMass);
 	fatGrowthSpeed_.store(fatGrowthSpeed_ + massRemaining);
 #endif
 }

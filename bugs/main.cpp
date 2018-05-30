@@ -382,7 +382,7 @@ int main(int argc, char* argv[]) {
 		world.getEntities(ents, EntityType::BUG);
 		Bug* pB = dynamic_cast<Bug*>(ents[0]);
 		static constexpr float metabUpdateTime = 1.f;
-		static constexpr float quickMetabUpdateTime = 0.01f;
+		static constexpr float quickMetabUpdateTime = 0.1f;
 		sigViewer.addSignal("cachedLeanMass", [pB]{return pB->getDebugValue("cachedLeanMass");}, {0.2f, 1.f, 0.2f}, metabUpdateTime, 50);
 		sigViewer.addSignal("growthMassBuffer", [pB]{return pB->getDebugValue("growthMassBuffer");}, {0.2f, 1.f, 0.2f}, quickMetabUpdateTime, 50, pB->getDebugValue("maxGrowthMassBuffer"));
 		sigViewer.addSignal("actualGrowthSpeed", [pB]{return pB->getDebugValue("actualGrowthSpeed");}, {0.2f, 1.f, 0.2f}, quickMetabUpdateTime, 50, 1.e-3f);
