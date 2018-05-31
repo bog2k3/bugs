@@ -292,15 +292,6 @@ void Bug::update(float dt) {
 		neuralNet_->iterate();
 	}
 
-#warning "implement die!"	// TODO
-//	if (body_->getFatMass() <= 0 && body_->getBufferedEnergy() <= 0) {
-//		// we just depleted our energy supply and died
-//		kill();
-//		return;
-//	}
-
-	//LOGLN("leanMass: "<<body_->getMass_tree()<<"  eggMassBuf: "<<eggMassBuffer_<<";  fatMass: "<<body_->getFatMass()<<";  energy: "<<body_->getBufferedEnergy());
-
 	if (cachedMassDirty_) {
 		// some part broke up, must recompute some things
 		float oldLeanMass = cachedLeanMass_;
@@ -504,8 +495,6 @@ void Bug::consumeEnergy(float totalAmount) {
 		float remainingDebt = totalAmount - amountConsumed;
 		float totalFatMass = getTotalFatMass();
 		if (totalFatMass < EPS) {
-			throw std::runtime_error("fatCells may still have energy buffers regardless of fat mass");
-			// we've run out of fat, bug dies
 			kill();
 			return;
 		}
