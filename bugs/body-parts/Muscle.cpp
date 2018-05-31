@@ -232,7 +232,7 @@ void Muscle::updateFixtures() {
 	float lMin = lMax / r;
 
 	aspectRatio_ = sqr(lMax) / size_;
-	float w0 = size_ / lMax;	// relaxed muscle length
+	float w0 = size_ / lMax;	// relaxed muscle width
 
 	maxForce_ = w0 * BodyConst::MuscleForcePerWidthRatio;
 
