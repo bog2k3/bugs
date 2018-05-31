@@ -53,8 +53,9 @@ float FatCell::getRadius(BodyCell const& cell, float angle) {
 
 float FatCell::consumeEnergy(float amount) {
 	float consumedFromBuffer = min(energyBuffer_, amount);
+	energyBuffer_ -= consumedFromBuffer;
 	float totalConsumed = consumedFromBuffer;
-	if (consumedFromBuffer < amount && size_ > 0) {
+	if (totalConsumed < amount && size_ > 0) {
 		// buffer is depleted, must use fat mass to refill
 		float massRequired = BodyConst::FatEnergyDensityInv * (maxEnergyBuffer_ + amount - consumedFromBuffer);
 		float sizeRequired = massRequired * BodyConst::FatDensityInv;

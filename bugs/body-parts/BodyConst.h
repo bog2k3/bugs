@@ -41,6 +41,7 @@ public:
 	static constexpr float FatEnergyBufferDensity			= 1.e2f;		// [J/m^2] energy buffer size for a unit sized fatCell
 	static constexpr float NeuronSize						= 1.e-6f;		// [m^2]
 	static constexpr float MuscleEnergyConstant				= 1.0f;			// [J/(N*s)] how many Joules uses a muscle with F=1N for 1 sec?
+	static constexpr float ResidualEnergyConstant			= 0.15f;		// [J/(Kg*s)] residual energy consumption by all body parts
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float NoseDensity						= 3.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?

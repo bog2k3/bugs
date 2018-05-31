@@ -79,7 +79,7 @@
 			-- body parts die when isolated from mouth or egg-layer
 		-- [X] after a split, each of the two parts may live on if they have energy
 			-- and if they both have mouths and egg-layers
-		-- [ ] must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
+		-- [X] must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
 	- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
 
