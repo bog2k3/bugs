@@ -490,7 +490,13 @@ float Bug::getTotalFatMass() const {
 void Bug::consumeEnergy(float totalAmount) {
 	// TODO optimize by accumulating all consumed energy during the frame and processing only once at the end (on update)
 	float amountConsumed = 0;
-	while (amountConsumed < totalAmount - EPS) {
+	float prevValue = 1;
+	/*
+	 * this check (amountConsumed != prevValue) is required to prevent an infinite loop caused by float imprecision
+	 * when remainingDebt gets very small (~1.e-10)
+	 */
+	while (amountConsumed < totalAmount - EPS && amountConsumed != prevValue) {
+		prevValue = amountConsumed;
 		// try to balance all fat cells by using energy from each one proportional to their size
 		float remainingDebt = totalAmount - amountConsumed;
 		float totalFatMass = getTotalFatMass();
@@ -519,6 +525,7 @@ void Bug::onFoodProcessed(float mass) {
 	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
 	if (cachedMassDirty_)
 		return;
+	mass *= 100;
 #warning "return above loses some food mass"
 	float fatMassRatio = getTotalFatMass() / getTotalMass();
 	float growthMass = 0;
