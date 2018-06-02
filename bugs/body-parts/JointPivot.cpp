@@ -139,8 +139,11 @@ void JointPivot::update(float dt) {
 	assertDbg(!std::isnan(torque));
 
 	// apply the torque and max speed:
-	b2PJoint()->SetMotorSpeed(speed);
-	b2PJoint()->SetMaxMotorTorque(abs(torque));
+	if (b2PJoint()) {
+		// joint may be null during the scale recreation frame
+		b2PJoint()->SetMotorSpeed(speed);
+		b2PJoint()->SetMaxMotorTorque(abs(torque));
+	}
 	// reset pending torques
 	vecTorques.clear();
 

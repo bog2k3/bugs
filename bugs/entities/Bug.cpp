@@ -289,17 +289,18 @@ void Bug::update(float dt) {
 
 	// take care of joints pending to be recreated
 	if (!jointsToRecreate_.empty()) {
-		World::getInstance().queueDeferredAction([=] {
-			for (auto j : jointsToRecreate_) {
+		decltype(jointsToRecreate_) jointsToRecreate;
+		jointsToRecreate.swap(jointsToRecreate_);
+		World::getInstance().queueDeferredAction([jointsToRecreate] {
+			for (auto j : jointsToRecreate) {
 				j->destroyFixtures();
 			}
 		});
-		World::getInstance().queueDeferredAction([=] {
-			for (auto j : jointsToRecreate_) {
+		World::getInstance().queueDeferredAction([jointsToRecreate] {
+			for (auto j : jointsToRecreate) {
 				j->updateFixtures();
 			}
 		}, 1); // delay 1 frame to allow neighbouring parts to settle in place
-		jointsToRecreate_.clear();
 	}
 
 	{
@@ -540,7 +541,6 @@ void Bug::onFoodProcessed(float mass) {
 	//LOGLN("PROCESS_FOOD "<<mass<<"======================");
 	if (cachedMassDirty_)
 		return;
-	mass *= 100;
 #warning "return above loses some food mass"
 	float fatMassRatio = getTotalFatMass() / getTotalMass();
 	float growthMass = 0;

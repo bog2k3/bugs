@@ -111,10 +111,6 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	float density = BodyConst::MuscleDensity;
 	overrideSizeAndDensity(mass / density, density);
 
-	World::getInstance().queueDeferredAction([this] {
-		updateFixtures();
-	});
-
 	context_.updateList.add(this);
 
 	onDied.add([this](BodyPart*) {
@@ -133,6 +129,7 @@ void Muscle::setJoint(JointPivot* joint) {
 	assert(joint && "invalid arg (null)");
 	joint_ = joint;
 	joint_->onJointBreak.add(std::bind(&Muscle::onJointBreak, this, std::placeholders::_1));
+	joint_->onJointRecreated.add(std::bind(&Muscle::updateFixtures, this));
 }
 
 void Muscle::onJointBreak(Joint* j) {
@@ -181,6 +178,9 @@ void Muscle::updateFixtures() {
 
 		return;
 	}
+
+	if (!joint_->isCreated())	// if not that means the joint has just been destroyed and will be recreated in the next frame
+		return;					// this method will be called again next frame by the onJointRecreated event
 
 	BodyPart* left = joint_->getLeftAnchor();
 	BodyPart* right = joint_->getRightAnchor();

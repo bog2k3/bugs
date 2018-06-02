@@ -338,6 +338,8 @@ void BodyPart::destroyFixtures() {
 
 void BodyPart::applyScale(float scale) {
 	size_ *= scale;
+	if (type_ == BodyPartType::JOINT_PIVOT || type_ == BodyPartType::JOINT_WELD)
+		return;
 	if (size_ * lastCommitSize_inv_ > BodyConst::SizeThresholdToCommit
 			|| size_ * lastCommitSize_inv_ < BodyConst::SizeThresholdToCommit_inv)
 	{
@@ -346,12 +348,10 @@ void BodyPart::applyScale(float scale) {
 			destroyFixtures();
 			updateFixtures();
 		});
-		if (type_ != BodyPartType::JOINT_PIVOT && type_ != BodyPartType::JOINT_WELD) {
-			// must update all neighbouring joints since the fixture has changed
-			for (auto n : neighbours_) {
-				if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ != BodyPartType::JOINT_WELD) {
-					context_.owner.recreateJoint(static_cast<Joint*>(n));
-				}
+		// must update all neighbouring joints since the fixture has changed
+		for (auto n : neighbours_) {
+			if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ == BodyPartType::JOINT_WELD) {
+				context_.owner.recreateJoint(static_cast<Joint*>(n));
 			}
 		}
 	}

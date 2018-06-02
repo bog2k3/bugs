@@ -29,6 +29,7 @@ public:
 	void breakJoint();
 
 	Event<void(Joint*)> onJointBreak;
+	Event<void(Joint*)> onJointRecreated;
 
 protected:
 	friend class Bug;

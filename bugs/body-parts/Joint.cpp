@@ -118,6 +118,8 @@ void Joint::updateFixtures() {
 	delete def;
 	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
 			std::bind(&Joint::onPhysJointDestroyed, this, std::placeholders::_1));
+
+	onJointRecreated.trigger(this);
 }
 
 glm::vec2 Joint::getAttachmentPoint(float relativeAngle) {

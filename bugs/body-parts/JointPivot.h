@@ -28,6 +28,7 @@ public:
 	inline float getLowerLimit() const { return phiMin_; }
 	inline float getUpperLimit() const { return phiMax_; }
 	float getJointAngle() const;
+	bool isCreated() const { return physJoint_ != nullptr; }
 
 	void addTorque(float t, float maxSpeed);
 
