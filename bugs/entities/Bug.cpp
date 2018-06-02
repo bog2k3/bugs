@@ -287,6 +287,21 @@ void Bug::update(float dt) {
 		return;
 	}
 
+	// take care of joints pending to be recreated
+	if (!jointsToRecreate_.empty()) {
+		World::getInstance().queueDeferredAction([=] {
+			for (auto j : jointsToRecreate_) {
+				j->destroyFixtures();
+			}
+		});
+		World::getInstance().queueDeferredAction([=] {
+			for (auto j : jointsToRecreate_) {
+				j->updateFixtures();
+			}
+		}, 1); // delay 1 frame to allow neighbouring parts to settle in place
+		jointsToRecreate_.clear();
+	}
+
 	{
 		PERF_MARKER("update-neuralNet");
 		neuralNet_->iterate();

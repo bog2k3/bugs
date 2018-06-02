@@ -92,6 +92,7 @@ void BodyPart::destroy() {
 	destroyCalled_ = true;
 	die();
 	disconnectAllNeighbors();
+	destroyFixtures();
 
 //	for (int i=0; i<nChildren_; i++)
 //		children_[i]->destroy();
@@ -347,15 +348,11 @@ void BodyPart::applyScale(float scale) {
 		});
 		if (type_ != BodyPartType::JOINT_PIVOT && type_ != BodyPartType::JOINT_WELD) {
 			// must update all neighbouring joints since the fixture has changed
-#warning "Optimize: Put all joints in a set and update them only once at the end- if more bodyparts get scaled in the same frame they will be update multiple times"
-			World::getInstance().queueDeferredAction([this] {
-				for (auto n : neighbours_) {
-					if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ != BodyPartType::JOINT_WELD) {
-						n->destroyFixtures();
-						n->updateFixtures();
-					}
+			for (auto n : neighbours_) {
+				if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ != BodyPartType::JOINT_WELD) {
+					context_.owner.recreateJoint(static_cast<Joint*>(n));
 				}
-			});
+			}
 		}
 	}
 }

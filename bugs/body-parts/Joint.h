@@ -31,6 +31,8 @@ public:
 	Event<void(Joint*)> onJointBreak;
 
 protected:
+	friend class Bug;
+
 	BodyPart* leftAnchor_;
 	BodyPart* rightAnchor_;
 	b2Joint* physJoint_;

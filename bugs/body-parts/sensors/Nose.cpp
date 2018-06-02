@@ -179,11 +179,6 @@ void Nose::updateFixtures() {
 #ifdef DEBUG
 	World::assertOnMainThread();
 #endif
-	if (physBody_.b2Body_->GetFixtureList()) {
-		physBody_.b2Body_->DestroyFixture(
-				&physBody_.b2Body_->GetFixtureList()[0]);
-	}
-
 	// create fixture:
 	b2PolygonShape shape;
 	// nose is oriented towards OX axis

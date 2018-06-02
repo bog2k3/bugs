@@ -39,10 +39,6 @@ Bone::Bone(BodyPartContext const& context, BodyCell& cell)
 }
 
 Bone::~Bone() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	physBody_.b2Body_->DestroyFixture(&physBody_.b2Body_->GetFixtureList()[0]);
 }
 
 float Bone::getDensity(BodyCell const& cell) {

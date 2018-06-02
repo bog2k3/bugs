@@ -27,6 +27,7 @@
 #include <map>
 #include <atomic>
 #include <functional>
+#include <set>
 
 class NeuralNet;
 class InputSocket;
@@ -77,6 +78,9 @@ public:
 	void consumeEnergy(float amount);
 	void onFoodProcessed(float mass);
 
+	// destroys a joint and recreates it; this is required after connected body parts get scaled
+	void recreateJoint(Joint* j) { jointsToRecreate_.insert(j); }
+
 	void kill();
 
 	uint64_t getId() { return id; }
@@ -125,6 +129,7 @@ protected:
 	bool cachedMassDirty_;		// flag to signal that cachedLeanMass_ must be recomputed
 	std::vector<EggLayer*> eggLayers_;
 	std::vector<BodyPart*> deadBodyParts_;
+	std::set<Joint*> jointsToRecreate_;
 	BodyPartContext context_;
 
 	std::map<gene_body_attribute_type, CumulativeValue*> mapBodyAttributes_;

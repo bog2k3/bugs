@@ -163,14 +163,16 @@ void Muscle::updateFixtures() {
 		fixDef.restitution = 0.3f;	// same
 		fixDef.shape = &shape;
 
-		// create a physical body first
-		glm::vec3 wPos = cachedWPos_;
-		PhysicsProperties props(vec3xy(wPos), wPos.z, true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
-		physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
-		physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
-		physBody_.userPointer_ = this;
-		physBody_.userObjectType_ = ObjectTypes::BPART_MUSCLE;
-		physBody_.create(props);
+		if (!physBody_.b2Body_) {
+			// create a physical body first
+			glm::vec3 wPos = cachedWPos_;
+			PhysicsProperties props(vec3xy(wPos), wPos.z, true, {0, 0}, 0.f); //TODO velocity?, angularVelocity?);
+			physBody_.categoryFlags_ = EventCategoryFlags::BODYPART;
+			physBody_.getEntityFunc_ = &getEntityFromBodyPartPhysBody;
+			physBody_.userPointer_ = this;
+			physBody_.userObjectType_ = ObjectTypes::BPART_MUSCLE;
+			physBody_.create(props);
+		}
 
 		// create fixture:
 		physBody_.b2Body_->CreateFixture(&fixDef);
