@@ -1,7 +1,7 @@
-* [ ] next: Metabolism, eating, growing, fat-burning and replenish, egg-laying
+* [X] next: Metabolism, eating, growing, fat-burning and replenish, egg-laying
 	- [X] eat, grow, fat replenish, egg-growth
-	- [ ] consume energy
-	- [ ] fix body-part overlapping after scaling and fixture regeneration
+	- [X] consume energy
+	- [X] fix body-part overlapping after scaling and fixture regeneration
 * [ ] next2: nerves and neurons
 * [ ] change synapse linkage - VMS based for each input and output
 	- [ ] gene for number of neuron inputs - float, integer part is used
