@@ -178,7 +178,9 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 
 			for (auto bp : bodyParts_) {
 				bp->onDied.add([this](BodyPart *dying) {
-					bodyParts_.erase(std::remove(bodyParts_.begin(), bodyParts_.end(), dying));
+					if (isAlive_) {
+						bodyParts_.erase(std::remove(bodyParts_.begin(), bodyParts_.end(), dying));
+					}
 					deadBodyParts_.push_back(dying);
 					if (dying->getType() == BodyPartType::EGGLAYER) {
 						// must remove from eggLayers_ vector
@@ -241,7 +243,9 @@ void Bug::kill() {
 			LOGLN("bug DIED");
 			--population; // one less bug
 			isAlive_ = false;
-			for (auto b : bodyParts_)
+			decltype(bodyParts_) parts;
+			parts.swap(bodyParts_);	// avoid screwing iterator during onDied event handler
+			for (auto b : parts)
 				b->die();
 		}
 	});
