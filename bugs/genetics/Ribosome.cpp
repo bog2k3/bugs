@@ -176,11 +176,18 @@ bool Ribosome::step() {
 	LOGPREFIX("Ribosome");
 	if (activeSet_.empty()) {
 		// finished division
-		// TODO must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
 
 		// check if critical body parts exist (at least a mouth and egg-layer)
 		bool hasMouth = false, hasEggLayer = false;
 		specializeCells(hasMouth, hasEggLayer);
+		// must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
+
+		// decode body attrib genes:
+		for (auto g : bodyAttribGenes_)
+			bug_->mapBodyAttributes_[g->data.gene_body_attribute.attribute]->changeAbs(g->data.gene_body_attribute.value);
+
+		// TODO: decode neural genes
+		// ...
 
 #ifdef DEBUG
 		World::getInstance().triggerEvent("pauseRequested", 1);
@@ -623,7 +630,6 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 		break;
 	case gene_type::BODY_ATTRIBUTE:
 		bodyAttribGenes_.insert(&g);
-		//bug_->mapBodyAttributes_[g.data.gene_body_attribute.attribute]->changeAbs(g.data.gene_body_attribute.value);
 		break;
 	case gene_type::VMS_OFFSET:
 		decodeVMSOffset(g.data.gene_vms_offset, cell, ctx);
