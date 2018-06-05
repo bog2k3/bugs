@@ -31,11 +31,9 @@ enum class gene_type : uint8_t {
 	SYNAPSE = 13,				// creates or alters a synapse between a VMS input coordinate and a VMS output coordinate (cummulative weight)
 	TRANSFER_FUNC = 14,			// controls the transfer function of a neuron (cummulative)
 	NEURAL_BIAS = 15,			// neural bias (cummulative) - is added to the weighted sum of the inputs
-	NEURON_OUTPUT_COORD = 16,	// output coord (in VMS) from a neuron - where the axon lies
-	NEURON_INPUT_COORD = 17,	// input coord (in VMS) to a neuron - where the dendrites lie
-	NEURAL_PARAM = 18,			// neural parameter - used by some types of neurons for specific purposes
+	NEURAL_PARAM = 16,			// neural parameter - used by some types of neurons for specific purposes
 
-	END = 19
+	END = 17
 };
 
 // ----------------------------------- gene_protein_type -------------------------------//
@@ -107,7 +105,7 @@ constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD1 = 5;			// input/output
 constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD2 = 6;			// input/output (depends on motor/sensor) coord in VMS;
 constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD3 = 7;			// input/output (depends on motor/sensor) coord in VMS;
 constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD4 = 8;			// input/output (depends on motor/sensor) coord in VMS;
-constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD6 = 9;			// input/output (depends on motor/sensor) coord in VMS;
+constexpr gene_part_attribute_type GENE_ATTRIB_VMS_COORD5 = 9;			// input/output (depends on motor/sensor) coord in VMS;
 constexpr gene_part_attribute_type GENE_ATTRIB_END = 10;
 
 // ----------------------------------- gene_body_attribute_type -------------------------------//

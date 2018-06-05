@@ -208,16 +208,6 @@ struct GeneNeuron {
 	Atom<float> neuronLocation;		// neuron location in VMS
 };
 
-struct GeneNeuronOutputCoord {
-	Atom<float> neuronLocation;		// neuron location
-	Atom<float> coordinate;			// VMS output coordinate for neuron
-};
-
-struct GeneNeuronInputCoord {
-	Atom<float> neuronLocation;		// neuron location
-	Atom<float> coordinate;			// VMS input coordinate for neuron
-};
-
 struct GeneTransferFunction {
 	Atom<float> neuronLocation;		// neuron location
 	Atom<int> functionID;
@@ -263,8 +253,6 @@ public:
 		GeneVMSOffset gene_vms_offset;
 		GeneNeuron gene_neuron;
 		GeneSynapse gene_synapse;
-		GeneNeuronOutputCoord gene_neuron_output;
-		GeneNeuronInputCoord gene_neuron_input;
 		GeneTransferFunction gene_transfer_function;
 		GeneNeuralBias gene_neural_constant;
 		GeneNeuralParam gene_neural_param;
@@ -282,8 +270,6 @@ public:
 		GeneData(GeneVMSOffset const& gvo) : gene_vms_offset(gvo) {}
 		GeneData(GeneNeuron const& gn) : gene_neuron(gn) {}
 		GeneData(GeneSynapse const &gs) : gene_synapse(gs) {}
-		GeneData(GeneNeuronOutputCoord const &gno) : gene_neuron_output(gno) {}
-		GeneData(GeneNeuronInputCoord const& gni) : gene_neuron_input(gni) {}
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
 		GeneData(GeneNeuralBias const &gnc) : gene_neural_constant(gnc) {}
 		GeneData(GeneNeuralParam const& gnp) : gene_neural_param(gnp) {}
@@ -311,8 +297,6 @@ public:
 	Gene(GeneVMSOffset const& gvo) : Gene(gene_type::VMS_OFFSET, gvo) {}
 	Gene(GeneNeuron const& gn) : Gene(gene_type::NEURON, gn) {}
 	Gene(GeneSynapse const &gs) : Gene(gene_type::SYNAPSE, gs) {}
-	Gene(GeneNeuronOutputCoord const &gnoc) : Gene(gene_type::NEURON_OUTPUT_COORD, gnoc) {}
-	Gene(GeneNeuronInputCoord const& gnic) : Gene(gene_type::NEURON_INPUT_COORD, gnic) {}
 	Gene(GeneTransferFunction const &gt) : Gene(gene_type::TRANSFER_FUNC, gt) {}
 	Gene(GeneNeuralBias const &gnc) : Gene(gene_type::NEURAL_BIAS, gnc) {}
 	Gene(GeneNeuralParam const& gnp) : Gene(gene_type::NEURAL_PARAM, gnp) {}
@@ -358,8 +342,6 @@ private:
 	static Gene createRandomAttribGene();
 	static Gene createRandomNeuronGene();
 	static Gene createRandomSynapseGene();
-	static Gene createRandomNeuronInputCoordGene();
-	static Gene createRandomNeuronOutputCoordGene();
 	static Gene createRandomTransferFuncGene();
 	static Gene createRandomNeuralBiasGene();
 	static Gene createRandomNeuralParamGene();

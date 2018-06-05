@@ -89,8 +89,10 @@ private:
 //	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 //																	// and relative genome offset of the joint (if joint exists)
 	std::vector<Muscle*> muscles_;
-	std::set<const Gene*> neuralGenes_;		// neural genes are added here and decoded at the end when all cells are done
-	std::set<const Gene*> bodyAttribGenes_;	// same for body attribute genes
+	std::map<const Gene*, std::set<float>> neuralGenes_;		// neural genes (neuron and neuron attributes)
+	std::set<std::pair<const Gene*, float>> synapseGenes_;		// first is gene, second is VMS offset from the decode context
+																// the same synapse gene is only interpreted multiple times if it appears in a different vms offset context
+	std::set<const Gene*> bodyAttribGenes_;	// hold body attribute genes here and decode them when all genome is processed
 //	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
 //											// to actual indices in the neural network plus cummulative properties
 #ifdef DEBUG
@@ -117,8 +119,6 @@ private:
 	void decodeTransferFn(GeneTransferFunction const& g);
 	void decodeNeuralBias(GeneNeuralBias const& g);
 	void decodeNeuralParam(GeneNeuralParam const& g);
-	void decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g);
-	void decodeNeuronInputCoord(GeneNeuronInputCoord const& g);
 //	bool partMustGenerateJoint(BodyPartType part_type);
 //	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);

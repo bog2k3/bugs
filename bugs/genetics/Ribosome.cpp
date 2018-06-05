@@ -303,7 +303,7 @@ bool Ribosome::step() {
 					skipCount = g2->data.gene_skip.count;
 			}
 		}
-		activeSet_[i].second.crtGenomePos += skipCount;
+		activeSet_[i].second.crtGenomePos += abs(skipCount); // only skip forward, never back to avoid infinite loop
 	}
 	return true;
 }
@@ -636,8 +636,6 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 		break;
 	case gene_type::NEURON:
 	case gene_type::SYNAPSE:
-	case gene_type::NEURON_INPUT_COORD:
-	case gene_type::NEURON_OUTPUT_COORD:
 	case gene_type::TRANSFER_FUNC:
 	case gene_type::NEURAL_BIAS:
 	case gene_type::NEURAL_PARAM:
@@ -754,22 +752,6 @@ void Ribosome::decodeNeuralParam(GeneNeuralParam const& g) {
 	assert(!std::isnan(g.value.value));
 //	if (hasNeuron(g.targetNeuron, false))
 //		mapNeurons_[g.targetNeuron].param.changeAbs(g.value);
-	NOT_IMPLEMENTED;
-}
-
-void Ribosome::decodeNeuronOutputCoord(GeneNeuronOutputCoord const& g) {
-//	checkAndAddNeuronMapping(g.srcNeuronVirtIndex);
-//	mapNeurons_[g.srcNeuronVirtIndex].outputVMSCoord.changeAbs(g.outCoord);
-//	// add this neuron into the outputNeurons_ set:
-//	outputNeurons_.insert(g.srcNeuronVirtIndex);
-	NOT_IMPLEMENTED;
-}
-
-void Ribosome::decodeNeuronInputCoord(GeneNeuronInputCoord const& g) {
-//	checkAndAddNeuronMapping(g.destNeuronVirtIndex);
-//	mapNeurons_[g.destNeuronVirtIndex].inputVMSCoord.changeAbs(g.inCoord);
-//	// add this neuron into the inputNeurons_ set:
-//	inputNeurons_.insert(g.destNeuronVirtIndex);
 	NOT_IMPLEMENTED;
 }
 

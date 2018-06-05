@@ -71,14 +71,6 @@ void Gene::update_meta_genes_vec() {
 		ATOM(data.gene_synapse.priority)
 		ATOM(data.gene_synapse.weight)
 		break;
-	case gene_type::NEURON_INPUT_COORD:
-		ATOM(data.gene_neuron_input.neuronLocation)
-		ATOM(data.gene_neuron_input.coordinate)
-		break;
-	case gene_type::NEURON_OUTPUT_COORD:
-		ATOM(data.gene_neuron_output.neuronLocation)
-		ATOM(data.gene_neuron_output.coordinate)
-		break;
 	case gene_type::TRANSFER_FUNC:
 		ATOM(data.gene_transfer_function.neuronLocation)
 		ATOM(data.gene_transfer_function.functionID)
@@ -153,20 +145,6 @@ Gene Gene::createRandomSynapseGene() {
 	g.destLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
 	g.priority.set(randf()*10);
 	g.weight.set(randf()*0.2f);
-	return g;
-}
-
-Gene Gene::createRandomNeuronInputCoordGene() {
-	GeneNeuronInputCoord g;
-	g.neuronLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
-	g.coordinate.set(randf() * BodyConst::MaxVMSCoordinateValue);
-	return g;
-}
-
-Gene Gene::createRandomNeuronOutputCoordGene() {
-	GeneNeuronOutputCoord g;
-	g.neuronLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
-	g.coordinate.set(randf() * BodyConst::MaxVMSCoordinateValue);
 	return g;
 }
 
@@ -260,8 +238,6 @@ Gene Gene::createRandom(int spaceLeftAfter) {
 		{gene_type::NEURAL_PARAM, 0.8},
 		{gene_type::TRANSFER_FUNC, 0.5},
 		{gene_type::SYNAPSE, 1.5},
-		{gene_type::NEURON_INPUT_COORD, 0.9},
-		{gene_type::NEURON_OUTPUT_COORD, 0.9},
 		{gene_type::SKIP, 0.1},
 		{gene_type::STOP, 0.09},
 		{gene_type::NO_OP, 0.09},
@@ -299,10 +275,6 @@ Gene Gene::createRandom(int spaceLeftAfter) {
 		return createRandomMuscleAttributeGene();
 	case gene_type::NEURON:
 		return createRandomNeuronGene();
-	case gene_type::NEURON_INPUT_COORD:
-		return createRandomNeuronInputCoordGene();
-	case gene_type::NEURON_OUTPUT_COORD:
-		return createRandomNeuronOutputCoordGene();
 	case gene_type::NEURAL_BIAS:
 		return createRandomNeuralBiasGene();
 	case gene_type::PART_ATTRIBUTE:
@@ -332,10 +304,6 @@ char Gene::getSymbol() const {
 		return 'M';
 	case gene_type::NEURAL_BIAS:
 		return 'C';
-	case gene_type::NEURON_INPUT_COORD:
-		return 'I';
-	case gene_type::NEURON_OUTPUT_COORD:
-		return 'O';
 	case gene_type::NEURON:
 		return '*';
 	case gene_type::NEURAL_PARAM:
@@ -353,7 +321,7 @@ char Gene::getSymbol() const {
 	case gene_type::STOP:
 		return '!';
 	case gene_type::SYNAPSE:
-		return 'S';
+		return '~';
 	case gene_type::TRANSFER_FUNC:
 		return 'T';
 	case gene_type::DIVISION_PARAM:
