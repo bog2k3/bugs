@@ -53,6 +53,12 @@ struct DecodeContext {
 	unsigned startGenomePos; // initial genome offset for this cell (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this cell
 	CumulativeValue childOffsets[2]; // holds relative genome offsets for each future child cell (0 is left, 1 right)
+	CumulativeValue vmsOffset;
+	float parentVmsOffset = 0;
+	std::set<const GeneVMSOffset*> vmsOffsetGenes;	// all vms offset genes are added to this set and passed down to the cell's children
+											// if the same vms offset gene is encountered by the child cell it will be ignored
+											// thus the vms offset gene can affect a cell only once (it is inherited by the children)
+	std::vector<const Gene*> neuralGenes;
 
 	DecodeContext(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
@@ -60,7 +66,7 @@ struct DecodeContext {
 };
 
 template<typename T>
-using InputOutputNerve = std::pair<T, float>;	// first (T) is the nerve pointer, second is the VMS coordinate
+using VMSEntry = std::pair<T, float>;	// first (T) is the object (neuron, input/output socket), second is the VMS coordinate
 
 /**
  * decodes the entity's genome and builds it step by step. When finished the entity will have its final
@@ -89,12 +95,10 @@ private:
 //	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 //																	// and relative genome offset of the joint (if joint exists)
 	std::vector<Muscle*> muscles_;
-	std::map<const Gene*, std::set<float>> neuralGenes_;		// neural genes (neuron and neuron attributes)
-	std::set<std::pair<const Gene*, float>> synapseGenes_;		// first is gene, second is VMS offset from the decode context
-																// the same synapse gene is only interpreted multiple times if it appears in a different vms offset context
+	std::map<const Gene*, std::set<float>> neuralGenes_;		// first is neural gene, second is a set of VMS offsets from the decode context
+																// the same neural gene is only interpreted multiple times if it appears in a different vms offset context
 	std::set<const Gene*> bodyAttribGenes_;	// hold body attribute genes here and decode them when all genome is processed
-//	std::map<int, NeuronInfo> mapNeurons_;	// maps virtual neuron indices (as encoded in the genes)
-//											// to actual indices in the neural network plus cummulative properties
+	std::vector<VMSEntry<Neuron*>> vmsNeurons_;				// holds VMS locations for each neuron
 #ifdef DEBUG
 //	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
 //	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
@@ -125,8 +129,8 @@ private:
 	void addSensor(ISensor* sensor);
 	void resolveMuscleLinkage();
 //	JointPivot* findNearestJoint(Muscle* m, int dir);
+	void processLocalNeuralGenes(BodyCell& cell, DecodeContext &ctx);
 
-	void initializeNeuralNetwork();
 	void decodeDeferredGenes();
 	void specializeCells(bool &hasMouth, bool &hasEggLayer);
 //	void checkAndAddNeuronMapping(int virtualIndex);
@@ -137,17 +141,17 @@ private:
 //	void createSynapse(int from, int to, SynapseInfo const& info);
 	void resolveNerveLinkage();
 //	void commitNeurons();
-	void linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,
-						 std::vector<InputOutputNerve<InputSocket*>> const& orderedMotorInputs_);
-	void linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedInputNeurons_,
-						  std::vector<InputOutputNerve<OutputSocket*>> orderedSensorOutputs_);
+	void linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& orderedOutputNeurons_,
+						 std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
+	void linkSensorNerves(std::vector<VMSEntry<Neuron*>> const& orderedInputNeurons_,
+						  std::vector<VMSEntry<OutputSocket*>> orderedSensorOutputs_);
 
 	// searches for the nerve nearest to the given matchCoordinate in the Virtual Matching Space; returns its index or -1 if none found
 	template<typename T>
-	int getVMSNearestNerveIndex(std::vector<InputOutputNerve<T>> const& nerves, float matchCoord);	// returns -1 if none found
+	int getVMSNearestObjectIndex(std::vector<VMSEntry<T>> const& entries, float matchCoord);	// returns -1 if none found
 
 	template<typename T>
-	void sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves);
+	void sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &entries);
 
 	// returns true if the gene applies to this cell (gene passes the branch restriction of the cell)
 	bool geneQualifies(Gene& g, BodyCell& c);

@@ -82,6 +82,8 @@ Ribosome::Ribosome(Bug* bug)
 	BodyCell* initialCell = new BodyCell(initialSize, glm::vec2(0, 0), 0, false, false);
 	cells_.push_back(initialCell);
 
+	bug_->neuralNet_ = new NeuralNet();
+
 	// start decoding with root body part at offset 0 in the genome:
 	activeSet_.push_back(std::make_pair(initialCell, 0));
 }
@@ -121,9 +123,8 @@ void Ribosome::cleanUp() {
 //	return abs(d1) < abs(d2);
 //}
 
-void Ribosome::initializeNeuralNetwork() {
+//void Ribosome::initializeNeuralNetwork() {
 	// create and initialize the neural network:
-	bug_->neuralNet_ = new NeuralNet();
 //	bug_->neuralNet_->neurons.reserve(mapNeurons_.size());
 //	for (uint i=0; i<mapNeurons_.size(); i++) {
 //		bug_->neuralNet_->neurons.push_back(new Neuron());
@@ -136,8 +137,8 @@ void Ribosome::initializeNeuralNetwork() {
 //		}
 //	}
 //#endif
-	NOT_IMPLEMENTED;
-}
+//	NOT_IMPLEMENTED;
+//}
 
 void Ribosome::decodeDeferredGenes() {
 	// create all synapses
@@ -166,8 +167,8 @@ void Ribosome::decodeDeferredGenes() {
 }
 
 template <typename T>
-void Ribosome::sortNervesByVMSCoord(std::vector<InputOutputNerve<T>> &nerves) {
-	std::sort(nerves.begin(), nerves.end(), [] (InputOutputNerve<T> const& left, InputOutputNerve<T> const& right) -> bool {
+void Ribosome::sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &nerves) {
+	std::sort(nerves.begin(), nerves.end(), [] (VMSEntry<T> const& left, VMSEntry<T> const& right) -> bool {
 		return left.second < right.second;
 	});
 }
@@ -201,14 +202,12 @@ bool Ribosome::step() {
 			return false;
 		}
 
-		// TODO must now decode neural genes from neuralGenes_ set and body attribute genes from bodyAttribGenes_ set
 		return false;
 
 		// link all muscles to joints:
 		resolveMuscleLinkage();
 
 		// now decode the neural network:
-		initializeNeuralNetwork();
 		decodeDeferredGenes();
 		// link nerves to sensors and motors:
 		resolveNerveLinkage();
@@ -235,6 +234,7 @@ bool Ribosome::step() {
 				|| (g1 && g1->type == gene_type::STOP)
 				|| (g2 && g2->type == gene_type::STOP)) {
 			// so much for this development path;
+			processLocalNeuralGenes(*activeSet_[i].first, activeSet_[i].second);
 			// decide if cell will divide or specialize
 			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f) {
 				// check if division will create pivot joint, and if so, we need to subtract the mass required to make the joint and muscles
@@ -262,7 +262,14 @@ bool Ribosome::step() {
 				cells_.push_back(pair.first);
 				cells_.push_back(pair.second);
 				DecodeContext leftCtx(activeSet_[i].second.startGenomePos + activeSet_[i].second.childOffsets[0]);
+				// inherit vms offset and offset genes set
+				leftCtx.parentVmsOffset = activeSet_[i].second.parentVmsOffset + activeSet_[i].second.vmsOffset;
+				leftCtx.vmsOffsetGenes = activeSet_[i].second.vmsOffsetGenes;
 				DecodeContext rightCtx(activeSet_[i].second.startGenomePos + activeSet_[i].second.childOffsets[1]);
+				// inherit vms offset and offset genes set
+				rightCtx.parentVmsOffset = activeSet_[i].second.parentVmsOffset + activeSet_[i].second.vmsOffset;
+				rightCtx.vmsOffsetGenes = activeSet_[i].second.vmsOffsetGenes;
+				// start decoding the children cells
 				activeSet_.push_back({pair.first, leftCtx});
 				activeSet_.push_back({pair.second, rightCtx});
 			}
@@ -469,6 +476,28 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 	cell.size_ *= oldDensity / cell.density_;
 }
 
+void Ribosome::processLocalNeuralGenes(BodyCell& cell, DecodeContext &ctx) {
+	for (auto g : ctx.neuralGenes) {
+		float vmsOffset = ctx.parentVmsOffset + ctx.vmsOffset.get();
+		auto it = neuralGenes_.find(g);
+		bool reject = true;
+		if (it == neuralGenes_.end()) {
+			neuralGenes_.insert(std::make_pair(g, std::set<float>{vmsOffset}));
+			reject = false;
+		} else {
+			reject = !it->second.insert(vmsOffset).second;
+		}
+		if (g->type == gene_type::NEURON && !reject) {
+			// instantiate new neuron in the current cell
+			Neuron* n = new Neuron();
+			bug_->neuralNet_->neurons.push_back(n);
+			cell.neurons_.push_back(n);
+			float geneVMSValue = clamp(g->data.gene_neuron.neuronLocation.value, 0.f, BodyConst::MaxVMSCoordinateValue);
+			vmsNeurons_.push_back(std::make_pair(n, vmsOffset + geneVMSValue));
+		}
+	}
+}
+
 /*void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {
 	// grow only works on bones and torso
 	if (parent->getType() != BodyPartType::BONE && parent->getType() != BodyPartType::TORSO)
@@ -639,7 +668,7 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 	case gene_type::TRANSFER_FUNC:
 	case gene_type::NEURAL_BIAS:
 	case gene_type::NEURAL_PARAM:
-		neuralGenes_.insert(&g);
+		ctx.neuralGenes.push_back(&g);
 		break;
 	default:
 		ERROR("Unhandled gene type : " << (uint)g.type);
@@ -721,7 +750,8 @@ void Ribosome::decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, 
 }
 
 void Ribosome::decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx) {
-	cell.VMSOffset_.changeAbs(g.value);
+	if (ctx.vmsOffsetGenes.insert(&g).second)
+		ctx.vmsOffset.changeAbs(g.value);
 }
 
 void Ribosome::decodeSynapse(GeneSynapse const& g) {
@@ -770,7 +800,7 @@ void Ribosome::decodeNeuralParam(GeneNeuralParam const& g) {
 
 // returns -1 if none found
 template <typename T>
-int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> const& nerves, float matchCoord) {
+int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& nerves, float matchCoord) {
 	if (nerves.size() == 0)
 		return -1;
 	// binary-search the nearest output neuron:
@@ -811,15 +841,15 @@ int Ribosome::getVMSNearestNerveIndex(std::vector<std::pair<T, float>> const& ne
 	return small;
 }
 
-void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedOutputNeurons_,
-							   std::vector<InputOutputNerve<InputSocket*>> const& orderedMotorInputs_) {
+void Ribosome::linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& orderedOutputNeurons_,
+							   std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_) {
 	bug_->motorLines_.clear();
 	// motors are matched 1:1 with the nearest output nerves from the neural network, in the direction from motor nerve to output nerve.
 	for (unsigned i = 0; i < orderedMotorInputs_.size(); i++) {
 		float motorCoord = orderedMotorInputs_[i].second;
 		if (motorCoord == 0)
 			continue;
-		int neuronIndex = getVMSNearestNerveIndex(orderedOutputNeurons_, motorCoord);
+		int neuronIndex = getVMSNearestObjectIndex(orderedOutputNeurons_, motorCoord);
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
 			orderedOutputNeurons_[neuronIndex].first->output.addTarget(orderedMotorInputs_[i].first);
@@ -840,15 +870,15 @@ void Ribosome::linkMotorNerves(std::vector<InputOutputNerve<Neuron*>> const& ord
 	}
 }
 
-void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& orderedInputNeurons_,
-						  	    std::vector<InputOutputNerve<OutputSocket*>> orderedSensorOutputs_) {
+void Ribosome::linkSensorNerves(std::vector<VMSEntry<Neuron*>> const& orderedInputNeurons_,
+						  	    std::vector<VMSEntry<OutputSocket*>> orderedSensorOutputs_) {
 	// sensors are matched n:m with nearest input nerves in two passes:
 	// 1. all input nerves are connected to the nearest sensor nerves
 	// 2. all unconnected sensor nerves are connected to the nearest input nerves
 
 	// stage 1:
 	for (auto &inerve : orderedInputNeurons_) {
-		int sensorSocketIndex = getVMSNearestNerveIndex(orderedSensorOutputs_, inerve.second);
+		int sensorSocketIndex = getVMSNearestObjectIndex(orderedSensorOutputs_, inerve.second);
 		if (sensorSocketIndex >= 0) {
 			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(inerve.first, 1.f));
 			orderedSensorOutputs_[sensorSocketIndex].first->addTarget(sock.get());
@@ -871,7 +901,7 @@ void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& or
 	for (auto &sensor : orderedSensorOutputs_) {
 		if (sensor.second == 0)
 			continue;
-		int nerveIndex = getVMSNearestNerveIndex(orderedInputNeurons_, sensor.second);
+		int nerveIndex = getVMSNearestObjectIndex(orderedInputNeurons_, sensor.second);
 		if (nerveIndex >= 0) {
 			Neuron* neuron = orderedInputNeurons_[nerveIndex].first;
 			std::unique_ptr<InputSocket> sock = std::unique_ptr<InputSocket>(new InputSocket(neuron, 1.f));
@@ -883,7 +913,7 @@ void Ribosome::linkSensorNerves(std::vector<InputOutputNerve<Neuron*>> const& or
 
 void Ribosome::resolveNerveLinkage() {
 	// build the motor input nerves vector:
-	std::vector<InputOutputNerve<InputSocket*>> motorInputs;
+	std::vector<VMSEntry<InputSocket*>> motorInputs;
 	for (unsigned i=0; i<motors_.size(); i++) {
 		for (unsigned j=0; j<motors_[i]->getInputCount(); j++) {
 			mapInputNerves_[motors_[i]->getInputSocket(j)] = motorInputs.size();
@@ -895,13 +925,13 @@ void Ribosome::resolveNerveLinkage() {
 		}
 	}
 	// build the sensor output nerves vector:
-	std::vector<InputOutputNerve<OutputSocket*>> sensorOutputs;
+	std::vector<VMSEntry<OutputSocket*>> sensorOutputs;
 	for (unsigned i=0; i<sensors_.size(); i++) {
 		for (unsigned j=0; j<sensors_[i]->getOutputCount(); j++)
 			sensorOutputs.push_back(std::make_pair(sensors_[i]->getOutputSocket(j), sensors_[i]->getOutputVMSCoord(j)));
 	}
 	// build the neuron vectors:
-	std::vector<InputOutputNerve<Neuron*>> inputNeurons;
+	std::vector<VMSEntry<Neuron*>> inputNeurons;
 //	for (int i : inputNeurons_) {
 //		if (!hasNeuron(i, true))
 //			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses
@@ -909,7 +939,7 @@ void Ribosome::resolveNerveLinkage() {
 //		float vmsCoord = mapNeurons_[i].inputVMSCoord;
 //		inputNeurons.push_back(std::make_pair(neuron, vmsCoord));
 //	}
-//	std::vector<InputOutputNerve<Neuron*>> outputNeurons;
+//	std::vector<VMSEntry<Neuron*>> outputNeurons;
 //	for (int i : outputNeurons_) {
 //		if (!hasNeuron(i, true))
 //			continue; // this neuron doesn't actually exist because it doesn't participate in any synapses

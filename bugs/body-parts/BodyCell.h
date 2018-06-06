@@ -20,6 +20,8 @@
 #include <map>
 #include <vector>
 
+class Neuron;
+
 class BodyCell: public Cell {
 public:
 
@@ -80,8 +82,8 @@ private:
 
 	float initialAngle_;
 	glm::vec4 proteinValues_ {0}; // hyper-space position for current cell
-	CumulativeValue VMSOffset_;  // VMS offset for all other VMS coordinates specified in this cell (neuron position, neuron in/out coords, sensor/motor coords)
 	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;
+	std::vector<Neuron*> neurons_;
 
 	float muscleMassLeft_ = 0;
 	float muscleMassRight_ = 0;

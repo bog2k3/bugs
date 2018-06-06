@@ -14,28 +14,24 @@
 	- [ ] synapses are only created by synapse gene with inputVMS, outputVMS, weight and priority attributes
 		-- the synapse is created from the nearest neuron/sensor at the inputVMS location to the nearest
 			neuron/motor at the outputVMS location
-* [ ] new Neuron gene creates a neuron in VMS at specified location
-	- [ ] neurons are only created by the new Neuron gene and will be housed inside the current cell
-	- [ ] neuron actual VMS coordinate is affected by the VMS offset of the cell that created it
+* [X] new Neuron gene creates a neuron in VMS at specified location
+	- [X] neurons are only created by the new Neuron gene and will be housed inside the current cell
+	- [X] neuron actual VMS coordinate is affected by the VMS offset of the cell that created it
 		-- neuron is instantiated right before cell divides, so its final VMS offset is known
-	- [ ] the Ribosome holds a map of neuron-gene keys and set<VMScoord> values. If the same gene is re-read in a child cell
+	- [ ] the Ribosome holds a map of neural gene keys and set<VMScoord> values. If the same gene is re-read in a child cell
 		the gene is reinterpreted only if the actual (offsetted) vms coordinate differs from the one already processed, thus
 		avoiding collisions
-		-- neuron genes are added into this map right after the neuron is instantiated (if not rejected by the above mechanism)
-		-- this applies to neuron and neuron param genes
-		-- synapse genes are not affected by this mechanism
-	- [ ] synapse genes are held into a map with <gene*, vmsOffset> key, thus the same gene can be interpreted more than once
-		if the offset is different
-		-- the synapse genes are processed at the end of the genome decoding, after all neurons have been instantiated
-	- [ ] when a cell splits, neurons from the cell are distributed between its children
+		-- neural genes are added into this map at the end of the decoding of a cell, before division/specialization
+		-- NeuronGenes are processed immediately after adding in the map (if not rejected) and instantiate neurons in the current cell.
+		-- neuron attrib and synapse genes are processed at the end of the genome decoding, after all neurons have been instantiated.
+	- [X] when a cell splits, neurons from the cell are distributed between its children
 		-- odd neurons to left and even neurons to right; these neurons are not further affected by the children cells' VMS offsets
-	- [ ] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
+	- [X] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
 		-- thus no more neuron indexes
 	- [ ] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
-	- [ ] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
-		- [ ] however VMS coordinates are relative to the current cell's VMS offset. Thus a synapse decoded in a cell will have its 
+	- [X] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
+		- [X] however VMS coordinates are relative to the current cell's VMS offset. Thus a synapse decoded in a cell will have its 
 			real VMS values different then the ones encoded in the gene.
-	- [ ] Neur
 
 * [X] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
 * [X] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
@@ -62,7 +58,14 @@
 		-- [X] original cell is kept for joint/muscle genes and its size is changed to joint size - it's used on the ctor of PivotJoint
 	- [X] new muscle parameter genes with left/right restriction per cell - dictate the parameters of the muscles that will be created by the division (only for pivot joint)
 	- [X] if division splits the pivot joint, muscles will be duplicated for each resulting joint (depending on mirroring)
-	- [ ] new VMS offset gene to control offset for a division branch (mirrored trees with same genes must have different coordinates to enable control by different neurons)
+	- [X] new VMS offset gene to control offset for a division branch (mirrored trees with same genes must have different coordinates to enable control by different neurons)
+		- [-] handle mirrored tree case
+			-- there's no sensible way to achieve this, will just let a vms offset gene with branch restriction do the job
+				otherwise the two mirrored subtrees will have the same offset
+		- [X] VMS offset is inherited into the child cells but the same gene cannot be applied twice in the same cell
+			-- so if a cell's VMS offset is already affected by a gene decoded in the parent cell and the same gene is encountered again
+				during child decoding, it will be ignored second time
+			-- keep a set of vms offset genes into each cell and pass it down to its children
 	- [X] division happens when gene decoding reaches the end, so all genes have a chance of being read
 		-- [X] !! because of this, attribute gene handling must be redesigned (body part classes don't have the chance to register the attributes any more before the genes are decoded since the body-part classes are instantiated when decoding is finished for the current cell)
 	- [X] each cell specializes into a body part depending on hyperspace position or turns into a FatCell (for unused or incomplete positions)

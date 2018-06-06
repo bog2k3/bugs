@@ -62,7 +62,13 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 	float bondBias = tanh(mapDivisionParams_[GENE_DIVISION_BOND_BIAS].get() / 2.f);
 	bool noBond = mapDivisionParams_[GENE_DIVISION_SEPARATE] > 0.f;
 	auto p = Cell::divide(angle, ratio, bondBias, reorient, mirror, noBond);
-	return {static_cast<BodyCell*>(p.first), static_cast<BodyCell*>(p.second)};
+	auto left = static_cast<BodyCell*>(p.first);
+	auto right = static_cast<BodyCell*>(p.second);
+	// distribute neurons to child cells:
+	for (uint i=0; i<neurons_.size(); i++) {
+		(i % 2 ? right->neurons_ : left->neurons_).push_back(neurons_[i]);
+	}
+	return {left, right};
 }
 
 void BodyCell::updateRotation() {
