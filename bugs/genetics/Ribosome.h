@@ -95,10 +95,10 @@ private:
 //	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 //																	// and relative genome offset of the joint (if joint exists)
 	std::vector<Muscle*> muscles_;
-	std::map<const Gene*, std::set<float>> neuralGenes_;		// first is neural gene, second is a set of VMS offsets from the decode context
-																// the same neural gene is only interpreted multiple times if it appears in a different vms offset context
-	std::set<const Gene*> bodyAttribGenes_;	// hold body attribute genes here and decode them when all genome is processed
 	std::vector<VMSEntry<Neuron*>> vmsNeurons_;				// holds VMS locations for each neuron
+	std::map<const Gene*, std::set<float>> neuralGenes_;	// first is neural gene, second is a set of VMS offsets from the decode context
+															// the same neural gene is only interpreted multiple times if it appears in a different vms offset context
+	std::set<const Gene*> bodyAttribGenes_;					// hold body attribute genes here and decode them when all genome is processed
 #ifdef DEBUG
 //	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
 //	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
