@@ -13,12 +13,21 @@
 	- [X] no more genes for inputs and outputs
 	- [ ] synapses are only created by synapse gene with inputVMS, outputVMS, weight and priority attributes
 		-- the synapse is created from the nearest neuron/sensor at the inputVMS location to the nearest
-			neuron/motor at the outputVMS location
+			neuron at the outputVMS location
+	- [ ] motors are not linked by synapses, but by old matching mechanism (since one input socket can only be attached to one output)
+	- [ ] synapses are created between sensors/neurons and neurons
+	- [ ] sensors that have no outputs connected to neurons should die (get deactivated) immediately after decoding for performance
+	- [ ] synapses should be created in two passes:
+		-- first decode all offsetted synapse genes and add pairs of <outputSock*, inputSock*> as keys into a map with
+			struct SynapseInfo as value (cumulativeValues for weight, priority)
+			-- when the same key exists, just update the values
+			-- thus more genes can affect the same synapse
+		-- second iterate the map and actually create the synapses - create inputSockets and link them to outputSockets
 * [X] new Neuron gene creates a neuron in VMS at specified location
 	- [X] neurons are only created by the new Neuron gene and will be housed inside the current cell
 	- [X] neuron actual VMS coordinate is affected by the VMS offset of the cell that created it
 		-- neuron is instantiated right before cell divides, so its final VMS offset is known
-	- [ ] the Ribosome holds a map of neural gene keys and set<VMScoord> values. If the same gene is re-read in a child cell
+	- [X] the Ribosome holds a map of neural gene keys and set<VMScoord> values. If the same gene is re-read in a child cell
 		the gene is reinterpreted only if the actual (offsetted) vms coordinate differs from the one already processed, thus
 		avoiding collisions
 		-- neural genes are added into this map at the end of the decoding of a cell, before division/specialization
@@ -28,7 +37,7 @@
 		-- odd neurons to left and even neurons to right; these neurons are not further affected by the children cells' VMS offsets
 	- [X] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
 		-- thus no more neuron indexes
-	- [ ] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
+	- [X] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
 	- [X] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
 		- [X] however VMS coordinates are relative to the current cell's VMS offset. Thus a synapse decoded in a cell will have its 
 			real VMS values different then the ones encoded in the gene.
