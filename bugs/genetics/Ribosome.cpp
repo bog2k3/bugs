@@ -140,39 +140,6 @@ void Ribosome::cleanUp() {
 //	NOT_IMPLEMENTED;
 //}
 
-void Ribosome::decodeDeferredGenes() {
-	// create all synapses
-//	for (auto s : mapSynapses_) {
-//		int32_t from = s.first >> 32;
-//		int32_t to = (s.first) & 0xFFFFFFFF;
-//		createSynapse(from, to, s.second);
-//	}
-//	// now decode the deferred neural genes (neuron properties):
-//	for (auto &g : neuralGenes_)
-//		decodeGene(*g, nullptr, nullptr, false);
-//	// apply all neuron properties
-//	for (auto &n : mapNeurons_) {
-//		if (n.second.transfer.hasValue()) {
-//			int funcIndex = clamp((int)n.second.transfer.get(),
-//					(int)transferFuncNames::FN_ONE,
-//					(int)transferFuncNames::FN_MAXCOUNT-1);
-//			bug_->neuralNet_->neurons[n.second.index]->setTranferFunction((transferFuncNames)funcIndex);
-//		}
-//		if (n.second.bias.hasValue())
-//			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.bias;
-//		if (n.second.param.hasValue())
-//			bug_->neuralNet_->neurons[n.second.index]->neuralParam = n.second.param;
-//	}
-	NOT_IMPLEMENTED;
-}
-
-template <typename T>
-void Ribosome::sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &nerves) {
-	std::sort(nerves.begin(), nerves.end(), [] (VMSEntry<T> const& left, VMSEntry<T> const& right) -> bool {
-		return left.second < right.second;
-	});
-}
-
 bool Ribosome::step() {
 	LOGPREFIX("Ribosome");
 	if (activeSet_.empty()) {
@@ -202,18 +169,12 @@ bool Ribosome::step() {
 			return false;
 		}
 
-		return false;
-
-		// link all muscles to joints:
-		resolveMuscleLinkage();
-
-		// now decode the neural network:
+		// decode the neural network:
 		decodeDeferredGenes();
 		// link nerves to sensors and motors:
 		resolveNerveLinkage();
 		// commit neuron properties:
-//		commitNeurons();
-		NOT_IMPLEMENTED;
+		commitNeurons();
 
 		// clean up:
 		cleanUp();
@@ -416,6 +377,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		if (pSensor)
 			addSensor(pSensor);
 	}
+	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
 
 	// 3rd run: create joints and muscles
 	std::set<std::pair<Cell*, Cell*>> joints;
@@ -476,6 +438,17 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 	cell.size_ *= oldDensity / cell.density_;
 }
 
+void Ribosome::addMotor(IMotor* motor, BodyPart* part) {
+	motors_.push_back(motor);
+	for (unsigned i=0; i<motor->getInputCount(); i++) {
+		int lineId = nMotorLines_++;
+		part->addMotorLine(lineId);
+	}
+}
+void Ribosome::addSensor(ISensor* sensor) {
+	sensors_.push_back(sensor);
+}
+
 void Ribosome::processLocalNeuralGenes(BodyCell& cell, DecodeContext &ctx) {
 	for (auto g : ctx.neuralGenes) {
 		float vmsOffset = ctx.parentVmsOffset + ctx.vmsOffset.get();
@@ -493,128 +466,11 @@ void Ribosome::processLocalNeuralGenes(BodyCell& cell, DecodeContext &ctx) {
 			bug_->neuralNet_->neurons.push_back(n);
 			cell.neurons_.push_back(n);
 			float geneVMSValue = clamp(g->data.gene_neuron.neuronLocation.value, 0.f, BodyConst::MaxVMSCoordinateValue);
-			vmsNeurons_.push_back(std::make_pair(n, vmsOffset + geneVMSValue));
+			vmsNeurons_.push_back(std::make_pair(NeuronInfo(n), vmsOffset + geneVMSValue));
 		}
 	}
 }
 
-/*void Ribosome::growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset) {
-	// grow only works on bones and torso
-	if (parent->getType() != BodyPartType::BONE && parent->getType() != BodyPartType::TORSO)
-		return;
-	// determine the body part type to grow from the hyperPosition
-
-	// if any one axis is zero, we cannot determine the part type and none is grown
-	if (hyperPosition.x * hyperPosition.y * hyperPosition.z * hyperPosition.w == 0)
-		return;
-	BodyPartType newBodyPartType = proteinHyperspace[hyperPosition.w > 0][hyperPosition.z > 0][hyperPosition.y > 0][hyperPosition.x > 0];
-	if (newBodyPartType == BodyPartType::INVALID)
-		return;
-
-	// TODO Auto-generate body-part-sensors in joints & grippers and other parts that may have useful info
-
-//	float angle = attachmentSegment * 2*PI / BodyPart::MAX_CHILDREN;
-
-	// The child's attachment point relative to the parent's center is computed from the angle of the current segment,
-	// by casting a ray from the parent's origin in the specified angle (which is relative to the parent's orientation)
-	// until it touches an edge of the parent. That point is used as attachment of the new part.
-
-	JointPivot* upstreamJoint = nullptr;
-	bool useUpstreamJoint = partMustGenerateJoint(newBodyPartType);
-	if (useUpstreamJoint) {
-		// we cannot grow this part directly onto its parent, they must be connected by a joint
-		upstreamJoint = new JointPivot();
-//		parent->add(upstreamJoint, angle);
-
-		// set part to point to the joint's node, since that's where the actual part will be attached:
-		parent = upstreamJoint;
-		// recompute coordinates in joint's space:
-		//angle = 0;
-	}
-
-	BodyPart* bp = nullptr;
-	IMotor* pMotor = nullptr;
-	ISensor* pSensor = nullptr;
-	switch (newBodyPartType) {
-	case BodyPartType::BONE:
-		bp = new Bone();
-		break;
-	case BodyPartType::GRIPPER: {
-		Gripper* gr = nullptr;//new Gripper();
-		pMotor = gr;
-		bp = gr;
-		break;
-	}
-	case BodyPartType::MUSCLE: {
-		// muscle must be linked to the nearest joint - or one towards which it's oriented if equidistant
-		// linkage is postponed until before commit when all parts are in place (muscle may be created before joint)
-		Muscle* m = nullptr;//new Muscle();
-		muscles_.push_back(m);
-		pMotor = m;
-		bp = m;
-		break;
-	}
-	case BodyPartType::MOUTH: {
-		Mouth* m = new Mouth();
-		bp = m;
-		break;
-	}
-	case BodyPartType::SENSOR_COMPASS:
-		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
-		break;
-//	case BodyPartType::SENSOR_DIRECTION:
-		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
-//		break;
-	case BodyPartType::SENSOR_PROXIMITY: {
-		Nose* n = new Nose();
-		pSensor = n;
-		bp = n;
-		break;
-	}
-	case BodyPartType::SENSOR_SIGHT:
-		// bp = new sensortype?(part->bodyPart, PhysicsProperties(offset, angle));
-		break;
-	case BodyPartType::EGGLAYER: {
-		EggLayer* e = nullptr;//new EggLayer();
-		pMotor = e;
-		bug_->eggLayers_.push_back(e);
-		bp = e;
-		break;
-	}
-	default:
-		ERROR("unhandled gene part type: "<<(uint)newBodyPartType);
-		break;
-	}
-	if (!bp)
-		return;
-
-	if (useUpstreamJoint) {
-		// add joint mapping to this part:
-		mapJointOffsets_[bp] = std::make_pair(upstreamJoint, CumulativeValue());
-	}
-
-	//parent->add(bp, angle);
-
-	// this must happen AFTER the part is added to its parent:
-	if (pMotor)
-		addMotor(pMotor, bp);
-	if (pSensor)
-		addSensor(pSensor);
-
-	// start a new development path from the new part:
-	activeSet_.push_back(std::make_pair(bp, genomeOffset));
-}*/
-
-void Ribosome::addMotor(IMotor* motor, BodyPart* part) {
-	motors_.push_back(motor);
-	for (unsigned i=0; i<motor->getInputCount(); i++) {
-		int lineId = nMotorLines_++;
-		part->addMotorLine(lineId);
-	}
-}
-void Ribosome::addSensor(ISensor* sensor) {
-	sensors_.push_back(sensor);
-}
 
 //bool Ribosome::hasNeuron(int virtualIndex, bool physical) {
 //	 bool hasVirtual = mapNeurons_.find(virtualIndex) != mapNeurons_.end();
@@ -675,15 +531,53 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 	}
 }
 
-/*bool Ribosome::partMustGenerateJoint(BodyPartType part_type) {
-	switch (part_type) {
-	case BodyPartType::BONE:
-	case BodyPartType::GRIPPER:
-		return true;
-	default:
-		return false;
+void Ribosome::decodeDeferredGenes() {
+	// decode the deferred neural genes (neuron properties):
+	for (auto &p : neuralGenes_) {
+		if (p.first->type == gene_type::NEURON)
+			continue;	// neurons have already been created
+		for (auto offs : p.second)
+			decodeNeuralGene(*p.first, offs);
 	}
-}*/
+	// apply all neuron properties
+	for (auto &n : mapNeurons_) {
+		if (n.second.transfer.hasValue()) {
+			int funcIndex = clamp((int)n.second.transfer.get(),
+					(int)transferFuncNames::FN_ONE,
+					(int)transferFuncNames::FN_MAXCOUNT-1);
+			bug_->neuralNet_->neurons[n.second.index]->setTranferFunction((transferFuncNames)funcIndex);
+		}
+		if (n.second.bias.hasValue())
+			bug_->neuralNet_->neurons[n.second.index]->inputBias = n.second.bias;
+		if (n.second.param.hasValue())
+			bug_->neuralNet_->neurons[n.second.index]->neuralParam = n.second.param;
+	}
+}
+
+template <typename T>
+void Ribosome::sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &nerves) {
+	std::sort(nerves.begin(), nerves.end(), [] (VMSEntry<T> const& left, VMSEntry<T> const& right) -> bool {
+		return left.second < right.second;
+	});
+}
+
+
+void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset) {
+	switch (g.type) {
+		case gene_type::SYNAPSE:
+			decodeSynapse(g.data.gene_synapse, vmsOffset);
+			break;
+		case gene_type::TRANSFER_FUNC:
+			decodeTransferFn(g.data.gene_transfer_function, vmsOffset);
+			break;
+		case gene_type::NEURAL_BIAS:
+			decodeNeuralBias(g.data.gene_neural_constant, vmsOffset);
+			break;
+		case gene_type::NEURAL_PARAM:
+			decodeNeuralParam(g.data.gene_neural_param, vmsOffset);
+			break;
+	}
+}
 
 void Ribosome::decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx) {
 	cell.proteinValues_[g.protein - GENE_PROT_X] += g.weight;
@@ -754,31 +648,45 @@ void Ribosome::decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeCon
 		ctx.vmsOffset.changeAbs(g.value);
 }
 
-void Ribosome::decodeSynapse(GeneSynapse const& g) {
-	// the number of neurons is derived from the synapse values
-//	checkAndAddNeuronMapping(g.from);
-//	checkAndAddNeuronMapping(g.to);
-//	uint64_t key = synKey(g.from, g.to);
-//	assert(!std::isnan(g.weight.value));
-//	mapSynapses_[key].weight.changeAbs(g.weight);
-//	mapSynapses_[key].priority.changeAbs(g.priority);
+void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset) {
+	auto iFrom = getVMSNearestObjectIndex(vmsNeurons_, g.srcLocation + vmsOffset);
+	auto iTo = getVMSNearestObjectIndex(vmsNeurons_, g.destLocation + vmsOffset);
+
+	if (iFrom == -1 || iTo == -1) {
+		LOGLN("Synapse to/from non-existent neuron!!");
+	}
+
+	auto &from = vmsNeurons_[iFrom];
+	auto &to = vmsNeurons_[iTo];
+
+	// TODO add sensor input sockets into the same VMS vector as well as motor output sockets
+	// synapse must work between all of them
+	// also if the same synapse (from the same sensor/neuron to the same motor/neuron) has already been created
+	// only update its properties (weight etc) instead of creating a new one
 	NOT_IMPLEMENTED;
+
+	//	OutputSocket* pFrom = &bug_->neuralNet_->neurons[mapNeurons_[from].index]->output;
+//	Neuron* pTo = bug_->neuralNet_->neurons[mapNeurons_[to].index];
+//
+//	InputSocket* i = new InputSocket(pTo, info.weight);
+//	pTo->addInput(std::unique_ptr<InputSocket>(i), info.priority);
+//	pFrom->addTarget(i);
 }
 
-void Ribosome::decodeTransferFn(GeneTransferFunction const& g) {
+void Ribosome::decodeTransferFn(GeneTransferFunction const& g, float vmsOffset) {
 //	if (hasNeuron(g.targetNeuron, false))
 //		mapNeurons_[g.targetNeuron].transfer.changeAbs(g.functionID);
 	NOT_IMPLEMENTED;
 }
 
-void Ribosome::decodeNeuralBias(GeneNeuralBias const& g) {
+void Ribosome::decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset) {
 	assert(!std::isnan(g.value.value));
 //	if (hasNeuron(g.targetNeuron, false))
 //		mapNeurons_[g.targetNeuron].bias.changeAbs(g.value);
 	NOT_IMPLEMENTED;
 }
 
-void Ribosome::decodeNeuralParam(GeneNeuralParam const& g) {
+void Ribosome::decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset) {
 	assert(!std::isnan(g.value.value));
 //	if (hasNeuron(g.targetNeuron, false))
 //		mapNeurons_[g.targetNeuron].param.changeAbs(g.value);
@@ -964,10 +872,10 @@ void Ribosome::resolveNerveLinkage() {
 	NOT_IMPLEMENTED;
 }
 
-//void Ribosome::commitNeurons() {
-//	for (auto &n : bug_->neuralNet_->neurons)
-//		n->commitInputs();
-//}
+void Ribosome::commitNeurons() {
+	for (auto &n : bug_->neuralNet_->neurons)
+		n->commitInputs();
+}
 
 //JointPivot* Ribosome::findNearestJoint(Muscle* m, int dir) {
 //	assertDbg(m->getParent() && "muscle should have a parent!");
@@ -1000,32 +908,6 @@ void Ribosome::resolveNerveLinkage() {
 //	} while (index != mIndex);
 //	return nullptr;
 //}
-
-void Ribosome::resolveMuscleLinkage() {
-//	for (Muscle* m : muscles_) {
-//		JointPivot* jNeg = findNearestJoint(m, -1);
-//		JointPivot* jPos = findNearestJoint(m, +1);
-//		if (!jNeg && !jPos)
-//			continue;
-//		// default to the joint on the negative side and only select the positive one if more appropriate:
-//		JointPivot* targetJoint = jNeg;
-//		if (jNeg != jPos) {
-//			float negDelta = absAngleDiff(jNeg->getAttachmentAngle(), m->getAttachmentAngle());
-//			float posDelta = absAngleDiff(jPos->getAttachmentAngle(), m->getAttachmentAngle());
-//			if (posDelta < negDelta) {
-//				targetJoint = jPos;
-//			} else if (posDelta == negDelta) {
-//				// angle differences are equal, choose the one towards which the muscle is oriented
-//				if (m->getLocalRotation() > 0) {
-//					targetJoint = jPos;
-//				}
-//			}
-//		}
-//		m->setJoint(targetJoint, angleDiff(m->getAttachmentAngle(), targetJoint->getAttachmentAngle()) > 0 ? -1 : +1);
-//	}
-//	muscles_.clear();
-	NOT_IMPLEMENTED;
-}
 
 bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {
 	BranchRestriction *r = nullptr;

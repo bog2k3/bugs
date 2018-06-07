@@ -26,23 +26,19 @@ class ISensor;
 class Muscle;
 class JointPivot;
 
-/*struct NeuronInfo {
-	int index;
+struct NeuronInfo {
+	Neuron* n;
 	CumulativeValue transfer;
 	CumulativeValue bias;
 	CumulativeValue param;
-	CumulativeValue inputVMSCoord;
-	CumulativeValue outputVMSCoord;
-	/*NeuronInfo(int index, float transfer, float constant)
-		: index(index), transfer(transfer), bias(constant) {
-	}* /
-	explicit NeuronInfo(int index)
-		: index(index) {
+
+	explicit NeuronInfo(Neuron* n)
+		: n(n) {
 	}
 	NeuronInfo(NeuronInfo const& other) = default;
-	NeuronInfo() : index(-1) {
+	NeuronInfo() : n(nullptr) {
 	}
-};*/
+};
 
 /*struct SynapseInfo {
 	CumulativeValue weight;
@@ -95,7 +91,7 @@ private:
 //	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
 //																	// and relative genome offset of the joint (if joint exists)
 	std::vector<Muscle*> muscles_;
-	std::vector<VMSEntry<Neuron*>> vmsNeurons_;				// holds VMS locations for each neuron
+	std::vector<VMSEntry<NeuronInfo*>> vmsNeurons_;			// holds VMS locations and cumulative attriutes for each neuron
 	std::map<const Gene*, std::set<float>> neuralGenes_;	// first is neural gene, second is a set of VMS offsets from the decode context
 															// the same neural gene is only interpreted multiple times if it appears in a different vms offset context
 	std::set<const Gene*> bodyAttribGenes_;					// hold body attribute genes here and decode them when all genome is processed
@@ -112,6 +108,7 @@ private:
 	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
 	void decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, bool deferNeural);
+	void decodeNeuralGene(Gene const& g, float vmsOffset);
 	void decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, DecodeContext &ctx);
@@ -119,15 +116,14 @@ private:
 	void decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx);
-	void decodeSynapse(GeneSynapse const& g);
-	void decodeTransferFn(GeneTransferFunction const& g);
-	void decodeNeuralBias(GeneNeuralBias const& g);
-	void decodeNeuralParam(GeneNeuralParam const& g);
+	void decodeSynapse(GeneSynapse const& g, float vmsOffset);
+	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset);
+	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset);
+	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset);
 //	bool partMustGenerateJoint(BodyPartType part_type);
 //	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
-	void resolveMuscleLinkage();
 //	JointPivot* findNearestJoint(Muscle* m, int dir);
 	void processLocalNeuralGenes(BodyCell& cell, DecodeContext &ctx);
 
@@ -140,7 +136,7 @@ private:
 //	inline uint64_t synKey(uint64_t from, uint64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
 //	void createSynapse(int from, int to, SynapseInfo const& info);
 	void resolveNerveLinkage();
-//	void commitNeurons();
+	void commitNeurons();
 	void linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& orderedOutputNeurons_,
 						 std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
 	void linkSensorNerves(std::vector<VMSEntry<Neuron*>> const& orderedInputNeurons_,
