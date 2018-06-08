@@ -176,10 +176,10 @@ void Joint::breakJoint() {
 		removeNeighbor(leftAnchor_);
 		removeNeighbor(rightAnchor_);
 
-		auto hasMouth = [&](BodyPart* bp) {
+		auto hasMouth = [&](const BodyPart* bp) {
 			return bp->getType() == BodyPartType::MOUTH;
 		};
-		auto hasEggLayer = [&](BodyPart* bp) {
+		auto hasEggLayer = [&](const BodyPart* bp) {
 			return bp->getType() == BodyPartType::EGGLAYER;
 		};
 		auto diePred = [](BodyPart* bp) {
@@ -188,11 +188,11 @@ void Joint::breakJoint() {
 		};
 		if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
 			// left sub-graph must die
-			leftAnchor_->applyPredicateGraph(diePred);
+			leftAnchor_->applyPredicateGraphMutable(diePred);
 		}
 		if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
 			// right sub-graph must die
-			rightAnchor_->applyPredicateGraph(diePred);
+			rightAnchor_->applyPredicateGraphMutable(diePred);
 		}
 
 		// consume all food value left - this will cause the Bug to destroy the joint in the next frame

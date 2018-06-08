@@ -474,7 +474,7 @@ void BodyPart::overrideSizeAndDensity(float newSize, float newDensity) {
 	density_ = newDensity;
 }
 
-bool BodyPart::applyPredicateGraph(std::function<bool(BodyPart* pCurrent)> pred, uint32_t UOID) {
+bool BodyPart::applyPredicateGraph(std::function<bool(const BodyPart* pCurrent)> const& pred, uint32_t UOID) const {
 	while (UOID==0)
 		UOID = new_RID();
 	UOID_ = UOID;
@@ -485,6 +485,23 @@ bool BodyPart::applyPredicateGraph(std::function<bool(BodyPart* pCurrent)> pred,
 		if (n->UOID_ == UOID)
 			continue;
 		if (n->applyPredicateGraph(pred, UOID))
+			return true;
+	}
+	return false;
+}
+
+bool BodyPart::applyPredicateGraphMutable(std::function<bool(BodyPart* pCurrent)> const& pred, uint32_t UOID) {
+	while (UOID==0)
+		UOID = new_RID();
+	UOID_ = UOID;
+
+	if (pred(this))
+		return true;
+	auto copyNeighbours = neighbours_;	// must iterate over a copy because the predicate may affect the vector and invalidate iterators
+	for (auto n : copyNeighbours) {
+		if (n->UOID_ == UOID)
+			continue;
+		if (n->applyPredicateGraphMutable(pred, UOID))
 			return true;
 	}
 	return false;

@@ -111,12 +111,18 @@ public:
 
 	// runs a given predicate on the current part and recursively on all of its neighbors and so on until the graph is completely covered,
 	// or the evaluation is stopped by the predicate.
+	// the traversal is thread-safe, concurrent calls on different threads are allowed
 	// return false from the predicate to continue or true to stop evaluation.
 	// the return value of the method indicates whether the evaluation was forcefully stopped by the predicate:
 	//		- [true] means the evaluation was stopped by the predicate returning true.
 	//		- [false] means the predicate was applied to the entire graph and no positive was detected.
 	// UOID parameter is used internally, don't pass any value to it explicitly.
-	bool applyPredicateGraph(std::function<bool(BodyPart* pCurrent)> pred, uint32_t UOID=0);
+	bool applyPredicateGraph(std::function<bool(const BodyPart* pCurrent)> const& pred, uint32_t UOID=0) const;
+
+	// the same as above except the predicates are allowed to modify the state of the object here
+	// thus the thread-safety is compromised, caller must ensure the calls are synchronized.
+	// also the method is slower because it has to take precautions to preserve the iterators even when neighbors are altered in the predicate
+	bool applyPredicateGraphMutable(std::function<bool(BodyPart* pCurrent)> const& pred, uint32_t UOID=0);
 
 	// adds the motor line id into this node and all nodes above it recursively
 	// this id is the index of the nerve line from the neural network down to one of this motor's inputs
@@ -251,7 +257,7 @@ private:
 	std::string divisionPath_;
 #endif
 
-	ThreadLocalValue<uint32_t> UOID_ = 0; // Unique Operation IDentifier
+	mutable ThreadLocalValue<uint32_t> UOID_ = 0; // Unique Operation IDentifier
 };
 
 #endif /* OBJECTS_BODY_PARTS_BODYPART_H_ */

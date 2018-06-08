@@ -116,6 +116,7 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	onDied.add([this](BodyPart*) {
 		context_.updateList.remove(this);
 		getWorldTransformation(); // update cachedWPos_
+		disconnectAllNeighbors();
 		updateFixtures();
 	});
 }
@@ -173,9 +174,6 @@ void Muscle::updateFixtures() {
 
 		// create fixture:
 		physBody_.b2Body_->CreateFixture(&fixDef);
-
-		disconnectAllNeighbors();
-
 		return;
 	}
 
