@@ -88,20 +88,11 @@ private:
 	Bug* bug_;
 	std::vector<BodyCell*> cells_;
 	std::vector<std::pair<BodyCell*, DecodeContext>> activeSet_;
-//	std::map<BodyPart*, std::pair<JointPivot*, CumulativeValue>> mapJointOffsets_;	// maps a body part pointer to its upstream joint
-//																	// and relative genome offset of the joint (if joint exists)
-	std::vector<Muscle*> muscles_;
 	std::vector<VMSEntry<NeuronInfo>> vmsNeurons_;			// holds VMS locations and cumulative attriutes for each neuron
 	std::map<const Gene*, std::set<float>> neuralGenes_;	// first is neural gene, second is a set of VMS offsets from the decode context
 															// the same neural gene is only interpreted multiple times if it appears in a different vms offset context
 	std::set<const Gene*> bodyAttribGenes_;					// hold body attribute genes here and decode them when all genome is processed
-#ifdef DEBUG
-//	std::map<Neuron*, int> mapNeuronVirtIndex_;	// maps neurons to their virtual indices
-//	std::map<InputSocket*, std::pair<std::string, int>> mapSockMotorInfo;	// first: motorName, second: inputID
-#endif
 	std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> mapSynapses_;
-//	std::set<int> outputNeurons_;	// virtual indices of output neurons
-//	std::set<int> inputNeurons_;	// virtual indices of input neurons
 	std::vector<IMotor*> motors_;
 	int nMotorLines_ = 0;
 	std::vector<ISensor*> sensors_;
@@ -122,28 +113,16 @@ private:
 	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset);
 	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset);
 	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset);
-//	bool partMustGenerateJoint(BodyPartType part_type);
-//	void growBodyPart(BodyPart* parent, unsigned attachmentSegment, glm::vec4 hyperPosition, unsigned genomeOffset);
 	void addMotor(IMotor* motor, BodyPart* part);
 	void addSensor(ISensor* sensor);
-//	JointPivot* findNearestJoint(Muscle* m, int dir);
 	void processLocalNeuralGenes(BodyCell& cell, DecodeContext &ctx);
 
 	void decodeDeferredGenes();
 	void buildOutputSocketsList(std::vector<VMSEntry<OutputSocket*>> &v); // builds and sorts by vms coord a vector of all the outputSockets from neurons and sensors
 	void specializeCells(bool &hasMouth, bool &hasEggLayer);
-//	void checkAndAddNeuronMapping(int virtualIndex);
-//	void updateNeuronConstant(int virtualIndex, float constant);
-//	bool hasNeuron(int virtualIndex, bool physical); // checks whether a virtual neuron exists and, if requested, its physical equivalent too
-	// Compute a synapse key (unique id for from-to pair:
-//	inline uint64_t synKey(uint64_t from, uint64_t to) { return ((from << 32) & 0xFFFFFFFF00000000) | (to & 0xFFFFFFFF); }
-//	void createSynapse(int from, int to, SynapseInfo const& info);
 	void resolveNerveLinkage();
 	void commitNeurons();
-	void linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& orderedOutputNeurons_,
-						 std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
-	void linkSensorNerves(std::vector<VMSEntry<Neuron*>> const& orderedInputNeurons_,
-						  std::vector<VMSEntry<OutputSocket*>> orderedSensorOutputs_);
+	void linkMotorNerves(std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
 
 	// searches for the nerve nearest to the given matchCoordinate in the Virtual Matching Space; returns its index or -1 if none found
 	template<typename T>
