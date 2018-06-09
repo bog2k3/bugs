@@ -2,8 +2,8 @@
 	- [X] eat, grow, fat replenish, egg-growth
 	- [X] consume energy
 	- [X] fix body-part overlapping after scaling and fixture regeneration
-* [ ] next2: nerves and neurons
-* [ ] change synapse linkage - VMS based for each input and output
+* [X] next2: nerves and neurons
+* [/] change synapse linkage - VMS based for each input and output
 	- [-] gene for number of neuron inputs - float, integer part is used
 	- [-] gene for each input vms coord and output coord - these are based on i/o index
 		-- these is how synapses will be created ^ (each input binds to the nearest output; outputs can remain unattached)
@@ -11,13 +11,13 @@
 	- [X] remove index-based synapse gene
 	- [-] all indexes (for inputs/outputs) are floats and integer part is used
 	- [X] no more genes for inputs and outputs
-	- [ ] synapses are only created by synapse gene with inputVMS, outputVMS, weight and priority attributes
+	- [X] synapses are only created by synapse gene with inputVMS, outputVMS, weight and priority attributes
 		-- the synapse is created from the nearest neuron/sensor at the inputVMS location to the nearest
 			neuron at the outputVMS location
-	- [ ] motors are not linked by synapses, but by old matching mechanism (since one input socket can only be attached to one output)
-	- [ ] synapses are created between sensors/neurons and neurons
+	- [X] motors are not linked by synapses, but by old matching mechanism (since one input socket can only be attached to one output)
+	- [X] synapses are created between sensors/neurons and neurons
 	- [ ] sensors that have no outputs connected to neurons should die (get deactivated) immediately after decoding for performance
-	- [ ] synapses should be created in two passes:
+	- [X] synapses should be created in two passes:
 		-- first decode all offsetted synapse genes and add pairs of <outputSock*, inputSock*> as keys into a map with
 			struct SynapseInfo as value (cumulativeValues for weight, priority)
 			-- when the same key exists, just update the values
@@ -43,7 +43,7 @@
 			real VMS values different then the ones encoded in the gene.
 
 * [X] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
-* [X] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
+* [/] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
 	- [X] a small change by itself must be able to benefit the bug - current model is not good at this
 	- [X] new cell division based system
 		-- [X] cell division working prototype
@@ -55,7 +55,7 @@
 	- [X] if proteins yield x*y*z*w = 0, the cell specializes into default type - fat cell body part
 	- [X] proteins should have a float weight instead of current int 1
 	- [X] division creates bond between child cells (weld/pivot joint)
-	- [X] when dividing, each existing bond is either split or inherited by one side:
+	- [/] when dividing, each existing bond is either split or inherited by one side:
 		-- [X] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
 		-- [X] otherwise each side inherits bonds on its side of the division axis
 		-- [X] new BondBias gene that biases the bond inheritance axis towards one side
@@ -100,7 +100,7 @@
 	- [X] all unused positions in hyperspace should be filled up with FatCell
 	- [X] no more start marker genes in order to allow for easy variation in offsets
 	- [ ] if decoding starts on a STOP gene, it moves forward until the 1st valid gene
-	- [ ] body attribute genes are read at any depth but only interpreted once - see below
+	- [X] body attribute genes are read at any depth but only interpreted once - see below
 	- [ ] when a joint between cells breaks, all synapses, motor lines and sensor lines passing through it are disconnected
 		-- [X] also if some of the cells become isolated from energy sources they die
 			-- body parts die when isolated from mouth or egg-layer
@@ -139,8 +139,9 @@
 	- [X] EntityLabeler created
 * [X] parts with no fixtures (noses) are not drawn correctly after commit
 * [X] !!! fix problem with nose triangle being too small -> causes Box2D to crash
-* [ ] !!! prevent b2d crashing from too small polygons which may be caused by degenerated body parts
-	- [ ] maybe don't create fixtures for them?
+* [X] !!! prevent b2d crashing from too small polygons which may be caused by degenerated body parts
+	- [-] maybe don't create fixtures for them?
+	- [X] very small fixtures are scaled up to avoid this
 * [X] multiple outputs from nose (sense different types of entities)
 * [X] need FAST method to get nearest body of certain type (for nose)
 * [X] outputVMS coord genes for sensors (indexed)
@@ -151,7 +152,7 @@
 	- [X] this will stabilize input #0 for special neurons (gate/modulator): set #0 synapses to priority 100
 	- [X] default 0 priority to input nerves so they shouldn't affect the order;
 	- [X] default [0.0~10.0] priority for random synapses
-* [ ] changes in neurons:
+* [/] changes in neurons:
 	- [X] neuralConst as offset to sum in all neuron types (rename to "bias")
 	- [X] new neuralParam to use in special function neurons which now use neuralConst
 	- [X] new abs() neural function
@@ -172,10 +173,12 @@
 * [X] rewrite default bug genome to use segmentation for leg
 * [X] tune nerve signals - GRIPPER must disengage sooner
 * [X] tune joint resillience
-* [ ] bugs degenerate too quickly and too often. Make them more stable
+* [-] bugs degenerate too quickly and too often. Make them more stable
 	- [X] reenabled start marker genes which increased stability
+	- hopefully will be fixed by new division mechanism
 * [ ] find a better way to decode the genome rather than offset-based
 * [X] develop a better embrionic development process (protein system done)
+    - also division based system improves a lot
 * [X] print population & generations in status update
 * [X] !!! fix autosave (doesn't save any more, wtf?)
 * [ ] fix world design to favour movers
