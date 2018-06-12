@@ -41,6 +41,23 @@
 	- [X] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
 		- [X] however VMS coordinates are relative to the current cell's VMS offset. Thus a synapse decoded in a cell will have its 
 			real VMS values different then the ones encoded in the gene.
+* [ ] Change VMS and synapse mechanism - distributed NS and localized neural gene expression
+	- the aim is to have a more robust neural system and allow local alterations based on the layout of the phenotype which have
+		a smaller change of breaking the entire system
+	- [ ] every body part has a default Neuron created inside in the middle of the VMS, with transfer=ONE and no default synapses
+		-- this ensures that the neural graph can be connex
+	- [ ] all neural genes are interpreted in their local context (the cell they were read from) 
+		-- thus neurons can be created only by genes within the cell; neural properties affect only the neurons within the cell
+	- [ ] synapse genes can only link neurons from the cell and its immediate neighbours (those linked by joints)
+		-- the VMS lookup is restricted to this local scope
+	- [ ] synapse genes coordinates are not affected by VMS offset any more (since the neurons they refer to are already offseted)
+		-- thus synapse gene coordinate are used as-is
+	- [ ] neural genes are only interpreted when read from a specialized cell; cells that divide will ignore neural genes except VMSOffset
+	- [ ] each synapse is guaranteed to be created since there is at least 1 (the default) Neuron in each cell
+	- [ ] subgraphs of neurons that are not linked to at least a sensor and a motor should be removed for performance reasons
+	- this removes the need to inherit neurons when a cell divides
+	- no more need for neural gene maps in the Ribosome, just a set of neural genes in the decode context will suffice
+	- [ ] change motor nerve linkage mechanism to only lookup neurons from within the motor cell and its immediate neighbours 
 
 * [X] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
 * [/] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution
