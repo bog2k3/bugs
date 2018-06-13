@@ -50,6 +50,7 @@
 		-- thus neurons can be created only by genes within the cell; neural properties affect only the neurons within the cell
 	- [ ] synapse genes can only link neurons from the cell and its immediate neighbours (those linked by joints)
 		-- the VMS lookup is restricted to this local scope
+		-- synapses are created FROM neurons in immediate neighbours TO neurons within the current cell
 	- [ ] synapse genes coordinates are not affected by VMS offset any more (since the neurons they refer to are already offseted)
 		-- thus synapse gene coordinate are used as-is
 	- [ ] neural genes are only interpreted when read from a specialized cell; cells that divide will ignore neural genes except VMSOffset
@@ -57,7 +58,8 @@
 	- [ ] subgraphs of neurons that are not linked to at least a sensor and a motor should be removed for performance reasons
 	- this removes the need to inherit neurons when a cell divides
 	- no more need for neural gene maps in the Ribosome, just a set of neural genes in the decode context will suffice
-	- [ ] change motor nerve linkage mechanism to only lookup neurons from within the motor cell and its immediate neighbours 
+	- [ ] only neurons from within the cell can create synapses to sensors within the cell
+	- [ ] change motor nerve linkage mechanism to only lookup neurons from within the motor cell  
 
 * [X] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
 * [/] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution

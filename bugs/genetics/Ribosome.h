@@ -45,6 +45,9 @@ struct SynapseInfo {
 	CumulativeValue priority;
 };
 
+template<typename T>
+using VMSEntry = std::pair<T, float>;	// first (T) is the object (neuron, input/output socket), second is the VMS coordinate
+
 struct DecodeContext {
 	unsigned startGenomePos; // initial genome offset for this cell (children are relative to this one)
 	unsigned crtGenomePos; // current READ position in genome for this cell
@@ -55,14 +58,33 @@ struct DecodeContext {
 											// if the same vms offset gene is encountered by the child cell it will be ignored
 											// thus the vms offset gene can affect a cell only once (it is inherited by the children)
 	std::vector<const Gene*> neuralGenes;
+	std::vector<VMSEntry<NeuronInfo>> vmsNeurons_;			// holds VMS locations and cumulative attriutes for each neuron
+	std::vector<ISensor*> sensors_;			// sensors within the cell
 
 	DecodeContext(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
 	}
-};
 
-template<typename T>
-using VMSEntry = std::pair<T, float>;	// first (T) is the object (neuron, input/output socket), second is the VMS coordinate
+	DecodeContext(const DecodeContext& c) = default;
+
+	DecodeContext(DecodeContext &&c)
+	{
+		operator=(std::move(c));
+	}
+
+	DecodeContext& operator = (DecodeContext &&c) {
+		startGenomePos = c.startGenomePos;
+		crtGenomePos = c.crtGenomePos;
+		vmsOffset = c.vmsOffset;
+		parentVmsOffset = c.parentVmsOffset;
+		childOffsets[0] = c.childOffsets[0];
+		childOffsets[1] = c.childOffsets[1];
+		vmsOffsetGenes.swap(c.vmsOffsetGenes);
+		neuralGenes.swap(c.neuralGenes);
+		vmsNeurons_.swap(c.vmsNeurons_);
+		return *this;
+	}
+};
 
 /**
  * decodes the entity's genome and builds it step by step. When finished the entity will have its final
@@ -88,20 +110,18 @@ private:
 	Bug* bug_;
 	std::vector<BodyCell*> cells_;
 	std::vector<std::pair<BodyCell*, DecodeContext>> activeSet_;
-	std::vector<VMSEntry<NeuronInfo>> vmsNeurons_;			// holds VMS locations and cumulative attriutes for each neuron
-	std::map<const Gene*, std::set<float>> neuralGenes_;	// first is neural gene, second is a set of VMS offsets from the decode context
-															// the same neural gene is only interpreted multiple times if it appears in a different vms offset context
+	std::map<BodyCell*, DecodeContext> cellContext_;		// hold decode data for each specialized cell
 	std::set<const Gene*> bodyAttribGenes_;					// hold body attribute genes here and decode them when all genome is processed
-	std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> mapSynapses_;
 	std::vector<IMotor*> motors_;
 	int nMotorLines_ = 0;
-	std::vector<ISensor*> sensors_;
-	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
+//	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
 	void postDecodeAndFinalization();		// does post-decode operations (deferred genes) and cell specialization
 
 	void decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, bool deferNeural);
-	void decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets);
+	void decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets,
+			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
+			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
 	void decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, DecodeContext &ctx);
@@ -109,16 +129,18 @@ private:
 	void decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx);
-	void decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets);
-	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset);
-	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset);
-	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset);
+	void decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets,
+			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
+			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
+	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
+	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
+	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 	void addMotor(IMotor* motor, BodyPart* part);
-	void addSensor(ISensor* sensor);
-	void processLocalNeuralGenes(BodyCell& cell, DecodeContext &ctx);
+	void createNeurons(BodyCell& cell, DecodeContext &ctx);
 
 	void decodeDeferredGenes();
-	void buildOutputSocketsList(std::vector<VMSEntry<OutputSocket*>> &v); // builds and sorts by vms coord a vector of all the outputSockets from neurons and sensors
+	// builds and sorts by vms coord a vector of all the outputSockets from neurons and sensors:
+	void buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<OutputSocket*>> &v);
 	void specializeCells(bool &hasMouth, bool &hasEggLayer);
 	void resolveNerveLinkage();
 	void commitNeurons();

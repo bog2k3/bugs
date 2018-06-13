@@ -593,9 +593,10 @@ Chromosome Bug::createBasicChromosome() {
 	gvo.value.set(rightNose_VMSoffs);
 	PUSH(gvo);
 
-	GeneNeuron gn;							// <0> and <1>
-	gn.neuronLocation.set(nose_VMScoord);
-	PUSH(gn);
+//	GeneNeuron gn;							// <0> and <1>
+//	gn.neuronLocation.set(nose_VMScoord);
+//	gn.
+//	PUSH(gn);
 
 	gp.protein = GENE_PROT_X;
 	gp.weight.set(-sfu);

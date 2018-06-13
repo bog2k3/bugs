@@ -64,10 +64,6 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 	auto p = Cell::divide(angle, ratio, bondBias, reorient, mirror, noBond);
 	auto left = static_cast<BodyCell*>(p.first);
 	auto right = static_cast<BodyCell*>(p.second);
-	// distribute neurons to child cells:
-	for (uint i=0; i<neurons_.size(); i++) {
-		(i % 2 ? right->neurons_ : left->neurons_).push_back(neurons_[i]);
-	}
 	return {left, right};
 }
 

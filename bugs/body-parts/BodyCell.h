@@ -83,7 +83,6 @@ private:
 	float initialAngle_;
 	glm::vec4 proteinValues_ {0}; // hyper-space position for current cell
 	std::map<gene_division_param_type, CumulativeValue> mapDivisionParams_;
-	std::vector<Neuron*> neurons_;
 
 	float muscleMassLeft_ = 0;
 	float muscleMassRight_ = 0;
