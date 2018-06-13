@@ -337,7 +337,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 			mapBodyParts[c] = bp;
 		}
 		if (pMotor)
-			addMotor(pMotor, bp);
+			motors_[pMotor] = &cellContext_[c];
 		if (pSensor)
 			cellContext_[c].sensors_.push_back(pSensor);
 	}
@@ -370,6 +370,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 					bug_->bodyParts_.push_back(ml);
 					bug_->bodyParts_.push_back(mr);
 					addMotor(ml, ml);
+					motors_[ml] = the muscle is created from the cell that divided and its context is not saved; need to find a work around
 					addMotor(mr, mr);
 
 					bpLeft->addNeighbor(ml);
@@ -402,13 +403,13 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 	cell.size_ *= oldDensity / cell.density_;
 }
 
-void Ribosome::addMotor(IMotor* motor, BodyPart* part) {
-	motors_.push_back(motor);
-	for (unsigned i=0; i<motor->getInputCount(); i++) {
-		int lineId = nMotorLines_++;
-		part->addMotorLine(lineId);
-	}
-}
+//void Ribosome::addMotor(IMotor* motor, BodyPart* part) {
+//	motors_.push_back(motor);
+//	for (unsigned i=0; i<motor->getInputCount(); i++) {
+//		int lineId = nMotorLines_++;
+//		part->addMotorLine(lineId);
+//	}
+//}
 
 void Ribosome::createNeurons(BodyCell& cell, DecodeContext &ctx) {
 	for (auto g : ctx.neuralGenes) {
@@ -717,20 +718,20 @@ int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& n
 	return small;
 }
 
-void Ribosome::linkMotorNerves(std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_) {
-	bug_->motorLines_.clear();
+void Ribosome::linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_) {
+//	bug_->motorLines_.clear();
 	// motors are matched 1:1 with the nearest neuron outputs from the neural network, in the direction from motor nerve to output nerve.
 	for (unsigned i = 0; i < orderedMotorInputs_.size(); i++) {
 		float motorCoord = orderedMotorInputs_[i].second;
 		if (motorCoord == 0)
 			continue;
-		int neuronIndex = getVMSNearestObjectIndex(vmsNeurons_, motorCoord);
+		int neuronIndex = getVMSNearestObjectIndex(neurons, motorCoord);
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
-			vmsNeurons_[neuronIndex].first.neuron->output.addTarget(orderedMotorInputs_[i].first);
+			neurons[neuronIndex].first->output.addTarget(orderedMotorInputs_[i].first);
 			// add mapping for this motor line in bug:
-			int nerveLineId = mapInputNerves_[orderedMotorInputs_[i].first];
-			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &vmsNeurons_[neuronIndex].first.neuron->output);
+//			int nerveLineId = mapInputNerves_[orderedMotorInputs_[i].first];
+//			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &vmsNeurons_[neuronIndex].first.neuron->output);
 
 #ifdef DEBUG
 			if (false) {
@@ -745,21 +746,22 @@ void Ribosome::linkMotorNerves(std::vector<VMSEntry<InputSocket*>> const& ordere
 }
 
 void Ribosome::resolveNerveLinkage() {
-	// build the motor input nerves vector:
-	std::vector<VMSEntry<InputSocket*>> motorInputs;
-	for (unsigned i=0; i<motors_.size(); i++) {
-		for (unsigned j=0; j<motors_[i]->getInputCount(); j++) {
-			mapInputNerves_[motors_[i]->getInputSocket(j)] = motorInputs.size();
-			motorInputs.push_back(std::make_pair(motors_[i]->getInputSocket(j), motors_[i]->getInputVMSCoord(j)));
+	for (auto &p : motors_) {
+		// build the motor input nerves vector:
+		std::vector<VMSEntry<InputSocket*>> motorInputs;
+		for (unsigned j=0; j<p.first->getInputCount(); j++) {
+//			mapInputNerves_[motors_[i]->getInputSocket(j)] = motorInputs.size();
+			motorInputs.push_back(std::make_pair(p.first->getInputSocket(j), p.first->getInputVMSCoord(j)));
 #ifdef DEBUG
-//			mapSockMotorInfo[motors_[i]->getInputSocket(j)] = std::make_pair(motors_[i]->getMotorDebugName(), j);
+//				mapSockMotorInfo[motors_[i]->getInputSocket(j)] = std::make_pair(motors_[i]->getMotorDebugName(), j);
 #endif
 		}
+		// sort the input/output nerves by their VMS coords, smallest to greatest:
+		sortEntriesByVMSCoord(motorInputs);
+		// link motors to neuron outputs from within the motor's cell:
+		// (at this point p.second->vmsNeurons_ is already sorted by vms coord)
+		linkMotorNerves(p.second->vmsNeurons_, motorInputs);
 	}
-	// sort the input/output nerves by their VMS coords, smallest to greatest:
-	sortEntriesByVMSCoord(motorInputs);
-	// link nerves to motors:
-	linkMotorNerves(motorInputs);
 }
 
 void Ribosome::commitNeurons() {

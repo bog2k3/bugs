@@ -59,7 +59,8 @@
 	- this removes the need to inherit neurons when a cell divides
 	- no more need for neural gene maps in the Ribosome, just a set of neural genes in the decode context will suffice
 	- [ ] only neurons from within the cell can create synapses to sensors within the cell
-	- [ ] change motor nerve linkage mechanism to only lookup neurons from within the motor cell  
+	- [ ] change motor nerve linkage mechanism to only lookup neurons from within the motor cell
+	- [ ] motor and sensor input/output vms coordinates should also be affected by the cell's vmsOffset to stay fixed with regards to local neurons
 
 * [X] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
 * [/] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution

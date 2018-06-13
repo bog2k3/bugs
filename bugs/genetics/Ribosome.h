@@ -49,8 +49,8 @@ template<typename T>
 using VMSEntry = std::pair<T, float>;	// first (T) is the object (neuron, input/output socket), second is the VMS coordinate
 
 struct DecodeContext {
-	unsigned startGenomePos; // initial genome offset for this cell (children are relative to this one)
-	unsigned crtGenomePos; // current READ position in genome for this cell
+	unsigned startGenomePos = 0; // initial genome offset for this cell (children are relative to this one)
+	unsigned crtGenomePos = 0; // current READ position in genome for this cell
 	CumulativeValue childOffsets[2]; // holds relative genome offsets for each future child cell (0 is left, 1 right)
 	CumulativeValue vmsOffset;
 	float parentVmsOffset = 0;
@@ -60,6 +60,8 @@ struct DecodeContext {
 	std::vector<const Gene*> neuralGenes;
 	std::vector<VMSEntry<NeuronInfo>> vmsNeurons_;			// holds VMS locations and cumulative attriutes for each neuron
 	std::vector<ISensor*> sensors_;			// sensors within the cell
+
+	DecodeContext() = default;
 
 	DecodeContext(int initialOffs)
 		: startGenomePos(initialOffs), crtGenomePos(initialOffs) {
@@ -95,10 +97,6 @@ public:
 	Ribosome(Bug* the_bug);
 	~Ribosome();
 
-	void addDefaultSensor(ISensor* sensor) {
-		addSensor(sensor);
-	}
-
 	/**
 	 * develops the entity one more step. Returns true as long as the process is not finished.
 	 */
@@ -112,7 +110,7 @@ private:
 	std::vector<std::pair<BodyCell*, DecodeContext>> activeSet_;
 	std::map<BodyCell*, DecodeContext> cellContext_;		// hold decode data for each specialized cell
 	std::set<const Gene*> bodyAttribGenes_;					// hold body attribute genes here and decode them when all genome is processed
-	std::vector<IMotor*> motors_;
+	std::map<IMotor*, DecodeContext*> motors_;
 	int nMotorLines_ = 0;
 //	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
@@ -135,7 +133,7 @@ private:
 	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
-	void addMotor(IMotor* motor, BodyPart* part);
+//	void addMotor(IMotor* motor, BodyPart* part);
 	void createNeurons(BodyCell& cell, DecodeContext &ctx);
 
 	void decodeDeferredGenes();
@@ -144,7 +142,7 @@ private:
 	void specializeCells(bool &hasMouth, bool &hasEggLayer);
 	void resolveNerveLinkage();
 	void commitNeurons();
-	void linkMotorNerves(std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
+	void linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
 
 	// searches for the nerve nearest to the given matchCoordinate in the Virtual Matching Space; returns its index or -1 if none found
 	template<typename T>
