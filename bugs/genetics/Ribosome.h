@@ -140,9 +140,9 @@ private:
 	// builds and sorts by vms coord a vector of all the outputSockets from neurons and sensors:
 	void buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<OutputSocket*>> &v);
 	void specializeCells(bool &hasMouth, bool &hasEggLayer);
-	void resolveNerveLinkage();
+	void resolveMotorLinkage();
 	void commitNeurons();
-	void linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
+	void linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
 
 	// searches for the nerve nearest to the given matchCoordinate in the Virtual Matching Space; returns its index or -1 if none found
 	template<typename T>

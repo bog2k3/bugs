@@ -232,7 +232,7 @@ void Ribosome::postDecodeAndFinalization() {
 	// decode the neural network:
 	decodeDeferredGenes();
 	// link nerves to sensors and motors:
-	resolveNerveLinkage();
+	resolveMotorLinkage();
 	// commit neuron properties:
 	commitNeurons();
 
@@ -369,10 +369,11 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 					mr->setJoint(pj);
 					bug_->bodyParts_.push_back(ml);
 					bug_->bodyParts_.push_back(mr);
-					addMotor(ml, ml);
-					motors_[ml] = the muscle is created from the cell that divided and its context is not saved; need to find a work around
-					addMotor(mr, mr);
+					motors_[ml] = &cellContext_[static_cast<BodyCell*>(left)]; //the muscle motor will link to neurons in the left cell
+					motors_[mr] = &cellContext_[static_cast<BodyCell*>(left)];
 
+
+					// muscles are linked to the left cell
 					bpLeft->addNeighbor(ml);
 					ml->addNeighbor(bpLeft);
 					bpLeft->addNeighbor(mr);
@@ -718,7 +719,7 @@ int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& n
 	return small;
 }
 
-void Ribosome::linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_) {
+void Ribosome::linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_) {
 //	bug_->motorLines_.clear();
 	// motors are matched 1:1 with the nearest neuron outputs from the neural network, in the direction from motor nerve to output nerve.
 	for (unsigned i = 0; i < orderedMotorInputs_.size(); i++) {
@@ -728,7 +729,7 @@ void Ribosome::linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& neurons, st
 		int neuronIndex = getVMSNearestObjectIndex(neurons, motorCoord);
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
-			neurons[neuronIndex].first->output.addTarget(orderedMotorInputs_[i].first);
+			neurons[neuronIndex].first.neuron->output.addTarget(orderedMotorInputs_[i].first);
 			// add mapping for this motor line in bug:
 //			int nerveLineId = mapInputNerves_[orderedMotorInputs_[i].first];
 //			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &vmsNeurons_[neuronIndex].first.neuron->output);
@@ -745,7 +746,7 @@ void Ribosome::linkMotorNerves(std::vector<VMSEntry<Neuron*>> const& neurons, st
 	}
 }
 
-void Ribosome::resolveNerveLinkage() {
+void Ribosome::resolveMotorLinkage() {
 	for (auto &p : motors_) {
 		// build the motor input nerves vector:
 		std::vector<VMSEntry<InputSocket*>> motorInputs;
@@ -765,19 +766,21 @@ void Ribosome::resolveNerveLinkage() {
 }
 
 void Ribosome::commitNeurons() {
-	// apply all neuron properties
-	for (auto &vn : vmsNeurons_) {
-		NeuronInfo &n = vn.first;
-		if (n.transfer.hasValue()) {
-			int funcIndex = clamp((int)n.transfer.get(),
-					(int)transferFuncNames::FN_ONE,
-					(int)transferFuncNames::FN_MAXCOUNT-1);
-			n.neuron->setTranferFunction((transferFuncNames)funcIndex);
+	for (auto &p : cellContext_) {
+		// apply all neuron properties
+		for (auto &vn : p.second.vmsNeurons_) {
+			NeuronInfo &n = vn.first;
+			if (n.transfer.hasValue()) {
+				int funcIndex = clamp((int)n.transfer.get(),
+						(int)transferFuncNames::FN_ONE,
+						(int)transferFuncNames::FN_MAXCOUNT-1);
+				n.neuron->setTranferFunction((transferFuncNames)funcIndex);
+			}
+			if (n.bias.hasValue())
+				n.neuron->inputBias = n.bias;
+			if (n.param.hasValue())
+				n.neuron->neuralParam = n.param;
 		}
-		if (n.bias.hasValue())
-			n.neuron->inputBias = n.bias;
-		if (n.param.hasValue())
-			n.neuron->neuralParam = n.param;
 	}
 	// apply input priorities:
 	for (auto &n : bug_->neuralNet_->neurons)

@@ -50,7 +50,7 @@
 		-- thus neurons can be created only by genes within the cell; neural properties affect only the neurons within the cell
 	- [ ] synapse genes can only link neurons from the cell and its immediate neighbours (those linked by joints)
 		-- the VMS lookup is restricted to this local scope
-		-- synapses are created FROM neurons in immediate neighbours TO neurons within the current cell
+		-- synapses are created FROM neurons within the cell and in immediate neighbours TO neurons within the current cell
 	- [ ] synapse genes coordinates are not affected by VMS offset any more (since the neurons they refer to are already offseted)
 		-- thus synapse gene coordinate are used as-is
 	- [ ] neural genes are only interpreted when read from a specialized cell; cells that divide will ignore neural genes except VMSOffset
