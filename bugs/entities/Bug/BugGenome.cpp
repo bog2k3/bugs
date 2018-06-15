@@ -527,17 +527,15 @@ Chromosome Bug::createBasicChromosome() {
 	gma.restriction.clear();
 	PUSH(gma);
 
-	gma.attrib = GENE_MUSCLE_ATTR_INPUT_COORD;
-	gma.side.set(sfu);	// left (inner muscle)
-	gma.restriction.clear();
-	gma.value.set(leg_push_VMScoord);
-	PUSH(gma);
+	ga.attribute = GENE_ATTRIB_VMS_COORD1;		// left (inner muscle)
+	ga.restriction.clear();
+	ga.value.set(leg_push_VMScoord);
+	PUSH(ga);
 
-	gma.attrib = GENE_MUSCLE_ATTR_INPUT_COORD;
-	gma.side.set(-sfu);	// right (outer muscle)
-	gma.restriction.clear();
-	gma.value.set(leg_pull_VMScoord);
-	PUSH(gma);
+	ga.attribute = GENE_ATTRIB_VMS_COORD2;	// right (outer muscle)
+	ga.restriction.clear();
+	ga.value.set(leg_pull_VMScoord);
+	PUSH(ga);
 
 	GeneVMSOffset gvo;
 	gvo.restriction = BranchRestriction("0v 0v 0v 0>");

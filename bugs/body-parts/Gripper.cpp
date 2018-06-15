@@ -37,7 +37,7 @@ Gripper::Gripper(BodyPartContext const& context, BodyCell& cell)
 	, active_(false)
 	, groundJoint_(nullptr)
 {
-	inputVMSCoord_ = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
+	inputVMSCoord_ = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_GRIPPER;
 	physBody_.userPointer_ = this;

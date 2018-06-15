@@ -2,7 +2,7 @@
 	- [X] eat, grow, fat replenish, egg-growth
 	- [X] consume energy
 	- [X] fix body-part overlapping after scaling and fixture regeneration
-* [X] next2: nerves and neurons
+* [ ] next2: nerves and neurons
 * [/] change synapse linkage - VMS based for each input and output
 	- [-] gene for number of neuron inputs - float, integer part is used
 	- [-] gene for each input vms coord and output coord - these are based on i/o index
@@ -26,41 +26,44 @@
 * [X] new Neuron gene creates a neuron in VMS at specified location
 	- [X] neurons are only created by the new Neuron gene and will be housed inside the current cell
 	- [X] neuron actual VMS coordinate is affected by the VMS offset of the cell that created it
-		-- neuron is instantiated right before cell divides, so its final VMS offset is known
-	- [X] the Ribosome holds a map of neural gene keys and set<VMScoord> values. If the same gene is re-read in a child cell
+		-- [OBSOLETE] neuron is instantiated right before cell divides, so its final VMS offset is known
+	- [OBSOLETE] the Ribosome holds a map of neural gene keys and set<VMScoord> values. If the same gene is re-read in a child cell
 		the gene is reinterpreted only if the actual (offsetted) vms coordinate differs from the one already processed, thus
 		avoiding collisions
 		-- neural genes are added into this map at the end of the decoding of a cell, before division/specialization
 		-- NeuronGenes are processed immediately after adding in the map (if not rejected) and instantiate neurons in the current cell.
 		-- neuron attrib and synapse genes are processed at the end of the genome decoding, after all neurons have been instantiated.
-	- [X] when a cell splits, neurons from the cell are distributed between its children
+	- [OBSOLETE] when a cell splits, neurons from the cell are distributed between its children
 		-- odd neurons to left and even neurons to right; these neurons are not further affected by the children cells' VMS offsets
 	- [X] all synapses (between neurons, or neuron-motor or sensor-neuron) are expressed in VMS coordinates
 		-- thus no more neuron indexes
 	- [X] all other neural genes (transfer, bias etc) bind to the nearest neuron from their target VMS location
-	- [X] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
-		- [X] however VMS coordinates are relative to the current cell's VMS offset. Thus a synapse decoded in a cell will have its 
+	- [OBSOLETE] VMS is universal across the entire organism, all cells, neurons, sensors and motors share it, altough individual neurons are associated with individual cells for detachment purposes
+	- [X] VMS coordinates are relative to the current cell's VMS offset. Thus a synapse decoded in a cell will have its 
 			real VMS values different then the ones encoded in the gene.
 * [ ] Change VMS and synapse mechanism - distributed NS and localized neural gene expression
 	- the aim is to have a more robust neural system and allow local alterations based on the layout of the phenotype which have
-		a smaller change of breaking the entire system
-	- [ ] every body part has a default Neuron created inside in the middle of the VMS, with transfer=ONE and no default synapses
+		a smaller chance of breaking the entire system
+	- [X] every body part has a default Neuron created inside in the middle of the VMS, with transfer=ONE and no default synapses
 		-- this ensures that the neural graph can be connex
-	- [ ] all neural genes are interpreted in their local context (the cell they were read from) 
+	- [X] all neural genes are interpreted in their local context (the cell they were read from) 
+		-- neural genes are only interpreted by specialized cells; cells that divide will ignore them
 		-- thus neurons can be created only by genes within the cell; neural properties affect only the neurons within the cell
-	- [ ] synapse genes can only link neurons from the cell and its immediate neighbours (those linked by joints)
+	- [X] synapse genes can only link neurons from the cell and its immediate neighbours (those linked by joints)
 		-- the VMS lookup is restricted to this local scope
-		-- synapses are created FROM neurons within the cell and in immediate neighbours TO neurons within the current cell
-	- [ ] synapse genes coordinates are not affected by VMS offset any more (since the neurons they refer to are already offseted)
-		-- thus synapse gene coordinate are used as-is
-	- [ ] neural genes are only interpreted when read from a specialized cell; cells that divide will ignore neural genes except VMSOffset
-	- [ ] each synapse is guaranteed to be created since there is at least 1 (the default) Neuron in each cell
+		-- synapses are created:
+			--- FROM (neurons or sensors within the cell) and (neurons in immediate neighbours)
+			--- TO neurons within the current cell
+	- [X] synapse genes coordinates should be fixed wrt neuron gene coordinates in the same cell
+		-- thus the same vmsOffset must be applied to all
+	- [X] neural genes are only interpreted when read from a specialized cell; cells that divide will ignore neural genes except VMSOffset
+	- [X] each synapse is guaranteed to be created since there is at least 1 (the default) Neuron in each cell
 	- [ ] subgraphs of neurons that are not linked to at least a sensor and a motor should be removed for performance reasons
 	- this removes the need to inherit neurons when a cell divides
 	- no more need for neural gene maps in the Ribosome, just a set of neural genes in the decode context will suffice
-	- [ ] only neurons from within the cell can create synapses to sensors within the cell
+	- [X] only neurons from within the cell can create synapses to sensors within the cell
 	- [ ] change motor nerve linkage mechanism to only lookup neurons from within the motor cell
-	- [ ] motor and sensor input/output vms coordinates should also be affected by the cell's vmsOffset to stay fixed with regards to local neurons
+	- [X] motor and sensor input/output vms coordinates should also be affected by the cell's vmsOffset to stay fixed with regards to local neurons
 
 * [X] rethink hyperspace to favour most-usefull possibilities - arrange neighbours in a better way
 * [/] !!! Rethink growth mechanism - more fractal/division like in order to favour evolution

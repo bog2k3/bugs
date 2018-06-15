@@ -20,8 +20,6 @@
 #include <map>
 #include <vector>
 
-class Neuron;
-
 class BodyCell: public Cell {
 public:
 
@@ -42,6 +40,7 @@ public:
 	float density() const { return density_; }
 	float muscleMass(bool right) const { return right ? muscleMassRight_ : muscleMassLeft_; }
 	float jointMass() const { return jointMass_; }
+	float vmsOffset() const { return vmsOffset_; }
 
 	void updateRotation();
 
@@ -87,6 +86,8 @@ private:
 	float muscleMassLeft_ = 0;
 	float muscleMassRight_ = 0;
 	float jointMass_ = 0;
+
+	float vmsOffset_ = 0;
 };
 
 #endif /* BODY_PARTS_BODYCELL_H_ */

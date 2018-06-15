@@ -181,6 +181,7 @@ bool Ribosome::step() {
 				activeSet_.push_back({pair.second, rightCtx});
 			} else {
 				// this cell will specialize, we need to keep its data
+				cell->vmsOffset_ = activeSet_[i].second.vmsOffset.get() + activeSet_[i].second.parentVmsOffset;
 				cellContext_[cell] = std::move(activeSet_[i].second);
 			}
 			// remove this branch:
@@ -413,8 +414,13 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 //}
 
 void Ribosome::createNeurons(BodyCell& cell, DecodeContext &ctx) {
+	// create the default neuron:
+	float vmsOffset = cell.vmsOffset();
+	Neuron* dn = new Neuron();
+	bug_->neuralNet_->neurons.push_back(dn);
+	ctx.vmsNeurons_.push_back(std::make_pair(NeuronInfo(dn), vmsOffset + 0.5 * BodyConst::MaxVMSCoordinateValue));
+	// create the neurons from genes:
 	for (auto g : ctx.neuralGenes) {
-		float vmsOffset = ctx.parentVmsOffset + ctx.vmsOffset.get();
 		if (g->type == gene_type::NEURON) {
 			// instantiate new neuron in the current cell
 			Neuron* n = new Neuron();
@@ -484,7 +490,7 @@ void Ribosome::decodeDeferredGenes() {
 	for (auto &it : cellContext_) {
 		BodyCell* cell = it.first;
 		DecodeContext& ctx = it.second;
-		float cellOffs = ctx.parentVmsOffset + ctx.vmsOffset.get();
+		float cellOffs = cell->vmsOffset();
 
 		/* build a list of output sockets from these objects:
 		 * 		- neurons within the cell

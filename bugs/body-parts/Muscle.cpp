@@ -99,7 +99,8 @@ Muscle::Muscle(BodyPartContext const& context, BodyCell& cell, bool isRightSide)
 	insertionAngle_[1] = mapMuscleAttr[GENE_MUSCLE_ATTR_INSERT_OFFSET2].clamp(
 				BodyConst::MinMuscleInsertionOffset,
 				BodyConst::MaxMuscleInsertionOffset);
-	inputVMSCoord_ = cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
+	auto vmsCoordAttribName = isRightSide ? GENE_ATTRIB_VMS_COORD2 : GENE_ATTRIB_VMS_COORD1;
+	inputVMSCoord_ = cell.vmsOffset() + cell.mapAttributes_[vmsCoordAttribName].clamp(0, BodyConst::MaxVMSCoordinateValue);
 
 	// insertion angle values from genes are positive, but we need to interpret them in the local context (joint side and mirrored?)
 	if (rotationSign_ > 0)
