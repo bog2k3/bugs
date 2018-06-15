@@ -658,6 +658,7 @@ void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<
 
 	OutputSocket *from = outSockets[iFrom].first;
 	NeuronInfo& to = vmsNeurons[iTo].first;
+	// TODO fill in SynapseInfo.ownerJoint if synapses spans a joint
 	updateSynapseInfo(from, to, mapSynapses, g.priority, g.weight);
 }
 
@@ -753,8 +754,6 @@ void Ribosome::linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons,
 	// motors are matched 1:1 with the nearest neuron outputs from the neural network, in the direction from motor nerve to output nerve.
 	for (unsigned i = 0; i < orderedMotorInputs_.size(); i++) {
 		float motorCoord = orderedMotorInputs_[i].second;
-		if (motorCoord == 0)
-			continue;
 		int neuronIndex = getVMSNearestObjectIndex(neurons, motorCoord);
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
@@ -762,15 +761,6 @@ void Ribosome::linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons,
 			// add mapping for this motor line in bug:
 //			int nerveLineId = mapInputNerves_[orderedMotorInputs_[i].first];
 //			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &vmsNeurons_[neuronIndex].first.neuron->output);
-
-#ifdef DEBUG
-			if (false) {
-//				LOGLN("LinkMotorNerve: virtN[" << mapNeuronVirtIndex_[orderedOutputNeurons_[neuronIndex].first] << "] to "
-//						<< mapSockMotorInfo[orderedMotorInputs_[i].first].first << "@@"
-//						<< mapSockMotorInfo[orderedMotorInputs_[i].first].second
-//						<< " {lineId:" << nerveLineId << "}");
-			}
-#endif
 		}
 	}
 }

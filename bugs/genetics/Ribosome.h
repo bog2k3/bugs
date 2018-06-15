@@ -24,6 +24,7 @@ class OutputSocket;
 class IMotor;
 class ISensor;
 class Muscle;
+class Joint;
 class JointPivot;
 
 struct NeuronInfo {
@@ -43,6 +44,7 @@ struct NeuronInfo {
 struct SynapseInfo {
 	CumulativeValue weight;
 	CumulativeValue priority;
+	Joint* ownerJoint;	// this may be null if the synapse is between neurons/sensors within the same body part
 };
 
 template<typename T>
