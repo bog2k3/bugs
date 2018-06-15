@@ -22,6 +22,11 @@ Neuron::~Neuron() {
 }
 
 void Neuron::setTranferFunction(transferFuncNames fn) {
+	if (fn == transferFuncNames::FN_DERIVATIVE) {
+		isDerivative_ = true;
+		return;
+	}
+
 	transfFunc_ = mapTransferFunctions[fn];
 
 	// check for special functions:
@@ -53,7 +58,7 @@ void Neuron::commitInputs() {
 	pInputPriorities_ = nullptr;
 }
 
-void Neuron::update_value()
+void Neuron::update_value(float dt)
 {
 	value_ = 0;
 	for (unsigned i=0, n=inputs_.size(); i<n; ++i) {
@@ -62,9 +67,15 @@ void Neuron::update_value()
 		}
 		value_ += inputs_[i]->value * inputs_[i]->weight;
 	}
-	float cmdSignal = inputs_.size() ? inputs_[0]->value * inputs_[0]->weight : 0;
-	value_ += inputBias;
-	value_ = transfFunc_(value_, neuralParam, cmdSignal, inputBias);
+	if (isDerivative_) {
+		float crtWeightedSum = value_;
+		value_ = (crtWeightedSum - lastWeightedSum_) / dt;
+		lastWeightedSum_ = crtWeightedSum;
+	} else {
+		float cmdSignal = inputs_.size() ? inputs_[0]->value * inputs_[0]->weight : 0;
+		value_ += inputBias;
+		value_ = transfFunc_(value_, neuralParam, cmdSignal, inputBias);
+	}
 	if (std::isnan(value_))
 		value_ = 0;
 }

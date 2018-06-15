@@ -10,7 +10,7 @@
 #include "../genetics/Gene.h"
 #include "../body-parts/BodyConst.h"
 #include "../ObjectTypesAndFlags.h"
-#include "Bug.h"
+#include "Bug/Bug.h"
 
 #include <boglfw/math/math3D.h>
 #include <boglfw/math/aabb.h>

@@ -32,8 +32,9 @@ enum class gene_type : uint8_t {
 	TRANSFER_FUNC = 14,			// controls the transfer function of a neuron (cummulative)
 	NEURAL_BIAS = 15,			// neural bias (cummulative) - is added to the weighted sum of the inputs
 	NEURAL_PARAM = 16,			// neural parameter - used by some types of neurons for specific purposes
+	TIME_SYNAPSE = 17,			// creates a synapse from lifetime sensor to the target neuron
 
-	END = 17
+	END = 18
 };
 
 // ----------------------------------- gene_protein_type -------------------------------//

@@ -9,7 +9,7 @@
 #define OBJECTS_BODY_PARTS_GRIPPER_H_
 
 #include "BodyPart.h"
-#include "../entities/Bug/IMotor.h"
+#include "IMotor.h"
 
 #include <memory>
 #include <atomic>

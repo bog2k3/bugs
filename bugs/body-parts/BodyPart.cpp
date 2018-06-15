@@ -8,7 +8,7 @@
 #include "BodyPart.h"
 #include "BodyConst.h"
 #include "BodyCell.h"
-#include "../entities/Bug.h"
+#include "../entities/Bug/Bug.h"
 #include "../genetics/GeneDefinitions.h"
 #include "../ObjectTypesAndFlags.h"
 #include "Joint.h"

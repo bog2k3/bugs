@@ -18,7 +18,7 @@ public:
 	~NeuralNet();
 
 	// performs one data iteration - new values are computed then output values are pushed through synapses.
-	void iterate();
+	void iterate(float dt);
 
 	std::vector<Neuron*> neurons;
 };

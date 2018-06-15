@@ -8,7 +8,7 @@
 #include "EggLayer.h"
 #include "BodyConst.h"
 #include "BodyCell.h"
-#include "../entities/Bug.h"
+#include "../entities/Bug/Bug.h"
 #include "../entities/Gamete.h"
 #include "../neuralnet/InputSocket.h"
 #include "../ObjectTypesAndFlags.h"

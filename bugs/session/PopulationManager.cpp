@@ -6,7 +6,7 @@
  */
 
 #include "PopulationManager.h"
-#include "../entities/Bug.h"
+#include "../entities/Bug/Bug.h"
 
 #include <boglfw/World.h>
 #include <boglfw/perf/marker.h>

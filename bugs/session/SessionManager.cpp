@@ -6,7 +6,7 @@
  */
 
 #include "SessionManager.h"
-#include "../entities/Bug.h"
+#include "../entities/Bug/Bug.h"
 #include "../entities/food/FoodDispenser.h"
 #include "../entities/food/FoodChunk.h"
 #include "../entities/Gamete.h"

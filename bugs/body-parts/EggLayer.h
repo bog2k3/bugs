@@ -9,7 +9,7 @@
 #define BODY_PARTS_EGGLAYER_H_
 
 #include "BodyPart.h"
-#include "../entities/Bug/IMotor.h"
+#include "IMotor.h"
 
 
 class EggLayer: public BodyPart, public IMotor {

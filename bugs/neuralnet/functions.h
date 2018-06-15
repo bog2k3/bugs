@@ -20,6 +20,7 @@ enum class transferFuncNames {
 	FN_POW,
 	FN_GATE,
 	FN_MODULATE,
+	FN_DERIVATIVE,		// computes the time derivative of the weighted input sum
 
 	FN_MAXCOUNT			// this is the total number of functions
 };

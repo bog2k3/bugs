@@ -1,6 +1,6 @@
 #include "Ribosome.h"
 
-#include "../entities/Bug.h"
+#include "../entities/Bug/Bug.h"
 #include "../body-parts/BodyConst.h"
 #include "../body-parts/BodyCell.h"
 #include "../body-parts/BodyPart.h"
@@ -462,6 +462,7 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 	case gene_type::TRANSFER_FUNC:
 	case gene_type::NEURAL_BIAS:
 	case gene_type::NEURAL_PARAM:
+	case gene_type::TIME_SYNAPSE:
 		ctx.neuralGenes.push_back(&g);
 		break;
 	default:
@@ -550,6 +551,9 @@ void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSE
 	switch (g.type) {
 		case gene_type::SYNAPSE:
 			decodeSynapse(g.data.gene_synapse, vmsOffset, outSockets, vmsNeurons, mapSynapses);
+			break;
+		case gene_type::TIME_SYNAPSE:
+			decodeTimeSynapse(g.data.gene_time_synapse, vmsOffset, vmsNeurons, mapSynapses);
 			break;
 		case gene_type::TRANSFER_FUNC:
 			decodeTransferFn(g.data.gene_transfer_function, vmsOffset, vmsNeurons);
@@ -643,17 +647,36 @@ void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<
 	auto iTo = getVMSNearestObjectIndex(vmsNeurons, g.destLocation + vmsOffset);
 
 	if (iFrom == -1 || iTo == -1) {
-		LOGLN("Synapse to/from non-existent sensor/neuron!!");
+		ERROR("Synapse to/from non-existent sensor/neuron!!");
 	}
 
 	OutputSocket *from = outSockets[iFrom].first;
 	NeuronInfo& to = vmsNeurons[iTo].first;
+	updateSynapseInfo(from, to, mapSynapses, g.priority, g.weight);
+}
+
+void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
+		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses)
+{
+	auto iTo = getVMSNearestObjectIndex(vmsNeurons, g.targetLocation + vmsOffset);
+
+	if (iTo == -1) {
+		ERROR("Time Synapse to non-existent neuron!!");
+	}
+
+	OutputSocket *from = &bug_->lifetimeOutput_;
+	NeuronInfo& to = vmsNeurons[iTo].first;
+	updateSynapseInfo(from, to, mapSynapses, 0, g.weight);
+}
+
+void Ribosome::updateSynapseInfo(OutputSocket *from, NeuronInfo &to, std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses,
+		float priority, float weight) {
 	// if the same synapse (from the same sensor/neuron to the same neuron) has already been created
 	// only update its properties (weight etc) instead of creating a new one
 	auto synapseKey = std::make_pair(from, to.neuron);
 	auto &sInfo = mapSynapses[synapseKey]; // this works because the value is automatically created in the map the first time
-	sInfo.priority.changeAbs(g.priority);
-	sInfo.weight.changeAbs(g.weight);
+	sInfo.priority.changeAbs(priority);
+	sInfo.weight.changeAbs(weight);
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons) {

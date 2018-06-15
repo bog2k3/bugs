@@ -8,13 +8,13 @@
 #ifndef ENTITIES_BUG_H_
 #define ENTITIES_BUG_H_
 
-#include "enttypes.h"
-#include "Bug/LifetimeSensor.h"
-#include "../genetics/Genome.h"
-#include "../genetics/GeneDefinitions.h"
-#include "../genetics/CumulativeValue.h"
-#include "../serialization/objectTypes.h"
-#include "../body-parts/BodyPartContext.h"
+#include "../enttypes.h"
+#include "../../genetics/Genome.h"
+#include "../../genetics/GeneDefinitions.h"
+#include "../../genetics/CumulativeValue.h"
+#include "../../serialization/objectTypes.h"
+#include "../../body-parts/BodyPartContext.h"
+#include "../../neuralnet/OutputSocket.h"
 
 #include <boglfw/entities/Entity.h>
 #include <boglfw/utils/UpdateList.h>
@@ -39,13 +39,8 @@ class Joint;
 
 class Bug : public Entity {
 public:
-
-	struct defaultConstants {
-		static constexpr float lifetimeSensor_vmsCoord = 500;
-	};
-
-	explicit Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation);
-	virtual ~Bug();
+	Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation);
+	virtual ~Bug() override;
 	FunctionalityFlags getFunctionalityFlags() const override { return
 			FunctionalityFlags::UPDATABLE |
 			FunctionalityFlags::DRAWABLE |
@@ -108,12 +103,12 @@ protected:
 	Genome genome_;
 	NeuralNet* neuralNet_;
 
+	OutputSocket lifetimeOutput_;
+	float lifeTime_ = 0;
+
 	// motor nerves mapped by the indices representing the order in which they are created from the genome - motor line indices match these.
 	// 'first' is the inputSocket of the motor, 'second' is the outputSocket of the neuron connected to it.
 //	std::map<int, std::pair<InputSocket*, OutputSocket*>> motorLines_;
-
-	// default sensors (arguments represent VMS coordinates):
-	LifetimeSensor lifeTimeSensor_ { defaultConstants::lifetimeSensor_vmsCoord };
 
 	Ribosome* ribosome_;
 	bool isAlive_;

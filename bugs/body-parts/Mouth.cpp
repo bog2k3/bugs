@@ -9,7 +9,7 @@
 #include "BodyConst.h"
 #include "BodyCell.h"
 #include "../entities/food/FoodChunk.h"
-#include "../entities/Bug.h"
+#include "../entities/Bug/Bug.h"
 #include "../ObjectTypesAndFlags.h"
 
 #include <boglfw/World.h>

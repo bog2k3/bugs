@@ -7,7 +7,7 @@
 #include "OperationBreakJoint.h"
 
 #ifdef DEBUG
-#include "entities/Bug.h"
+#include "entities/Bug/Bug.h"
 #include "body-parts/sensors/Nose.h"
 #include "neuralnet/OutputSocket.h"
 #endif

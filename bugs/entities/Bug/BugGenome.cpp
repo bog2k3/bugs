@@ -6,11 +6,11 @@
  */
 
 #include "Bug.h"
-#include "../genetics/Gene.h"
-#include "../genetics/GeneDefinitions.h"
-#include "../genetics/constants.h"
-#include "../neuralnet/functions.h"
-#include "../body-parts/BodyConst.h"
+#include "../../genetics/Gene.h"
+#include "../../genetics/GeneDefinitions.h"
+#include "../../genetics/constants.h"
+#include "../../neuralnet/functions.h"
+#include "../../body-parts/BodyConst.h"
 
 #include <boglfw/utils/log.h>
 #include <boglfw/math/constants.h>
@@ -46,7 +46,6 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float body_adult_lean_mass = 4; // kg
 	constexpr float nose_VMScoord = 10;
 	constexpr float rightNose_VMSoffs = 20;
-	constexpr float time_VMScoord = Bug::defaultConstants::lifetimeSensor_vmsCoord;
 	constexpr float leg_pull_VMScoord = 100;
 	constexpr float leg_push_VMScoord = 120;
 	constexpr float gripper_VMScoord = 150;

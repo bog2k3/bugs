@@ -8,7 +8,7 @@
 #include "Nose.h"
 #include "../BodyConst.h"
 #include "../../ObjectTypesAndFlags.h"
-#include "../../entities/Bug.h"
+#include "../../entities/Bug/Bug.h"
 #include "../../neuralnet/OutputSocket.h"
 #include "../BodyCell.h"
 

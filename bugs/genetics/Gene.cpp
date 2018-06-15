@@ -162,6 +162,12 @@ Gene Gene::createRandomNeuralParamGene() {
 	return g;
 }
 
+Gene Gene::createRandomTimeSynapse() {
+	GeneTimeSynapse g;
+	g.targetLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	return g;
+}
+
 Gene Gene::createRandomTransferFuncGene() {
 	GeneTransferFunction g;
 	g.neuronLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
@@ -236,6 +242,7 @@ Gene Gene::createRandom(int spaceLeftAfter) {
 		{gene_type::NEURON, 1.2},
 		{gene_type::NEURAL_BIAS, 1.0},
 		{gene_type::NEURAL_PARAM, 0.8},
+		{gene_type::TIME_SYNAPSE, 0.25},
 		{gene_type::TRANSFER_FUNC, 0.5},
 		{gene_type::SYNAPSE, 1.5},
 		{gene_type::SKIP, 0.1},
@@ -277,6 +284,10 @@ Gene Gene::createRandom(int spaceLeftAfter) {
 		return createRandomNeuronGene();
 	case gene_type::NEURAL_BIAS:
 		return createRandomNeuralBiasGene();
+	case gene_type::NEURAL_PARAM:
+		return createRandomNeuralParamGene();
+	case gene_type::TIME_SYNAPSE:
+		return createRandomTimeSynapse();
 	case gene_type::PART_ATTRIBUTE:
 		return createRandomAttribGene();
 	case gene_type::SKIP:
@@ -308,6 +319,8 @@ char Gene::getSymbol() const {
 		return '*';
 	case gene_type::NEURAL_PARAM:
 		return 'N';
+	case gene_type::TIME_SYNAPSE:
+		return '$';
 	case gene_type::NO_OP:
 		return '_';
 	case gene_type::OFFSET:

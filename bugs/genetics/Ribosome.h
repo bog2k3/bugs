@@ -130,11 +130,15 @@ private:
 	void decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
+	void decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
+				std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
 	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 //	void addMotor(IMotor* motor, BodyPart* part);
 	void createNeurons(BodyCell& cell, DecodeContext &ctx);
+	void updateSynapseInfo(OutputSocket *from, NeuronInfo &to, std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses,
+			float priority, float weight);
 
 	void decodeDeferredGenes();
 	// builds and sorts by vms coord a vector of all the outputSockets from neurons and sensors:

@@ -27,7 +27,7 @@ public:
 	void addInput(std::unique_ptr<InputSocket> &&input, float priority);
 	void commitInputs();	// sorts all inputs by priority in their final positions and deletes priority data
 
-	void update_value(); // recomputes the value of the neuron after input has been updated
+	void update_value(float dt); // recomputes the value of the neuron after input has been updated
 	float getValue() { return value_; }
 	inline void push_output() { output.push_value(value_); }
 
@@ -36,6 +36,8 @@ public:
 private:
 	float value_ = 0;
 	bool isZeroCmdSignal_ = false;
+	bool isDerivative_ = false;
+	float lastWeightedSum_ = 0;
 	transfer_function transfFunc_ = transfer_fn_one;
 
 	std::vector<std::unique_ptr<InputSocket>> inputs_;

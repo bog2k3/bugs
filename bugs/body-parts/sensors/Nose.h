@@ -9,7 +9,7 @@
 #define BODY_PARTS_SENSORS_NOSE_H_
 
 #include "../BodyPart.h"
-#include "../../entities/Bug/ISensor.h"
+#include "../ISensor.h"
 #include "../../entities/enttypes.h"
 
 #include <glm/vec2.hpp>

@@ -205,29 +205,40 @@ struct GeneVMSOffset {
 };
 
 struct GeneNeuron {
+	BranchRestriction restriction;
 	Atom<float> neuronLocation;		// neuron location in VMS
 };
 
 struct GeneTransferFunction {
+	BranchRestriction restriction;
 	Atom<float> neuronLocation;		// neuron location
 	Atom<int> functionID;
 };
 
 struct GeneNeuralBias {
+	BranchRestriction restriction;
 	Atom<float> neuronLocation;		// neuron location
 	Atom<float> value;
 };
 
 struct GeneNeuralParam {
+	BranchRestriction restriction;
 	Atom<float> neuronLocation;		// neuron location
 	Atom<float> value;
 };
 
 struct GeneSynapse {
+	BranchRestriction restriction;
 	Atom<float> srcLocation;		// VMS coordinate of source (neuron output or sensor output)
 	Atom<float> destLocation;		// VMS coordinate of destination (neuron input or motor input)
 	Atom<float> weight;				// absolute weight of the synapse (cummulative)
 	Atom<float> priority; 			// synapse priority - inputs synapses in a neuron are ordered by highest priority first
+};
+
+struct GeneTimeSynapse {
+	BranchRestriction restriction;
+	Atom<float> targetLocation;		// target neuron location
+	Atom<float> weight;
 };
 
 struct GeneBodyAttribute {
@@ -256,6 +267,7 @@ public:
 		GeneTransferFunction gene_transfer_function;
 		GeneNeuralBias gene_neural_constant;
 		GeneNeuralParam gene_neural_param;
+		GeneTimeSynapse gene_time_synapse;
 		GeneBodyAttribute gene_body_attribute;
 
 		GeneData(GeneStop const &gs) : gene_stop(gs) {}
@@ -273,6 +285,7 @@ public:
 		GeneData(GeneTransferFunction const &gt) : gene_transfer_function(gt) {}
 		GeneData(GeneNeuralBias const &gnc) : gene_neural_constant(gnc) {}
 		GeneData(GeneNeuralParam const& gnp) : gene_neural_param(gnp) {}
+		GeneData(GeneTimeSynapse const& gts) : gene_time_synapse(gts) {}
 		GeneData(GeneBodyAttribute const &gba) : gene_body_attribute(gba) {}
 	} data;
 
@@ -300,6 +313,7 @@ public:
 	Gene(GeneTransferFunction const &gt) : Gene(gene_type::TRANSFER_FUNC, gt) {}
 	Gene(GeneNeuralBias const &gnc) : Gene(gene_type::NEURAL_BIAS, gnc) {}
 	Gene(GeneNeuralParam const& gnp) : Gene(gene_type::NEURAL_PARAM, gnp) {}
+	Gene(GeneTimeSynapse const& gts) : Gene(gene_type::TIME_SYNAPSE, gts) {}
 	Gene(GeneBodyAttribute const &gba) : Gene(gene_type::BODY_ATTRIBUTE, gba) {}
 
 	Gene() : Gene(GeneNoOp()) {}
@@ -345,6 +359,7 @@ private:
 	static Gene createRandomTransferFuncGene();
 	static Gene createRandomNeuralBiasGene();
 	static Gene createRandomNeuralParamGene();
+	static Gene createRandomTimeSynapse();
 	static Gene createRandomBodyAttribGene();
 	static Gene createRandomDivisionParamGene();
 	static Gene createRandomVMSOffsetGene();

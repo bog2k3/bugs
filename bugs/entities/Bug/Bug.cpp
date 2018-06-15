@@ -6,22 +6,21 @@
  */
 
 #include "Bug.h"
-#include "../neuralnet/Network.h"
-#include "../genetics/Gene.h"
-#include "../genetics/GeneDefinitions.h"
-#include "../genetics/constants.h"
-#include "../genetics/Ribosome.h"
-#include "../neuralnet/functions.h"
-#include "../body-parts/ZygoteShell.h"
-#include "../body-parts/Torso.h"
-#include "../body-parts/BodyConst.h"
-#include "../body-parts/EggLayer.h"
-#include "../body-parts/BodyPart.h"
-#include "../body-parts/FatCell.h"
-#include "../serialization/GenomeSerialization.h"
-#include "Bug/IMotor.h"
-#include "Bug/ISensor.h"
-#include "Gamete.h"
+#include "../../neuralnet/Network.h"
+#include "../../neuralnet/functions.h"
+#include "../../genetics/Gene.h"
+#include "../../genetics/GeneDefinitions.h"
+#include "../../genetics/constants.h"
+#include "../../genetics/Ribosome.h"
+#include "../../body-parts/ZygoteShell.h"
+#include "../../body-parts/Torso.h"
+#include "../../body-parts/BodyConst.h"
+#include "../../body-parts/EggLayer.h"
+#include "../../body-parts/BodyPart.h"
+#include "../../body-parts/FatCell.h"
+#include "../../body-parts/JointPivot.h"
+#include "../../serialization/GenomeSerialization.h"
+#include "../Gamete.h"
 
 #include <boglfw/math/math3D.h>
 #include <boglfw/math/aabb.h>
@@ -37,7 +36,6 @@
 #include <glm/vec3.hpp>
 #include <sstream>
 #include <algorithm>
-#include "../body-parts/JointPivot.h"
 
 #ifdef DEBUG_DMALLOC
 #include <dmalloc.h>
@@ -101,8 +99,6 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	mapBodyAttributes_[GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO] = &reproductiveMassRatio_;
 	mapBodyAttributes_[GENE_BODY_ATTRIB_EGG_MASS] = &eggMass_;
 	mapBodyAttributes_[GENE_BODY_DEVELOPMENT_MASS_THRESH_RATIO] = &developmentMassThreshRatio_;
-
-	ribosome_->addDefaultSensor(&lifeTimeSensor_);
 
 	if (generation_ > maxGeneration)
 		maxGeneration = generation_;
@@ -267,7 +263,6 @@ void Bug::update(float dt) {
 
 	cachedAABBFramesOld_++;
 
-	lifeTimeSensor_.update(dt);
 	{
 		PERF_MARKER("update-bodyParts");
 		bodyPartsUpdateList_.update(dt);
@@ -309,7 +304,9 @@ void Bug::update(float dt) {
 
 	{
 		PERF_MARKER("update-neuralNet");
-		neuralNet_->iterate();
+		lifeTime_ += dt;
+		lifetimeOutput_.push_value(lifeTime_);
+		neuralNet_->iterate(dt);
 	}
 
 	if (cachedMassDirty_) {
