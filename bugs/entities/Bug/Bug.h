@@ -30,6 +30,7 @@
 #include <set>
 
 class NeuralNet;
+class Neuron;
 class InputSocket;
 class Ribosome;
 class ZygoteShell;
@@ -102,6 +103,9 @@ protected:
 
 	Genome genome_;
 	NeuralNet* neuralNet_;
+
+	std::map<Joint*, std::vector<std::pair<OutputSocket*, InputSocket*>>> jointSynapses_;
+	std::map<BodyPart*, std::vector<Neuron*>> bodyPartNeurons_;
 
 	OutputSocket lifetimeOutput_;
 	float lifeTime_ = 0;

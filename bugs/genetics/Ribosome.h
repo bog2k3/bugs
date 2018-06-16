@@ -26,6 +26,7 @@ class ISensor;
 class Muscle;
 class Joint;
 class JointPivot;
+class Cell;
 
 struct NeuronInfo {
 	Neuron* neuron;
@@ -111,17 +112,13 @@ private:
 	std::vector<BodyCell*> cells_;
 	std::vector<std::pair<BodyCell*, DecodeContext>> activeSet_;
 	std::map<BodyCell*, DecodeContext> cellContext_;		// hold decode data for each specialized cell
+	std::map<Cell*, BodyPart*> cellToPart_;				// associate each specialized or joint cell with the corresponding body part
 	std::set<const Gene*> bodyAttribGenes_;					// hold body attribute genes here and decode them when all genome is processed
 	std::map<IMotor*, DecodeContext*> motors_;
-	int nMotorLines_ = 0;
-//	std::map<InputSocket*, int> mapInputNerves_;	// maps inputSockets from motors to motor line indexes
 
 	void postDecodeAndFinalization();		// does post-decode operations (deferred genes) and cell specialization
 
 	void decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, bool deferNeural);
-	void decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets,
-			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
-			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
 	void decodeProtein(GeneProtein const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeOffset(GeneOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, DecodeContext &ctx);
@@ -129,7 +126,10 @@ private:
 	void decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx);
-	void decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets,
+	void decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
+			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
+			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
+	void decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
 	void decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
@@ -139,12 +139,13 @@ private:
 	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 //	void addMotor(IMotor* motor, BodyPart* part);
 	void createNeurons(BodyCell& cell, DecodeContext &ctx);
-	void updateSynapseInfo(OutputSocket *from, NeuronInfo &to, std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses,
+	void updateSynapseInfo(OutputSocket *from, NeuronInfo &to, Joint* synJoint,
+			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses,
 			float priority, float weight);
 
 	void decodeDeferredGenes();
 	// builds and sorts by vms coord a vector of all the outputSockets from neurons and sensors:
-	void buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<OutputSocket*>> &v);
+	void buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &v);
 	void specializeCells(bool &hasMouth, bool &hasEggLayer);
 	void resolveMotorLinkage();
 	void commitNeurons();

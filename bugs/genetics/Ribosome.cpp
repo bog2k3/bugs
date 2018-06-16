@@ -85,7 +85,7 @@ Ribosome::Ribosome(Bug* bug)
 	bug_->neuralNet_ = new NeuralNet();
 
 	// start decoding with root cell at offset 0 in the genome:
-	activeSet_.push_back(std::make_pair(initialCell, 0));
+	activeSet_.push_back({initialCell, 0});
 }
 
 Ribosome::~Ribosome() {
@@ -290,8 +290,6 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 	glm::mat4 m = glm::translate(glm::vec3{tr.x, tr.y, 0.f});
 	m *= glm::rotate(tr.z, glm::vec3{0.f, 0.f, 1.f});
 
-	std::map<Cell*, BodyPart*> mapBodyParts;
-
 	// second run: instantiate body parts:
 	for (auto c : activeCells) {
 		c->transform(m, tr.z);
@@ -335,7 +333,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 
 		if (bp) {
 			bug_->bodyParts_.push_back(bp);
-			mapBodyParts[c] = bp;
+			cellToPart_[c] = bp;
 		}
 		if (pMotor)
 			motors_[pMotor] = &cellContext_[c];
@@ -352,10 +350,10 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 			if (n.isRightSide) {
 				xchg(left, right);
 			}
-			if (joints.insert(std::make_pair(left, right)).second) {
+			if (joints.insert({left, right}).second) {
 				// only create each joint once - it will appear in both sides of the split
-				BodyPart* bpLeft = mapBodyParts[left];
-				BodyPart* bpRight = mapBodyParts[right];
+				BodyPart* bpLeft = cellToPart_[left];
+				BodyPart* bpRight = cellToPart_[right];
 				assert(bpLeft && bpRight && "bodyparts for each side of the joint must exist!");
 				BodyCell* jointCell = static_cast<BodyCell*>(n.jointParent);
 				assert(jointCell && "joint cell must not be null!");
@@ -383,6 +381,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 					auto wj = new JointWeld(bug_->context_, *jointCell, bpLeft, bpRight);
 					j = wj;
 				}
+				cellToPart_[jointCell] = j;
 				bug_->bodyParts_.push_back(j);
 				j->onJointBreak.add(std::bind(&Bug::onJointBreak, bug_, std::placeholders::_1));
 
@@ -416,9 +415,11 @@ void Ribosome::updateCellDensity(BodyCell &cell) {
 void Ribosome::createNeurons(BodyCell& cell, DecodeContext &ctx) {
 	// create the default neuron:
 	float vmsOffset = cell.vmsOffset();
+	BodyPart* part = cellToPart_[&cell];
 	Neuron* dn = new Neuron();
 	bug_->neuralNet_->neurons.push_back(dn);
-	ctx.vmsNeurons_.push_back(std::make_pair(NeuronInfo(dn), vmsOffset + 0.5 * BodyConst::MaxVMSCoordinateValue));
+	bug_->bodyPartNeurons_[part].push_back(dn);
+	ctx.vmsNeurons_.push_back({NeuronInfo(dn), vmsOffset + 0.5 * BodyConst::MaxVMSCoordinateValue});
 	// create the neurons from genes:
 	for (auto g : ctx.neuralGenes) {
 		if (g->type == gene_type::NEURON) {
@@ -426,7 +427,8 @@ void Ribosome::createNeurons(BodyCell& cell, DecodeContext &ctx) {
 			Neuron* n = new Neuron();
 			bug_->neuralNet_->neurons.push_back(n);
 			float geneVMSValue = clamp(g->data.gene_neuron.neuronLocation.value, 0.f, BodyConst::MaxVMSCoordinateValue);
-			ctx.vmsNeurons_.push_back(std::make_pair(NeuronInfo(n), vmsOffset + geneVMSValue));
+			ctx.vmsNeurons_.push_back({NeuronInfo(n), vmsOffset + geneVMSValue});
+			bug_->bodyPartNeurons_[part].push_back(n);
 		}
 	}
 }
@@ -497,7 +499,7 @@ void Ribosome::decodeDeferredGenes() {
 		 * 		- sensors within the cell
 		 * 		- neurons from immediate neighbor cells
 		*/
-		std::vector<VMSEntry<OutputSocket*>> outputSockets;
+		std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> outputSockets;
 		buildOutputSocketsList(cell, outputSockets);
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> mapSynapses;
 		// decode the deferred neural genes (neuron properties):
@@ -514,29 +516,31 @@ void Ribosome::decodeDeferredGenes() {
 			InputSocket* i = new InputSocket(neuron, sInfo.weight);
 			neuron->addInput(std::unique_ptr<InputSocket>(i), sInfo.priority);
 			outSock->addTarget(i);
+			bug_->jointSynapses_[p.second.ownerJoint].push_back({outSock, i});
 		}
 	}
 }
 
-void Ribosome::buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<OutputSocket*>> &out) {
+void Ribosome::buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &out) {
 	// add cell's neurons' output sockets
 	for (auto &vn : cellContext_[cell].vmsNeurons_) {
 		float vmsCoord = vn.second;
 		OutputSocket* sock = &vn.first.neuron->output;
-		out.push_back({sock, vmsCoord});
+		out.push_back({{sock, nullptr}, vmsCoord});
 	}
 	// add cell's sensors' output sockets
 	for (auto s : cellContext_[cell].sensors_) {
 		for (uint i=0; i<s->getOutputCount(); i++) {
-			out.push_back({s->getOutputSocket(i), s->getOutputVMSCoord(i)});
+			out.push_back({{s->getOutputSocket(i), nullptr}, s->getOutputVMSCoord(i)});
 		}
 	}
 	// add neighbour cells' neurons' output sockets
 	for (auto ncl : cell->neighbours_) {
+		BodyCell* jointCell = static_cast<BodyCell*>(ncl.jointParent);	// synapse will be associated with this joint cell
 		for (auto &vn : cellContext_[static_cast<BodyCell*>(ncl.other)].vmsNeurons_) {
 			float vmsCoord = vn.second;
 			OutputSocket* sock = &vn.first.neuron->output;
-			out.push_back({sock, vmsCoord});
+			out.push_back({{sock, jointCell}, vmsCoord});
 		}
 	}
 	// sort all output sockets by vms coord
@@ -551,7 +555,7 @@ void Ribosome::sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &nerves) {
 }
 
 
-void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets,
+void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses) {
 	switch (g.type) {
@@ -645,7 +649,7 @@ void Ribosome::decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeCon
 		ctx.vmsOffset.changeAbs(g.value);
 }
 
-void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<OutputSocket*>> &outSockets,
+void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses)
 {
@@ -656,10 +660,10 @@ void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<
 		ERROR("Synapse to/from non-existent sensor/neuron!!");
 	}
 
-	OutputSocket *from = outSockets[iFrom].first;
+	OutputSocket *from = outSockets[iFrom].first.first;
 	NeuronInfo& to = vmsNeurons[iTo].first;
-	// TODO fill in SynapseInfo.ownerJoint if synapses spans a joint
-	updateSynapseInfo(from, to, mapSynapses, g.priority, g.weight);
+	Joint* j = static_cast<Joint*>(cellToPart_[outSockets[iFrom].first.second]);
+	updateSynapseInfo(from, to, j, mapSynapses, g.priority, g.weight);
 }
 
 void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
@@ -673,17 +677,20 @@ void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, std:
 
 	OutputSocket *from = &bug_->lifetimeOutput_;
 	NeuronInfo& to = vmsNeurons[iTo].first;
-	updateSynapseInfo(from, to, mapSynapses, 0, g.weight);
+	updateSynapseInfo(from, to, nullptr, mapSynapses, 0, g.weight);
 }
 
-void Ribosome::updateSynapseInfo(OutputSocket *from, NeuronInfo &to, std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses,
-		float priority, float weight) {
+void Ribosome::updateSynapseInfo(OutputSocket *from, NeuronInfo &to, Joint* synJoint,
+		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses,
+		float priority, float weight)
+{
 	// if the same synapse (from the same sensor/neuron to the same neuron) has already been created
 	// only update its properties (weight etc) instead of creating a new one
 	auto synapseKey = std::make_pair(from, to.neuron);
 	auto &sInfo = mapSynapses[synapseKey]; // this works because the value is automatically created in the map the first time
 	sInfo.priority.changeAbs(priority);
 	sInfo.weight.changeAbs(weight);
+	sInfo.ownerJoint = synJoint;
 }
 
 void Ribosome::decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons) {
@@ -750,7 +757,6 @@ int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& n
 }
 
 void Ribosome::linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_) {
-//	bug_->motorLines_.clear();
 	// motors are matched 1:1 with the nearest neuron outputs from the neural network, in the direction from motor nerve to output nerve.
 	for (unsigned i = 0; i < orderedMotorInputs_.size(); i++) {
 		float motorCoord = orderedMotorInputs_[i].second;
@@ -758,9 +764,6 @@ void Ribosome::linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons,
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
 			neurons[neuronIndex].first.neuron->output.addTarget(orderedMotorInputs_[i].first);
-			// add mapping for this motor line in bug:
-//			int nerveLineId = mapInputNerves_[orderedMotorInputs_[i].first];
-//			bug_->motorLines_[nerveLineId] = std::make_pair(orderedMotorInputs_[i].first, &vmsNeurons_[neuronIndex].first.neuron->output);
 		}
 	}
 }
@@ -770,11 +773,7 @@ void Ribosome::resolveMotorLinkage() {
 		// build the motor input nerves vector:
 		std::vector<VMSEntry<InputSocket*>> motorInputs;
 		for (unsigned j=0; j<p.first->getInputCount(); j++) {
-//			mapInputNerves_[motors_[i]->getInputSocket(j)] = motorInputs.size();
-			motorInputs.push_back(std::make_pair(p.first->getInputSocket(j), p.first->getInputVMSCoord(j)));
-#ifdef DEBUG
-//				mapSockMotorInfo[motors_[i]->getInputSocket(j)] = std::make_pair(motors_[i]->getMotorDebugName(), j);
-#endif
+			motorInputs.push_back({p.first->getInputSocket(j), p.first->getInputVMSCoord(j)});
 		}
 		// sort the input/output nerves by their VMS coords, smallest to greatest:
 		sortEntriesByVMSCoord(motorInputs);
