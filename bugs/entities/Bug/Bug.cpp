@@ -182,6 +182,13 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 						// must remove from eggLayers_ vector
 						eggLayers_.erase(std::remove(eggLayers_.begin(), eggLayers_.end(), dying));
 					}
+					// if not a joint, kill all neurons inside the body part
+					// (for joints the synapses are broken when the joint breaks)
+					if (dying->getType() != BodyPartType::JOINT_PIVOT && dying->getType() != BodyPartType::JOINT_WELD) {
+						for (auto &n : bodyPartNeurons_[dying])
+							killNeuron(n);
+					}
+					// no more bodyParts left alive?
 					if (bodyParts_.size() == 0)
 						kill();
 				});
@@ -320,6 +327,9 @@ void Bug::update(float dt) {
 	// residual energy consumption:
 	consumeEnergy(cachedLeanMass_ * dt * BodyConst::ResidualEnergyConstant);
 
+	// energy consumed by neurons:
+	consumeEnergy(computeNeuralNetFrameEnergy(dt));
+
 	// grow:
 	if (cachedLeanMass_ < adultLeanMass_) {
 		// juvenile, growing
@@ -340,6 +350,16 @@ void Bug::update(float dt) {
 	} else {
 		// adult life
 	}
+}
+
+float Bug::computeNeuralNetFrameEnergy(float dt) {
+	float energy = 0;
+	for (auto n : neuralNet_->neurons) {
+		// the energy consumption rate per second for a neuron depends on its output value;
+		// the higher the output value, the higher the consumption; the relationship is sub-linear
+		energy += pow(abs(n->getValue()), 1/3.f) * BodyConst::NeuronEnergyRate * dt;
+	}
+	return energy;
 }
 
 void Bug::draw(Viewport* vp) {
@@ -375,28 +395,16 @@ void Bug::draw(Viewport* vp) {
 
 
 void Bug::onJointBreak(Joint* joint) {
-//	if (!isAlive_ || !lines.size())
-//		return;
-//#ifdef DEBUG
-//	LOGPREFIX("Bug");
-//	LOG("motor lines detached: ");
-//#endif
-//	for (unsigned i : lines) {
-//		if (motorLines_[i].second) {
-//#ifdef DEBUG
-//			LOGNP(i << ", ");
-//#endif
-//			motorLines_[i].second->removeTarget(motorLines_[i].first);
-//		}
-//		motorLines_[i] = std::make_pair(nullptr, nullptr);
-//	}
-//#ifdef DEBUG
-//	LOGNP("\n");
-//#endif
+	for (auto &s : jointSynapses_[joint])
+		breakSynapse(s);
+}
 
-	// TODO detach all neural lines that pass through the joint
-	//throw std::runtime_error("Implement!");
-	ERROR("Implement detach all neural lines that pass through the joint\n" << __FUNCTION__);
+void Bug::killNeuron(Neuron* n) {
+	n->disable();
+
+}
+void Bug::breakSynapse(std::pair<OutputSocket*, InputSocket*> &syn) {
+	syn.first->removeTarget(syn.second);
 }
 
 Bug* Bug::newBasicBug(glm::vec2 position) {

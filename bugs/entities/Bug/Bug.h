@@ -151,6 +151,10 @@ protected:
 	void updateDeadDecaying(float dt);
 	void onJointBreak(Joint* joint);
 	void fixAllGeneValues();
+	void killNeuron(Neuron* n);
+	void breakSynapse(std::pair<OutputSocket*, InputSocket*> &syn);
+	float computeNeuralNetFrameEnergy(float dt); // how much energy the neural net consumed in the time frame?
+
 	static Chromosome createBasicChromosome();
 
 #ifdef DEBUG

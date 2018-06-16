@@ -79,3 +79,4 @@ void Neuron::update_value(float dt)
 	if (std::isnan(value_))
 		value_ = 0;
 }
+

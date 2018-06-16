@@ -21,8 +21,10 @@ void NeuralNet::iterate(float dt)
 
 	// step 1: update all neurons values before any data moves around
 	for (Neuron* n : neurons)
-		n->update_value(dt);
+		if (!n->isDisabled())
+			n->update_value(dt);
 	// step 2: push all neurons output data simultaneously
 	for (Neuron* n : neurons)
-		n->push_output();
+		if (!n->isDisabled())
+			n->push_output();
 }

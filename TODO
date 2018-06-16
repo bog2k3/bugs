@@ -125,10 +125,14 @@
 	- [ ] if decoding starts on a STOP gene, it moves forward until the 1st valid gene
 	- [X] body attribute genes are read at any depth but only interpreted once - see below
 	- [ ] when a joint between cells breaks, all synapses, motor lines and sensor lines passing through it are disconnected
-		-- [X] also if some of the cells become isolated from energy sources they die
+		-- [ ] also if some of the cells become isolated from energy sources they die
 			-- body parts die when isolated from mouth or egg-layer
 		-- [X] after a split, each of the two parts may live on if they have energy
 			-- and if they both have mouths and egg-layers
+			-- [ ] we should split the bug into two independent entities at this point, otherwise its AABB will become huge
+		-- [ ] energy must be drained only from accessible fatCells, if the bug is separated one of the parts should not
+			draw energy from fatCells in the different part which it's isolated from
+			-- curently energy distribution does not take into account adjacency
 		-- [X] must introduce a default energy drain for each cell regardless if they do work or not, so that parts that are isolated from a mouth will eventually die
 	- [X] !!! No more need for a Torso, it'll just be an unspecialized cell (or bone)
 	- [ ] tune muscle actuation: max contraction speed + limited range of motion 
