@@ -471,7 +471,7 @@ void Bug::deserialize(BinaryStream &stream) {
 }
 
 float Bug::getNeuronValue(int neuronIndex) const {
-	if (neuronIndex < 0 || neuronIndex >= neuralNet_->neurons.size())
+	if (neuronIndex < 0 || (unsigned)neuronIndex >= neuralNet_->neurons.size())
 		return 0;
 	return neuralNet_->neurons[neuronIndex]->getValue();
 }
