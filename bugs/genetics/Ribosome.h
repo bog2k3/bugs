@@ -126,17 +126,23 @@ private:
 	void decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx);
-	void decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
+	void decodeNeuralGene(Gene const& g, float vmsOffset, bool mirrorCoordinates,
+			std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
-	void decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
+	void decodeSynapse(GeneSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+			std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
-	void decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
-				std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
-	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
-	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
-	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
+	void decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
+			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
+	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, bool mirrorCoordinates,
+			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
+	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, bool mirrorCoordinates,
+			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
+	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, bool mirrorCoordinates,
+			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 //	void addMotor(IMotor* motor, BodyPart* part);
 	void createNeurons(BodyCell& cell, DecodeContext &ctx);
 	void updateSynapseInfo(OutputSocket *from, NeuronInfo &to, Joint* synJoint,

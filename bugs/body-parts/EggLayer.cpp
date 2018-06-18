@@ -40,8 +40,8 @@ EggLayer::EggLayer(BodyPartContext const& context, BodyCell& cell)
 {
 	inputs_[0] = new InputSocket(nullptr, 1);	// [0] - suppress growth
 	inputs_[1] = new InputSocket(nullptr, 1); 	// [1] - suppress release
-	VMSCoords_[0] = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(0, BodyConst::MaxVMSCoordinateValue);
-	VMSCoords_[1] = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD2].clamp(0, BodyConst::MaxVMSCoordinateValue);
+	VMSCoords_[0] = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1].clamp(-BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	VMSCoords_[1] = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD2].clamp(-BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
 	cell.mapAttributes_[GENE_ATTRIB_GENERIC1].changeAbs(BodyConst::initialEggEjectSpeed);
 	ejectSpeed_ = cell.mapAttributes_[GENE_ATTRIB_GENERIC1].clamp(0, BodyConst::MaxEggEjectSpeed);
 	initialSize_ = size_;

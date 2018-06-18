@@ -43,6 +43,7 @@ public:
 	float angle() const { return angle_; }
 	float size() const { return size_; }
 	bool isMirrored() const { return mirror_; }
+	bool isRightSide() const { return rightSide_; }
 
 	unsigned neighbourCount() const { return neighbours_.size(); }
 	link neighbour(unsigned index) const { return neighbours_[index]; }

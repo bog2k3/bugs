@@ -41,7 +41,7 @@ Nose::Nose(BodyPartContext const& context, BodyCell& cell)
 	physBody_.userPointer_ = this;
 
 	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
-		outputVMSCoord_[i] = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1 + i].clamp(0, BodyConst::MaxVMSCoordinateValue);
+		outputVMSCoord_[i] = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1 + i].clamp(-BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
 
 	context_.updateList.add(this);
 

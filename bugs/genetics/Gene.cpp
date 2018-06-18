@@ -141,8 +141,8 @@ Gene Gene::createRandomOffsetGene(int spaceLeftAfter) {
 
 Gene Gene::createRandomSynapseGene() {
 	GeneSynapse g;
-	g.srcLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
-	g.destLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	g.srcLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
+	g.destLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
 	g.priority.set(randf()*10);
 	g.weight.set(randf()*0.2f);
 	return g;
@@ -150,27 +150,27 @@ Gene Gene::createRandomSynapseGene() {
 
 Gene Gene::createRandomNeuralBiasGene() {
 	GeneNeuralBias g;
-	g.neuronLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	g.neuronLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
 	g.value.set(randf());
 	return g;
 }
 
 Gene Gene::createRandomNeuralParamGene() {
 	GeneNeuralParam g;
-	g.neuronLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	g.neuronLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
 	g.value.set(randf());
 	return g;
 }
 
 Gene Gene::createRandomTimeSynapse() {
 	GeneTimeSynapse g;
-	g.targetLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	g.targetLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
 	return g;
 }
 
 Gene Gene::createRandomTransferFuncGene() {
 	GeneTransferFunction g;
-	g.neuronLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	g.neuronLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
 	g.functionID.set(randi((int)transferFuncNames::FN_MAXCOUNT-1));
 	return g;
 }
@@ -224,7 +224,7 @@ Gene Gene::createRandomMuscleAttributeGene() {
 
 Gene Gene::createRandomNeuronGene() {
 	GeneNeuron g;
-	g.neuronLocation.set(randf() * BodyConst::MaxVMSCoordinateValue);
+	g.neuronLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
 	return g;
 }
 

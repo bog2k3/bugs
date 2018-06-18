@@ -419,14 +419,16 @@ void Ribosome::createNeurons(BodyCell& cell, DecodeContext &ctx) {
 	Neuron* dn = new Neuron();
 	bug_->neuralNet_->neurons.push_back(dn);
 	bug_->bodyPartNeurons_[part].push_back(dn);
-	ctx.vmsNeurons_.push_back({NeuronInfo(dn), vmsOffset + 0.5 * BodyConst::MaxVMSCoordinateValue});
+	ctx.vmsNeurons_.push_back({NeuronInfo(dn), vmsOffset});
 	// create the neurons from genes:
 	for (auto g : ctx.neuralGenes) {
 		if (g->type == gene_type::NEURON) {
 			// instantiate new neuron in the current cell
 			Neuron* n = new Neuron();
 			bug_->neuralNet_->neurons.push_back(n);
-			float geneVMSValue = clamp(g->data.gene_neuron.neuronLocation.value, 0.f, BodyConst::MaxVMSCoordinateValue);
+			float geneVMSValue = clamp(g->data.gene_neuron.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+			if (!cell.rightSide_)
+				geneVMSValue *= -1;
 			ctx.vmsNeurons_.push_back({NeuronInfo(n), vmsOffset + geneVMSValue});
 			bug_->bodyPartNeurons_[part].push_back(n);
 		}
@@ -506,7 +508,7 @@ void Ribosome::decodeDeferredGenes() {
 		for (auto g : ctx.neuralGenes) {
 			if (g->type == gene_type::NEURON)
 				continue;	// neurons have already been created
-			decodeNeuralGene(*g, cellOffs, outputSockets, ctx.vmsNeurons_, mapSynapses);
+			decodeNeuralGene(*g, cellOffs, !cell->rightSide_, outputSockets, ctx.vmsNeurons_, mapSynapses);
 		}
 		// create the synapses:
 		for (auto &p : mapSynapses) {
@@ -525,12 +527,14 @@ void Ribosome::buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<std::
 	// add cell's neurons' output sockets
 	for (auto &vn : cellContext_[cell].vmsNeurons_) {
 		float vmsCoord = vn.second;
+		// neurons' vms locations is already affected by cell's vmsOffset
 		OutputSocket* sock = &vn.first.neuron->output;
 		out.push_back({{sock, nullptr}, vmsCoord});
 	}
 	// add cell's sensors' output sockets
 	for (auto s : cellContext_[cell].sensors_) {
 		for (uint i=0; i<s->getOutputCount(); i++) {
+			// sensors' vms coordinates aleardy contain the cell's vmsOffset
 			out.push_back({{s->getOutputSocket(i), nullptr}, s->getOutputVMSCoord(i)});
 		}
 	}
@@ -555,24 +559,25 @@ void Ribosome::sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &nerves) {
 }
 
 
-void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
+void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset, bool mirrorCoordinates,
+		std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses) {
 	switch (g.type) {
 		case gene_type::SYNAPSE:
-			decodeSynapse(g.data.gene_synapse, vmsOffset, outSockets, vmsNeurons, mapSynapses);
+			decodeSynapse(g.data.gene_synapse, vmsOffset, mirrorCoordinates, outSockets, vmsNeurons, mapSynapses);
 			break;
 		case gene_type::TIME_SYNAPSE:
-			decodeTimeSynapse(g.data.gene_time_synapse, vmsOffset, vmsNeurons, mapSynapses);
+			decodeTimeSynapse(g.data.gene_time_synapse, vmsOffset, mirrorCoordinates, vmsNeurons, mapSynapses);
 			break;
 		case gene_type::TRANSFER_FUNC:
-			decodeTransferFn(g.data.gene_transfer_function, vmsOffset, vmsNeurons);
+			decodeTransferFn(g.data.gene_transfer_function, vmsOffset, mirrorCoordinates, vmsNeurons);
 			break;
 		case gene_type::NEURAL_BIAS:
-			decodeNeuralBias(g.data.gene_neural_constant, vmsOffset, vmsNeurons);
+			decodeNeuralBias(g.data.gene_neural_constant, vmsOffset, mirrorCoordinates, vmsNeurons);
 			break;
 		case gene_type::NEURAL_PARAM:
-			decodeNeuralParam(g.data.gene_neural_param, vmsOffset, vmsNeurons);
+			decodeNeuralParam(g.data.gene_neural_param, vmsOffset, mirrorCoordinates, vmsNeurons);
 			break;
 		default:
 			assert(!!!"Invalid neural gene type!");
@@ -624,8 +629,11 @@ void Ribosome::decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, D
 }
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
+	float multiplier = 1.f;
+	if (g.attribute >= GENE_ATTRIB_VMS_COORD1 && g.attribute <= GENE_ATTRIB_VMS_COORD5 && !cell.rightSide_)
+		multiplier = -1.f;
 	if (g.attribute > GENE_ATTRIB_INVALID && g.attribute < GENE_ATTRIB_END)
-		cell.mapAttributes_[g.attribute].changeAbs(g.value);
+		cell.mapAttributes_[g.attribute].changeAbs(g.value * multiplier);
 	if (g.attribute == GENE_ATTRIB_LOCAL_ROTATION)
 		cell.updateRotation();
 }
@@ -646,15 +654,19 @@ void Ribosome::decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, 
 
 void Ribosome::decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx) {
 	if (ctx.vmsOffsetGenes.insert(&g).second)
-		ctx.vmsOffset.changeAbs(g.value);
+		ctx.vmsOffset.changeAbs(cell.rightSide_ ? g.value : -g.value);	// vmsOffset is negative on left cells, positive on right cells
 }
 
-void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
+void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+		std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses)
 {
-	auto iFrom = getVMSNearestObjectIndex(outSockets, g.srcLocation + vmsOffset);
-	auto iTo = getVMSNearestObjectIndex(vmsNeurons, g.destLocation + vmsOffset);
+	float mul = mirrorCoordinates ? -1 : +1;
+	float vmsFrom = vmsOffset + mul * clamp(g.srcLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	float vmsTo = vmsOffset + mul * clamp(g.destLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iFrom = getVMSNearestObjectIndex(outSockets, vmsFrom);
+	auto iTo = getVMSNearestObjectIndex(vmsNeurons, vmsTo);
 
 	if (iFrom == -1 || iTo == -1) {
 		ERROR("Synapse to/from non-existent sensor/neuron!!");
@@ -666,10 +678,13 @@ void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, std::vector<
 	updateSynapseInfo(from, to, j, mapSynapses, g.priority, g.weight);
 }
 
-void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
+void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses)
 {
-	auto iTo = getVMSNearestObjectIndex(vmsNeurons, g.targetLocation + vmsOffset);
+	float mul = mirrorCoordinates ? -1 : +1;
+	float vmsTo = vmsOffset + mul * clamp(g.targetLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iTo = getVMSNearestObjectIndex(vmsNeurons, vmsTo);
 
 	if (iTo == -1) {
 		ERROR("Time Synapse to non-existent neuron!!");
@@ -693,22 +708,34 @@ void Ribosome::updateSynapseInfo(OutputSocket *from, NeuronInfo &to, Joint* synJ
 	sInfo.ownerJoint = synJoint;
 }
 
-void Ribosome::decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons) {
-	auto iN = getVMSNearestObjectIndex(vmsNeurons, g.neuronLocation + vmsOffset);
+void Ribosome::decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, bool mirrorCoordinates,
+		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons)
+{
+	float mul = mirrorCoordinates ? -1 : +1;
+	float vmsTarget = vmsOffset + mul * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget);
 	if (iN >= 0)
 		vmsNeurons[iN].first.transfer.changeAbs(g.functionID);
 }
 
-void Ribosome::decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons) {
+void Ribosome::decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, bool mirrorCoordinates,
+		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons)
+{
 	assert(!std::isnan(g.value.value));
-	auto iN = getVMSNearestObjectIndex(vmsNeurons, g.neuronLocation + vmsOffset);
+	float mul = mirrorCoordinates ? -1 : +1;
+	float vmsTarget = vmsOffset + mul * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget);
 	if (iN >= 0)
 		vmsNeurons[iN].first.bias.changeAbs(g.value);
 }
 
-void Ribosome::decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, std::vector<VMSEntry<NeuronInfo>> &vmsNeurons) {
+void Ribosome::decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, bool mirrorCoordinates,
+		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons)
+{
 	assert(!std::isnan(g.value.value));
-	auto iN = getVMSNearestObjectIndex(vmsNeurons, g.neuronLocation + vmsOffset);
+	float mul = mirrorCoordinates ? -1 : +1;
+	float vmsTarget = vmsOffset + mul * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget);
 	if (iN >= 0)
 		vmsNeurons[iN].first.param.changeAbs(g.value);
 }
