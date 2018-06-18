@@ -19,6 +19,10 @@ file(GLOB_RECURSE sources 	bugs/*.cpp)
 
 add_executable(bugs ${sources})
 
+# add explicit dependency on boglfw library to force the target to be re-linked when the library is changed.
+# for some reason CMake doesn't do this automatically even though we do depend on the library.
+set_property(TARGET bugs PROPERTY LINK_DEPENDS "${BOGLFW_DIST_DIR}/lib/libboglfw.a")
+
 #add libraries
 target_link_libraries(bugs PUBLIC boglfw GLEW glfw GL rt png Box2D dl pthread)
 
