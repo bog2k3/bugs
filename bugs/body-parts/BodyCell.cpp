@@ -62,6 +62,7 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 	bool noBond = mapDivisionParams_[GENE_DIVISION_SEPARATE] > 0.f;
 	auto p = Cell::divide(angle, ratio, bondBias, reorient, mirror, noBond);
 	auto left = static_cast<BodyCell*>(p.first);
+	left->vmsDirection_ *= -1;
 	auto right = static_cast<BodyCell*>(p.second);
 	return {left, right};
 }

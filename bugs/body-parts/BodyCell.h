@@ -41,6 +41,7 @@ public:
 	float muscleMass(bool right) const { return right ? muscleMassRight_ : muscleMassLeft_; }
 	float jointMass() const { return jointMass_; }
 	float vmsOffset() const { return vmsOffset_; }
+	float vmsDirection() const { return vmsDirection_; }
 
 	void updateRotation();
 
@@ -88,6 +89,7 @@ private:
 	float jointMass_ = 0;
 
 	float vmsOffset_ = 0;
+	float vmsDirection_ = 1.f;
 };
 
 #endif /* BODY_PARTS_BODYCELL_H_ */

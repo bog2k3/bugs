@@ -126,22 +126,22 @@ private:
 	void decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx);
 	void decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx);
-	void decodeNeuralGene(Gene const& g, float vmsOffset, bool mirrorCoordinates,
+	void decodeNeuralGene(Gene const& g, float vmsOffset, float vmsDirection,
 			std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
-	void decodeSynapse(GeneSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+	void decodeSynapse(GeneSynapse const& g, float vmsOffset, float vmsDirection,
 			std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
-	void decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+	void decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, float vmsDirection,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 			std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses);
-	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, bool mirrorCoordinates,
+	void decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, float vmsDirection,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
-	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, bool mirrorCoordinates,
+	void decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, float vmsDirection,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
-	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, bool mirrorCoordinates,
+	void decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, float vmsDirection,
 			std::vector<VMSEntry<NeuronInfo>> &vmsNeurons);
 //	void addMotor(IMotor* motor, BodyPart* part);
 	void createNeurons(BodyCell& cell, DecodeContext &ctx);
@@ -158,8 +158,9 @@ private:
 	void linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_);
 
 	// searches for the nerve nearest to the given matchCoordinate in the Virtual Matching Space; returns its index or -1 if none found
-	template<typename T>
-	int getVMSNearestObjectIndex(std::vector<VMSEntry<T>> const& entries, float matchCoord);	// returns -1 if none found
+	template<typename T, class PredT>
+	int getVMSNearestObjectIndex(std::vector<VMSEntry<T>> const& entries, float matchCoord,
+			PredT validatePred, int start=0, int end=-1);	// returns -1 if none found
 
 	template<typename T>
 	void sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &entries);

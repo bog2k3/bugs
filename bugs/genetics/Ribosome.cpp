@@ -427,8 +427,7 @@ void Ribosome::createNeurons(BodyCell& cell, DecodeContext &ctx) {
 			Neuron* n = new Neuron();
 			bug_->neuralNet_->neurons.push_back(n);
 			float geneVMSValue = clamp(g->data.gene_neuron.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
-			if (!cell.rightSide_)
-				geneVMSValue *= -1;
+			geneVMSValue *= cell.vmsDirection();
 			ctx.vmsNeurons_.push_back({NeuronInfo(n), vmsOffset + geneVMSValue});
 			bug_->bodyPartNeurons_[part].push_back(n);
 		}
@@ -508,7 +507,7 @@ void Ribosome::decodeDeferredGenes() {
 		for (auto g : ctx.neuralGenes) {
 			if (g->type == gene_type::NEURON)
 				continue;	// neurons have already been created
-			decodeNeuralGene(*g, cellOffs, !cell->rightSide_, outputSockets, ctx.vmsNeurons_, mapSynapses);
+			decodeNeuralGene(*g, cellOffs, cell->vmsDirection(), outputSockets, ctx.vmsNeurons_, mapSynapses);
 		}
 		// create the synapses:
 		for (auto &p : mapSynapses) {
@@ -559,25 +558,25 @@ void Ribosome::sortEntriesByVMSCoord(std::vector<VMSEntry<T>> &nerves) {
 }
 
 
-void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset, bool mirrorCoordinates,
+void Ribosome::decodeNeuralGene(Gene const& g, float vmsOffset, float vmsDirection,
 		std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses) {
 	switch (g.type) {
 		case gene_type::SYNAPSE:
-			decodeSynapse(g.data.gene_synapse, vmsOffset, mirrorCoordinates, outSockets, vmsNeurons, mapSynapses);
+			decodeSynapse(g.data.gene_synapse, vmsOffset, vmsDirection, outSockets, vmsNeurons, mapSynapses);
 			break;
 		case gene_type::TIME_SYNAPSE:
-			decodeTimeSynapse(g.data.gene_time_synapse, vmsOffset, mirrorCoordinates, vmsNeurons, mapSynapses);
+			decodeTimeSynapse(g.data.gene_time_synapse, vmsOffset, vmsDirection, vmsNeurons, mapSynapses);
 			break;
 		case gene_type::TRANSFER_FUNC:
-			decodeTransferFn(g.data.gene_transfer_function, vmsOffset, mirrorCoordinates, vmsNeurons);
+			decodeTransferFn(g.data.gene_transfer_function, vmsOffset, vmsDirection, vmsNeurons);
 			break;
 		case gene_type::NEURAL_BIAS:
-			decodeNeuralBias(g.data.gene_neural_constant, vmsOffset, mirrorCoordinates, vmsNeurons);
+			decodeNeuralBias(g.data.gene_neural_constant, vmsOffset, vmsDirection, vmsNeurons);
 			break;
 		case gene_type::NEURAL_PARAM:
-			decodeNeuralParam(g.data.gene_neural_param, vmsOffset, mirrorCoordinates, vmsNeurons);
+			decodeNeuralParam(g.data.gene_neural_param, vmsOffset, vmsDirection, vmsNeurons);
 			break;
 		default:
 			assert(!!!"Invalid neural gene type!");
@@ -630,8 +629,8 @@ void Ribosome::decodeDivisionParam(GeneDivisionParam const& g, BodyCell &cell, D
 
 void Ribosome::decodePartAttrib(GeneAttribute const& g, BodyCell &cell, DecodeContext &ctx) {
 	float multiplier = 1.f;
-	if (g.attribute >= GENE_ATTRIB_VMS_COORD1 && g.attribute <= GENE_ATTRIB_VMS_COORD5 && !cell.rightSide_)
-		multiplier = -1.f;
+	if (g.attribute >= GENE_ATTRIB_VMS_COORD1 && g.attribute <= GENE_ATTRIB_VMS_COORD5)
+		multiplier = cell.vmsDirection();
 	if (g.attribute > GENE_ATTRIB_INVALID && g.attribute < GENE_ATTRIB_END)
 		cell.mapAttributes_[g.attribute].changeAbs(g.value * multiplier);
 	if (g.attribute == GENE_ATTRIB_LOCAL_ROTATION)
@@ -654,19 +653,20 @@ void Ribosome::decodeMuscleAttrib(GeneMuscleAttribute const& g, BodyCell &cell, 
 
 void Ribosome::decodeVMSOffset(GeneVMSOffset const& g, BodyCell &cell, DecodeContext &ctx) {
 	if (ctx.vmsOffsetGenes.insert(&g).second)
-		ctx.vmsOffset.changeAbs(cell.rightSide_ ? g.value : -g.value);	// vmsOffset is negative on left cells, positive on right cells
+		ctx.vmsOffset.changeAbs(g.value * cell.vmsDirection());
 }
 
-void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, float vmsDirection,
 		std::vector<VMSEntry<std::pair<OutputSocket*, BodyCell*>>> &outSockets,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses)
 {
-	float mul = mirrorCoordinates ? -1 : +1;
-	float vmsFrom = vmsOffset + mul * clamp(g.srcLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
-	float vmsTo = vmsOffset + mul * clamp(g.destLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
-	auto iFrom = getVMSNearestObjectIndex(outSockets, vmsFrom);
-	auto iTo = getVMSNearestObjectIndex(vmsNeurons, vmsTo);
+	float vmsFrom = vmsOffset + vmsDirection * clamp(g.srcLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	float vmsTo = vmsOffset + vmsDirection * clamp(g.destLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iTo = getVMSNearestObjectIndex(vmsNeurons, vmsTo, [](auto){return true;});
+	auto iFrom = getVMSNearestObjectIndex(outSockets, vmsFrom, [&] (auto sock) {
+		return &vmsNeurons[iTo].first.neuron->output != sock.first;	// don't create synapse between same neuron's output and input
+	});
 
 	if (iFrom == -1 || iTo == -1) {
 		ERROR("Synapse to/from non-existent sensor/neuron!!");
@@ -678,13 +678,12 @@ void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, bool mirrorC
 	updateSynapseInfo(from, to, j, mapSynapses, g.priority, g.weight);
 }
 
-void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, bool mirrorCoordinates,
+void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, float vmsDirection,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons,
 		std::map<std::pair<OutputSocket*, Neuron*>, SynapseInfo> &mapSynapses)
 {
-	float mul = mirrorCoordinates ? -1 : +1;
-	float vmsTo = vmsOffset + mul * clamp(g.targetLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
-	auto iTo = getVMSNearestObjectIndex(vmsNeurons, vmsTo);
+	float vmsTo = vmsOffset + vmsDirection * clamp(g.targetLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iTo = getVMSNearestObjectIndex(vmsNeurons, vmsTo, [](auto){return true;});
 
 	if (iTo == -1) {
 		ERROR("Time Synapse to non-existent neuron!!");
@@ -708,86 +707,92 @@ void Ribosome::updateSynapseInfo(OutputSocket *from, NeuronInfo &to, Joint* synJ
 	sInfo.ownerJoint = synJoint;
 }
 
-void Ribosome::decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, bool mirrorCoordinates,
+void Ribosome::decodeTransferFn(GeneTransferFunction const& g, float vmsOffset, float vmsDirection,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons)
 {
-	float mul = mirrorCoordinates ? -1 : +1;
-	float vmsTarget = vmsOffset + mul * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
-	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget);
+	float vmsTarget = vmsOffset + vmsDirection * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget, [](auto){return true;});
 	if (iN >= 0)
 		vmsNeurons[iN].first.transfer.changeAbs(g.functionID);
 }
 
-void Ribosome::decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, bool mirrorCoordinates,
+void Ribosome::decodeNeuralBias(GeneNeuralBias const& g, float vmsOffset, float vmsDirection,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons)
 {
 	assert(!std::isnan(g.value.value));
-	float mul = mirrorCoordinates ? -1 : +1;
-	float vmsTarget = vmsOffset + mul * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
-	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget);
+	float vmsTarget = vmsOffset + vmsDirection * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget, [](auto){return true;});
 	if (iN >= 0)
 		vmsNeurons[iN].first.bias.changeAbs(g.value);
 }
 
-void Ribosome::decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, bool mirrorCoordinates,
+void Ribosome::decodeNeuralParam(GeneNeuralParam const& g, float vmsOffset, float vmsDirection,
 		std::vector<VMSEntry<NeuronInfo>> &vmsNeurons)
 {
 	assert(!std::isnan(g.value.value));
-	float mul = mirrorCoordinates ? -1 : +1;
-	float vmsTarget = vmsOffset + mul * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
-	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget);
+	float vmsTarget = vmsOffset + vmsDirection * clamp(g.neuronLocation.value, -BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
+	auto iN = getVMSNearestObjectIndex(vmsNeurons, vmsTarget, [](auto){return true;});
 	if (iN >= 0)
 		vmsNeurons[iN].first.param.changeAbs(g.value);
 }
 
 // returns -1 if none found
-template <typename T>
-int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& nerves, float matchCoord) {
+template <typename T, class PredT>
+int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& nerves, float matchCoord,
+		PredT validatePred, int start, int end) {
 	if (nerves.size() == 0)
 		return -1;
-	// binary-search the nearest output neuron:
-	unsigned small = 0, big = nerves.size()-1;
-	while (small != big) {
-		unsigned pivot = (big-small) / 2 + small;
-		if (matchCoord > nerves[pivot].second) { // look into the big interval
-			if (pivot < nerves.size()-1) {	// there are greater
-				float crtDelta = matchCoord - nerves[pivot].second;
-				float nextDelta = matchCoord - nerves[pivot+1].second;
-				if (fabs(crtDelta) > fabs(nextDelta)) {
-					// move to the greater interval:
-					if (small != pivot)
-						small = pivot;
-					else
-						small = pivot+1;
-				} else	// this is the closest we can get
-					return pivot;
-			} else // this is the closest we can get
-				return pivot;
-		} else if (matchCoord < nerves[pivot].second) { // look into the small interval
-			if (pivot > 0) {	// there are smaller
-				float crtDelta = matchCoord - nerves[pivot].second;
-				float prevDelta = matchCoord - nerves[pivot-1].second;
-				if (fabs(crtDelta) > fabs(prevDelta)) {
-					// move to the small interval
-					if (big != pivot)
-						big = pivot;
-					else
-						big = pivot-1;
-				} else	// this is the closest we can get
-					return pivot;
-			} else	// this is the closest we can get
-				return pivot;
-		} else
-			return pivot;	// perfect match!
+	if (end == -1)
+		end = nerves.size() - 1;
+	// binary-search the nearest object that satisfies validatePred:
+	assert(start <= end);
+	if (start == end) {
+		if (validatePred(nerves[start].first))
+			return start;
+		else
+			return -1;
 	}
-	return small;
+	unsigned pivot = (end-start) / 2 + start;
+	if (matchCoord == nerves[pivot].second && validatePred(nerves[pivot].first))
+		return pivot;	// exact match!
+	// if we got here, there's no perfect match
+	int iBegin, iEnd, iDir;
+	if (matchCoord > nerves[pivot].second) { // look into the big interval
+		iBegin = pivot;
+		iEnd = end;
+		iDir = -1;
+	} else {
+		// look into the small interval
+		iBegin = start;
+		iEnd = pivot;
+		iDir = +1;
+	}
+	int intervalMatch = getVMSNearestObjectIndex(nerves, matchCoord, validatePred, iBegin, iEnd);
+	float intervalDelta = 1e20;
+	if (intervalMatch != -1)
+		intervalDelta = abs(matchCoord - nerves[intervalMatch].second);
+	// go back from the pivot one by one and get the closest match and compare it to the intervalMatch
+	int otherSearch = pivot + iDir;
+	while (otherSearch >= start && otherSearch <= end && !validatePred(nerves[otherSearch].first))
+		otherSearch += iDir;
+	if (otherSearch >= start && otherSearch <= end) {
+		// we found something in the other interval as well, let's see which is closer
+		float otherDelta = abs(matchCoord - nerves[otherSearch].second);
+		if (otherDelta < intervalDelta)
+			return otherSearch;
+		else
+			return intervalMatch;
+	} else if (intervalMatch != -1)
+		return intervalMatch;
+	else
+		return -1;
 }
 
 void Ribosome::linkMotorNerves(std::vector<VMSEntry<NeuronInfo>> const& neurons, std::vector<VMSEntry<InputSocket*>> const& orderedMotorInputs_) {
 	// motors are matched 1:1 with the nearest neuron outputs from the neural network, in the direction from motor nerve to output nerve.
 	for (unsigned i = 0; i < orderedMotorInputs_.size(); i++) {
 		float motorCoord = orderedMotorInputs_[i].second;
-		int neuronIndex = getVMSNearestObjectIndex(neurons, motorCoord);
+		int neuronIndex = getVMSNearestObjectIndex(neurons, motorCoord, [](auto){return true;});
 		if (neuronIndex >= 0) {
 			// link this motor to this neuron
 			neurons[neuronIndex].first.neuron->output.addTarget(orderedMotorInputs_[i].first);
