@@ -541,6 +541,7 @@ void BodyPart::disconnectAllNeighbors() {
 		j->breakJoint();
 }
 
+#ifdef DEBUG
 std::string BodyPart::getDebugName() const {
 	// compute own name from type & division branch:
 	std::string type;
@@ -592,3 +593,4 @@ std::string BodyPart::getDebugName() const {
 
 	return type + " [" + divisionPath_ + "]";
 }
+#endif

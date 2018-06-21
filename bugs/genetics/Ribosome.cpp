@@ -758,7 +758,7 @@ int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& n
 	// if we got here, there's no perfect match
 	int iBegin, iEnd, iDir;
 	if (matchCoord > nerves[pivot].second) { // look into the big interval
-		iBegin = pivot;
+		iBegin = pivot + 1;
 		iEnd = end;
 		iDir = -1;
 	} else {
@@ -772,7 +772,7 @@ int Ribosome::getVMSNearestObjectIndex(std::vector<std::pair<T, float>> const& n
 	if (intervalMatch != -1)
 		intervalDelta = abs(matchCoord - nerves[intervalMatch].second);
 	// go back from the pivot one by one and get the closest match and compare it to the intervalMatch
-	int otherSearch = pivot + iDir;
+	int otherSearch = pivot + (iDir > 0 ? iDir : 0);
 	while (otherSearch >= start && otherSearch <= end && !validatePred(nerves[otherSearch].first))
 		otherSearch += iDir;
 	if (otherSearch >= start && otherSearch <= end) {

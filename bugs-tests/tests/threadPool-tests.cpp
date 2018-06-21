@@ -5,7 +5,7 @@
  *      Author: bog
  */
 
-#include "../../bugs/utils/ThreadPool.h"
+#include <boglfw/utils/ThreadPool.h>
 
 #include <array>
 #include <iostream>

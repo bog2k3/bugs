@@ -5,15 +5,15 @@
  *      Author: bog
  */
 
-#include "../../bugs/math/math2D.h"
-#include "../../bugs/math/box2glm.h"
+#include <boglfw/math/math3D.h>
+#include <boglfw/math/box2glm.h>
 
 #include <easyunit/test.h>
 #include <sstream>
 
 using namespace easyunit;
 
-float flterr = 1.e-5f;	// accepted float error in comparisons
+static float flterr = 1.e-5f;	// accepted float error in comparisons
 
 TEST(math, sqr) {
 	float x = PI;

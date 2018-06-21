@@ -537,7 +537,9 @@ void Bug::consumeEnergy(float totalAmount) {
 			amountConsumed += f->consumeEnergy(amountToConsume);
 		}
 	}
+#ifdef DEBUG
 	frameEnergyUsed_.store(frameEnergyUsed_ + totalAmount);
+#endif
 }
 
 void Bug::onFoodProcessed(float mass) {

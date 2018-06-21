@@ -149,6 +149,7 @@ void Joint::update(float dt) {
 #endif
 	if (jointIsFUBAR || excessForce /*|| excessMTorque*/ || excessRTorque) {
 		// this joint is toast - must break free the downstream body parts
+#ifdef DEBUG
 		LOG("JOINT BREAK: " << getDebugName() << " (");
 		std::stringstream reason;
 		if (jointIsFUBAR)
@@ -160,6 +161,7 @@ void Joint::update(float dt) {
 		else if (excessRTorque)
 			reason << "EXCESS-RTORQUE: " << reactionTorque << " [max:" << breakTorque() << "]";
 		LOGNP(reason.str() << ")\n");
+#endif
 
 		breakJoint();
 	}
