@@ -44,14 +44,6 @@ Chromosome Bug::createBasicChromosome() {
 
 	constexpr float body_min_fat_ratio = 0.1f;
 	constexpr float body_adult_lean_mass = 4; // kg
-	constexpr float nose_VMScoord = 10;
-	constexpr float rightNose_VMSoffs = 20;
-	constexpr float leg_pull_VMScoord = 100;
-	constexpr float leg_push_VMScoord = 120;
-	constexpr float gripper_VMScoord = 150;
-	constexpr float rightLeg_VMSoffs = 70;
-	constexpr float egglayer_sig1_VMScoord = 500;
-	constexpr float egglayer_sig2_VMScoord = 530;
 	constexpr float musclePeriod = 3.f; // seconds
 	constexpr float gripper_signal_threshold = -0.55f;
 	constexpr float gripper_signal_phase_offset = 1.0f * PI;
@@ -91,10 +83,6 @@ Chromosome Bug::createBasicChromosome() {
 	gba.attribute = GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO;
 	gba.value.set(BodyConst::initialReproductiveMassRatio);
 	PUSH(gba);
-
-	// neural genes start here --------------------------------------
-	// todo
-	// neural genes end here --------------------------------------
 
 	GeneDivisionParam gdp;
 	gdp.param = GENE_DIVISION_MIRROR;
@@ -537,11 +525,6 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(leg_pull_VMScoord);
 	PUSH(ga);
 
-	GeneVMSOffset gvo;
-	gvo.restriction = BranchRestriction("0v 0v 0v 0>");
-	gvo.value.set(rightLeg_VMSoffs);
-	PUSH(gvo);
-
 	PUSH(GeneStop());
 
 	OFFSET_MARKER(C4ab)	//------------------------------- MARKER ----------------
@@ -585,15 +568,6 @@ Chromosome Bug::createBasicChromosome() {
 	ga.value.set(PI/4);
 	ga.restriction = BranchRestriction("*v *v *v *v 0>");
 	PUSH(ga);
-
-	gvo.restriction = BranchRestriction("*v *v *v *>");
-	gvo.value.set(rightNose_VMSoffs);
-	PUSH(gvo);
-
-//	GeneNeuron gn;							// <0> and <1>
-//	gn.neuronLocation.set(nose_VMScoord);
-//	gn.
-//	PUSH(gn);
 
 	gp.protein = GENE_PROT_X;
 	gp.weight.set(-sfu);
