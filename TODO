@@ -82,7 +82,8 @@
 		-- [X] if division axis is similar to bond direction (angle error < thresh), bond is split and inherited by each side
 		-- [X] otherwise each side inherits bonds on its side of the division axis
 		-- [X] new BondBias gene that biases the bond inheritance axis towards one side
-		-- [ ] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
+		-- [OBSOLETE] result is a graph of cells - use it to find shortest path to route sensor/motor nerves
+			-- no more routing, motors are linked to neurons from the same cell by synapses; synapses span joints and can break
 	- [X] division automatically creates joint (weld or pivot) between child cells as well as muscles (only for pivot joint)
 		-- [X] (pivot only) joint's default (rest) orientation is perpendicular to the division axis, going from left child cell to right child cell; it's angle direction is the same as the parent cell (so joint can be mirrored as well)
 		-- [X] left and right muscles are defined with respect to the joint's zero-axis (left muscle on the positive side); mirrored joints have left/right switched 
@@ -111,7 +112,8 @@
 		-- [X] unspecialized cells will instantiate a FatCell body part which acts as an energy storage
 	- [X] joints and muscles are not created explicitly any more - remove them from hyperspace
 	- [X] must rethink muscle linkange and body part hierarchies
-	- [ ] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
+	- [OBSOLETE] must find different way to route sensor and motor lines through neighbouring cells - no more parent hierarchy
+		-- no more routing, no more motor/sensor lines, signals are caried by synapses from one cell to the next
 	- [X] BodyParts hold a list of all their neighbours - Joints are treated as part of the graph as well, so the BodyParts will actually hold links to joints, not directly to other BodyParts (with the exception of Muscles which are attached directly to the left-side body part)
 		-- in this way the mass of the whole body can be easily computed (Joints have mass too) and the whole thing becomes more uniform
 	- [X] (not a problem any more) perpendicular division of two adjacent cell problem - square of cells
