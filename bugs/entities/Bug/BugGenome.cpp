@@ -47,6 +47,14 @@ Chromosome Bug::createBasicChromosome() {
 	constexpr float musclePeriod = 3.f; // seconds
 	constexpr float gripper_signal_threshold = -0.55f;
 	constexpr float gripper_signal_phase_offset = 1.0f * PI;
+	constexpr float bodyLegMuscleIn_VMScoord = 40.f;
+	constexpr float bodyLegMuscleOut_VMScoord = 30.f;
+	constexpr float leg1MuscleIn_VMScoord = 50.f;
+	constexpr float leg1MuscleOut_VMScoord = 60.f;
+	constexpr float leg2MuscleIn_VMScoord = 70.f;
+	constexpr float leg2MuscleOut_VMScoord = 90.f;
+	constexpr float head_VMSoffset = 100.f;			// vms offset for cells #4a and #4b
+	constexpr float body_VMSoffset = 200.f;			// vms offset for cells #3b and #3c
 	constexpr float mouth_size_ratio = 0.25f;		// mouth to head ratio (M3/#3a)
 	constexpr float nose_size_ratio = 0.1f;			// nose to head ratio (N5/#4a)
 	constexpr float egglayer_size_ratio = 0.01f;	// egglayer to body ratio (E1/#1)
@@ -224,12 +232,12 @@ Chromosome Bug::createBasicChromosome() {
 	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_VMS_COORD1;		// egg-layer suppress growth signal
-	ga.value.set(egglayer_sig1_VMScoord);
+	ga.value.set(0.f);							// this will link to the default #0 neuron in egg-layer cell which is unused
 	ga.restriction.clear();
 	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_VMS_COORD2;		// egg-layer suppress release signal
-	ga.value.set(egglayer_sig2_VMScoord);
+	ga.value.set(0.f);							// this will link to the default #0 neuron in egg-layer cell which is unused
 	ga.restriction.clear();
 	PUSH(ga);
 
@@ -294,6 +302,11 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.value.set(2*fat_torso_ratio - 1.f);
 	gdp.restriction = BranchRestriction("*v *< 0v");
 	PUSH(gdp);
+
+	GeneVMSOffset gvo;
+	gvo.value.set(body_VMSoffset);
+	gvo.restriction.clear();
+	PUSH(gvo);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	ga.value.set(0);
@@ -515,14 +528,34 @@ Chromosome Bug::createBasicChromosome() {
 	gma.restriction.clear();
 	PUSH(gma);
 
-	ga.attribute = GENE_ATTRIB_VMS_COORD1;		// left (inner muscle)
-	ga.restriction.clear();
-	ga.value.set(leg_push_VMScoord);
+	ga.attribute = GENE_ATTRIB_VMS_COORD1;		// left (inner muscle) from body to first leg segment
+	ga.restriction = BranchRestriction("*v *v *v *v *<");
+	ga.value.set(bodyLegMuscleIn_VMScoord);
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_VMS_COORD1;		// left (inner muscle) from first leg segment to second
+	ga.restriction = BranchRestriction("*v *v *v *v *> *<");
+	ga.value.set(leg1MuscleIn_VMScoord);
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_VMS_COORD1;		// left (inner muscle) from 2nd leg segment to gripper
+	ga.restriction = BranchRestriction("*v *v *v *v *> *> *<");
+	ga.value.set(leg2MuscleIn_VMScoord);
 	PUSH(ga);
 
 	ga.attribute = GENE_ATTRIB_VMS_COORD2;	// right (outer muscle)
-	ga.restriction.clear();
-	ga.value.set(leg_pull_VMScoord);
+	ga.restriction = BranchRestriction("*v *v *v *v *<");
+	ga.value.set(bodyLegMuscleOut_VMScoord);
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_VMS_COORD2;		// right (outer muscle) from first leg segment to second
+	ga.restriction = BranchRestriction("*v *v *v *v *> *<");
+	ga.value.set(leg1MuscleOut_VMScoord);
+	PUSH(ga);
+
+	ga.attribute = GENE_ATTRIB_VMS_COORD2;		// right (outer muscle) from 2nd leg segment to gripper
+	ga.restriction = BranchRestriction("*v *v *v *v *> *> *<");
+	ga.value.set(leg2MuscleOut_VMScoord);
 	PUSH(ga);
 
 	PUSH(GeneStop());
@@ -558,6 +591,10 @@ Chromosome Bug::createBasicChromosome() {
 	gdp.value.set(constants::FBOOL_false);
 	gdp.restriction.clear();
 	PUSH(gdp);
+
+	gvo.value.set(head_VMSoffset);
+	gvo.restriction.clear();
+	PUSH(gvo);
 
 	ga.attribute = GENE_ATTRIB_LOCAL_ROTATION;
 	ga.value.set(0);
