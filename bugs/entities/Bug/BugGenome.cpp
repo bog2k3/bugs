@@ -641,6 +641,129 @@ Chromosome Bug::createBasicChromosome() {
 	ga.restriction.clear();
 	PUSH(ga);
 
+	BranchRestriction branchLRHeadBone = BranchRestriction("*v *v *v *v *<");
+
+	// neuron #0 transfer function
+	GeneTransferFunction gtf;
+	gtf.restriction = branchLRHeadBone;
+	gtf.neuronLocation.set(0);								// #0, #0' [+/-100]
+	gtf.functionID.set((int)transferFuncNames::FN_ONE);
+	PUSH(gtf);
+
+	// neuron #0 bias
+	GeneNeuralBias gnb;
+	gnb.restriction.clear();
+	gnb.neuronLocation.set(0);								// #0, #0' [+/-100]
+	gnb.value.set(0);
+	PUSH(gnb);
+
+	GeneNeuron gn;
+	gn.restriction = branchLRHeadBone;
+	gn.neuronLocation.set(-10);								// #1, #1' [+/-110]
+	PUSH(gn);
+
+	// neuron #1/#1' transfer:
+	gtf.restriction.clear();
+	gtf.neuronLocation.set(-10);
+	gtf.functionID.set((int)transferFuncNames::FN_SIGMOID);
+	PUSH(gtf);
+
+	// neuron #1/#1' sigmoid steepness
+	GeneNeuralParam gnp;
+	gnp.restriction.clear();
+	gnp.neuronLocation.set(-10);
+	gnp.value.set(10);
+	PUSH(gnp);
+
+	// neuron #1/#1' bias
+	gnb.restriction.clear();
+	gnb.neuronLocation.set(-10);
+	gnb.value.set(0);
+	PUSH(gnb);
+
+	gn.restriction = branchLRHeadBone;
+	gn.neuronLocation.set(-20);								// #2, #2' [+/-120]
+	PUSH(gn);
+
+	// neuron #2 transfer:
+	gtf.restriction.clear();
+	gtf.neuronLocation.set(-20);
+	gtf.functionID.set((int)transferFuncNames::FN_GATE);
+	PUSH(gtf);
+
+	// neuron #2 gate threshold
+	gnb.restriction.clear();
+	gnb.neuronLocation.set(-20);
+	gnb.value.set(0);
+	PUSH(gnb);
+
+	// neuron #2 gate switch steepness
+	gnp.restriction.clear();
+	gnp.neuronLocation.set(-20);
+	gnp.value.set(10);
+	PUSH(gnp);
+
+	gn.restriction = branchLRHeadBone;
+	gn.neuronLocation.set(-30);								// #3, #3' [+/-130]
+	PUSH(gn);
+
+	// neuron #3 transfer:
+	gtf.restriction.clear();
+	gtf.neuronLocation.set(-30);
+	gtf.functionID.set((int)transferFuncNames::FN_GATE);
+	PUSH(gtf);
+
+	// neuron #3 gate threshold
+	gnb.restriction.clear();
+	gnb.neuronLocation.set(-30);
+	gnb.value.set(0);
+	PUSH(gnb);
+
+	// neuron #3 gate switch steepness
+	gnp.restriction.clear();
+	gnp.neuronLocation.set(-30);
+	gnp.value.set(10);
+	PUSH(gnp);
+
+	gn.restriction = branchLRHeadBone;
+	gn.neuronLocation.set(-40);								// #4, #4' [+/-140]
+	PUSH(gn);
+
+	// neuron #4 transfer:
+	gtf.restriction.clear();
+	gtf.neuronLocation.set(-40);
+	gtf.functionID.set((int)transferFuncNames::FN_POW);
+	PUSH(gtf);
+
+	// neuron #4 param:
+	gnp.restriction.clear();
+	gnp.neuronLocation.set(-40);
+	gnp.value.set(-1);
+	PUSH(gnp);
+
+	// neuron #4 bias (to avoid division by 0)
+	gnb.restriction.clear();
+	gnb.neuronLocation.set(-40);
+	gnb.value.set(1.e-10f);
+	PUSH(gnb);
+
+	gn.restriction = branchLRHeadBone;
+	gn.neuronLocation.set(-50);								// #5, #5' [+/-150]
+	PUSH(gn);
+
+	// neuron #5 transfer:
+	gtf.restriction.clear();
+	gtf.neuronLocation.set(-50);
+	gtf.functionID.set((int)transferFuncNames::FN_MODULATE);
+	PUSH(gtf);
+
+	// neuron #5 bias
+	gnb.restriction.clear();
+	gnb.neuronLocation.set(-50);
+	gnb.value.set(0);
+	PUSH(gnb);
+
+
 //  ------- finished genome; house-keeping from here on -----------------
 
 	// generate and insert offsets:
