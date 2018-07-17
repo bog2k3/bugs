@@ -65,6 +65,7 @@ public:
 	float getMass() const;
 	unsigned getGeneration() const { return generation_; }
 	bool isAlive() const { return isAlive_; }
+	bool isInEmbryonicDevelopment() const { return isDeveloping_; }
 	float getNeuronValue(int neuronIndex) const;
 //	Torso* getBody() { return body_; }
 	float getTotalFatMass() const;
