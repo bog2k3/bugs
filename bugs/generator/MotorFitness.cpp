@@ -7,3 +7,6 @@
 
 #include "MotorFitness.h"
 
+float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
+	return 0;
+}

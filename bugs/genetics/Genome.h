@@ -52,6 +52,9 @@ public:
 
 	static void alterChromosome(Chromosome &c);
 
+	// return number of mutated atoms
+	static int alterGene(Gene &g, float mutationChanceFactor);
+
 	/**
 	 * fixes genes synchronization for a new genome created out of two chromosomes that came from gamettes.
 	 */
@@ -59,8 +62,6 @@ public:
 
 private:
 	static void getAlterationChances(Gene const& g, float& mutationCh, float& swapCh, float& deleteCh);
-	// return number of mutated atoms
-	static int alterGene(Gene &g, float mutationChanceFactor);
 	static void alterMetaGene(MetaGene &m);
 	static void pullBackInsertions(Chromosome &c, int amount);
 	static int insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g);

@@ -13,7 +13,7 @@
 // generates random genomes
 class GenomeGenerator {
 public:
-	static Genome createRandom();
+	static Genome createRandom(int length);
 };
 
 #endif /* BUGS_GENERATOR_GENOMEGENERATOR_H_ */

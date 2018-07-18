@@ -7,3 +7,6 @@
 
 #include "GenomeFitness.h"
 
+float GenomeFitness::compute(Bug const& b) {
+	return 0;
+}

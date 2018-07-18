@@ -6,6 +6,8 @@
 
 #include "OperationBreakJoint.h"
 
+#include "generator/Researcher.h"
+
 #ifdef DEBUG
 #include "entities/Bug/Bug.h"
 #include "body-parts/sensors/Nose.h"
@@ -162,6 +164,35 @@ void registerEventHandlers(World &world) {
 	});
 }
 
+void researchRun(std::string researchPath) {
+	constexpr int targetPopulation = 20;
+	constexpr float recombinationRatio = 0.25f;
+	constexpr int motorSampleFrames = 500;
+	constexpr int randomGenomeLength = 200;
+	constexpr float timeStep = 0.02f;
+	Researcher r(researchPath);
+	r.initialize(targetPopulation, recombinationRatio, motorSampleFrames, randomGenomeLength);
+
+	LOGLN("Running in research mode....");
+	LOGLN("[press ENTER to stop]");
+
+	bool stop = false;
+	do {
+		r.iterate(timeStep);
+		while (std::cin.peek() != EOF)
+			if (std::cin.get() == '\n')
+				stop = true;
+	} while(!stop);
+
+	LOGLN("Stop requested. Saving genomes...");
+	r.saveGenomes();
+
+	LOGLN("Session stats:");
+	r.printStatistics();
+
+	LOGLN("Done, exiting.");
+}
+
 // these are defined in perfPrint.cpp
 void printFrameCaptureData(std::vector<perf::FrameCapture::frameData> data);
 void printTopHits(std::vector<perf::sectionData> data);
@@ -190,6 +221,8 @@ int main(int argc, char* argv[]) {
 		bool defaultSession = false;
 		bool saveSession = false;
 		bool enableAutosave = false;
+		bool runInResearchMode = false;
+		std::string researchPath;
 		for (int i=1; i<argc; i++) {
 			if (!strcmp(argv[i], "--load")) {
 				if (defaultSession) {
@@ -215,12 +248,19 @@ int main(int argc, char* argv[]) {
 					ERROR("Expected filename after --save");
 					return -1;
 				}
-				// must load session
+				// must save session
 				saveSession = true;
 				saveFilename = argv[i+1];
 				i++;
 			} else if (!strcmp(argv[i], "--enable-autosave")) {
 				enableAutosave = true;
+			} else if (!strcmp(argv[i], "--research")){
+				runInResearchMode = true;
+				if (i == argc-1) {
+					ERROR("Expected path after --research");
+					return -1;
+				}
+				researchPath = argv[++i];
 			} else {
 				ERROR("Unknown argument " << argv[i]);
 				return -1;
@@ -251,7 +291,50 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		// initialize stuff:
+		// initialize world and physics:
+		b2ThreadPool b2tp(6);
+		b2World physWld(b2Vec2_zero, &b2tp);
+		pPhysWld = &physWld;
+		if (!runInResearchMode) {
+			PhysicsDebugDraw physicsDraw;
+			pPhysicsDraw = &physicsDraw;
+			physicsDraw.SetFlags(
+						  b2Draw::e_shapeBit
+						//| b2Draw::e_centerOfMassBit
+						//| b2Draw::e_jointBit
+						//| b2Draw::e_aabbBit
+					);
+			physWld.SetDebugDraw(&physicsDraw);
+		}
+
+		PhysContactListener contactListener;
+		physWld.SetContactListener(&contactListener);
+
+		PhysDestroyListener destroyListener;
+		physWld.SetDestructionListener(&destroyListener);
+
+		WorldConfig cfg;
+		cfg.disableParallelProcessing = std::stoi(configOpts[configNames::disableMultithreading]) != 0;
+		cfg.disableUserEvents = runInResearchMode;
+		World::setConfig(cfg);
+		World &world = World::getInstance();
+		registerEventHandlers(world);
+
+		world.setPhysics(&physWld);
+		world.setDestroyListener(&destroyListener);
+
+		randSeed(1517598343);
+		//randSeed(time(NULL));
+		LOGLN("RAND seed: "<<rand_seed);
+
+		if (runInResearchMode) {
+			researchRun(researchPath);
+			world.reset();
+			Infrastructure::shutDown();
+			return 0;
+		}
+
+		// initialize window and rendering:
 		int winW = std::stoi(configOpts[configNames::screenWidth]);
 		int winH = std::stoi(configOpts[configNames::screenHeight]);
 		bool disableMipMaps = std::stoi(configOpts[configNames::disableMipMaps]) != 0;
@@ -268,34 +351,7 @@ int main(int argc, char* argv[]) {
 		auto vp1 = vp.get();
 		renderer.addViewport("main", std::move(vp));
 
-		b2ThreadPool b2tp(6);
-		b2World physWld(b2Vec2_zero, &b2tp);
-		pPhysWld = &physWld;
-		PhysicsDebugDraw physicsDraw;
-		pPhysicsDraw = &physicsDraw;
-		physicsDraw.SetFlags(
-					  b2Draw::e_shapeBit
-					//| b2Draw::e_centerOfMassBit
-					//| b2Draw::e_jointBit
-					//| b2Draw::e_aabbBit
-				);
-		physWld.SetDebugDraw(&physicsDraw);
-
-		PhysContactListener contactListener;
-		physWld.SetContactListener(&contactListener);
-
-		PhysDestroyListener destroyListener;
-		physWld.SetDestructionListener(&destroyListener);
-
-		WorldConfig cfg;
-		cfg.disableParallelProcessing = std::stoi(configOpts[configNames::disableMultithreading]) != 0;
-		World::setConfig(cfg);
-		World &world = World::getInstance();
-		registerEventHandlers(world);
-
-		world.setPhysics(&physWld);
-		world.setDestroyListener(&destroyListener);
-
+		// initialize GUI
 		GuiSystem Gui;
 		/*std::shared_ptr<Window> win1 = std::make_shared<Window>(glm::vec2(400, 10), glm::vec2(380, 580));
 		std::shared_ptr<Window> win2 = std::make_shared<Window>(glm::vec2(300, 130), glm::vec2(350, 200));
@@ -309,10 +365,6 @@ int main(int argc, char* argv[]) {
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationSpring(InputEvent::MB_LEFT)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationGui(Gui)));
 		opStack.pushOperation(std::unique_ptr<IOperation>(new OperationBreakJoint(InputEvent::MB_MIDDLE)));
-
-		randSeed(1517598343);
-		//randSeed(time(NULL));
-		LOGLN("RAND seed: "<<rand_seed);
 
 		SessionManager sessionMgr;
 

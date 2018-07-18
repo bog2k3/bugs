@@ -23,10 +23,13 @@ public:
 
 	// load genomes, set target population and recombinationRatio - the fraction of targetPopulation that will be filled
 	// with new genomes created by recombining previous generation genomes (the rest will be prev gen genomes wich are simply mutated)
-	void initialize(int targetPopulation, float recombinationRatio, int motorSampleFrames);
+	void initialize(int targetPopulation, float recombinationRatio, int motorSampleFrames, int randomGenomeLength);
 
 	// perform a research iteration
-	void iterate();
+	void iterate(float timeStep);
+
+	// print stats from the current session
+	void printStatistics();
 
 private:
 	std::string genomesPath_;
@@ -34,6 +37,7 @@ private:
 	int targetPopulation_ = 20;
 	float recombinationRatio_ = 0.25f;
 	int motorSampleFrames_ = 500;
+	int randomGenomeLength_ = 200;
 
 	void loadGenomes();
 	void fillUpPopulation();
