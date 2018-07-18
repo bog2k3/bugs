@@ -24,7 +24,7 @@ void Researcher::saveGenomes() {
 }
 
 // load genomes, set target population and recombinationRatio - the fraction of targetPopulation that will be filled
-// with new genomes created by recombining previous generation genomes (the rest will be prev gen genomes wich are simply mutated)
+// with new genomes created by recombining previous generation genomes (the rest will be prev gen genomes which are simply mutated)
 void Researcher::initialize(int targetPopulation, float recombinationRatio, int motorSampleFrames, int randomGenomeLength) {
 	targetPopulation_ = targetPopulation;
 	recombinationRatio_ = recombinationRatio;

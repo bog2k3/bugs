@@ -10,7 +10,7 @@
 
 class Bug;
 
-// computes a fitness score for a motor command signal based on its characteristics and resemblance to a "real" signal
+// computes a fitness score for a genome, analyzing the motor command signals based on their characteristics and resemblance to "real" signals
 class MotorFitness {
 public:
 	static float compute(Bug const& b, int nIterations, float timeStep);
