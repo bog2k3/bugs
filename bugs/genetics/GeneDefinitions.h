@@ -113,21 +113,18 @@ typedef uint8_t gene_body_attribute_type;
 
 constexpr gene_body_attribute_type GENE_BODY_ATTRIB_INVALID = 0;
 
-// fraction of zygote mass that will be transformed into fat during development, to act as the initial energy supply of the bug
-//constexpr gene_body_attribute_type GENE_BODY_ATTRIB_INITIAL_FAT_MASS_RATIO = 1;	// OBSOLETE - fat ratio is implicitly determined by unspecialized cells
-
 // minimum fat to body mass ratio that enables growth and reproduction. If fat mass ratio falls below
 // this threshold, growth is stalled until the balance is restored. Also, an egg will not be generated if the
 // remaining fat ratio falls below this threshold.
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO = 2;
+constexpr gene_body_attribute_type GENE_BODY_ATTRIB_MIN_FAT_MASS_RATIO = 1;
 
 // target lean body mass (excluding fat) of adult body. The body grows until it reaches this target, then growth stops.
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_ADULT_LEAN_MASS = 3;
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_GROWTH_SPEED = 4;				// [kg/s] speed at which growth happens
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_EGG_MASS = 5;					// [kg] how big eggs should be?
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO = 6;	// [*] what fraction of growth food goes into creating eggs?
-constexpr gene_body_attribute_type GENE_BODY_DEVELOPMENT_MASS_THRESH_RATIO = 7;		// [*] ratio from adult lean mass after which egg production starts
+constexpr gene_body_attribute_type GENE_BODY_ATTRIB_ADULT_LEAN_MASS = 2;
+constexpr gene_body_attribute_type GENE_BODY_ATTRIB_GROWTH_SPEED = 3;				// [kg/s] speed at which growth happens
+constexpr gene_body_attribute_type GENE_BODY_ATTRIB_EGG_MASS = 4;					// [kg] how big eggs should be?
+constexpr gene_body_attribute_type GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO = 5;	// [*] what fraction of growth food goes into creating eggs?
+constexpr gene_body_attribute_type GENE_BODY_DEVELOPMENT_MASS_THRESH_RATIO = 6;		// [*] ratio from adult lean mass after which egg production starts
 
-constexpr gene_body_attribute_type GENE_BODY_ATTRIB_END = 8;
+constexpr gene_body_attribute_type GENE_BODY_ATTRIB_END = 7;
 
 #endif /* GENETICS_GENEDEFINITIONS_H_ */

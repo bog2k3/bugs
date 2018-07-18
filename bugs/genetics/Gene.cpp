@@ -29,6 +29,9 @@ void Gene::update_meta_genes_vec() {
 	}
 
 	switch (type) {
+	case gene_type::BODY_ATTRIBUTE:
+		ATOM(data.gene_body_attribute.value)
+		break;
 	case gene_type::DIVISION_PARAM:
 		ATOM(data.gene_division_param.value)
 		RESTRICTION(data.gene_division_param.restriction)
@@ -42,13 +45,19 @@ void Gene::update_meta_genes_vec() {
 		ATOM(data.gene_muscle_attrib.value)
 		RESTRICTION(data.gene_muscle_attrib.restriction)
 		break;
-	case gene_type::VMS_OFFSET:
-		ATOM(data.gene_vms_offset.value)
-		RESTRICTION(data.gene_vms_offset.restriction)
+	case gene_type::NEURAL_BIAS:
+		ATOM(data.gene_neural_constant.neuronLocation)
+		ATOM(data.gene_neural_constant.value)
+		RESTRICTION(data.gene_neural_constant.restriction)
 		break;
-	case gene_type::PROTEIN:
-		ATOM(data.gene_protein.weight);
-		RESTRICTION(data.gene_protein.restriction);
+	case gene_type::NEURAL_PARAM:
+		ATOM(data.gene_neural_param.neuronLocation)
+		ATOM(data.gene_neural_param.value)
+		RESTRICTION(data.gene_neural_param.restriction)
+		break;
+	case gene_type::NEURON:
+		ATOM(data.gene_neuron.neuronLocation)
+		RESTRICTION(data.gene_neuron.restriction)
 		break;
 	case gene_type::OFFSET:
 		ATOM(data.gene_offset.offset)
@@ -59,33 +68,34 @@ void Gene::update_meta_genes_vec() {
 		ATOM(data.gene_attribute.value)
 		RESTRICTION(data.gene_attribute.restriction)
 		break;
-	case gene_type::BODY_ATTRIBUTE:
-		ATOM(data.gene_body_attribute.value)
+	case gene_type::PROTEIN:
+		ATOM(data.gene_protein.weight);
+		RESTRICTION(data.gene_protein.restriction);
 		break;
-	case gene_type::NEURON:
-		ATOM(data.gene_neuron.neuronLocation)
+	case gene_type::SKIP:
+		ATOM(data.gene_skip.count)
+		RESTRICTION(data.gene_skip.restriction)
 		break;
 	case gene_type::SYNAPSE:
 		ATOM(data.gene_synapse.srcLocation)
 		ATOM(data.gene_synapse.destLocation)
 		ATOM(data.gene_synapse.priority)
 		ATOM(data.gene_synapse.weight)
+		RESTRICTION(data.gene_synapse.restriction)
+		break;
+	case gene_type::TIME_SYNAPSE:
+		ATOM(data.gene_time_synapse.targetLocation)
+		ATOM(data.gene_time_synapse.weight)
+		RESTRICTION(data.gene_time_synapse.restriction)
 		break;
 	case gene_type::TRANSFER_FUNC:
 		ATOM(data.gene_transfer_function.neuronLocation)
 		ATOM(data.gene_transfer_function.functionID)
+		RESTRICTION(data.gene_transfer_function.restriction)
 		break;
-	case gene_type::NEURAL_BIAS:
-		ATOM(data.gene_neural_constant.neuronLocation)
-		ATOM(data.gene_neural_constant.value)
-		break;
-	case gene_type::NEURAL_PARAM:
-		ATOM(data.gene_neural_param.neuronLocation)
-		ATOM(data.gene_neural_param.value)
-		break;
-	case gene_type::SKIP:
-		ATOM(data.gene_skip.count)
-		RESTRICTION(data.gene_skip.restriction)
+	case gene_type::VMS_OFFSET:
+		ATOM(data.gene_vms_offset.value)
+		RESTRICTION(data.gene_vms_offset.restriction)
 		break;
 	case gene_type::STOP:
 	case gene_type::NO_OP:
@@ -116,6 +126,9 @@ Gene Gene::createRandomBodyAttribGene() {
 		break;
 	case GENE_BODY_ATTRIB_REPRODUCTIVE_MASS_RATIO:
 		g.value.set(BodyConst::initialReproductiveMassRatio);
+		break;
+	case GENE_BODY_DEVELOPMENT_MASS_THRESH_RATIO:
+		g.value.set(BodyConst::initialDevelopmentMassThreshRatio);
 		break;
 	default:
 		throw std::runtime_error("unhandled body attrib type! ");
@@ -233,21 +246,21 @@ Gene Gene::createRandom(int spaceLeftAfter) {
 		// these are relative chances:
 		{gene_type::BODY_ATTRIBUTE, 1.0},
 		{gene_type::DIVISION_PARAM, 1.9},
-		{gene_type::PROTEIN, 1.5},
-		{gene_type::PART_ATTRIBUTE, 2.1},
-		{gene_type::VMS_OFFSET, 0.5},
-		{gene_type::OFFSET, 0.3},
 		{gene_type::JOINT_ATTRIBUTE, 0.5},
 		{gene_type::MUSCLE_ATTRIBUTE, 0.9},
-		{gene_type::NEURON, 1.2},
 		{gene_type::NEURAL_BIAS, 1.0},
 		{gene_type::NEURAL_PARAM, 0.8},
-		{gene_type::TIME_SYNAPSE, 0.25},
-		{gene_type::TRANSFER_FUNC, 0.5},
-		{gene_type::SYNAPSE, 1.5},
+		{gene_type::NEURON, 1.2},
+		{gene_type::NO_OP, 0.09},
+		{gene_type::OFFSET, 0.3},
+		{gene_type::PART_ATTRIBUTE, 2.1},
+		{gene_type::PROTEIN, 1.5},
 		{gene_type::SKIP, 0.1},
 		{gene_type::STOP, 0.09},
-		{gene_type::NO_OP, 0.09},
+		{gene_type::SYNAPSE, 1.5},
+		{gene_type::TIME_SYNAPSE, 0.25},
+		{gene_type::TRANSFER_FUNC, 0.5},
+		{gene_type::VMS_OFFSET, 0.5},
 	};
 	// normalize chances to make them sum up to 1.0
 	double total = 0;
@@ -270,36 +283,36 @@ Gene Gene::createRandom(int spaceLeftAfter) {
 		return createRandomBodyAttribGene();
 	case gene_type::DIVISION_PARAM:
 		return createRandomDivisionParamGene();
-	case gene_type::PROTEIN:
-		return createRandomProteinGene();
-	case gene_type::VMS_OFFSET:
-		return createRandomVMSOffsetGene();
-	case gene_type::OFFSET:
-		return createRandomOffsetGene(spaceLeftAfter);
 	case gene_type::JOINT_ATTRIBUTE:
 		return createRandomJointAttributeGene();
 	case gene_type::MUSCLE_ATTRIBUTE:
 		return createRandomMuscleAttributeGene();
-	case gene_type::NEURON:
-		return createRandomNeuronGene();
 	case gene_type::NEURAL_BIAS:
 		return createRandomNeuralBiasGene();
 	case gene_type::NEURAL_PARAM:
 		return createRandomNeuralParamGene();
-	case gene_type::TIME_SYNAPSE:
-		return createRandomTimeSynapse();
+	case gene_type::NEURON:
+		return createRandomNeuronGene();
+	case gene_type::NO_OP:
+		return GeneNoOp();
+	case gene_type::OFFSET:
+		return createRandomOffsetGene(spaceLeftAfter);
 	case gene_type::PART_ATTRIBUTE:
 		return createRandomAttribGene();
+	case gene_type::PROTEIN:
+		return createRandomProteinGene();
 	case gene_type::SKIP:
 		return createRandomSkipGene(spaceLeftAfter);
 	case gene_type::STOP:
 		return GeneStop();
 	case gene_type::SYNAPSE:
 		return createRandomSynapseGene();
+	case gene_type::TIME_SYNAPSE:
+		return createRandomTimeSynapse();
 	case gene_type::TRANSFER_FUNC:
 		return createRandomTransferFuncGene();
-	case gene_type::NO_OP:
-		return GeneNoOp();
+	case gene_type::VMS_OFFSET:
+		return createRandomVMSOffsetGene();
 	default:
 		throw std::runtime_error("You forgot to treat one gene type!");
 	}
