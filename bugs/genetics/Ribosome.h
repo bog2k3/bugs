@@ -107,6 +107,8 @@ public:
 
 	void drawCells(Viewport* vp);
 
+	bool isPreFinalStep() const { return activeSet_.empty(); }
+
 private:
 	Bug* bug_;
 	std::vector<BodyCell*> cells_;

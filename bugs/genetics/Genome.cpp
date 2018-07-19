@@ -267,7 +267,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	}
 
 #if(ENABLE_STATS)
-		LOGLN("alter chromosome: [mutations: "<<stat_mutations<<"] [swaps: "<<stat_swaps<<"] [new: "<<stat_new<<"] [del: "<<stat_delete<<"]");
+		DEBUGLOGLN("alter chromosome: [mutations: "<<stat_mutations<<"] [swaps: "<<stat_swaps<<"] [new: "<<stat_new<<"] [del: "<<stat_delete<<"]");
 #endif
 }
 

@@ -75,9 +75,9 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 	, cachedAABBFramesOld_(randi(AABB_CACHE_MAX_FRAMES))
 {
 	LOGPREFIX("BUG");
-	LOGLN("new embryo [id="<<id<<"]; printing chromosomes:");
-	LOGLN("C1: " << genome.first.stringify());
-	LOGLN("C2: " << genome.second.stringify());
+	DEBUGLOGLN("new embryo [id="<<id<<"]; printing chromosomes:");
+	DEBUGLOGLN("C1: " << genome.first.stringify());
+	DEBUGLOGLN("C2: " << genome.second.stringify());
 
 	// create embryo shell:
 	zygoteShell_ = new ZygoteShell(position, 0, velocity, 0, zygoteMass, context_);
@@ -139,7 +139,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 			freeZygotes--;
 			if (!isAlive_) {
 				// embryo not viable, discarded.
-				LOGLN("Embryo not viable. DISCARDED.");
+				DEBUGLOGLN("Embryo not viable. DISCARDED.");
 				World::getInstance().queueDeferredAction([this] {
 					zygoteShell_->die();
 					deadBodyParts_.push_back(zygoteShell_);

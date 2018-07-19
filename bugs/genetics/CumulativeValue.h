@@ -28,15 +28,18 @@ struct CumulativeValue {
 		return *this;
 	}
 	inline void changeAbs(float change) {
+		assertDbg(!std::isnan(change));
 		value_ += change;
 		n_++;
 		cacheUpdated_ = false;
 	}
 	inline void changeRel(float factor) {
+		assertDbg(!std::isnan(factor));
 		factor_ *= factor;
 		cacheUpdated_ = false;
 	}
 	inline void reset(float initialValue) {
+		assertDbg(!std::isnan(initialValue));
 		*this = CumulativeValue(initialValue);
 	}
 	inline bool hasValue() const { return n_ > 0; }

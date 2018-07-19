@@ -71,6 +71,7 @@ public:
 	float getTotalFatMass() const;
 	float getTotalMass() const;
 	float getLeanMass() const { return getTotalMass() - getTotalFatMass(); }
+	const Ribosome* getRibosome() const { return ribosome_; }
 
 	void consumeEnergy(float amount);
 	void onFoodProcessed(float mass);

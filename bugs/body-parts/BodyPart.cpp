@@ -363,7 +363,7 @@ void BodyPart::die() {
 		return;
 	}
 #ifdef DEBUG
-	LOGLN("BodyPart::die() : " << getDebugName());
+	DEBUGLOGLN("BodyPart::die() : " << getDebugName());
 #endif
 	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 	foodValueLeft_ = size_ * density_;

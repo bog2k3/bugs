@@ -220,6 +220,9 @@ void printStatus(float simulationTime, float realTime, float simDTAcc, float rea
 
 int main(int argc, char* argv[]) {
 	perf::setCrtThreadName("main");
+#ifdef _ENABLE_LOGGING_
+	logger::setLogLevel(LOG_LEVEL_DEBUG);
+#endif
 	do {
 		PERF_MARKER_FUNC;
 		// parse command line parameters:
@@ -336,6 +339,9 @@ int main(int argc, char* argv[]) {
 		LOGLN("RAND seed: "<<rand_seed);
 
 		if (runInResearchMode) {
+#ifdef _ENABLE_LOGGING_
+			logger::setLogLevel(LOG_LEVEL_INFO);
+#endif
 			researchRun(researchPath);
 			world.reset();
 			Infrastructure::shutDown();

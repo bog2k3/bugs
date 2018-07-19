@@ -11,6 +11,7 @@
 #include "GenomeGenerator.h"
 #include "GenomeFitness.h"
 #include "MotorFitness.h"
+#include "../genetics/Ribosome.h"
 
 #include <boglfw/World.h>
 #include <boglfw/utils/parallel.h>
@@ -41,25 +42,36 @@ void Researcher::initialize(int targetPopulation, float recombinationRatio, int 
 
 // perform a research iteration
 void Researcher::iterate(float timeStep) {
-	LOGLN("RESEARCH ITERATION ---------------------------------------------------------");
+	LOGLN("RESEARCH ITERATION -----------------------------------------------------------------------------------------------");
 	MTVector<Bug*> bugs(genomes_.size());
 	parallel_for(genomes_.begin(), genomes_.end(), Infrastructure::getThreadPool(), [this, timeStep, &bugs](auto &gp) {
 		Genome& g = gp.first;
 		Bug* b = new Bug(g, BodyConst::initialEggMass*2, {0,0}, {0,0}, 0);
 		bugs.push_back(b);
-		while (b->isInEmbryonicDevelopment())
+		while (b->isInEmbryonicDevelopment() && !b->getRibosome()->isPreFinalStep())
 			b->update(1.f);	// use 1 second step to bypass gene decode frequency delay in ribosome
-		float &fitness = gp.second;
-		fitness = 0;
-		fitness = GenomeFitness::compute(*b);
-		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
 	});
 	// execute deferred tasks
 	World::getInstance().update(0);
-	// delete bugs
 	for (auto b : bugs)
-		delete b;
+		b->update(1.f); // last update to finalize ribosome stuff
+	// another deferred tasks execution:
+	World::getInstance().update(0);
+
+	// compute fitnesses
+	genomes_.clear();
+	for (auto b : bugs) {
+		float fitness = 0;
+		fitness += GenomeFitness::compute(*b);
+		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
+		genomes_.push_back({b->getGenome(), fitness});
+		// delete bug
+		b->destroy();
+	}
+
 	bugs.clear();
+	// allow world to clean up entities
+	World::getInstance().update(0);
 
 	// sort by decreasing fitness
 	std::sort(genomes_.begin(), genomes_.end(), [](auto &g1, auto &g2) {
@@ -151,7 +163,7 @@ void Researcher::printIterationStats() {
 	}
 	if (!printed)
 		LOGNP("nothing yet...");
-	LOGLN("");
+	LOGNP("\n");
 }
 
 void Researcher::printStatistics() {

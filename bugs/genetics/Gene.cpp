@@ -178,6 +178,7 @@ Gene Gene::createRandomNeuralParamGene() {
 Gene Gene::createRandomTimeSynapse() {
 	GeneTimeSynapse g;
 	g.targetLocation.set(srandf() * BodyConst::MaxVMSCoordinateValue);
+	g.weight.set(randf()*0.2f);
 	return g;
 }
 
