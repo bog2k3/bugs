@@ -676,6 +676,7 @@ void Ribosome::decodeSynapse(GeneSynapse const& g, float vmsOffset, float vmsDir
 
 	if (iFrom == -1 || iTo == -1) {
 		ERROR("Synapse to/from non-existent sensor/neuron!!");
+		return;
 	}
 
 	OutputSocket *from = outSockets[iFrom].first.first;
@@ -693,6 +694,7 @@ void Ribosome::decodeTimeSynapse(GeneTimeSynapse const& g, float vmsOffset, floa
 
 	if (iTo == -1) {
 		ERROR("Time Synapse to non-existent neuron!!");
+		return;
 	}
 
 	OutputSocket *from = &bug_->lifetimeOutput_;

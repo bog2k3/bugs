@@ -44,7 +44,12 @@ float GenomeFitness::compute(Bug const& b) {
 	});
 	float fatRatio = b.getTotalFatMass() / b.getTotalMass();
 	float idealFatRatio = 0.33f;
-	float fatFitnessScore = (fatRatio > idealFatRatio ? 1.f / fatRatio : fatRatio) / idealFatRatio;	// max score when fatRatio is ideal, less if it's greater or smaller
+	float fatFitnessScore = 0;
+	// max score when fatRatio is ideal, less if it's greater or smaller
+	if (fatRatio > idealFatRatio)
+		fatFitnessScore = 1.f - sqr((fatRatio - idealFatRatio) / (1.f - idealFatRatio));
+	else
+		fatFitnessScore = sqrt(fatRatio / idealFatRatio);
 
 	return fitness + fatFitnessScore;
 }
