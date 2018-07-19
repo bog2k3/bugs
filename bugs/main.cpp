@@ -170,21 +170,29 @@ void researchRun(std::string researchPath) {
 	constexpr int motorSampleFrames = 500;
 	constexpr int randomGenomeLength = 200;
 	constexpr float timeStep = 0.02f;
-	Researcher r(researchPath);
-	r.initialize(targetPopulation, recombinationRatio, motorSampleFrames, randomGenomeLength);
 
 	LOGLN("Running in research mode....");
 	LOGLN("[press ENTER to stop]");
 
-	bool stop = false;
-	do {
-		r.iterate(timeStep);
-		while (std::cin.peek() != EOF)
-			if (std::cin.get() == '\n')
-				stop = true;
-	} while(!stop);
+	Researcher r(researchPath);
+	r.initialize(targetPopulation, recombinationRatio, motorSampleFrames, randomGenomeLength);
 
-	LOGLN("Stop requested. Saving genomes...");
+	std::atomic_bool stop {false};
+	Infrastructure::getThreadPool().queueTask([&] {
+		while (std::cin.get() != '\n');
+		stop.store(true, std::memory_order_release);
+		LOGLN("Stop requested.");
+	});
+
+	while(!stop.load(std::memory_order_acquire)) {
+		LOGPREFIX("Researcher")
+		r.iterate(timeStep);
+	}
+
+	LOGLN("waiting for pool threads...");
+	Infrastructure::getThreadPool().wait();
+
+	LOGLN("Saving genomes...");
 	r.saveGenomes();
 
 	LOGLN("Session stats:");

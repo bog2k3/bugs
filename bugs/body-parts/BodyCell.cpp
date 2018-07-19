@@ -64,6 +64,12 @@ std::pair<BodyCell*, BodyCell*> BodyCell::divide() {
 	auto left = static_cast<BodyCell*>(p.first);
 	left->vmsDirection_ *= -1;
 	auto right = static_cast<BodyCell*>(p.second);
+
+	// slightly decrease the division affinity as the depth of the cell increases
+	int depth = branch_.size() + 1;
+	left->mapDivisionParams_[GENE_DIVISION_AFFINITY].reset(-depth * constants::small_gene_value);
+	right->mapDivisionParams_[GENE_DIVISION_AFFINITY].reset(-depth * constants::small_gene_value);
+
 	return {left, right};
 }
 
