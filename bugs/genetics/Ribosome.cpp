@@ -221,7 +221,7 @@ void Ribosome::postDecodeAndFinalization() {
 	bool hasMouth = false, hasEggLayer = false;
 	specializeCells(hasMouth, hasEggLayer);
 
-	if (!hasMouth || !hasEggLayer) {
+	if (!researchMode_ && (!hasMouth || !hasEggLayer)) {
 		// here mark the embryo as non viable and return
 		bug_->isViable_ = false;
 		cleanUp();
