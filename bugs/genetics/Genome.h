@@ -32,6 +32,10 @@ struct Chromosome {
 		insertions.clear();
 	}
 
+	bool isGeneticallyCompatible(Chromosome const& c) {
+		return (uint)abs((int)c.genes.size() - (int)genes.size()) <= WorldConst::MaxGenomeLengthDifference;
+	}
+
 	std::string stringify() const;
 };
 

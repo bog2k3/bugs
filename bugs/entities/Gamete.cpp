@@ -64,7 +64,7 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 	Gamete *other = (Gamete*)pOther->userPointer_;
 	if (other->isZombie())
 		return;
-	if ((uint)abs((int)other->getChromosome().genes.size() - (int)chromosome_.genes.size()) > WorldConst::MaxGenomeLengthDifference)
+	if (!chromosome_.isGeneticallyCompatible(other->getChromosome()))
 		return;
 	LOGLN("gametes fused -> new bug embryo !!!");
 	Genome g;
@@ -105,7 +105,7 @@ void Gamete::update(float dt) {
 			// found another gamete, let's attract each other
 			// p.s.: only attract and fuse if they don't differ by more than N in the number of genes - N is the same as the new gene recorded history
 			Gamete* other = (Gamete*)((PhysicsBody*)b->GetUserData())->userPointer_;
-			if ((uint)abs((int)other->getChromosome().genes.size() - (int)chromosome_.genes.size()) > WorldConst::MaxGenomeLengthDifference)
+			if (!chromosome_.isGeneticallyCompatible(other->getChromosome()))
 				continue;
 			b2Vec2 force = body_.b2Body_->GetPosition() - b->GetPosition();
 			float distance = force.Normalize();

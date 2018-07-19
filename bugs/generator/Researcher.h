@@ -34,13 +34,18 @@ public:
 private:
 	std::string genomesPath_;
 	std::vector<std::pair<Genome, float>> genomes_;
-	int targetPopulation_ = 20;
+	uint targetPopulation_ = 20;
 	float recombinationRatio_ = 0.25f;
-	int motorSampleFrames_ = 500;
-	int randomGenomeLength_ = 200;
+	uint motorSampleFrames_ = 500;
+	uint randomGenomeLength_ = 200;
 
 	void loadGenomes();
 	void fillUpPopulation();
+	decltype(genomes_) doRecombination();
+	void selectBest(decltype(genomes_) &out);
+	uint biasedRandomSelect(); // select a genome randomly, but biased by the relative fitnesses towards the best
+
+	void printIterationStats();
 };
 
 #endif /* BUGS_GENERATOR_RESEARCHER_H_ */
