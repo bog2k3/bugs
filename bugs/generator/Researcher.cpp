@@ -31,9 +31,10 @@ void Researcher::saveGenomes() {
 
 // load genomes, set target population and recombinationRatio - the fraction of targetPopulation that will be filled
 // with new genomes created by recombining previous generation genomes (the rest will be prev gen genomes which are simply mutated)
-void Researcher::initialize(int targetPopulation, float recombinationRatio, int motorSampleFrames, int randomGenomeLength) {
+void Researcher::initialize(int targetPopulation, float recombinationRatio, float renewRatio, int motorSampleFrames, int randomGenomeLength) {
 	targetPopulation_ = targetPopulation;
 	recombinationRatio_ = recombinationRatio;
+	renewRatio_ = renewRatio;
 	motorSampleFrames_ = motorSampleFrames;
 	randomGenomeLength_ = randomGenomeLength;
 	loadGenomes();
@@ -62,15 +63,15 @@ void Researcher::iterate(float timeStep) {
 		World::getInstance().update(0);
 
 	// compute fitnesses
-	genomes_.clear();
-	for (auto b : bugs) {
+	MTVector<std::remove_reference<decltype(genomes_[0])>::type> updatedGenomes(genomes_.size());
+	parallel_for(bugs.begin(), bugs.end(), Infrastructure::getThreadPool(), [this, &updatedGenomes, &timeStep] (auto b) {
 		float fitness = 0;
 		fitness += GenomeFitness::compute(*b);
 		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
-		genomes_.push_back({b->getGenome(), fitness});
+		updatedGenomes.push_back({b->getGenome(), fitness});
 		// kill bug
 		b->kill();
-	}
+	});
 	while(World::getInstance().hasQueuedDeferredActions())
 		World::getInstance().update(0); // performed queued die events and stuff
 
@@ -81,6 +82,11 @@ void Researcher::iterate(float timeStep) {
 	// allow world to clean up entities
 	while(World::getInstance().hasQueuedDeferredActions())
 		World::getInstance().update(0);
+
+	// copy back the genomes with the updated fitness scores
+	genomes_.clear();
+	for (auto &g : updatedGenomes)
+		genomes_.push_back(g);
 
 	// sort by decreasing fitness
 	std::sort(genomes_.begin(), genomes_.end(), [](auto &g1, auto &g2) {
@@ -96,6 +102,9 @@ void Researcher::iterate(float timeStep) {
 	selectBest(newGenomes);
 
 	genomes_.swap(newGenomes);
+
+	// refresh population by adding some new random genomes
+	fillUpPopulation();
 }
 
 void Researcher::loadGenomes() {
@@ -110,7 +119,7 @@ void Researcher::fillUpPopulation() {
 
 decltype(Researcher::genomes_) Researcher::doRecombination() {
 	decltype(genomes_) newGenomes;
-	uint required = recombinationRatio_ * targetPopulation_;
+	uint required = max(1.f, recombinationRatio_ * targetPopulation_);
 	uint tries = 0;
 	uint maxTries = genomes_.size();
 
@@ -121,19 +130,20 @@ decltype(Researcher::genomes_) Researcher::doRecombination() {
 		Chromosome c1 = GeneticOperations::meyosis(genomes_[i1].first);
 		Chromosome c2 = GeneticOperations::meyosis(genomes_[i2].first);
 
-		if (c1.isGeneticallyCompatible(c2)) {
-			auto newGenome = Genome{c1, c2};
-			auto newFitness = (genomes_[i1].second + genomes_[i2].second) / 2;	// average fitness
-			newGenomes.push_back({newGenome, newFitness});
-		}
+		if (c1.isGeneticallyCompatible(c2))
+			newGenomes.push_back({Genome{c1, c2}, 0});
 	}
 
 	return newGenomes;
 }
 
 void Researcher::selectBest(decltype(genomes_) &out) {
-	while (out.size() < targetPopulation_) {
-		out.push_back(genomes_[biasedRandomSelect()]);
+	std::set<uint> selected;
+	uint roomForNew = max(1.f, renewRatio_ * targetPopulation_);
+	while (out.size() < targetPopulation_ - roomForNew) {
+		uint index = biasedRandomSelect();
+		out.push_back(genomes_[index]);
+		genomes_.erase(genomes_.begin() + index); // in order to avoid duplicates
 		// perform mutations:
 		GeneticOperations::alterChromosome(out.back().first.first);
 		GeneticOperations::alterChromosome(out.back().first.second);
@@ -164,7 +174,7 @@ void Researcher::printIterationStats() {
 	LOG("Iteration best fitnesses: ");
 	int n=10;
 	int printed = 0;
-	for (int i=0; i<n; i++) {
+	for (int i=0; i<n && i<genomes_.size(); i++) {
 		if (genomes_[i].second == 0)
 			break;
 		printed++;

@@ -237,6 +237,8 @@ protected:
 	// sets new values for size and density; Muscle should use this since it's size and density are not found in the Cell
 	void overrideSizeAndDensity(float newSize, float newDensity);
 
+	bool destroyCalled() const { return destroyCalled_; }
+
 private:
 	//void reverseUpdateCachedProps();
 	//glm::vec2 getParentSpacePosition();

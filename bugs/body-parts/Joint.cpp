@@ -7,6 +7,7 @@
 
 #include "Joint.h"
 #include "BodyCell.h"
+#include "../entities/Bug/Bug.h"
 
 #include <boglfw/World.h>
 #include <boglfw/math/box2glm.h>
@@ -169,6 +170,10 @@ void Joint::update(float dt) {
 
 void Joint::breakJoint() {
 	die();
+
+	if(context_.owner.isZombie()) {
+		return; // bug is already being destroyed, skip all of below
+	}
 
 	World::getInstance().queueDeferredAction([this] () {
 		onJointBreak.trigger(this);

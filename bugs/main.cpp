@@ -165,8 +165,9 @@ void registerEventHandlers(World &world) {
 }
 
 void researchRun(std::string researchPath) {
-	constexpr int targetPopulation = 1;//20;
+	constexpr int targetPopulation = 20;
 	constexpr float recombinationRatio = 0.25f;
+	constexpr float renewRatio = 0.05f;
 	constexpr int motorSampleFrames = 500;
 	constexpr int randomGenomeLength = 200;
 	constexpr float timeStep = 0.02f;
@@ -175,7 +176,7 @@ void researchRun(std::string researchPath) {
 	LOGLN("[press ENTER to stop]");
 
 	Researcher r(researchPath);
-	r.initialize(targetPopulation, recombinationRatio, motorSampleFrames, randomGenomeLength);
+	r.initialize(targetPopulation, recombinationRatio, renewRatio, motorSampleFrames, randomGenomeLength);
 
 	std::atomic_bool stop {false};
 	Infrastructure::getThreadPool().queueTask([&] {

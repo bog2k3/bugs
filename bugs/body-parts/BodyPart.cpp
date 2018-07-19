@@ -367,9 +367,11 @@ void BodyPart::die() {
 #endif
 	physBody_.categoryFlags_ |= EventCategoryFlags::FOOD;
 	foodValueLeft_ = size_ * density_;
-	World::getInstance().queueDeferredAction([this] {
-		onDied.trigger(this);
-	});
+	if (!destroyCalled()) {
+		World::getInstance().queueDeferredAction([this] {
+			onDied.trigger(this);
+		});
+	}
 }
 
 void BodyPart::consumeFoodValue(float amount) {

@@ -22,8 +22,9 @@ public:
 	void saveGenomes();
 
 	// load genomes, set target population and recombinationRatio - the fraction of targetPopulation that will be filled
+	// renewRatio - fraction of targetPopulation that wil be filled with fresh new random genomes every iteration
 	// with new genomes created by recombining previous generation genomes (the rest will be prev gen genomes wich are simply mutated)
-	void initialize(int targetPopulation, float recombinationRatio, int motorSampleFrames, int randomGenomeLength);
+	void initialize(int targetPopulation, float recombinationRatio, float renewRatio, int motorSampleFrames, int randomGenomeLength);
 
 	// perform a research iteration
 	void iterate(float timeStep);
@@ -36,6 +37,7 @@ private:
 	std::vector<std::pair<Genome, float>> genomes_;
 	uint targetPopulation_ = 20;
 	float recombinationRatio_ = 0.25f;
+	float renewRatio_ = 0.05f;
 	uint motorSampleFrames_ = 500;
 	uint randomGenomeLength_ = 200;
 
