@@ -165,7 +165,7 @@ void registerEventHandlers(World &world) {
 }
 
 void researchRun(std::string researchPath) {
-	constexpr int targetPopulation = 20;
+	constexpr int targetPopulation = 1;//20;
 	constexpr float recombinationRatio = 0.25f;
 	constexpr int motorSampleFrames = 500;
 	constexpr int randomGenomeLength = 200;

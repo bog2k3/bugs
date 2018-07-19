@@ -137,7 +137,7 @@ void Bug::updateEmbryonicDevelopment(float dt) {
 		isDeveloping_ = ribosome_->step();
 		if (!isDeveloping_) {	// finished development
 			freeZygotes--;
-			if (!isAlive_) {
+			if (!isViable_) {
 				// embryo not viable, discarded.
 				DEBUGLOGLN("Embryo not viable. DISCARDED.");
 				World::getInstance().queueDeferredAction([this] {
@@ -243,7 +243,7 @@ void Bug::updateDeadDecaying(float dt) {
 void Bug::kill() {
 	World::getInstance().queueDeferredAction([this] {
 		if (isAlive_) {
-			LOGLN("bug DIED");
+			DEBUGLOGLN("bug DIED");
 			--population; // one less bug
 			isAlive_ = false;
 			decltype(bodyParts_) parts;

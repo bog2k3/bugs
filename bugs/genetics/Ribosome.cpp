@@ -222,8 +222,8 @@ void Ribosome::postDecodeAndFinalization() {
 	specializeCells(hasMouth, hasEggLayer);
 
 	if (!hasMouth || !hasEggLayer) {
-		// here mark the embryo as dead and return
-		bug_->isAlive_ = false;
+		// here mark the embryo as non viable and return
+		bug_->isViable_ = false;
 		cleanUp();
 		return;
 	}
@@ -278,7 +278,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 		}
 	}
 
-	if (!hasMouth || !hasEggLayer) {
+	if (!researchMode_ && (!hasMouth || !hasEggLayer)) {
 		return;
 	}
 
@@ -318,17 +318,21 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 			bp = g;
 			pMotor = g;
 		} break;
-		case BodyPartType::SENSOR_COMPASS:
-//			pSensor = bp;
-			break;
+		case BodyPartType::SENSOR_COMPASS: {
+			auto comp = new Compass(bug_->context_, *c);
+			bp = comp;
+			pSensor = comp;
+		} break;
 		case BodyPartType::SENSOR_PROXIMITY: {
 			auto n = new Nose(bug_->context_, *c);
 			bp = n;
 			pSensor = n;
 		} break;
-		case BodyPartType::SENSOR_SIGHT:
-//			pSensor = bp;
-			break;
+		case BodyPartType::SENSOR_SIGHT: {
+			auto e = new Eye(bug_->context_, *c);
+			pSensor = e;
+			bp = e;
+		} break;
 		default:
 			throw std::runtime_error("invalid specialization type!");
 		};

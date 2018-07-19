@@ -108,6 +108,7 @@ public:
 	void drawCells(Viewport* vp);
 
 	bool isPreFinalStep() const { return activeSet_.empty(); }
+	void setResearchModeOn() const { researchMode_ = true; }
 
 private:
 	Bug* bug_;
@@ -117,6 +118,7 @@ private:
 	std::map<Cell*, BodyPart*> cellToPart_;				// associate each specialized or joint cell with the corresponding body part
 	std::set<const Gene*> bodyAttribGenes_;					// hold body attribute genes here and decode them when all genome is processed
 	std::map<IMotor*, DecodeContext*> motors_;
+	mutable bool researchMode_ = false;
 
 	void postDecodeAndFinalization();		// does post-decode operations (deferred genes) and cell specialization
 

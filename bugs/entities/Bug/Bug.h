@@ -120,6 +120,7 @@ protected:
 
 	Ribosome* ribosome_;
 	bool isAlive_;
+	bool isViable_ = true;
 	bool isDeveloping_;
 	float tRibosomeStep_; // time since last ribosome step
 //	Torso* body_;

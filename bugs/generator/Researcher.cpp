@@ -48,15 +48,18 @@ void Researcher::iterate(float timeStep) {
 		Genome& g = gp.first;
 		Bug* b = new Bug(g, BodyConst::initialEggMass*2, {0,0}, {0,0}, 0);
 		bugs.push_back(b);
+		b->getRibosome()->setResearchModeOn();
 		while (b->isInEmbryonicDevelopment() && !b->getRibosome()->isPreFinalStep())
 			b->update(1.f);	// use 1 second step to bypass gene decode frequency delay in ribosome
 	});
 	// execute deferred tasks
-	World::getInstance().update(0);
+	while(World::getInstance().hasQueuedDeferredActions())
+		World::getInstance().update(0);
 	for (auto b : bugs)
 		b->update(1.f); // last update to finalize ribosome stuff
 	// another deferred tasks execution:
-	World::getInstance().update(0);
+	while(World::getInstance().hasQueuedDeferredActions())
+		World::getInstance().update(0);
 
 	// compute fitnesses
 	genomes_.clear();
@@ -65,13 +68,19 @@ void Researcher::iterate(float timeStep) {
 		fitness += GenomeFitness::compute(*b);
 		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
 		genomes_.push_back({b->getGenome(), fitness});
-		// delete bug
+		// kill bug
+		b->kill();
+	}
+	while(World::getInstance().hasQueuedDeferredActions())
+		World::getInstance().update(0); // performed queued die events and stuff
+
+	for (auto b : bugs) {
 		b->destroy();
 	}
-
 	bugs.clear();
 	// allow world to clean up entities
-	World::getInstance().update(0);
+	while(World::getInstance().hasQueuedDeferredActions())
+		World::getInstance().update(0);
 
 	// sort by decreasing fitness
 	std::sort(genomes_.begin(), genomes_.end(), [](auto &g1, auto &g2) {
