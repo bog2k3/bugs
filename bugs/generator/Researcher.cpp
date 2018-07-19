@@ -126,7 +126,7 @@ void Researcher::iterate(float timeStep) {
 
 void Researcher::loadGenomes() {
 	// load as many genomes as needed or available from genomesPath_ directory
-	auto files = filesystem::getFiles(genomesPath_);
+	auto files = filesystem::getFiles(genomesPath_, false);
 	for (auto &fn : files) {
 		// load from file fn
 		std::ifstream f(fn);
