@@ -8,17 +8,22 @@
 #include "Researcher.h"
 #include "../entities/Bug/Bug.h"
 #include "../body-parts/BodyConst.h"
+#include "../genetics/Ribosome.h"
+#include "../serialization/GenomeSerialization.h"
+#include "../serialization/separatedTextOutStream.h"
 #include "GenomeGenerator.h"
 #include "GenomeFitness.h"
 #include "MotorFitness.h"
-#include "../genetics/Ribosome.h"
 
 #include <boglfw/World.h>
 #include <boglfw/utils/parallel.h>
 #include <boglfw/Infrastructure.h>
+#include <boglfw/utils/filesystem.h>
 
 #include <algorithm>
 #include <numeric>
+#include <fstream>
+#include <sstream>
 
 Researcher::Researcher(std::string genomesPath)
 	: genomesPath_(genomesPath)
@@ -26,7 +31,14 @@ Researcher::Researcher(std::string genomesPath)
 }
 
 void Researcher::saveGenomes() {
-
+	int i = 0;
+	for (auto &g : genomes_) {
+		std::stringstream ss;
+		ss << genomesPath_ + "/genome-" << i++ << ".txt";
+		std::ofstream f(ss.str());
+		//SeparatedTextOutStream sf(f);
+		f << g.second << g.first;
+	}
 }
 
 // load genomes, set target population and recombinationRatio - the fraction of targetPopulation that will be filled
@@ -114,6 +126,19 @@ void Researcher::iterate(float timeStep) {
 
 void Researcher::loadGenomes() {
 	// load as many genomes as needed or available from genomesPath_ directory
+	auto files = filesystem::getFiles(genomesPath_);
+	for (auto &fn : files) {
+		// load from file fn
+		std::ifstream f(fn);
+		float fitness;
+		Genome g;
+		f >> fitness >> g;
+
+		genomes_.push_back({g, fitness});
+
+		if (genomes_.size() == targetPopulation_)
+			break;
+	}
 }
 
 void Researcher::fillUpPopulation() {
@@ -194,8 +219,8 @@ uint Researcher::biasedRandomSelect(float steepness, std::set<uint> exclude) {
 
 void Researcher::printIterationStats() {
 	LOG("Iteration best fitnesses: ");
-	int n=10;
-	int printed = 0;
+	uint n=10;
+	uint printed = 0;
 	for (uint i=0; i<n && i<stats_.back().fitness.size(); i++) {
 		if (stats_.back().fitness[i] == 0)
 			break;
@@ -224,5 +249,5 @@ void Researcher::printIterationStats() {
 }
 
 void Researcher::printStatistics() {
-
+	// TODO ...
 }

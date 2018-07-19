@@ -96,7 +96,7 @@ struct BranchRestriction {
 	 * 		'>' - propagate right only (stop left)
 	 * 		'-' - stop both ways (don't propagate at all)
 	 */
-	BranchRestriction(const char* code) {
+	explicit BranchRestriction(const char* code) {
 		clear();
 		activeLevels.set((strlen(code)+1)/3);
 		memset(levels, 0, sizeof(levels));
