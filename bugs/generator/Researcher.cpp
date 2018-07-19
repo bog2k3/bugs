@@ -44,6 +44,7 @@ void Researcher::initialize(int targetPopulation, float recombinationRatio, floa
 // perform a research iteration
 void Researcher::iterate(float timeStep) {
 	LOGLN("RESEARCH ITERATION -----------------------------------------------------------------------------------------------");
+	stats_.push_back({});
 	MTVector<Bug*> bugs(genomes_.size());
 	parallel_for(genomes_.begin(), genomes_.end(), Infrastructure::getThreadPool(), [this, timeStep, &bugs](auto &gp) {
 		Genome& g = gp.first;
@@ -93,7 +94,8 @@ void Researcher::iterate(float timeStep) {
 		return g1.second > g2.second;
 	});
 
-	printIterationStats();
+	for (auto &g : genomes_)
+		stats_.back().fitness.push_back(g.second);
 
 	// try to recombine recombinationRatio_ * targetPopulation_ matching genome pairs
 	auto newGenomes = doRecombination();
@@ -103,8 +105,11 @@ void Researcher::iterate(float timeStep) {
 
 	genomes_.swap(newGenomes);
 
+	stats_.back().newRandom = targetPopulation_ - genomes_.size();
 	// refresh population by adding some new random genomes
 	fillUpPopulation();
+
+	printIterationStats();
 }
 
 void Researcher::loadGenomes() {
@@ -123,15 +128,20 @@ decltype(Researcher::genomes_) Researcher::doRecombination() {
 	uint tries = 0;
 	uint maxTries = genomes_.size();
 
+	stats_.back().recombinationTarget = required;
+
 	while (tries++ <= maxTries && newGenomes.size() < required) {
-		uint i1 = biasedRandomSelect();
-		uint i2 = biasedRandomSelect();
+		uint i1 = biasedRandomSelect(1.f, {});
+		uint i2 = biasedRandomSelect(1.f, {});
 
 		Chromosome c1 = GeneticOperations::meyosis(genomes_[i1].first);
 		Chromosome c2 = GeneticOperations::meyosis(genomes_[i2].first);
 
-		if (c1.isGeneticallyCompatible(c2))
+		if (c1.isGeneticallyCompatible(c2)) {
 			newGenomes.push_back({Genome{c1, c2}, 0});
+
+			stats_.back().recombinationPairs.push_back({i1, i2});
+		}
 	}
 
 	return newGenomes;
@@ -141,32 +151,44 @@ void Researcher::selectBest(decltype(genomes_) &out) {
 	std::set<uint> selected;
 	uint roomForNew = max(1.f, renewRatio_ * targetPopulation_);
 	while (out.size() < targetPopulation_ - roomForNew) {
-		uint index = biasedRandomSelect();
+		uint index = biasedRandomSelect(1.f, selected);
+		selected.insert(index);
 		out.push_back(genomes_[index]);
-		genomes_.erase(genomes_.begin() + index); // in order to avoid duplicates
-		// perform mutations:
-		GeneticOperations::alterChromosome(out.back().first.first);
-		GeneticOperations::alterChromosome(out.back().first.second);
+		genomes_[index].second = 0; // in order to avoid duplicates
+		// perform mutations on half of the genomes:
+		if (randf() < 0.5) {
+			GeneticOperations::alterChromosome(out.back().first.first);
+			GeneticOperations::alterChromosome(out.back().first.second);
+		}
+
+		stats_.back().selected.push_back(index);
 	}
 }
 
-uint Researcher::biasedRandomSelect() {
-	// each genome gets a chance to be selected proportional to its fitness squared
+// smaller than 1.0 values are more likely to also select from the ones with smaller fitnesses
+// greater than 1.0 values are more likely to only select the highest fitnesses
+uint Researcher::biasedRandomSelect(float steepness, std::set<uint> exclude) {
+	// each genome gets a chance to be selected proportional to its fitness raised to "steepness" power
 	// normalize chances to make them sum up to 1.0
-	double total = std::accumulate(genomes_.begin(), genomes_.end(), 0.f, [](double t, auto &g) {
-		return t + sqr(g.second);
-	});
-	double dice = randd();
-	double floor = 0;
-	uint selected = 0;
+	double total = 0;
 	for (uint i=0; i<genomes_.size(); i++) {
+		if (exclude.find(i) == exclude.end())
+			total += pow(genomes_[i].second, steepness);
+	}
+	double dice = randd() * total;
+	double floor = 0;
+	uint selected = genomes_.size();
+	for (uint i=0; i<genomes_.size(); i++) {
+		if (exclude.find(i) != exclude.end())
+			continue;
 		auto &g = genomes_[i];
-		if (dice - floor < (sqr(g.second) / total)) {
+		if (dice - floor <= pow(g.second, steepness)) {
 			selected = i;
 			break;
 		}
-		floor += g.second;
+		floor += pow(g.second, steepness);
 	}
+	assertDbg(selected < genomes_.size());
 	return selected;
 }
 
@@ -174,15 +196,31 @@ void Researcher::printIterationStats() {
 	LOG("Iteration best fitnesses: ");
 	int n=10;
 	int printed = 0;
-	for (int i=0; i<n && i<genomes_.size(); i++) {
-		if (genomes_[i].second == 0)
+	for (uint i=0; i<n && i<stats_.back().fitness.size(); i++) {
+		if (stats_.back().fitness[i] == 0)
 			break;
 		printed++;
-		LOGNP(genomes_[i].second << ",   ");
+		LOGNP(stats_.back().fitness[i] << ",   ");
 	}
 	if (!printed)
 		LOGNP("nothing yet...");
 	LOGNP("\n");
+	LOGLN("Recombined " << stats_.back().recombinationPairs.size() << " out of " << stats_.back().recombinationTarget << " pairs of genomes:");
+	LOG("\t");
+	for (auto &p : stats_.back().recombinationPairs) {
+		LOGNP(p.first << " (f: " << stats_.back().fitness[p.first] << ") x " <<
+				p.second << " (f: " << stats_.back().fitness[p.second] << ");  ");
+	}
+	LOGNP("\n");
+	LOG("Selected genomes for next generation: ");
+	for (auto i : stats_.back().selected)
+		LOGNP(i << " (f: " << stats_.back().fitness[i] << "); ");
+	LOGNP("\n");
+	LOGLN("Fresh new genomes for next generation: " << stats_.back().newRandom);
+
+	float avgFitness = std::accumulate(stats_.back().fitness.begin(), stats_.back().fitness.end(), 0.f);
+	avgFitness /= stats_.back().fitness.size();
+	LOGLN("Average iteration fitness: " << avgFitness);
 }
 
 void Researcher::printStatistics() {
