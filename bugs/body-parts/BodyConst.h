@@ -19,7 +19,6 @@ public:
 	// fixed values:
 	static constexpr float minDivisionRatio					= 0.01f;		// [*]
 	static constexpr float NeuronEnergyRate					= 0.03f;		// [J/s] how much energy does a neuron consume when outputting a value of 1.0?
-//	static constexpr float MinBodyPartSize					= 1.e-4f;		// [m^2]
 	static constexpr float MinBodyPartDensity				= 0.5f;			// [kg/m^2]
 	static constexpr float MaxBodyPartDensity				= 100.f;		// [kg/m^2]
 	static constexpr float MaxBodyPartAspectRatio			= 100.f;		// [*]
@@ -31,7 +30,6 @@ public:
 	static constexpr float ZygoteDensityInv					= 1.f / ZygoteDensity; // [m^2/kg]
 	static constexpr float GripperDensity					= 7.f;			// [kg/m^2]
 	static constexpr float MuscleDensity					= 13.f;			// [kg/m^2]
-//	static constexpr float FatCellReadyEnergyDensity		= 100.f;		// [J/m^2] how much ready-to-use energy the cells can store
 	static constexpr float MuscleContractionRatio 			= 0.5f;			// [*] ratio between muscle's fully contracted length and fully stretched length
 	static constexpr float MuscleForcePerWidthRatio 		= 100;			// [N/m] the theoretical force of a muscle 1 meter wide.
 	static constexpr float MuscleMaxLinearContractionSpeed 	= 0.6f;			// [m/s] max meters/second linear contraction speed
@@ -44,6 +42,8 @@ public:
 	static constexpr float ResidualEnergyConstant			= 0.15f;		// [J/(Kg*s)] residual energy consumption by all body parts
 	static constexpr float MouthDensity						= 8.f;			// [kg/m^2]
 	static constexpr float NoseDensity						= 3.f;			// [kg/m^2]
+	static constexpr float EyeDensity						= 3.f;			// [kg/m^2]
+	static constexpr float CompassDensity					= 5.f;			// [kg/m^2]
 	static constexpr float MouthBufferDensity				= 10.f;			// [kg/m^2] how much food (kg) can fit into a unit size mouth?
 	static constexpr float FoodSwallowSpeedDensity			= 5.0f;			// [kg/(m^2*s)] how much food can a unit sized Mouth swallow in a second?
 	static constexpr float FoodProcessingSpeedDensity		= 0.5f;			// [kg/(m^2*s)] how much food can a unit sized Mouth process in a second?
@@ -62,7 +62,6 @@ public:
 	// default initial values for cummulative properties:
 	static constexpr float initialBoneDensity				= 11.f;			// [kg/m^2]
 	static constexpr float initialBoneAspectRatio			= 1.5f;			// [*]  length/width
-//	static constexpr float initialJointSize					= 1.9e-4f;		// [m^2]
 	static constexpr float initialJointDensity				= 9.f;			// [kg/m^2]
 	static constexpr float initialJointMinPhi				= -PI/8;		// [rad]
 	static constexpr float initialJointMaxPhi				= PI*0.6f;		// [rad]

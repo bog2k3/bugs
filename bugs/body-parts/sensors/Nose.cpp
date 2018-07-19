@@ -78,6 +78,7 @@ void Nose::draw(Viewport* vp) {
 }
 
 static glm::vec2 getNoseAttachmentPoint(float size, float angle) {
+	// TODO - fix this to use the triangular shape instead of round
 	glm::vec2 ret(glm::rotate(glm::vec2(sqrtf(size * PI_INV), 0), angle));
 	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
 	return ret;

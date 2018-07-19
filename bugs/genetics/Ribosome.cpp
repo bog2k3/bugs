@@ -12,6 +12,8 @@
 #include "../body-parts/Mouth.h"
 #include "../body-parts/EggLayer.h"
 #include "../body-parts/sensors/Nose.h"
+#include "../body-parts/sensors/Eye.h"
+#include "../body-parts/sensors/Compass.h"
 #include "../body-parts/JointPivot.h"
 #include "../body-parts/JointWeld.h"
 #include "../body-parts/FatCell.h"
@@ -56,9 +58,9 @@ static std::map<BodyPartType, float (*)(BodyCell const&)> mapDensityFunctions {
 	{ BodyPartType::FAT, 				FatCell::getDensity },
 	{ BodyPartType::GRIPPER, 			Gripper::getDensity },
 	{ BodyPartType::MOUTH, 				Mouth::getDensity },
-//	{ BodyPartType::SENSOR_COMPASS, 	SensorCompass::getDensity },
+	{ BodyPartType::SENSOR_COMPASS, 	Compass::getDensity },
 	{ BodyPartType::SENSOR_PROXIMITY,	Nose::getDensity },
-//	{ BodyPartType::SENSOR_SIGHT, 		Eye::getDensity },
+	{ BodyPartType::SENSOR_SIGHT, 		Eye::getDensity },
 };
 
 static std::map<BodyPartType, float (*)(BodyCell const& cell, float angle)> mapRadiusFunctions {
@@ -67,9 +69,9 @@ static std::map<BodyPartType, float (*)(BodyCell const& cell, float angle)> mapR
 	{ BodyPartType::FAT, 				FatCell::getRadius },
 	{ BodyPartType::GRIPPER, 			Gripper::getRadius },
 	{ BodyPartType::MOUTH, 				Mouth::getRadius },
-//	{ BodyPartType::SENSOR_COMPASS, 	SensorCompass::getRadius },
+	{ BodyPartType::SENSOR_COMPASS, 	Compass::getRadius },
 	{ BodyPartType::SENSOR_PROXIMITY,	Nose::getRadius },
-//	{ BodyPartType::SENSOR_SIGHT, 		Eye::getRadius },
+	{ BodyPartType::SENSOR_SIGHT, 		Eye::getRadius },
 };
 
 Ribosome::Ribosome(Bug* bug)
