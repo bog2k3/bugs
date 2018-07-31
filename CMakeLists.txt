@@ -26,7 +26,7 @@ add_executable(bugs ${sources})
 set_property(TARGET bugs PROPERTY LINK_DEPENDS "${BOGLFW_DIST_DIR}/lib/libboglfw.a")
 
 #add libraries
-target_link_libraries(bugs PUBLIC boglfw GLEW glfw GL rt png Box2D dl pthread X11 xrandr Xinerama Xcursor)
+target_link_libraries(bugs PUBLIC boglfw GLEW glfw3 GL rt png Box2D dl pthread X11 xrandr Xinerama Xcursor)
 
 set_property(TARGET bugs PROPERTY CXX_STANDARD 14)
 target_compile_options(bugs PUBLIC -Wall -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS -std=c++14)
