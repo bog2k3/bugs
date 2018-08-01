@@ -21,8 +21,22 @@ public:
 	std::ostream &str_;
 };
 
-template<class C>
-SeparatedTextOutStream& operator << (SeparatedTextOutStream &s, C const& c) {
+SeparatedTextOutStream& operator << (SeparatedTextOutStream &s, int const& c) {
+	s.str_ << c << "\n";
+	return s;
+}
+
+SeparatedTextOutStream& operator << (SeparatedTextOutStream &s, unsigned const& c) {
+	s.str_ << c << "\n";
+	return s;
+}
+
+SeparatedTextOutStream& operator << (SeparatedTextOutStream &s, float const& c) {
+	s.str_ << c << "\n";
+	return s;
+}
+
+SeparatedTextOutStream& operator << (SeparatedTextOutStream &s, double const& c) {
 	s.str_ << c << "\n";
 	return s;
 }

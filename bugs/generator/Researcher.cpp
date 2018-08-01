@@ -36,8 +36,8 @@ void Researcher::saveGenomes() {
 		std::stringstream ss;
 		ss << genomesPath_ + "/genome-" << i++ << ".txt";
 		std::ofstream f(ss.str());
-		//SeparatedTextOutStream sf(f);
-		f << g.second << g.first;
+		SeparatedTextOutStream sf(f);
+		sf << g.second << g.first;
 	}
 }
 
