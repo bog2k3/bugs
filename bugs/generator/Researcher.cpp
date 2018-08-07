@@ -149,15 +149,15 @@ void Researcher::fillUpPopulation() {
 
 decltype(Researcher::genomes_) Researcher::doRecombination() {
 	decltype(genomes_) newGenomes;
-	uint required = max(1.f, recombinationRatio_ * targetPopulation_);
-	uint tries = 0;
-	uint maxTries = genomes_.size();
+	unsigned required = max(1.f, recombinationRatio_ * targetPopulation_);
+	unsigned tries = 0;
+	unsigned maxTries = genomes_.size();
 
 	stats_.back().recombinationTarget = required;
 
 	while (tries++ <= maxTries && newGenomes.size() < required) {
-		uint i1 = biasedRandomSelect(1.f, {});
-		uint i2 = biasedRandomSelect(1.f, {});
+		unsigned i1 = biasedRandomSelect(1.f, {});
+		unsigned i2 = biasedRandomSelect(1.f, {});
 
 		Chromosome c1 = GeneticOperations::meyosis(genomes_[i1].first);
 		Chromosome c2 = GeneticOperations::meyosis(genomes_[i2].first);
@@ -173,10 +173,10 @@ decltype(Researcher::genomes_) Researcher::doRecombination() {
 }
 
 void Researcher::selectBest(decltype(genomes_) &out) {
-	std::set<uint> selected;
-	uint roomForNew = max(1.f, renewRatio_ * targetPopulation_);
+	std::set<unsigned> selected;
+	unsigned roomForNew = max(1.f, renewRatio_ * targetPopulation_);
 	while (out.size() < targetPopulation_ - roomForNew) {
-		uint index = biasedRandomSelect(1.f, selected);
+		unsigned index = biasedRandomSelect(1.f, selected);
 		selected.insert(index);
 		out.push_back(genomes_[index]);
 		genomes_[index].second = 0; // in order to avoid duplicates
@@ -192,18 +192,18 @@ void Researcher::selectBest(decltype(genomes_) &out) {
 
 // smaller than 1.0 values are more likely to also select from the ones with smaller fitnesses
 // greater than 1.0 values are more likely to only select the highest fitnesses
-uint Researcher::biasedRandomSelect(float steepness, std::set<uint> exclude) {
+unsigned Researcher::biasedRandomSelect(float steepness, std::set<unsigned> exclude) {
 	// each genome gets a chance to be selected proportional to its fitness raised to "steepness" power
 	// normalize chances to make them sum up to 1.0
 	double total = 0;
-	for (uint i=0; i<genomes_.size(); i++) {
+	for (unsigned i=0; i<genomes_.size(); i++) {
 		if (exclude.find(i) == exclude.end())
 			total += pow(genomes_[i].second, steepness);
 	}
 	double dice = randd() * total;
 	double floor = 0;
-	uint selected = genomes_.size();
-	for (uint i=0; i<genomes_.size(); i++) {
+	unsigned selected = genomes_.size();
+	for (unsigned i=0; i<genomes_.size(); i++) {
 		if (exclude.find(i) != exclude.end())
 			continue;
 		auto &g = genomes_[i];
@@ -219,9 +219,9 @@ uint Researcher::biasedRandomSelect(float steepness, std::set<uint> exclude) {
 
 void Researcher::printIterationStats() {
 	LOG("Iteration best fitnesses: ");
-	uint n=10;
-	uint printed = 0;
-	for (uint i=0; i<n && i<stats_.back().fitness.size(); i++) {
+	unsigned n=10;
+	unsigned printed = 0;
+	for (unsigned i=0; i<n && i<stats_.back().fitness.size(); i++) {
 		if (stats_.back().fitness[i] == 0)
 			break;
 		printed++;

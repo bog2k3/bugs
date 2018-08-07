@@ -481,7 +481,7 @@ void Ribosome::decodeGene(Gene const& g, BodyCell &cell, DecodeContext &ctx, boo
 		ctx.neuralGenes.push_back(&g);
 		break;
 	default:
-		ERROR("Unhandled gene type : " << (uint)g.type);
+		ERROR("Unhandled gene type : " << (unsigned)g.type);
 	}
 }
 
@@ -538,7 +538,7 @@ void Ribosome::buildOutputSocketsList(BodyCell* cell, std::vector<VMSEntry<std::
 	}
 	// add cell's sensors' output sockets
 	for (auto s : cellContext_[cell].sensors_) {
-		for (uint i=0; i<s->getOutputCount(); i++) {
+		for (unsigned i=0; i<s->getOutputCount(); i++) {
 			// sensors' vms coordinates aleardy contain the cell's vmsOffset
 			out.push_back({{s->getOutputSocket(i), nullptr}, s->getOutputVMSCoord(i)});
 		}
@@ -878,7 +878,7 @@ bool Ribosome::geneQualifies(Gene& g, BodyCell& c) {
 	if (!r)
 		return true;
 	// check for propagation block down to the cell
-	for (uint i=0; i<c.branch_.size(); i++) {
+	for (unsigned i=0; i<c.branch_.size(); i++) {
 		bool block = c.branch_[i] == 'R' ? fBool(r->levels[i].stopRight) : fBool(r->levels[i].stopLeft);
 		if (block)
 			return false;

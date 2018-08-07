@@ -19,8 +19,8 @@
 
 std::string Chromosome::stringify() const {
 	char s[genes.size() + (genes.size()/10)*4 + 1];
-	uint p = 0;
-	for (uint i=0; i<genes.size(); i++) {
+	unsigned p = 0;
+	for (unsigned i=0; i<genes.size(); i++) {
 		if (i % 10 == 0) {
 			s[p++] = '[';
 			s[p++] = ((i/100) % 10) + '0';
@@ -51,7 +51,7 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	// copy insertion list:
 	c.insertions = gen.first.insertions;	// both chromosomes should have identical lists
 	// increase all insertions' age:
-	for (uint i=0; i<c.insertions.size(); i++)
+	for (unsigned i=0; i<c.insertions.size(); i++)
 		c.insertions[i].age++;
 	// perform some mutations:
 	alterChromosome(c);
@@ -61,8 +61,8 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 
 void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
 	assertDbg(amount > 0);
-	for (uint i=0; i<c.insertions.size(); i++) {
-		uint from = i + amount;
+	for (unsigned i=0; i<c.insertions.size(); i++) {
+		unsigned from = i + amount;
 		if (from < c.insertions.size())
 			c.insertions[i] = c.insertions[from];
 		else {
@@ -79,7 +79,7 @@ int GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, G
 	assertDbg(ins.index <= (int)c.genes.size());
 	c.genes.insert(c.genes.begin() + ins.index, g);
 	// determine where in insertions we must add this new index
-	uint d=0;
+	unsigned d=0;
 	while (d<c.insertions.size() && c.insertions[d].index < ins.index) d++;
 	c.insertions.insert(c.insertions.begin()+d, ins);
 	int ret = d;
@@ -92,8 +92,8 @@ int GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, G
 void GeneticOperations::trimInsertionList(Chromosome &c) {
 	while (c.insertions.size() > WorldConst::MaxGenomeLengthDifference) {
 		// search for oldest entry and remove it
-		uint ioldest = 0;
-		for (uint i=1; i<c.insertions.size(); i++)
+		unsigned ioldest = 0;
+		for (unsigned i=1; i<c.insertions.size(); i++)
 			if (c.insertions[i].age > c.insertions[ioldest].age)
 				ioldest = i;
 		c.insertions.erase(c.insertions.begin()+ioldest);
@@ -103,7 +103,7 @@ void GeneticOperations::trimInsertionList(Chromosome &c) {
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	// this shit is more complicated than i thought
 	LOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
-	assertDbg((uint)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
+	assertDbg((unsigned)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
 
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
 	Chromosome &c1 = gen.first;
@@ -134,7 +134,7 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	decltype(c1.insertions) &ins1 = c1.insertions;
 	decltype(c2.insertions) &ins2 = c2.insertions;
 
-	for (uint i=0, j=0; i<ins1.size() || j<ins2.size(); ) {
+	for (unsigned i=0, j=0; i<ins1.size() || j<ins2.size(); ) {
 		while (i<ins1.size() && c1_added[i])
 			i++;
 		while (j<ins2.size() && c2_added[j])
@@ -289,7 +289,7 @@ int alterAtom(Atom<T> &a, float mutationChanceFactor) {
 
 int alterRestriction(BranchRestriction& r, float mutationChanceFactor) {
 	int altered = alterAtom(r.activeLevels, mutationChanceFactor);
-	for (uint i=0; i<constants::MAX_DIVISION_DEPTH; i++) {
+	for (unsigned i=0; i<constants::MAX_DIVISION_DEPTH; i++) {
 		altered += alterAtom(r.levels[i].skipLeft, mutationChanceFactor);
 		altered += alterAtom(r.levels[i].skipRight, mutationChanceFactor);
 		altered += alterAtom(r.levels[i].stopLeft, mutationChanceFactor);
@@ -373,7 +373,7 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 		altered += alterRestriction(g.data.gene_vms_offset.restriction, mutationChanceFactor);
 		break;
 	default:
-		ERROR("unhandled gene type (alterGene): "<<(uint)g.type);
+		ERROR("unhandled gene type (alterGene): "<<(unsigned)g.type);
 		break;
 	}
 
@@ -387,7 +387,7 @@ int GeneticOperations::alterGene(Gene &g, float mutationChanceFactor) {
 float restrictionMutationChance(BranchRestriction const& r) {
 	float val = 0;
 	val += r.activeLevels.chanceToMutate.value;
-	for (uint i=0; i<constants::MAX_DIVISION_DEPTH; i++) {
+	for (unsigned i=0; i<constants::MAX_DIVISION_DEPTH; i++) {
 		val += r.levels[i].skipLeft.chanceToMutate.value;
 		val += r.levels[i].skipRight.chanceToMutate.value;
 		val += r.levels[i].stopLeft.chanceToMutate.value;
@@ -473,7 +473,7 @@ void GeneticOperations::getAlterationChances(Gene const& g, float& mutationCh, f
 		mutationCh += restrictionMutationChance(g.data.gene_vms_offset.restriction);
 		break;
 	default:
-		ERROR("unhandled gene type (getAlterationChances): "<<(uint)g.type);
+		ERROR("unhandled gene type (getAlterationChances): "<<(unsigned)g.type);
 		break;
 	}
 }

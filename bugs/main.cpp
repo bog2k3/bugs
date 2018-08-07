@@ -594,7 +594,7 @@ int main(int argc, char* argv[]) {
 		Infrastructure::shutDown();
 	} while (0);
 
-	for (uint i=0; i<perf::Results::getNumberOfThreads(); i++) {
+	for (unsigned i=0; i<perf::Results::getNumberOfThreads(); i++) {
 		std::cout << "\n=============Call Tree for thread [" << perf::Results::getThreadName(i) << "]==========================================\n";
 		printCallTree(perf::Results::getCallTrees(i), 0);
 		std::cout << "\n------------ TOP HITS -------------\n";

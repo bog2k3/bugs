@@ -16,10 +16,10 @@
 
 struct IterationStats {
 	std::vector<float> fitness;
-	uint newRandom = 0;
-	uint recombinationTarget = 0;
-	std::vector<std::pair<uint, uint>> recombinationPairs;
-	std::vector<uint> selected;
+	unsigned newRandom = 0;
+	unsigned recombinationTarget = 0;
+	std::vector<std::pair<unsigned, unsigned>> recombinationPairs;
+	std::vector<unsigned> selected;
 };
 
 // this class manages and coordinates the genome research process
@@ -44,11 +44,11 @@ public:
 private:
 	std::string genomesPath_;
 	std::vector<std::pair<Genome, float>> genomes_;
-	uint targetPopulation_ = 20;
+	unsigned targetPopulation_ = 20;
 	float recombinationRatio_ = 0.25f;
 	float renewRatio_ = 0.05f;
-	uint motorSampleFrames_ = 500;
-	uint randomGenomeLength_ = 200;
+	unsigned motorSampleFrames_ = 500;
+	unsigned randomGenomeLength_ = 200;
 
 	std::vector<IterationStats> stats_;
 
@@ -56,7 +56,7 @@ private:
 	void fillUpPopulation();
 	decltype(genomes_) doRecombination();
 	void selectBest(decltype(genomes_) &out);
-	uint biasedRandomSelect(float steepness, std::set<uint> exclude); // select a genome randomly, but biased by the relative fitnesses towards the best
+	unsigned biasedRandomSelect(float steepness, std::set<unsigned> exclude); // select a genome randomly, but biased by the relative fitnesses towards the best
 
 	void printIterationStats();
 };

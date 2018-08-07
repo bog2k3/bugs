@@ -34,13 +34,13 @@ const glm::vec3 debug_color(1.f, 0.8f, 0.f);
 Nose::Nose(BodyPartContext const& context, BodyCell& cell)
 	: BodyPart(BodyPartType::SENSOR_PROXIMITY, context, cell)
 {
-	for (uint i=0; i<getOutputCount(); i++)
+	for (unsigned i=0; i<getOutputCount(); i++)
 		outputSocket_[i] = new OutputSocket();
 
 	physBody_.userObjectType_ = ObjectTypes::BPART_NOSE;
 	physBody_.userPointer_ = this;
 
-	for (uint i=0; i<NoseDetectableFlavoursCount; i++)
+	for (unsigned i=0; i<NoseDetectableFlavoursCount; i++)
 		outputVMSCoord_[i] = cell.vmsOffset() + cell.mapAttributes_[GENE_ATTRIB_VMS_COORD1 + i].clamp(-BodyConst::MaxVMSCoordinateValue, BodyConst::MaxVMSCoordinateValue);
 
 	context_.updateList.add(this);
@@ -51,7 +51,7 @@ Nose::Nose(BodyPartContext const& context, BodyCell& cell)
 }
 
 Nose::~Nose() {
-	for (uint i=0; i<getOutputCount(); i++)
+	for (unsigned i=0; i<getOutputCount(); i++)
 		delete outputSocket_[i];
 }
 
@@ -131,7 +131,7 @@ void Nose::update(float dt) {
 	entLabels[whichNose].clear();
 #endif
 
-	for (uint i=0; i<NoseDetectableFlavoursCount; i++) {
+	for (unsigned i=0; i<NoseDetectableFlavoursCount; i++) {
 		glm::vec3 posRot = getWorldTransformation();
 		glm::vec2 pos = vec3xy(posRot);
 		static thread_local std::vector<Entity*> ents;

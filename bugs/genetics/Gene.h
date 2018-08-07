@@ -100,7 +100,7 @@ struct BranchRestriction {
 		clear();
 		activeLevels.set((strlen(code)+1)/3);
 		memset(levels, 0, sizeof(levels));
-		for (uint i=0; i<activeLevels; i++) {
+		for (unsigned i=0; i<activeLevels; i++) {
 			switch (code[i*3+0]) {
 				case '0':
 					levels[i].skipLeft.set(constants::FBOOL_true);

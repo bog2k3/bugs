@@ -33,7 +33,7 @@ struct Chromosome {
 	}
 
 	bool isGeneticallyCompatible(Chromosome const& c) {
-		return (uint)abs((int)c.genes.size() - (int)genes.size()) <= WorldConst::MaxGenomeLengthDifference;
+		return (unsigned)abs((int)c.genes.size() - (int)genes.size()) <= WorldConst::MaxGenomeLengthDifference;
 	}
 
 	std::string stringify() const;

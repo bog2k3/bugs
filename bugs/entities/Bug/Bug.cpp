@@ -43,11 +43,11 @@
 
 static const float DECODE_FREQUENCY = 5.f; // genes per second
 static const float DECODE_PERIOD = 1.f / DECODE_FREQUENCY; // seconds
-static const uint AABB_CACHE_MAX_FRAMES = 15;
+static const unsigned AABB_CACHE_MAX_FRAMES = 15;
 
-std::atomic<uint> Bug::population {0};
-std::atomic<uint> Bug::maxGeneration {0};
-std::atomic<uint> Bug::freeZygotes {0};
+std::atomic<unsigned> Bug::population {0};
+std::atomic<unsigned> Bug::maxGeneration {0};
+std::atomic<unsigned> Bug::freeZygotes {0};
 std::atomic<uint64_t> Bug::nextId {1};
 
 Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 velocity, unsigned generation)

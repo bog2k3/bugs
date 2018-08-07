@@ -53,9 +53,9 @@ StreamType& operator >> (StreamType &stream, gene_type &type) {
 template<class StreamType>
 StreamType& operator << (StreamType &stream, BranchRestriction const& br) {
 	stream << br.activeLevels;
-	uint totalLevels = sizeof(br.levels) / sizeof(br.levels[0]);
+	unsigned totalLevels = sizeof(br.levels) / sizeof(br.levels[0]);
 	stream << totalLevels;
-	for (uint i=0; i<totalLevels; i++) {
+	for (unsigned i=0; i<totalLevels; i++) {
 		stream << br.levels[i].skipLeft;
 		stream << br.levels[i].skipRight;
 		stream << br.levels[i].stopLeft;
@@ -67,12 +67,12 @@ StreamType& operator << (StreamType &stream, BranchRestriction const& br) {
 template<class StreamType>
 StreamType& operator >> (StreamType &stream, BranchRestriction &br) {
 	stream >> br.activeLevels;
-	uint maxLevels = sizeof(br.levels) / sizeof(br.levels[0]);
+	unsigned maxLevels = sizeof(br.levels) / sizeof(br.levels[0]);
 	if (br.activeLevels > maxLevels)
 		br.activeLevels.set(maxLevels);
-	uint totalLevels;
+	unsigned totalLevels;
 	stream >> totalLevels;
-	for (uint i=0; i<totalLevels; i++) {
+	for (unsigned i=0; i<totalLevels; i++) {
 		Atom<float> skipLeft, skipRight, stopLeft, stopRight;
 		stream >> skipLeft >> skipRight >> stopLeft >> stopRight;
 		if (i < maxLevels) {

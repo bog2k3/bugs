@@ -145,10 +145,10 @@ protected:
 	CumulativeValue developmentMassThreshRatio_;
 	CumulativeValue eggMass_;
 
-	uint generation_=0;  // the generation this bug represents
-	static std::atomic<uint> population;
-	static std::atomic<uint> freeZygotes;
-	static std::atomic<uint> maxGeneration;
+	unsigned generation_=0;  // the generation this bug represents
+	static std::atomic<unsigned> population;
+	static std::atomic<unsigned> freeZygotes;
+	static std::atomic<unsigned> maxGeneration;
 
 	friend class Ribosome;
 
@@ -176,7 +176,7 @@ private:
 	uint64_t id = nextId++;
 
 	mutable aabb cachedAABB_;
-	mutable uint cachedAABBFramesOld_;
+	mutable unsigned cachedAABBFramesOld_;
 //	mutable glm::vec3 cachedWorldTransform_;
 };
 
