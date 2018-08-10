@@ -20,6 +20,7 @@ struct IterationStats {
 	unsigned recombinationTarget = 0;
 	std::vector<std::pair<unsigned, unsigned>> recombinationPairs;
 	std::vector<unsigned> selected;
+	float duration_s = 0;
 };
 
 // this class manages and coordinates the genome research process

@@ -57,7 +57,10 @@ void Researcher::initialize(int targetPopulation, float recombinationRatio, floa
 
 // perform a research iteration
 void Researcher::iterate(float timeStep) {
-	LOGLN("RESEARCH ITERATION -----------------------------------------------------------------------------------------------");
+	static unsigned iterationNumber = 1;
+	LOGNP("\n");
+	LOGLN("RESEARCH ITERATION " << iterationNumber++ << " -----------------------------------------------------------------------------------------------\n");
+	std::chrono::time_point<std::chrono::high_resolution_clock> itStartTime(std::chrono::high_resolution_clock::now());
 	stats_.push_back({});
 	MTVector<Bug*> bugs(genomes_.size());
 	parallel_for(genomes_.begin(), genomes_.end(), Infrastructure::getThreadPool(), [this, timeStep, &bugs](auto &gp) {
@@ -78,7 +81,7 @@ void Researcher::iterate(float timeStep) {
 		World::getInstance().update(0);
 
 	// compute fitnesses
-	MTVector<std::remove_reference<decltype(genomes_[0])>::type> updatedGenomes(genomes_.size());
+	MTVector<decltype(genomes_)::value_type> updatedGenomes(genomes_.size());
 	parallel_for(bugs.begin(), bugs.end(), Infrastructure::getThreadPool(), [this, &updatedGenomes, &timeStep] (auto b) {
 		float fitness = 0;
 		fitness += GenomeFitness::compute(*b);
@@ -122,6 +125,9 @@ void Researcher::iterate(float timeStep) {
 	stats_.back().newRandom = targetPopulation_ - genomes_.size();
 	// refresh population by adding some new random genomes
 	fillUpPopulation();
+
+	std::chrono::time_point<std::chrono::high_resolution_clock> itEndTime(std::chrono::high_resolution_clock::now());
+	stats_.back().duration_s = std::chrono::nanoseconds(itEndTime - itStartTime).count() * 1.e-9;
 
 	printIterationStats();
 }
@@ -253,6 +259,7 @@ void Researcher::printIterationStats() {
 	float avgFitness = std::accumulate(stats_.back().fitness.begin(), stats_.back().fitness.end(), 0.f);
 	avgFitness /= stats_.back().fitness.size();
 	LOGLN("Average iteration fitness: " << avgFitness);
+	LOGLN("Iteration duration: " << stats_.back().duration_s << " [s]");
 }
 
 void Researcher::printStatistics() {

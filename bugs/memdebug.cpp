@@ -2,14 +2,15 @@
  * memdebug.cpp
  *
  *  Created on: Dec 27, 2015
- *      Author: alexandra
+ *      Author: bogdan
  */
 
 #include <new>
 #include <set>
 #include <stdexcept>
+#include <mutex>
 
-//#define ENABLE_MEMDEBUG
+#define ENABLE_MEMDEBUG
 
 #ifdef ENABLE_MEMDEBUG
 
@@ -19,13 +20,28 @@ std::set<void*> initialize() {
 	initialized = true;
 	return std::set<void*>();
 }
-std::set<void*> ptrSet = initialize();
+
+std::recursive_mutex heapMutex;
+
+static struct wrapper {
+	std::set<void*> ptrSet = initialize();
+
+	~wrapper() {
+		std::lock_guard<std::recursive_mutex> lk(heapMutex);
+		internalCall = true;
+		ptrSet.clear();
+		internalCall = false;
+		initialized = false;
+	}
+} _;
+
 
 void* operator new(std::size_t sz) _GLIBCXX_THROW (std::bad_alloc) {
+	std::lock_guard<std::recursive_mutex> lk(heapMutex);
 	void* ptr = malloc(sz);
 	if (initialized && !internalCall) {
 		internalCall = true;
-		ptrSet.insert(ptr);
+		_.ptrSet.insert(ptr);
 		internalCall = false;
 	}
 	return ptr;
@@ -36,11 +52,12 @@ void* operator new[](std::size_t sz) _GLIBCXX_THROW (std::bad_alloc) {
 }
 
 void operator delete(void* ptr) _GLIBCXX_USE_NOEXCEPT {
+	std::lock_guard<std::recursive_mutex> lk(heapMutex);
 	if (initialized && !internalCall) {
-		if (ptrSet.find(ptr) == ptrSet.end())
+		if (_.ptrSet.find(ptr) == _.ptrSet.end())
 			throw std::runtime_error("delete called on invalid pointer!!!");
 		internalCall = true;
-		ptrSet.erase(ptr);
+		_.ptrSet.erase(ptr);
 		internalCall = false;
 	}
 	free(ptr);

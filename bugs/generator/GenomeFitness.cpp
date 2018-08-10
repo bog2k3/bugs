@@ -11,7 +11,7 @@
 
 float GenomeFitness::compute(Bug const& b) {
 	float fitness = 0;
-	const float max_fitness = 4.f; // +1 for egglayer, +1 for mouth, +2 for noses
+	// +1 for egglayer, +1 for mouth, +2 for noses
 	int noses = 0;
 	bool hasMouth = false;
 	bool hasEggLayer = false;
@@ -44,7 +44,7 @@ float GenomeFitness::compute(Bug const& b) {
 		default:
 			break;
 		}
-		return fitness >= max_fitness; // stop when max_fitness is reached
+		return false;
 	});
 	float fatRatio = b.getTotalFatMass() / b.getTotalMass();
 	float idealFatRatio = 0.33f;
