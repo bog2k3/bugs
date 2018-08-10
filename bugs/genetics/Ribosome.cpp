@@ -284,7 +284,7 @@ void Ribosome::specializeCells(bool &hasMouth, bool &hasEggLayer) {
 
 	// fix all cell's positioning (affected by changing shape and size above)
 	std::set<Cell*> cellSet { activeCells.begin(), activeCells.end() };
-	BodyCell::fixOverlap(cellSet, true);
+	BodyCell::fixOverlap(cellSet, !researchMode_);
 	for (auto c : activeCells)
 		c->updateBonds();
 

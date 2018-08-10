@@ -130,6 +130,13 @@ void Researcher::iterate(float timeStep) {
 	stats_.back().duration_s = std::chrono::nanoseconds(itEndTime - itStartTime).count() * 1.e-9;
 
 	printIterationStats();
+
+	const int autosaveInterval = 20; // iterations
+	if (!(iterationNumber % autosaveInterval)) {
+		LOGLN("Autosaving (interval=" << autosaveInterval << ") ...");
+		saveGenomes();
+		LOGLN("Autosave done.");
+	}
 }
 
 void Researcher::loadGenomes() {
