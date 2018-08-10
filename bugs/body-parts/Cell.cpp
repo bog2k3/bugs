@@ -108,6 +108,9 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 					auto thisOffs = -offset * clamp(1-ratio, 0.f, cr*maxDisplacementRatio);
 					auto otherOffs = offset * clamp(ratio, 0.f, nr*maxDisplacementRatio);
 
+					assert(!std::isnan(glm::length(thisOffs)));
+					assert(!std::isnan(glm::length(otherOffs)));
+
 					totalCellOffset[c] += thisOffs;
 					assert(!std::isinf(glm::length(totalCellOffset[c])));
 

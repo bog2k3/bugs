@@ -141,6 +141,8 @@ void Researcher::iterate(float timeStep) {
 
 void Researcher::loadGenomes() {
 	// load as many genomes as needed or available from genomesPath_ directory
+	LOGLN("Loading genomes from: " << genomesPath_ << " ...");
+	int nLoaded = 0;
 	for (unsigned i=0; i<targetPopulation_; i++) {
 		std::stringstream ss;
 		ss << genomesPath_ + "/genome-" << i << ".dat";
@@ -156,9 +158,12 @@ void Researcher::loadGenomes() {
 
 		genomes_.push_back({g, fitness});
 
+		nLoaded++;
+
 		if (genomes_.size() == targetPopulation_)
 			break;
 	}
+	LOGLN("Loaded " << nLoaded << " genomes.");
 }
 
 void Researcher::fillUpPopulation() {
