@@ -63,10 +63,11 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 	const float a = -(2.f*r2)*(1.f - 1.f/(r2*RM) - (1-1.f/r2)*RM);
 	const float b = 1.f/RM - RM - a;
 	const float c = RM;
-	auto massRatioFn = [a,b,c](float r) {		// 2nd order polynomial function - see "making-of/20 mass ratio function.jpg" for details
-		assert(r >= 0.f && r <= 1.1f);
+	auto massRatioFn = [a,b,c, MaxMassRatio](float r) {		// 2nd order polynomial function - see "making-of/20 mass ratio function.jpg" for details
+		assert(r >= 0.f && r <= 1.01f);
 		r = clamp(r, 0.f, 1.f);
 		float y = a*r*r + b*r + c;
+		assert(y >= 0.95f/MaxMassRatio && y <= 1.05*MaxMassRatio);
 		return y;
 	};
 
@@ -86,7 +87,7 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 				// common constants and variables -------
 				const float toleranceFactor = extraPrecision ? 0.02f : 0.1f; // proportion of the smaller neighbor's radius
 				constexpr float maxDisplacementRatio = 2.f; // ratio of displacement to radius
-				// adjust for aparent mass alteration:
+				// adjust for apparent mass alteration:
 				float mr1 = massRatios[c]; if (mr1 == 0) mr1 = 1.f;
 				float mr2 = massRatios[n.other]; if (mr2 == 0) mr2 = 1.f;
 				float cmass = c->size_ * mr1;
@@ -108,7 +109,10 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 					auto otherOffs = offset * clamp(ratio, 0.f, nr*maxDisplacementRatio);
 
 					totalCellOffset[c] += thisOffs;
+					assert(!std::isinf(glm::length(totalCellOffset[c])));
+
 					totalCellOffset[n.other] += otherOffs;
+					assert(!std::isinf(glm::length(totalCellOffset[n.other])));
 
 					totalCellOffsetMod[c] += glm::length(thisOffs);
 					totalCellOffsetMod[n.other] += glm::length(otherOffs);

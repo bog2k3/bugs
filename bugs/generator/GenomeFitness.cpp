@@ -18,6 +18,7 @@ float GenomeFitness::compute(Bug const& b) {
 	auto &bparts = b.getBodyParts();
 	if (bparts.size() == 0)
 		return 0;
+	int fatCells = 0;
 	bparts[0]->applyPredicateGraph([&](auto b) {
 		switch (b->getType()) {
 		case BodyPartType::EGGLAYER:
@@ -37,6 +38,9 @@ float GenomeFitness::compute(Bug const& b) {
 				fitness += 1;
 			}
 			break;
+		case BodyPartType::FAT:
+			fatCells++;
+			break;
 		default:
 			break;
 		}
@@ -51,5 +55,17 @@ float GenomeFitness::compute(Bug const& b) {
 	else
 		fatFitnessScore = sqrt(fatRatio / idealFatRatio);
 
-	return fitness + fatFitnessScore;
+	fitness += fatFitnessScore;
+
+	// fitness decreases when bug has too many body parts, as few as possible that do the job is best
+	float lowestCoef = 0.2f;	// 20%
+	float highestCoef = 1.f;	// 100%
+	int minPartsThreshold = 30; // up to this number there is no penalty (fitness 100%)
+	int maxPartsThreshold = 100; // this is where fitness is reduced to 20%, above this it stays at 20%
+	int nBodyPartsClamped = clamp((int)bparts.size(), minPartsThreshold, maxPartsThreshold);
+
+	float coef = lowestCoef + (1 - nBodyPartsClamped / (maxPartsThreshold - minPartsThreshold)) * (highestCoef - lowestCoef);
+	assert(coef >= lowestCoef*0.95 && coef <= highestCoef*1.05);
+
+	return fitness * coef;
 }
