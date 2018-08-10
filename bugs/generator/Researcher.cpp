@@ -10,7 +10,6 @@
 #include "../body-parts/BodyConst.h"
 #include "../genetics/Ribosome.h"
 #include "../serialization/GenomeSerialization.h"
-#include "../serialization/separatedTextOutStream.h"
 #include "GenomeGenerator.h"
 #include "GenomeFitness.h"
 #include "MotorFitness.h"
@@ -19,6 +18,7 @@
 #include <boglfw/utils/parallel.h>
 #include <boglfw/Infrastructure.h>
 #include <boglfw/utils/filesystem.h>
+#include <boglfw/serialization/BinaryStream.h>
 
 #include <algorithm>
 #include <numeric>
@@ -31,13 +31,15 @@ Researcher::Researcher(std::string genomesPath)
 }
 
 void Researcher::saveGenomes() {
-	int i = 0;
-	for (auto &g : genomes_) {
+	for (unsigned i=0; i<genomes_.size(); i++) {
+		auto &g = genomes_[i];
 		std::stringstream ss;
-		ss << genomesPath_ + "/genome-" << i++ << ".txt";
-		std::ofstream f(ss.str());
-		SeparatedTextOutStream sf(f);
-		sf << g.second << g.first;
+		ss << genomesPath_ + "/genome-" << i << ".dat";
+		BinaryStream str(sizeof(g));
+		str << g.second << g.first;
+
+		std::ofstream f(ss.str(), std::ios::binary);
+		f.write((char*)str.getBuffer(), str.getSize());
 	}
 }
 
@@ -126,13 +128,18 @@ void Researcher::iterate(float timeStep) {
 
 void Researcher::loadGenomes() {
 	// load as many genomes as needed or available from genomesPath_ directory
-	auto files = filesystem::getFiles(genomesPath_, false);
-	for (auto &fn : files) {
+	for (unsigned i=0; i<targetPopulation_; i++) {
+		std::stringstream ss;
+		ss << genomesPath_ + "/genome-" << i << ".dat";
+		auto fn = ss.str();
+		if (!filesystem::pathExists(fn))
+			continue;
 		// load from file fn
-		std::ifstream f(fn);
+		std::ifstream f(fn, std::ios::binary);
+		BinaryStream str(f);
 		float fitness;
 		Genome g;
-		f >> fitness >> g;
+		str >> fitness >> g;
 
 		genomes_.push_back({g, fitness});
 

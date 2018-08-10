@@ -486,3 +486,16 @@ void GeneticOperations::alterMetaGene(MetaGene &meta)
 		meta.value = 0;
 }
 
+bool Chromosome::operator == (Chromosome const& c) const {
+	if (genes.size() != c.genes.size())
+		return false;
+	if (insertions.size() != c.insertions.size())
+		return false;
+	for (unsigned i=0; i<genes.size(); i++)
+		if (genes[i] != c.genes[i])
+			return false;
+	for (unsigned i=0; i<insertions.size(); i++)
+		if (insertions[i] != c.insertions[i])
+			return false;
+	return true;
+}

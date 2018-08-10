@@ -359,3 +359,155 @@ char Gene::getSymbol() const {
 		throw std::runtime_error("Unhandled gene type!");
 	}
 }
+
+bool Gene::operator==(Gene const& g) const {
+	if (type != g.type)
+		return false;
+	if (chance_to_delete != g.chance_to_delete)
+		return false;
+	if (chance_to_swap != g.chance_to_swap)
+		return false;
+	switch (type) {
+	case gene_type::BODY_ATTRIBUTE:
+		if (data.gene_body_attribute.attribute != g.data.gene_body_attribute.attribute)
+			return false;
+		if (data.gene_body_attribute.value != g.data.gene_body_attribute.value)
+			return false;
+		break;
+	case gene_type::JOINT_ATTRIBUTE:
+		if (data.gene_joint_attrib.attrib != g.data.gene_joint_attrib.attrib)
+			return false;
+		if (data.gene_joint_attrib.restriction != g.data.gene_joint_attrib.restriction)
+			return false;
+		if (data.gene_joint_attrib.value != g.data.gene_joint_attrib.value)
+			return false;
+		break;
+	case gene_type::MUSCLE_ATTRIBUTE:
+		if (data.gene_muscle_attrib.attrib != g.data.gene_muscle_attrib.attrib)
+			return false;
+		if (data.gene_muscle_attrib.restriction != g.data.gene_muscle_attrib.restriction)
+			return false;
+		if (data.gene_muscle_attrib.side != g.data.gene_muscle_attrib.side)
+			return false;
+		if (data.gene_muscle_attrib.value != g.data.gene_muscle_attrib.value)
+			return false;
+		break;
+	case gene_type::NEURAL_BIAS:
+		if (data.gene_neural_constant.neuronLocation != g.data.gene_neural_constant.neuronLocation)
+			return false;
+		if (data.gene_neural_constant.restriction != g.data.gene_neural_constant.restriction)
+			return false;
+		if (data.gene_neural_constant.value != g.data.gene_neural_constant.value)
+			return false;
+		break;
+	case gene_type::NEURON:
+		if (data.gene_neuron.neuronLocation != g.data.gene_neuron.neuronLocation)
+			return false;
+		if (data.gene_neuron.restriction != g.data.gene_neuron.restriction)
+			return false;
+		break;
+	case gene_type::NEURAL_PARAM:
+		if (data.gene_neural_param.neuronLocation != g.data.gene_neural_param.neuronLocation)
+			return false;
+		if (data.gene_neural_param.restriction != g.data.gene_neural_param.restriction)
+			return false;
+		if (data.gene_neural_param.value != g.data.gene_neural_param.value)
+			return false;
+		break;
+	case gene_type::TIME_SYNAPSE:
+		if (data.gene_time_synapse.restriction != g.data.gene_time_synapse.restriction)
+			return false;
+		if (data.gene_time_synapse.targetLocation != g.data.gene_time_synapse.targetLocation)
+			return false;
+		if (data.gene_time_synapse.weight != g.data.gene_time_synapse.weight)
+			return false;
+		break;
+	case gene_type::NO_OP:
+		break;
+	case gene_type::OFFSET:
+		if (data.gene_offset.offset != g.data.gene_offset.offset)
+			return false;
+		if (data.gene_offset.restriction != g.data.gene_offset.restriction)
+			return false;
+		if (data.gene_offset.side != g.data.gene_offset.side)
+			return false;
+		break;
+	case gene_type::PART_ATTRIBUTE:
+		if (data.gene_attribute.attribute != g.data.gene_attribute.attribute)
+			return false;
+		if (data.gene_attribute.restriction != g.data.gene_attribute.restriction)
+			return false;
+		if (data.gene_attribute.value != g.data.gene_attribute.value)
+			return false;
+		break;
+	case gene_type::PROTEIN:
+		if (data.gene_protein.protein != g.data.gene_protein.protein)
+			return false;
+		if (data.gene_protein.restriction != g.data.gene_protein.restriction)
+			return false;
+		if (data.gene_protein.weight != g.data.gene_protein.weight)
+			return false;
+		break;
+	case gene_type::SKIP:
+		if (data.gene_skip.count != g.data.gene_skip.count)
+			return false;
+		if (data.gene_skip.restriction != g.data.gene_skip.restriction)
+			return false;
+		break;
+	case gene_type::STOP:
+		break;
+	case gene_type::SYNAPSE:
+		if (data.gene_synapse.destLocation != g.data.gene_synapse.destLocation)
+			return false;
+		if (data.gene_synapse.priority != g.data.gene_synapse.priority)
+			return false;
+		if (data.gene_synapse.restriction != g.data.gene_synapse.restriction)
+			return false;
+		if (data.gene_synapse.srcLocation != g.data.gene_synapse.srcLocation)
+			return false;
+		if (data.gene_synapse.weight != g.data.gene_synapse.weight)
+			return false;
+		break;
+	case gene_type::TRANSFER_FUNC:
+		if (data.gene_transfer_function.functionID != g.data.gene_transfer_function.functionID)
+			return false;
+		if (data.gene_transfer_function.neuronLocation != g.data.gene_transfer_function.neuronLocation)
+			return false;
+		if (data.gene_transfer_function.restriction != g.data.gene_transfer_function.restriction)
+			return false;
+		break;
+	case gene_type::DIVISION_PARAM:
+		if (data.gene_division_param.param != g.data.gene_division_param.param)
+			return false;
+		if (data.gene_division_param.restriction != g.data.gene_division_param.restriction)
+			return false;
+		if (data.gene_division_param.value != g.data.gene_division_param.value)
+			return false;
+		break;
+	case gene_type::VMS_OFFSET:
+		if (data.gene_vms_offset.restriction != g.data.gene_vms_offset.restriction)
+			return false;
+		if (data.gene_vms_offset.value != g.data.gene_vms_offset.value)
+			return false;
+		break;
+	default:
+		throw std::runtime_error("Unhandled gene type!");
+	}
+	return true;
+}
+
+bool BranchRestriction::operator==(BranchRestriction const& b) const {
+	if (activeLevels != b.activeLevels)
+		return false;
+	for (unsigned i=0; i<activeLevels; i++) {
+		if (levels[i].skipLeft != b.levels[i].skipLeft)
+			return false;
+		if (levels[i].skipRight!= b.levels[i].skipRight)
+			return false;
+		if (levels[i].stopLeft != b.levels[i].stopLeft)
+			return false;
+		if (levels[i].stopRight != b.levels[i].stopRight)
+			return false;
+	}
+	return true;
+}

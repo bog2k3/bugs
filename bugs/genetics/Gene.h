@@ -16,6 +16,11 @@
 #include <vector>
 #include <cstring>
 
+template<class C>
+bool operator!=(C const& c1, C const& c2) {
+	return !(c1 == c2);
+}
+
 class MetaGene {
 public:
 	float value;
@@ -29,6 +34,10 @@ public:
 	MetaGene()
 		: value(0), dynamic_variation(0)
 	{ }
+
+	bool operator==(MetaGene const& m) const {
+		return value == m.value && dynamic_variation == m.dynamic_variation;
+	}
 };
 
 /**
@@ -51,6 +60,12 @@ struct Atom {
 
 	Atom() = default;
 	Atom(Atom const& a) = default;
+
+	bool operator==(Atom<T> const& a) const {
+		return value == a.value
+				&& chanceToMutate == a.chanceToMutate
+				&& changeAmount == a.changeAmount;
+	}
 };
 
 constexpr bool fBool(Atom<float> const& f) { return f.value > 0; }
@@ -135,6 +150,8 @@ struct BranchRestriction {
 			}
 		}
 	}
+
+	bool operator==(BranchRestriction const&) const;
 };
 
 struct GeneStop {
@@ -335,6 +352,8 @@ public:
 		update_meta_genes_vec();
 		return *this;
 	}
+
+	bool operator==(Gene const&) const;
 
 	char getSymbol() const;
 

@@ -25,6 +25,10 @@ struct Chromosome {
 
 		insertion() = default;
 		insertion(int index, int age) : index(index), age(age) {}
+
+		bool operator==(insertion const& i) const {
+			return index ==i.index && age == i.age;
+		}
 	};
 	std::vector<insertion> insertions;
 
@@ -35,6 +39,8 @@ struct Chromosome {
 	bool isGeneticallyCompatible(Chromosome const& c) {
 		return (unsigned)abs((int)c.genes.size() - (int)genes.size()) <= WorldConst::MaxGenomeLengthDifference;
 	}
+
+	bool operator == (Chromosome const&) const;
 
 	std::string stringify() const;
 };

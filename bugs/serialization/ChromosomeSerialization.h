@@ -26,11 +26,11 @@ StreamType& operator >> (StreamType &stream, Chromosome::insertion &ins) {
 template<class StreamType>
 StreamType& operator << (StreamType &stream, Chromosome const& chromosome) {
 	stream << (uint32_t)chromosome.genes.size();
-	for (Gene const &g : chromosome.genes)
-		stream << g;
+	for (unsigned i=0; i<chromosome.genes.size(); i++)
+		stream << chromosome.genes[i];
 	stream << (uint16_t)chromosome.insertions.size();
-	for (Chromosome::insertion const &i : chromosome.insertions)
-		stream << i;
+	for (unsigned i=0; i<chromosome.insertions.size(); i++)
+		stream << chromosome.insertions[i];
 	return stream;
 }
 
