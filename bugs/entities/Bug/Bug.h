@@ -72,6 +72,7 @@ public:
 	float getTotalMass() const;
 	float getLeanMass() const { return getTotalMass() - getTotalFatMass(); }
 	const Ribosome* getRibosome() const { return ribosome_; }
+	NeuralNet* neuralNet() const { return neuralNet_; }
 
 	void consumeEnergy(float amount);
 	void onFoodProcessed(float mass);
