@@ -18,6 +18,7 @@
 #include "../neuralnet/OutputSocket.h"
 
 #include <boglfw/utils/rand.h>
+#include <fstream>
 
 struct signalGenerator {
 	float phase = 0;		// [rad]
@@ -27,6 +28,7 @@ struct signalGenerator {
 
 	signalGenerator(float freq, float amp, float noiseThresh)
 		: freq(freq), amp(amp), noiseThresh(noiseThresh) {
+		phase = randf() * 2*PI;
 	}
 
 	float next(float dt) {
@@ -36,9 +38,66 @@ struct signalGenerator {
 	}
 };
 
+// Discrete Fourier Transform
+/* the index of each output sample represents a signal frequency given by:
+ * 		i (index) = number of periods (repetitions) of that signal that exist in the input data
+ * 		given n = number of samples in the input data
+ * 		and f = sample frequency (1 / duration of each sample)
+ * 		we have:
+ * 			Ti = n/i * 1/f		(period of component i)
+ * 			fi =  i * f / n		(frequency of component i)
+ * the amplitude of each component is computed as such:
+ * 		amp(i) = 2 * sqrt(sqr(outR[i]) + sqr(outI[i])) / n
+ * 		that is twice the modulus of the complex number from output at index i divided by the number of samples
+ *
+ * !! ONLY THE FIRST HALF of the output values is significant because of Nyquist limit !!
+ * (the second half is a mirror of the first half)
+ */
+void dft(float inreal[], float outreal[], float outimag[], int n) {
+    for (int k = 0; k < n; k++) {  // For each output element
+        double sumreal = 0;
+        double sumimag = 0;
+        for (int t = 0; t < n; t++) {  // For each input element
+            double angle = 2 * PI * t * k / n;
+            sumreal +=  inreal[t] * cosf(angle);
+            sumimag += -inreal[t] * sinf(angle);
+        }
+        outreal[k] = sumreal;
+        outimag[k] = sumimag;
+    }
+}
+
 static float computeSignalScore(std::vector<float> samples) {
+	float outR[samples.size()];
+	float outI[samples.size()];
+	dft(&samples[0], outR, outI, samples.size());
+
+	float score = 0;
+	return score;
+}
+
+int testDFT() {
+	float amp = 4.f;
+	int signalPeriods = 20;
+	unsigned nSamples = 200;
+	float sigFreq = (float)signalPeriods / nSamples;
+	signalGenerator g(sigFreq, amp, 0.0);
+	std::vector<float> samples;
+	for (int i=0; i<nSamples; i++)
+		samples.push_back(g.next(1.f));
+	float outR[nSamples];
+	float outI[nSamples];
+	dft(&samples[0], outR, outI, nSamples);
+
+	std::ofstream f("test-dft.csv");
+	f << "virtTime,signal,dft_R,dft_I\n";
+	for (unsigned i=0; i<samples.size(); i++) {
+		f << (float)i/nSamples << "," << samples[i] << "," << outR[i] << "," << outI[i] << "\n";
+	}
 	return 0;
 }
+
+int dummy = testDFT();
 
 float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 	std::vector<std::pair<OutputSocket*, signalGenerator>> sensorOutputs;
