@@ -11,7 +11,7 @@
 
 float GenomeFitness::compute(Bug const& b) {
 	float fitness = 0;
-	// +1 for egglayer, +1 for mouth, +2 for noses
+	// +3 for egglayer, +3 for mouth, +1 for each nose
 	int noses = 0;
 	bool hasMouth = false;
 	bool hasEggLayer = false;
@@ -23,13 +23,13 @@ float GenomeFitness::compute(Bug const& b) {
 		switch (b->getType()) {
 		case BodyPartType::EGGLAYER:
 			if (!hasEggLayer) {
-				fitness += 1;
+				fitness += 3;
 				hasEggLayer = true;
 			}
 			break;
 		case BodyPartType::MOUTH:
 			if (!hasMouth) {
-				fitness += 1;
+				fitness += 3;
 				hasMouth = true;
 			}
 			break;

@@ -18,7 +18,6 @@
 #include "../neuralnet/OutputSocket.h"
 
 #include <boglfw/utils/rand.h>
-#include <fstream>
 
 struct signalGenerator {
 	float phase = 0;		// [rad]
@@ -70,12 +69,49 @@ void dft(float inreal[], float outreal[], float outimag[], int n) {
 static float computeSignalScore(std::vector<float> samples) {
 	float outR[samples.size()];
 	float outI[samples.size()];
+
 	dft(&samples[0], outR, outI, samples.size());
 
-	float score = 0;
+	int nAmps = samples.size()/2; // up to the Nyquist limit
+	float amps[nAmps];
+	float amp_avg = 0;
+	float amp_max = 0;
+	for (unsigned i=0; i<nAmps; i++) {
+		// skip #0 which represents the continuous component:
+		amps[i] = 2.f * sqrt(sqr(outR[i+1]) + sqr(outI[i+1])) / samples.size();
+		amp_avg += amps[i];
+		if (amp_max < amps[i])
+			amp_max = amps[i];
+	}
+	amp_avg /= nAmps;
+
+	// count how many significant components there are (amp > 5*amp_avg)
+	int nSignif = 0;
+	float ampRatios = 0; // cumulated ratios of significant components amplitude to average
+	for (unsigned i=0; i<nAmps; i++) {
+		if (amps[i] > 5*amp_avg) {
+			nSignif++;
+			ampRatios += amps[i] / amp_avg / 5;
+		}
+	}
+	// max score if number of significant components is between [1, compThreshLow]
+	// from (compThreshLow to compThreshHigh] score decreases
+	// above compThreshHigh score is zero
+	float compThreshLow = 5;
+	float compThreshHigh = 9;
+	float factor = nSignif == 0 ? 0 : (
+			nSignif <= compThreshLow ? 1 : (
+					nSignif > compThreshHigh ? 0 : (
+							(compThreshHigh - nSignif) / (compThreshHigh - compThreshLow)
+							)
+					)
+			);
+
+	float score = ampRatios * factor;
 	return score;
 }
 
+/*#include <fstream>
 int testDFT() {
 	float amp = 4.f;
 	int signalPeriods = 20;
@@ -97,7 +133,7 @@ int testDFT() {
 	return 0;
 }
 
-int dummy = testDFT();
+int dummy = testDFT();*/
 
 float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 	std::vector<std::pair<OutputSocket*, signalGenerator>> sensorOutputs;
@@ -108,7 +144,7 @@ float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 	float minAmp = 0.05f;
 	float maxAmp = 5.f;
 	float minNoiseThresh = 0.1;
-	float maxNoiseThresh = 0.7f;
+	float maxNoiseThresh = 0.4f;
 
 //#define USE_COMPASSES
 //#define USE_EYES
@@ -155,6 +191,9 @@ float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 		return false;
 	});
 
+	if (sensorOutputs.size() == 0 || motorInputs.size() == 0)
+		return 0;
+
 	// now run the simulation and collect data
 	for (int i=0; i<nIterations; i++) {
 		for (auto &pair : sensorOutputs)
@@ -174,8 +213,8 @@ float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 
 	// scale factor: more motors (up to a max number) give a higher score
 	size_t maxMotors = 10;
-	int scale = min(maxMotors, motorInputs.size());
+	float scale = min(maxMotors, motorInputs.size());
 
-	float fitness = score * scale;
+	float fitness = score * (log(scale)+1);
 	return fitness;
 }
