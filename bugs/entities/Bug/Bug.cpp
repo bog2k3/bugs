@@ -118,12 +118,28 @@ Bug::Bug(Genome const &genome, float zygoteMass, glm::vec2 position, glm::vec2 v
 }
 
 Bug::~Bug() {
-	for (auto p : bodyParts_)
+#ifdef DEBUG
+	std::set<BodyPart*> deletedParts;
+#endif
+	for (unsigned i=0; i<bodyParts_.size(); i++) {
+		auto &p = bodyParts_[i];
+#ifdef DEBUG
+		assertDbg(deletedParts.insert(p).second);
+#endif
 		p->destroy();
-	for (auto bp : deadBodyParts_) {
-		if (bp != nullptr)
-			bp->destroy();
+		p = nullptr;
 	}
+	bodyParts_.clear();
+	for (auto &bp : deadBodyParts_) {
+		if (bp != nullptr) {
+#ifdef DEBUG
+			assertDbg(deletedParts.insert(bp).second);
+#endif
+			bp->destroy();
+			bp = nullptr;
+		}
+	}
+	deadBodyParts_.clear();
 	if (ribosome_)
 		delete ribosome_;
 }

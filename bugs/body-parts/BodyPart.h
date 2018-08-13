@@ -19,12 +19,9 @@
 #include <glm/vec2.hpp>
 
 #include <vector>
-//#include <map>
 #include <memory>
 #include <atomic>
-//#include <ostream>
 
-class UpdateList;
 class Viewport;
 class Bug;
 class BodyCell;
@@ -70,44 +67,10 @@ public:
 
 	Bug* getOwner() const { return &context_.owner; }
 
-	/*
-	 * Returns a pointer to a specific attribute value, or nullptr if the type of body part doesn't support the specific attribute.
-	 */
-	/*inline CumulativeValue* getAttribute(gene_part_attribute_type attrib, unsigned index=0) {
-		if (mapAttributes_.find(attrib) == mapAttributes_.end())
-			return nullptr;
-		auto &attrVec = mapAttributes_[attrib];
-		if (attrVec.size() > index)
-			return attrVec[index];
-		else
-			return attrVec[0];
-	}*/
-
-	/*
-	 * this will commit recursively in the entire body tree
-	 */
-	//void commit_tree(float initialScale);
-
-	/* returns the mass of the part and its entire subtree */
-	//virtual float getMass_tree();
-
 	/* scale the part by a factor; the part's fixtures and all the connecting joints are updated when a scale threshold is reached */
 	virtual void applyScale(float scale);
 
-	// draws the whole tree of body-parts
-	//void draw_tree(RenderContext const& ctx);
-
-	//inline int getChildrenCount() const { return nChildren_; }
-	//inline BodyPart* getChild(int i) const { assertDbg(i<nChildren_); return children_[i]; }
-	//inline std::shared_ptr<BodyPartInitializationData> getInitializationData() const { return initialData_; }
-	//void setUpdateList(UpdateList& lst) { updateList_ = &lst; }
 	PhysicsBody const& getBody() { return physBody_; }
-
-	/** returns the default (rest) angle of this part relative to its parent
-	 */
-	//inline float getDefaultAngle() const { return /*attachmentDirectionParent_ +*/ localRotation_; }
-	//inline float getLocalRotation() const { return localRotation_; }
-	//inline float getAttachmentAngle() const { return 0/*attachmentDirectionParent_*/; }
 
 	// runs a given predicate on the current part and recursively on all of its neighbors and so on until the graph is completely covered,
 	// or the evaluation is stopped by the predicate.
@@ -128,20 +91,8 @@ public:
 	// this id is the index of the nerve line from the neural network down to one of this motor's inputs
 	void addMotorLine(int lineId);
 
-	/*
-	 * adds another body part as a child of this one, trying to fit it at the given relative angle.
-	 * The part's angle may be slightly changed if it overlaps other siblings.
-	 * returns the actual angle at which the part was inserted.
-	 */
-	//virtual float add(BodyPart* part, float angle);
-	/*
-	 * remove all links, to parent and children. Calling this makes you responsible for the children, make sure
-	 * they don't get leaked.
-	 */
-//	void removeAllLinks();
-
 	void addNeighbor(BodyPart* n);
-	void removeNeighbor(BodyPart* n);
+	virtual void removeNeighbor(BodyPart* n);
 	std::vector<BodyPart*> neighbors() const { return neighbours_; }
 
 	// breaks all links with neighbors, disconnecting from both sides and removing joints if present
@@ -168,36 +119,11 @@ public:
 
 protected:
 	BodyPartContext const& context_;
-	// these are used when initializing the body and whenever a new commit is called.
-	// they contain world-space values that are updated only prior to committing
-	//PhysicsProperties cachedProps_;
 	PhysicsBody physBody_;
 	BodyPartType type_;
-
 	std::vector<BodyPart*> neighbours_;
-
-	//bool committed_;
-	//bool noFixtures_ = false;
-	// bool keepInitializationData_;	// set to true to not delete the initialData_ after commit()
-	//bool dontCreateBody_;			// set to true to prevent creating an actual physics body
-	/* this indicates if the values that come from genes (such as angleOffset_, size_ etc) have been cached
-	 * into the object's variables.
-	 * If not, one must sanitize and use directly the values from the initialData for whatever purposes.
-	 */
-	//bool geneValuesCached_;
-
-	// final positioning and physical values:
-	//float attachmentDirectionParent_;
 	float size_;
 	float density_;
-
-	/**
-	 * Lists of motor & sensor nerve lines that pass through this node.
-	 * Each number represents the Nth motor/sensor input/output socket that has been created for this body.
-	 * This correlates with the Nth CONNECTED output/input nerve in the brain
-	 * (they are connected by VMS coordinates but kept in this order nonetheless)
-	 */
-	std::vector<unsigned> motorLines_;
 
 	/*
 	 * This is called after the decoding is finished and body structure is fully defined.
@@ -207,23 +133,6 @@ protected:
 	virtual void updateFixtures() = 0;
 
 	virtual void destroyFixtures();
-	//virtual void onAddedToParent() {}
-	//virtual void onDetachedFromParent() {}
-
-
-	//void registerAttribute(gene_part_attribute_type type, CumulativeValue& value);
-	//void registerAttribute(gene_part_attribute_type type, unsigned index, CumulativeValue& value);
-	// returns the attachment point for the current part in its parent's coordinate space.
-	//glm::vec2 getUpstreamAttachmentPoint();
-	//UpdateList* getUpdateList();
-	// call this if the fixture changed for any reason:
-	//void reattachChildren();
-	//void computeBodyPhysProps();
-
-//	friend class JointPivot;
-
-	//virtual void detachMotorLines(std::vector<unsigned> const& lines);
-	//virtual void hierarchyMassChanged();
 
 	/*
 	 * Adjusts a pair of values used for fixture size in order to avoid too small fixtures which would cause trouble with box2D.
@@ -240,16 +149,6 @@ protected:
 	bool destroyCalled() const { return destroyCalled_; }
 
 private:
-	//void reverseUpdateCachedProps();
-	//glm::vec2 getParentSpacePosition();
-	//void purge_initializationData();
-	/** changes the attachment direction of this part to its parent. This doesn't take effect until commit is called */
-	//inline void setAttachmentDirection(float angle) { attachmentDirectionParent_ = angle; }
-	//void remove(BodyPart* part);
-
-	//std::map<gene_part_attribute_type, std::vector<CumulativeValue*>> mapAttributes_;
-	//std::shared_ptr<BodyPartInitializationData> initialData_;
-	//UpdateList* updateList_;
 	float lastCommitSize_inv_ = 0;
 	bool destroyCalled_ = false;
 	std::atomic<bool> dead_ { false };

@@ -41,6 +41,7 @@ protected:
 	void updateFixtures() override;
 	void destroyFixtures() override;
 	glm::vec2 getAttachmentPoint(float relativeAngle) override;
+	void removeNeighbor(BodyPart* n) override;
 
 	virtual b2JointDef* createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) = 0;
 	void destroyPhysJoint();

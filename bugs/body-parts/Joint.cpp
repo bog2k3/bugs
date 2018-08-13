@@ -178,10 +178,14 @@ void Joint::breakJoint() {
 	World::getInstance().queueDeferredAction([this] () {
 		onJointBreak.trigger(this);
 		destroyPhysJoint();
-		leftAnchor_->removeNeighbor(this);
-		rightAnchor_->removeNeighbor(this);
-		removeNeighbor(leftAnchor_);
-		removeNeighbor(rightAnchor_);
+		if (leftAnchor_) {
+			leftAnchor_->removeNeighbor(this);
+			removeNeighbor(leftAnchor_);
+		}
+		if (rightAnchor_) {
+			rightAnchor_->removeNeighbor(this);
+			removeNeighbor(rightAnchor_);
+		}
 
 		auto hasMouth = [&](const BodyPart* bp) {
 			return bp->getType() == BodyPartType::MOUTH;
@@ -193,11 +197,11 @@ void Joint::breakJoint() {
 			bp->die();
 			return false;
 		};
-		if (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer)) {
+		if (leftAnchor_ && (!leftAnchor_->applyPredicateGraph(hasMouth) || !leftAnchor_->applyPredicateGraph(hasEggLayer))) {
 			// left sub-graph must die
 			leftAnchor_->applyPredicateGraphMutable(diePred);
 		}
-		if (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer)) {
+		if (rightAnchor_ && (!rightAnchor_->applyPredicateGraph(hasMouth) || !rightAnchor_->applyPredicateGraph(hasEggLayer))) {
 			// right sub-graph must die
 			rightAnchor_->applyPredicateGraphMutable(diePred);
 		}
@@ -205,4 +209,12 @@ void Joint::breakJoint() {
 		// consume all food value left - this will cause the Bug to destroy the joint in the next frame
 		consumeFoodValue(getFoodValue());
 	});
+}
+
+void Joint::removeNeighbor(BodyPart* n) {
+	if (n == leftAnchor_)
+		leftAnchor_ = nullptr;
+	if (n == rightAnchor_)
+		rightAnchor_ = nullptr;
+	BodyPart::removeNeighbor(n);
 }
