@@ -78,6 +78,7 @@ public:
 	void onFoodProcessed(float mass);
 
 	const std::vector<BodyPart*>& getBodyParts() const { return bodyParts_; }
+	const std::vector<BodyPart*>& getDeadBodyParts() const { return deadBodyParts_; }
 
 	// destroys a joint and recreates it; this is required after connected body parts get scaled
 	void recreateJoint(Joint* j) { jointsToRecreate_.insert(j); }

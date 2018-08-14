@@ -233,6 +233,7 @@ Gene Gene::createRandomMuscleAttributeGene() {
 	g.attrib = (gene_muscle_attribute_type)randi(GENE_MUSCLE_ATTR_INVALID+1, GENE_MUSCLE_ATTR_END-1);
 	g.restriction.activeLevels.set(randi(constants::MAX_DIVISION_DEPTH));
 	g.value.set(srandf());
+	g.side.set(srandf() * constants::small_gene_value);
 	return g;
 }
 

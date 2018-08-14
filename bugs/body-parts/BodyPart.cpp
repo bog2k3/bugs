@@ -28,17 +28,6 @@
 #include <sstream>
 #include <algorithm>
 
-#ifdef DEBUG_DMALLOC
-#include <dmalloc.h>
-#endif
-
-/*BodyPartInitializationData::BodyPartInitializationData()
-	: localRotation(0)
-	, size(BodyConst::initialBodyPartSize)
-	, density(BodyConst::initialBodyPartDensity)
-{
-}*/
-
 BodyPart::BodyPart(BodyPartType type, BodyPartContext const& context, BodyCell const& cell, bool suppressPhysicalBody)
 	: context_(context)
 	, type_(type)
@@ -94,147 +83,18 @@ void BodyPart::destroy() {
 	disconnectAllNeighbors();
 	destroyFixtures();
 
-//	for (int i=0; i<nChildren_; i++)
-//		children_[i]->destroy();
+#ifdef DEBUG
+	// check that no link to this body part remains anywhere
+	for (auto bp : context_.owner.getBodyParts())
+		if (bp)
+			assertDbg(std::find(bp->neighbours_.begin(), bp->neighbours_.end(), this) == bp->neighbours_.end());
+	for (auto bp : context_.owner.getDeadBodyParts())
+		if (bp)
+			assertDbg(std::find(bp->neighbours_.begin(), bp->neighbours_.end(), this) == bp->neighbours_.end());
+#endif
+
 	delete this;
 }
-
-//bool BodyPart::applyRecursive(std::function<bool(BodyPart* pCurrent)> pred) {
-//	if (pred(this))
-//		return true;
-//	for (int i=0; i<nChildren_; i++)
-//		if (children_[i]->applyRecursive(pred))
-//			return true;
-//	return false;
-//}
-
-void BodyPart::addMotorLine(int lineId) {
-	motorLines_.push_back(lineId);
-//	if (parent_)
-//		parent_->addMotorLine(lineId);
-}
-
-//float BodyPart::add(BodyPart* part, float angle) {
-//	angle = limitAngle(angle, 2*PI);
-//	assertDbg(nChildren_ < (int)MAX_CHILDREN && initialData_);
-//	// determine the position in buffer:
-//	int bufferPos = 0;
-//	while (bufferPos < nChildren_ && angle >= children_[bufferPos]->attachmentDirectionParent_)
-//		bufferPos++;
-//	for (int i=nChildren_; i>bufferPos; i--) {
-//		// initialData_->circularBuffer[i] = initialData_->circularBuffer[i-1];
-//		children_[i] = children_[i-1];
-//	}
-//	nChildren_++;
-//	children_[bufferPos] = part;
-//	part->parent_ = this;
-//	part->setAttachmentDirection(angle);
-//	part->onAddedToParent();
-//	return children_[bufferPos]->attachmentDirectionParent_;
-//}
-
-/*void BodyPart::detach(bool die) {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	/*if (parent_) {
-		// first must detach all neural connections
-		detachMotorLines(motorLines_);
-		parent_->remove(this);
-		onDetachedFromParent();
-		parent_->hierarchyMassChanged();
-	}
-	parent_ = nullptr;* /
-	if (die && !dead_)
-		this->die();
-}*/
-
-/*void BodyPart::detachMotorLines(std::vector<unsigned> const& lines) {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-//	if (parent_)
-//		parent_->detachMotorLines(lines);
-}*/
-
-/*void BodyPart::remove(BodyPart* part) {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	for (int i=0; i<nChildren_; i++)
-		if (children_[i] == part) {
-			children_[i] = children_[--nChildren_];
-			break;
-		}
-}*/
-
-/*glm::vec2 BodyPart::getUpstreamAttachmentPoint() {
-	if (!parent_)
-		return glm::vec2(0);
-	else {
-		glm::vec2 point(parent_->getAttachmentPoint(attachmentDirectionParent_));
-		assertDbg(!std::isnan(point.x) && !std::isnan(point.y));
-		return point;
-	}
-}*/
-
-/*void BodyPart::commit_tree(float initialScale) {
-	if (!committed_) {
-		initialData_->size.changeRel(initialScale);
-		cacheInitializationData();
-		geneValuesCached_ = true;
-		purge_initializationData();
-		computeBodyPhysProps();
-	} else
-		reverseUpdateCachedProps();
-	lastCommitSize_inv_ = 1.f / size_;
-
-	World::getInstance().queueDeferredAction([this, initialScale] () {
-		// perform commit on local node:
-		if (type_ != BodyPartType::JOINT) {
-			if (!physBody_.b2Body_ && !dontCreateBody_)
-				physBody_.create(cachedProps_);
-			commit();
-		}
-		// perform recursive commit on all non-muscle children:
-		for (int i=0; i<nChildren_; i++) {
-			if (children_[i]->type_ != BodyPartType::MUSCLE)
-				children_[i]->commit_tree(initialScale);
-		}
-		// muscles go after all other children:
-		for (int i=0; i<nChildren_; i++) {
-			if (children_[i]->type_ == BodyPartType::MUSCLE)
-				children_[i]->commit_tree(initialScale);
-		}
-
-		if (type_ == BodyPartType::JOINT) {
-			commit();
-		}
-		committed_ = true;
-	});
-}*/
-
-/*void BodyPart::purge_initializationData() {
-	initialData_.reset();
-}*/
-
-/*glm::vec2 BodyPart::getParentSpacePosition() {
-	if (!geneValuesCached_) {
-#ifdef DEBUG
-		World::assertOnMainThread();
-#endif
-		cacheInitializationData();
-	}
-	glm::vec2 upstreamAttach = getUpstreamAttachmentPoint();
-	glm::vec2 localOffset = getAttachmentPoint(PI - localRotation_);
-	assertDbg(!std::isnan(localOffset.x) && !std::isnan(localOffset.y));
-	float angle;
-	angle = attachmentDirectionParent_ + localRotation_;
-	glm::vec2 ret(upstreamAttach - glm::rotate(localOffset, angle));
-	assertDbg(!std::isnan(ret.x) && !std::isnan(ret.y));
-	return ret;
-#warning "must take into account lateral offset"
-}*/
 
 /*void BodyPart::reverseUpdateCachedProps() {
 	// reverse the magic here: get values from the physics engine and put them in our cached props
@@ -295,35 +155,6 @@ void BodyPart::draw(Viewport* vp) {
 	Shape3D::get()->drawLine(pos - 0.01f*v, pos + 0.01f*v, glm::vec3(1.f, 0.2f, 0.2f));
 }
 
-/*void BodyPart::registerAttribute(gene_part_attribute_type type, CumulativeValue& value) {
-	registerAttribute(type, 0, value);
-}
-
-void BodyPart::registerAttribute(gene_part_attribute_type type, unsigned index, CumulativeValue& value) {
-	auto &attrVec = mapAttributes_[type];
-	while (attrVec.size() < index + 1)
-		attrVec.push_back(nullptr);
-	attrVec[index] = &value;
-}*/
-
-/*UpdateList* BodyPart::getUpdateList() {
-	if (updateList_)
-		return updateList_;
-	else if (parent_) {
-		updateList_ = parent_->getUpdateList();
-		return updateList_;
-	} else
-		return nullptr;
-}*/
-
-/*float BodyPart::getMass_tree() {
-	float mass = size_ * density_;
-
-	for (int i=0; i<nChildren_; i++)
-		mass += children_[i]->getMass_tree();
-	return mass;
-}*/
-
 void BodyPart::destroyFixtures() {
 	World::getInstance().assertOnMainThread();
 	if (!physBody_.b2Body_)
@@ -379,44 +210,6 @@ void BodyPart::consumeFoodValue(float amount) {
 		foodValueLeft_ -= amount;
 	}
 }
-
-/*void BodyPart::removeAllLinks() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	NOT_IMPLEMENTED;
-	//parent_ = nullptr;
-	//nChildren_ = 0;
-}*/
-
-/*void BodyPart::reattachChildren() {
-#ifdef DEBUG
-	World::assertOnMainThread();
-#endif
-	if (committed_) {
-		for (int i=0; i<nChildren_; i++) {
-			children_[i]->commit();
-		}
-	}
-}*/
-
-/*void BodyPart::draw_tree(RenderContext const& ctx) {
-	draw(ctx);
-	for (int i=0; i<nChildren_; i++)
-		children_[i]->draw_tree(ctx);
-}*/
-
-/*void BodyPart::cacheInitializationData() {
-	localRotation_ = limitAngle(initialData_->localRotation, 2*PI);
-	//lateralOffset_ = initialData_->lateralOffset;
-	size_ = initialData_->size.clamp(BodyConst::MinBodyPartSize, 1.e10f);
-	density_ = initialData_->density.clamp(BodyConst::MinBodyPartDensity, BodyConst::MaxBodyPartDensity);
-}*/
-
-/*void BodyPart::hierarchyMassChanged() {
-	if (parent_)
-		parent_->hierarchyMassChanged();
-}*/
 
 Entity* BodyPart::getEntityFromBodyPartPhysBody(PhysicsBody const& body) {
 	BodyPart* pPart = static_cast<BodyPart*>(body.userPointer_);
@@ -534,8 +327,7 @@ void BodyPart::disconnectAllNeighbors() {
 	for (auto n : neighbours_) {
 		if (n->type_ == BodyPartType::JOINT_PIVOT || n->type_ == BodyPartType::JOINT_WELD)
 			jointsToBreak.push_back(static_cast<Joint*>(n));
-		else
-			n->removeNeighbor(this);
+		n->removeNeighbor(this);
 	}
 	neighbours_.clear();
 	// break joints after the neighbor loop to avoid screwing iterators from recursively calling removeNeighbor

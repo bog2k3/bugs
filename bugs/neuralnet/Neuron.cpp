@@ -42,6 +42,7 @@ void Neuron::addInput(std::unique_ptr<InputSocket> &&input, float priority) {
 	inputs_.push_back(std::move(input));
 	pInputPriorities_->push_back(priority);
 }
+
 void Neuron::commitInputs() {
 	assertDbg(pInputPriorities_ && "Only call this once at the end!!!");
 	// sort inputs
