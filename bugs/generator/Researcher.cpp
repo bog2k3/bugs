@@ -62,25 +62,51 @@ void Researcher::iterate(float timeStep) {
 	LOGLN("RESEARCH ITERATION " << iterationNumber++ << " -----------------------------------------------------------------------------------------------\n");
 	std::chrono::time_point<std::chrono::high_resolution_clock> itStartTime(std::chrono::high_resolution_clock::now());
 	stats_.push_back({});
-	MTVector<Bug*> bugs(genomes_.size());
-	parallel_for(genomes_.begin(), genomes_.end(), Infrastructure::getThreadPool(), [this, timeStep, &bugs](auto &gp) {
+	MTVector<std::pair<Bug*, float>> bugs(genomes_.size());
+
+//#define SINGLE_THREAD
+
+#ifdef SINGLE_THREAD
+	std::for_each(
+#else
+	parallel_for(
+#endif
+			genomes_.begin(), genomes_.end(),
+#ifndef SINGLE_THREAD
+			Infrastructure::getThreadPool(),
+#endif
+			[this, timeStep, &bugs](auto &gp)
+	{
 		Genome& g = gp.first;
 		Bug* b = new Bug(g, BodyConst::initialEggMass*2, {0,0}, {0,0}, 0);
-		bugs.push_back(b);
 		b->getRibosome()->setResearchModeOn();
+		std::chrono::time_point<std::chrono::high_resolution_clock> decodeGenomeStart(std::chrono::high_resolution_clock::now());
 		while (b->isInEmbryonicDevelopment() && !b->getRibosome()->isPreFinalStep())
 			b->update(1.f);	// use 1 second step to bypass gene decode frequency delay in ribosome
+		std::chrono::time_point<std::chrono::high_resolution_clock> decodeGenomeEnd(std::chrono::high_resolution_clock::now());
+		float decodeTime = std::chrono::nanoseconds(decodeGenomeEnd - decodeGenomeStart).count();
+
+		bugs.push_back({b, decodeTime});
+
 	});
 	// execute deferred tasks
 	while(World::getInstance().hasQueuedDeferredActions())
 		World::getInstance().update(0);
-	for (auto b : bugs)
-		b->update(1.f); // last update to finalize ribosome stuff
+	for (auto p : bugs)
+		p.first->update(1.f); // last update to finalize ribosome stuff
 	// another deferred tasks execution:
 	while(World::getInstance().hasQueuedDeferredActions())
 		World::getInstance().update(0);
 
-//#define SINGLE_THREAD
+	// compute min/max genome decode times to use later for fitness scaling
+	float maxDecodeTime = 0;
+	float minDecodeTime = 1e20;
+	for (auto &p : bugs) {
+		if (p.second > maxDecodeTime)
+			maxDecodeTime = p.second;
+		if (p.second < minDecodeTime)
+			minDecodeTime = p.second;
+	}
 
 	// compute fitnesses
 	MTVector<decltype(genomes_)::value_type> updatedGenomes(genomes_.size());
@@ -93,12 +119,20 @@ void Researcher::iterate(float timeStep) {
 #ifndef SINGLE_THREAD
 			Infrastructure::getThreadPool(),
 #endif
-			[this, &updatedGenomes, &timeStep] (auto b)
+			[this, &updatedGenomes, &timeStep, &minDecodeTime, &maxDecodeTime] (auto &p)
 	{
+		auto b = p.first;
 		float fitness = 0;
 		fitness += GenomeFitness::compute(*b);
 		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
 		fitness *= GenomeFitness::genomeLengthFactor(*b);
+		// scale fitness by decode time factor;
+		// decode time factor is 1 for lowest decode time, minTimeFactor for highest decode time, in an inverse logarithmic shape
+		float minTimeFactor = 0.5f;
+		float r = 1 / log(maxDecodeTime-minDecodeTime + 1);
+		float decodeTimeFactor = 1.f / (1 + r * log(p.second - minDecodeTime + 1));
+		assertDbg(decodeTimeFactor >= minTimeFactor * 0.95 && decodeTimeFactor <= 1.05);
+		fitness *= decodeTimeFactor;
 		updatedGenomes.push_back({b->getGenome(), fitness});
 		// kill bug
 		b->kill();
@@ -107,7 +141,7 @@ void Researcher::iterate(float timeStep) {
 		World::getInstance().update(0); // performed queued die events and stuff
 
 	for (auto b : bugs) {
-		b->destroy();
+		b.first->destroy();
 	}
 	bugs.clear();
 	// allow world to clean up entities

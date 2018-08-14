@@ -58,14 +58,24 @@ float GenomeFitness::compute(Bug const& b) {
 	fitness += fatFitnessScore;
 
 	// fitness decreases when bug has too many body parts, as few as possible that do the job is best
-	float lowestPartScore = 0.f;
+	float lowestPartScore = -1.f;
 	float highestPartsScore = 1.f;
-	int minPartsThreshold = 30; // up to this number score is max
-	int maxPartsThreshold = 100; // above this number score is min
-	int nBodyPartsClamped = clamp((int)bparts.size(), minPartsThreshold, maxPartsThreshold);
+	int highScoreThreshold = 30; // up to this number score is highest
+	int zeroScoreThreshold = 100; // at this number score is zero
+	int lowScoreThreshold = 200; // at this number and above score is lowest
 
-	float partsScore = lowestPartScore + (1 - nBodyPartsClamped / (maxPartsThreshold - minPartsThreshold)) * (highestPartsScore - lowestPartScore);
-	assert(partsScore >= lowestPartScore*0.95 && partsScore <= highestPartsScore*1.05);
+	int nBodyParts = bparts.size();
+	float partsScore;
+	if (nBodyParts <= highScoreThreshold)
+		partsScore = highestPartsScore;
+	else if (nBodyParts <= zeroScoreThreshold)
+		partsScore = highestPartsScore * (zeroScoreThreshold - nBodyParts) / (zeroScoreThreshold - highScoreThreshold);
+	else if (nBodyParts <= lowScoreThreshold)
+		partsScore = lowestPartScore * (nBodyParts - zeroScoreThreshold) / (lowScoreThreshold - zeroScoreThreshold);
+	else
+		partsScore = lowestPartScore;
+
+	assert(partsScore >= lowestPartScore - 0.05 && partsScore <= highestPartsScore + 0.05);
 
 	return fitness + partsScore;
 }
