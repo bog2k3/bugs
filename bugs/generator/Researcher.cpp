@@ -129,11 +129,11 @@ void Researcher::iterate(float timeStep) {
 		// scale fitness by decode time factor;
 		// decode time factor is 1 for lowest decode time, minTimeFactor for highest decode time, in an inverse logarithmic shape
 		// if maxTime is 10 times smallTime, factor for maxTime is 0.5:
-		float minTimeFactor = 1/(1+log(maxDecodeTime/minDecodeTime)/log(10));
-		assertDbg(minTimeFactor > 0 && minTimeFactor <= 1);
-		float r = 1 / log(maxDecodeTime-minDecodeTime + 1);
+		float minDurationFactor = 1/(1+log(maxDecodeTime/minDecodeTime)/log(10));
+		assertDbg(minDurationFactor > 0 && minDurationFactor <= 1);
+		float r = (1.f / minDurationFactor - 1) / log(maxDecodeTime-minDecodeTime + 1);
 		float decodeTimeFactor = 1.f / (1 + r * log(p.second - minDecodeTime + 1));
-		assertDbg(decodeTimeFactor >= minTimeFactor * 0.95 && decodeTimeFactor <= 1.05);
+		assertDbg(decodeTimeFactor >= minDurationFactor * 0.95 && decodeTimeFactor <= 1.05);
 		fitness *= decodeTimeFactor;
 		updatedGenomes.push_back({b->getGenome(), fitness});
 		// kill bug
