@@ -128,7 +128,9 @@ void Researcher::iterate(float timeStep) {
 		fitness *= GenomeFitness::genomeLengthFactor(*b);
 		// scale fitness by decode time factor;
 		// decode time factor is 1 for lowest decode time, minTimeFactor for highest decode time, in an inverse logarithmic shape
-		float minTimeFactor = 0.5f;
+		// if maxTime is 10 times smallTime, factor for maxTime is 0.5:
+		float minTimeFactor = 1/(1+log(maxDecodeTime/minDecodeTime)/log(10));
+		assertDbg(minTimeFactor > 0 && minTimeFactor <= 1);
 		float r = 1 / log(maxDecodeTime-minDecodeTime + 1);
 		float decodeTimeFactor = 1.f / (1 + r * log(p.second - minDecodeTime + 1));
 		assertDbg(decodeTimeFactor >= minTimeFactor * 0.95 && decodeTimeFactor <= 1.05);
