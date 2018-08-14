@@ -31,6 +31,11 @@ Researcher::Researcher(std::string genomesPath)
 }
 
 void Researcher::saveGenomes() {
+	// sort genomes by decreasing fitness:
+	std::sort(genomes_.begin(), genomes_.end(), [](auto &g1, auto &g2) {
+		return g1.second > g2.second;
+	});
+	// now write them to disk:
 	for (unsigned i=0; i<genomes_.size(); i++) {
 		auto &g = genomes_[i];
 		std::stringstream ss;
