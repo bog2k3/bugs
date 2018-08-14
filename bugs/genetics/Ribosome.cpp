@@ -144,7 +144,9 @@ bool Ribosome::step() {
 				|| (g2 && g2->type == gene_type::STOP)) {
 			// so much for this development path;
 			// decide if cell will divide or specialize
-			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f && cell->branch_.size() < constants::MAX_DIVISION_DEPTH) {
+			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f
+					&& cell->branch_.size() < constants::MAX_DIVISION_DEPTH
+					&& cell->size() >= BodyConst::CellDivisionSizeThresh) {
 				// check if division will create pivot joint, and if so, we need to subtract the mass required to make the joint and muscles
 				float cellMass = cell->density() * cell->size();
 				float jointMass = cellMass * cell->mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO].clamp(

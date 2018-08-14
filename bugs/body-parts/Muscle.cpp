@@ -185,9 +185,13 @@ void Muscle::updateFixtures() {
 	BodyPart* right = joint_->getRightAnchor();
 	auto leftTr = left->getWorldTransformation();
 	auto rightTr = right->getWorldTransformation();
+	glm::vec2 leftOffs = vec3xy(joint_->getWorldTransformation() - leftTr);
+	assertDbg(glm::length(leftOffs) > 0);
+	glm::vec2 rightOffs = vec3xy(joint_->getWorldTransformation() - rightTr);
+	assertDbg(glm::length(rightOffs) > 0);
 
-	float alphaJ1 = pointDirection(vec3xy(joint_->getWorldTransformation() - leftTr)) - leftTr.z; // joint angle in left cell's coordinates
-	float alphaJ2 = pointDirection(vec3xy(joint_->getWorldTransformation() - rightTr)) - rightTr.z; // joint angle in right cell's coordinates
+	float alphaJ1 = pointDirection(leftOffs) - leftTr.z; // joint angle in left cell's coordinates
+	float alphaJ2 = pointDirection(rightOffs) - rightTr.z; // joint angle in right cell's coordinates
 
 	glm::vec2 I1 = left->getAttachmentPoint(alphaJ1 + insertionAngle_[0]); // first insertion point in left cell's space
 	anchor_ = {I1, alphaJ1};

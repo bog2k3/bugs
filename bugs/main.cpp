@@ -307,8 +307,8 @@ int main(int argc, char* argv[]) {
 		b2ThreadPool b2tp(6);
 		b2World physWld(b2Vec2_zero, &b2tp);
 		pPhysWld = &physWld;
+		PhysicsDebugDraw physicsDraw;
 		if (!runInResearchMode) {
-			PhysicsDebugDraw physicsDraw;
 			pPhysicsDraw = &physicsDraw;
 			physicsDraw.SetFlags(
 						  b2Draw::e_shapeBit
