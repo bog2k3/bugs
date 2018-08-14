@@ -18,6 +18,7 @@
 #include "../neuralnet/OutputSocket.h"
 
 #include <boglfw/utils/rand.h>
+//#include <boglfw/utils/log.h>
 
 struct signalGenerator {
 	float phase = 0;		// [rad]
@@ -76,7 +77,7 @@ static float computeSignalScore(std::vector<float> samples) {
 	float amps[nAmps];
 	float amp_avg = 0;
 	float amp_max = 0;
-	for (unsigned i=0; i<nAmps; i++) {
+	for (int i=0; i<nAmps; i++) {
 		// skip #0 which represents the continuous component:
 		amps[i] = 2.f * sqrt(sqr(outR[i+1]) + sqr(outI[i+1])) / samples.size();
 		amp_avg += amps[i];
@@ -87,13 +88,14 @@ static float computeSignalScore(std::vector<float> samples) {
 
 	// count how many significant components there are (amp > 5*amp_avg)
 	int nSignif = 0;
-	float ampRatios = 0; // cumulated ratios of significant components amplitude to average
-	for (unsigned i=0; i<nAmps; i++) {
+	float ampRatios = 0; // cumulated ratios of significant components amplitude to max amplitude
+	for (int i=0; i<nAmps; i++) {
 		if (amps[i] > 5*amp_avg) {
 			nSignif++;
-			ampRatios += amps[i] / amp_avg / 5;
+			ampRatios += amps[i] / amp_max;
 		}
 	}
+//	LOGLN("found " << nSignif << " significant components with total ratio: " << ampRatios);
 	// max score if number of significant components is between [1, compThreshLow]
 	// from (compThreshLow to compThreshHigh] score decreases
 	// above compThreshHigh score is zero
@@ -204,12 +206,15 @@ float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 	}
 
 	// compute motor signal score
-	float score = 0;
+//	LOGLN("-------------------------- motor fitness analysis START -----------------------");
+	float score = 1;	// we start with something non-zero because at least there are motors and sensors
 	for (auto &pair : motorInputs) {
 		score += computeSignalScore(pair.second);
 	}
 	// average score:
 	score /= motorInputs.size();
+//	LOGLN("total motor score: " << score);
+//	LOGLN("-------------------------- motor fitness analysis END -----------------------");
 
 	// scale factor: more motors (up to a max number) give a higher score
 	size_t maxMotors = 10;

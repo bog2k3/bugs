@@ -80,12 +80,25 @@ void Researcher::iterate(float timeStep) {
 	while(World::getInstance().hasQueuedDeferredActions())
 		World::getInstance().update(0);
 
+//#define SINGLE_THREAD
+
 	// compute fitnesses
 	MTVector<decltype(genomes_)::value_type> updatedGenomes(genomes_.size());
-	parallel_for(bugs.begin(), bugs.end(), Infrastructure::getThreadPool(), [this, &updatedGenomes, &timeStep] (auto b) {
+#ifdef SINGLE_THREAD
+	std::for_each(
+#else
+	parallel_for(
+#endif
+			bugs.begin(), bugs.end(),
+#ifndef SINGLE_THREAD
+			Infrastructure::getThreadPool(),
+#endif
+			[this, &updatedGenomes, &timeStep] (auto b)
+	{
 		float fitness = 0;
 		fitness += GenomeFitness::compute(*b);
 		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
+		fitness *= GenomeFitness::genomeLengthFactor(*b);
 		updatedGenomes.push_back({b->getGenome(), fitness});
 		// kill bug
 		b->kill();

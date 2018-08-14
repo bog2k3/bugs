@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <mutex>
 
-//#define ENABLE_MEMDEBUG
+#define ENABLE_MEMDEBUG
 
 #ifdef ENABLE_MEMDEBUG
 

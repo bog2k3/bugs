@@ -105,8 +105,14 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 				if (abs(overlap) > toleranceFactor * min(cr, nr)) {
 					glm::vec2 offset = glm::normalize(diff) * overlap;
 					// compute displacements
-					auto thisOffs = -offset * clamp(1-ratio, 0.f, cr*maxDisplacementRatio);
-					auto otherOffs = offset * clamp(ratio, 0.f, nr*maxDisplacementRatio);
+					auto thisOffs = -offset * (1-ratio);
+					float thisMagnitude = glm::length(thisOffs) / (cr*maxDisplacementRatio);
+					if (thisMagnitude > 1)
+						thisOffs /= thisMagnitude; // clamp offset to cr*maxDisplacementRatio
+					auto otherOffs = offset * ratio;
+					float otherMagnitude = glm::length(otherOffs) / (nr*maxDisplacementRatio);
+					if (otherMagnitude > 1)
+						otherOffs /= otherMagnitude; // clamp offset to nr*maxDisplacementRatio
 
 					assert(!std::isnan(glm::length(thisOffs)));
 					assert(!std::isnan(glm::length(otherOffs)));

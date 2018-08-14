@@ -58,14 +58,31 @@ float GenomeFitness::compute(Bug const& b) {
 	fitness += fatFitnessScore;
 
 	// fitness decreases when bug has too many body parts, as few as possible that do the job is best
-	float lowestCoef = 0.2f;	// 20%
-	float highestCoef = 1.f;	// 100%
-	int minPartsThreshold = 30; // up to this number there is no penalty (fitness 100%)
-	int maxPartsThreshold = 100; // this is where fitness is reduced to 20%, above this it stays at 20%
+	float lowestPartScore = 0.f;
+	float highestPartsScore = 1.f;
+	int minPartsThreshold = 30; // up to this number score is max
+	int maxPartsThreshold = 100; // above this number score is min
 	int nBodyPartsClamped = clamp((int)bparts.size(), minPartsThreshold, maxPartsThreshold);
 
-	float coef = lowestCoef + (1 - nBodyPartsClamped / (maxPartsThreshold - minPartsThreshold)) * (highestCoef - lowestCoef);
-	assert(coef >= lowestCoef*0.95 && coef <= highestCoef*1.05);
+	float partsScore = lowestPartScore + (1 - nBodyPartsClamped / (maxPartsThreshold - minPartsThreshold)) * (highestPartsScore - lowestPartScore);
+	assert(partsScore >= lowestPartScore*0.95 && partsScore <= highestPartsScore*1.05);
 
-	return fitness * coef;
+	return fitness + partsScore;
+}
+
+float GenomeFitness::genomeLengthFactor(Bug const& b) {
+	// fitness decreases when bug has too many genes, as few as possible that do the job is best
+	float lowestGCoef = 0.2f;
+	float highestGCoef = 1.f;
+	int minLengthThresh = 250; // up to this number of genes there's no penalty
+	int maxLengthThresh = 1000; // where coef is reduced to lowestGCoef, above this no further penalty
+	int nGenes1 = clamp((int)b.getGenome().first.genes.size(), minLengthThresh, maxLengthThresh);
+	int nGenes2 = clamp((int)b.getGenome().second.genes.size(), minLengthThresh, maxLengthThresh);
+
+	float geneCoef1 = lowestGCoef + (1 - nGenes1 / (maxLengthThresh - minLengthThresh)) * (highestGCoef - lowestGCoef);
+	float geneCoef2 = lowestGCoef + (1 - nGenes2 / (maxLengthThresh - minLengthThresh)) * (highestGCoef - lowestGCoef);
+	float geneCoef = (geneCoef1 + geneCoef2) / 2;
+	assert(geneCoef >= lowestGCoef*0.95 && geneCoef <= highestGCoef*1.05);
+
+	return geneCoef;
 }

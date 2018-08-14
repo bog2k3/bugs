@@ -14,6 +14,7 @@ class Bug;
 class GenomeFitness {
 public:
 	static float compute(Bug const& b);
+	static float genomeLengthFactor(Bug const& b);
 };
 
 #endif /* BUGS_GENERATOR_GENOMEFITNESS_H_ */
