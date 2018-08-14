@@ -82,7 +82,7 @@ float GenomeFitness::compute(Bug const& b) {
 
 float GenomeFitness::genomeLengthFactor(Bug const& b) {
 	// fitness decreases when bug has too many genes, as few as possible that do the job is best
-	float lowestGCoef = 0.2f;
+	float lowestGCoef = 0.5f;
 	float highestGCoef = 1.f;
 	int minLengthThresh = 250; // up to this number of genes there's no penalty
 	int maxLengthThresh = 1000; // where coef is reduced to lowestGCoef, above this no further penalty

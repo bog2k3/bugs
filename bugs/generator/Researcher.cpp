@@ -108,8 +108,8 @@ void Researcher::iterate(float timeStep) {
 			minDecodeTime = p.second;
 	}
 	// decode time factor is 1 for lowest decode time, minTimeFactor for highest decode time, in an inverse logarithmic shape
-	// if maxTime is 10 times smallTime, factor for maxTime is 0.5:
-	float minDurationFactor = 1/(1+log(maxDecodeTime/minDecodeTime)/log(10));
+	// if maxTime is 10 times smallTime, factor for maxTime is 0.75:
+	float minDurationFactor = 1/(1+0.33f*log(maxDecodeTime/minDecodeTime)/log(10));
 	assertDbg(minDurationFactor > 0 && minDurationFactor <= 1);
 	float durationFactorSlope = (1.f / minDurationFactor - 1) / log(maxDecodeTime-minDecodeTime + 1);
 
@@ -143,8 +143,10 @@ void Researcher::iterate(float timeStep) {
 		World::getInstance().update(0); // performed queued die events and stuff
 
 	for (auto b : bugs) {
+		stats_.back().averageGenomeLength += b.first->getGenome().first.genes.size();
 		b.first->destroy();
 	}
+	stats_.back().averageGenomeLength /= bugs.size();
 	bugs.clear();
 	// allow world to clean up entities
 	while(World::getInstance().hasQueuedDeferredActions())
@@ -218,7 +220,7 @@ void Researcher::loadGenomes() {
 void Researcher::fillUpPopulation() {
 	// generate random genomes until reaching the target population
 	while (genomes_.size() < targetPopulation_)
-		genomes_.push_back({GenomeGenerator::createRandom(randomGenomeLength_), 0.f});
+		genomes_.push_back({GenomeGenerator::createRandom(max(randomGenomeLength_, stats_.size() ? stats_.back().averageGenomeLength : 1)), 0.f});
 }
 
 decltype(Researcher::genomes_) Researcher::doRecombination() {
@@ -320,6 +322,7 @@ void Researcher::printIterationStats() {
 	float avgFitness = std::accumulate(stats_.back().fitness.begin(), stats_.back().fitness.end(), 0.f);
 	avgFitness /= stats_.back().fitness.size();
 	LOGLN("Average iteration fitness: " << avgFitness);
+	LOGLN("Average iteration genome length: " << stats_.back().averageGenomeLength);
 	LOGLN("Iteration duration: " << stats_.back().duration_s << " [s]");
 }
 
