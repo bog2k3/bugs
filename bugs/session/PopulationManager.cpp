@@ -32,6 +32,11 @@
 	static unsigned refillPopulationTarget = 60;	// target population after refill
 #endif
 
+void PopulationManager::setPopulationTarget(unsigned thresh, unsigned refill) {
+	refillPopulationTarget = refill;
+	minPopulation = thresh;
+}
+
 unsigned PopulationManager::getPopulationTarget() {
 	return refillPopulationTarget;
 }

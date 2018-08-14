@@ -11,6 +11,7 @@
 #include "../entities/food/FoodChunk.h"
 #include "../entities/Gamete.h"
 #include "../entities/Wall.h"
+#include "../body-parts/BodyConst.h"
 
 #include <boglfw/World.h>
 #include <boglfw/entities/Entity.h>
@@ -39,15 +40,11 @@ void SessionManager::startEmptySession() {
 	LOGLN("Finished. Session is now clean.");
 }
 
-void SessionManager::startDefaultSession() {
-	LOGPREFIX("SessionManager");
-	LOGLN("Creating default session...");
-	World::getInstance().reset();
-	float worldRadius = 10.f;
+void SessionManager::prepareDefaultWorld(float worldRadius) {
 	populationMgr.setWorldSize(glm::vec2(worldRadius*2, worldRadius*2));
 	World::getInstance().setBounds(-worldRadius, worldRadius, worldRadius, -worldRadius);
 
-	LOGLN("Building entities for default session...");
+	LOGLN("Building default entities...");
 
 	std::unique_ptr<Wall> w1(new Wall(glm::vec2(-worldRadius, -worldRadius), glm::vec2(+worldRadius, -worldRadius), 0.2f));
 	World::getInstance().takeOwnershipOf(std::move(w1));
@@ -62,6 +59,28 @@ void SessionManager::startDefaultSession() {
 		std::unique_ptr<FoodDispenser> foodDisp(new FoodDispenser(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), 0));
 		World::getInstance().takeOwnershipOf(std::move(foodDisp));
 	}
+}
+
+void SessionManager::startGenomeTestSession(Genome &g) {
+	LOGPREFIX("SessionManager");
+	LOGLN("Creating genome test session...");
+	World::getInstance().reset();
+	float worldRadius = 10.f;
+	prepareDefaultWorld(worldRadius);
+
+	populationMgr.setPopulationTarget(0, 1);
+	std::unique_ptr<Bug> bug(new Bug(g, 2*BodyConst::initialEggMass, glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), {0, 0}, 1));
+	World::getInstance().takeOwnershipOf(std::move(bug));
+
+	LOGLN("Finished building genome test session.");
+}
+
+void SessionManager::startDefaultSession() {
+	LOGPREFIX("SessionManager");
+	LOGLN("Creating default session...");
+	World::getInstance().reset();
+	float worldRadius = 10.f;
+	prepareDefaultWorld(worldRadius);
 
 	// bug id=1 is a standard for reference:
 //	World::getInstance().takeOwnershipOf(std::unique_ptr<Bug>(Bug::newBasicBug(glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)))));

@@ -7,6 +7,7 @@
 #include "OperationBreakJoint.h"
 
 #include "generator/Researcher.h"
+#include "serialization/GenomeSerialization.h"
 
 #ifdef DEBUG
 #include "entities/Bug/Bug.h"
@@ -45,12 +46,14 @@
 #include <boglfw/perf/marker.h>
 #include <boglfw/perf/results.h>
 #include <boglfw/perf/frameCapture.h>
+#include <boglfw/serialization/BinaryStream.h>
 
 
 #include <GLFW/glfw3.h>
 #include <Box2D/Box2D.h>
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <functional>
@@ -235,12 +238,10 @@ int main(int argc, char* argv[]) {
 		bool enableAutosave = false;
 		bool runInResearchMode = false;
 		std::string researchPath;
+		bool testGenome = false;
+		std::string testGenomePath;
 		for (int i=1; i<argc; i++) {
 			if (!strcmp(argv[i], "--load")) {
-				if (defaultSession) {
-					ERROR("--default and --load cannot be used together.");
-					return -1;
-				}
 				if (i == argc-1) {
 					ERROR("Expected filename after --load");
 					return -1;
@@ -250,10 +251,6 @@ int main(int argc, char* argv[]) {
 				loadFilename = argv[i+1];
 				i++;
 			} else if (!strcmp(argv[i], "--default")) {
-				if (loadSession) {
-					ERROR("--default and --load cannot be used together.");
-					return -1;
-				}
 				defaultSession = true;
 			} else if (!strcmp(argv[i], "--save")) {
 				if (i == argc-1) {
@@ -273,12 +270,23 @@ int main(int argc, char* argv[]) {
 					return -1;
 				}
 				researchPath = argv[++i];
+			} else if (!strcmp(argv[i], "--test-genome")){
+				testGenome = true;
+				if (i == argc-1) {
+					ERROR("Expected path after --test-genome");
+					return -1;
+				}
+				testGenomePath = argv[++i];
 			} else {
 				ERROR("Unknown argument " << argv[i]);
 				return -1;
 			}
 		}
-		if (!enableAutosave) {
+		if ((loadSession?1:0) + (defaultSession?1:0) + (testGenome?1:0) > 1) {
+			ERROR("none of --default, --load and --test-genome cannot be used together!");
+			return -1;
+		}
+		if (!enableAutosave && !runInResearchMode) {
 			LOGLN("WARNING: Autosave is turned off! (use --enable-autosave to turn on)");
 		}
 
@@ -390,6 +398,16 @@ int main(int argc, char* argv[]) {
 				ERROR("Could not load session from file \""<<loadFilename<<"\"");
 				return -1;
 			}
+		} else if (testGenome) {
+			std::ifstream f(testGenomePath, std::ios::binary);
+			BinaryStream str(f);
+			float fitness; Genome g;
+			str >> fitness >> g;
+			LOGLN("Test Genome:")
+			LOGLN("\tFitness: " << fitness);
+			LOGLN("\tChromosome #1: " << g.first.genes.size());
+			LOGLN("\tChromosome #2: " << g.second.genes.size());
+			sessionMgr.startGenomeTestSession(g);
 		}
 		else {
 			LOGLN("No parameters specified. Starting with empty session.");

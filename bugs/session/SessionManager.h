@@ -9,6 +9,7 @@
 #define SESSION_SESSIONMANAGER_H_
 
 #include "PopulationManager.h"
+#include "../genetics/Genome.h"
 #include <string>
 
 class SessionManager {
@@ -18,6 +19,7 @@ public:
 
 	void startEmptySession();
 	void startDefaultSession();
+	void startGenomeTestSession(Genome &g);
 	bool loadSessionFromFile(std::string const &path);
 	bool mergeSessionFromFile(std::string const &path);
 	bool saveSessionToFile(std::string const &path);
@@ -26,6 +28,8 @@ public:
 
 private:
 	PopulationManager populationMgr;
+
+	void prepareDefaultWorld(float worldRadius);
 };
 
 #endif /* SESSION_SESSIONMANAGER_H_ */

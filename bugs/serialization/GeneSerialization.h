@@ -11,6 +11,10 @@
 #include "../genetics/Gene.h"
 #include "../neuralnet/functions.h"
 
+#include <boglfw/math/math3D.h>
+
+#include <cmath>
+
 template<class StreamType>
 StreamType& operator << (StreamType &stream, MetaGene const& mg) {
 	stream << mg.dynamic_variation << mg.value;

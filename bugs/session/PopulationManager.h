@@ -19,6 +19,8 @@ public:
 	unsigned getMaxGeneration();
 	unsigned getPopulationTarget();
 
+	void setPopulationTarget(unsigned minimumPopulation, unsigned refillTarget);
+
 private:
 	glm::vec2 worldSize_{0};
 };
