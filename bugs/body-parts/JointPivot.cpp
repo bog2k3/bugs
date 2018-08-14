@@ -64,15 +64,6 @@ b2JointDef* JointPivot::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB,
 	return def;
 }
 
-//void JointPivot::destroyPhysJoint() {
-//#ifdef DEBUG
-//	World::assertOnMainThread();
-//#endif
-//	World::getInstance().getDestroyListener()->removeCallback(physJoint_, jointListenerHandle_);
-//	physJoint_->GetBodyA()->GetWorld()->DestroyJoint(physJoint_);
-//	physJoint_ = nullptr;
-//}
-//
 glm::vec3 JointPivot::getWorldTransformation() const {
 	if (!physJoint_) {
 		return {0.f, 0.f, 0.f};

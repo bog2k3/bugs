@@ -97,10 +97,14 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 
 				// center-push method ----------------
 				auto diff = n.other->position_ - c->position_;
+				auto dist = glm::length(diff);
+				if (dist <= EPS) { // this is a degenerate case where the cells are overlapped perfectly
+					diff = {0.01f, 0.f};
+					dist = glm::length(diff);
+				}
 				float angle = pointDirection(diff);
 				float cr = c->radius(c->rangle(angle));
 				float nr = n.other->radius(n.other->rangle(angle+PI));
-				auto dist = glm::length(diff);
 				float overlap = cr + nr + n.offset - dist;
 				if (abs(overlap) > toleranceFactor * min(cr, nr)) {
 					glm::vec2 offset = glm::normalize(diff) * overlap;
@@ -175,6 +179,8 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 			p.first->position_ += p.second;
 			float modulusOfSums = glm::length(p.second);
 			float sumOfModuli = totalCellOffsetMod[p.first];
+			if (sumOfModuli < EPS)
+				sumOfModuli = EPS;
 			massRatios[p.first] = massRatioFn(modulusOfSums / sumOfModuli);
 		}
 

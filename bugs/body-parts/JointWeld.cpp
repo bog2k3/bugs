@@ -56,36 +56,6 @@ glm::vec3 JointWeld::getWorldTransformation() const {
 	return {b2g(anchorA), angle};
 }
 
-//void JointWeld::updateFixtures() {
-//#ifdef DEBUG
-//	World::assertOnMainThread();
-//#endif
-//	if (physJoint_) {
-//		destroyPhysJoint();
-//		physJoint_ = nullptr;
-//	}
-//
-//	b2WeldJointDef def;
-//	def.bodyA = leftAnchor_->getBody().b2Body_;
-//	def.bodyB = rightAnchor_->getBody().b2Body_;
-//	def.userData = (void*)this;
-//	def.referenceAngle = 0; // TODO fix this
-//
-//	// TODO determine angles for anchor points
-//	glm::vec2 leftAnchorPoint = leftAnchor_->getAttachmentPoint(0);
-//	def.localAnchorA = g2b(leftAnchorPoint);
-//
-//	// TODO fix angle for anchor points
-//	glm::vec2 rightAnchorPoint = rightAnchor_->getAttachmentPoint(PI - 0);
-//	def.localAnchorB = g2b(rightAnchorPoint);
-//
-//	//def.collideConnected = true;
-//
-//	physJoint_ = (b2WeldJoint*)World::getInstance().getPhysics()->CreateJoint(&def);
-//	jointListenerHandle_ = World::getInstance().getDestroyListener()->addCallback(physJoint_,
-//			std::bind(&JointWeld::onPhysJointDestroyed, this, std::placeholders::_1));
-//}
-
 b2JointDef* JointWeld::createJointDef(b2Vec2 localAnchorA, b2Vec2 localAnchorB, float refAngle) {
 	b2WeldJointDef *def = new b2WeldJointDef();
 	def->localAnchorA = localAnchorA;

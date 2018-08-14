@@ -4,7 +4,6 @@
 #include "../body-parts/BodyConst.h"
 #include "../body-parts/BodyCell.h"
 #include "../body-parts/BodyPart.h"
-#include "../body-parts/Torso.h"
 #include "../body-parts/Bone.h"
 #include "../body-parts/Gripper.h"
 #include "../body-parts/ZygoteShell.h"

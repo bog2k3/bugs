@@ -107,6 +107,11 @@ void Researcher::iterate(float timeStep) {
 		if (p.second < minDecodeTime)
 			minDecodeTime = p.second;
 	}
+	// decode time factor is 1 for lowest decode time, minTimeFactor for highest decode time, in an inverse logarithmic shape
+	// if maxTime is 10 times smallTime, factor for maxTime is 0.5:
+	float minDurationFactor = 1/(1+log(maxDecodeTime/minDecodeTime)/log(10));
+	assertDbg(minDurationFactor > 0 && minDurationFactor <= 1);
+	float durationFactorSlope = (1.f / minDurationFactor - 1) / log(maxDecodeTime-minDecodeTime + 1);
 
 	// compute fitnesses
 	MTVector<decltype(genomes_)::value_type> updatedGenomes(genomes_.size());
@@ -119,7 +124,7 @@ void Researcher::iterate(float timeStep) {
 #ifndef SINGLE_THREAD
 			Infrastructure::getThreadPool(),
 #endif
-			[this, &updatedGenomes, &timeStep, &minDecodeTime, &maxDecodeTime] (auto &p)
+			[this, &updatedGenomes, timeStep, minDecodeTime, minDurationFactor, durationFactorSlope] (auto &p)
 	{
 		auto b = p.first;
 		float fitness = 0;
@@ -127,12 +132,7 @@ void Researcher::iterate(float timeStep) {
 		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
 		fitness *= GenomeFitness::genomeLengthFactor(*b);
 		// scale fitness by decode time factor;
-		// decode time factor is 1 for lowest decode time, minTimeFactor for highest decode time, in an inverse logarithmic shape
-		// if maxTime is 10 times smallTime, factor for maxTime is 0.5:
-		float minDurationFactor = 1/(1+log(maxDecodeTime/minDecodeTime)/log(10));
-		assertDbg(minDurationFactor > 0 && minDurationFactor <= 1);
-		float r = (1.f / minDurationFactor - 1) / log(maxDecodeTime-minDecodeTime + 1);
-		float decodeTimeFactor = 1.f / (1 + r * log(p.second - minDecodeTime + 1));
+		float decodeTimeFactor = 1.f / (1 + durationFactorSlope * log(p.second - minDecodeTime + 1));
 		assertDbg(decodeTimeFactor >= minDurationFactor * 0.95 && decodeTimeFactor <= 1.05);
 		fitness *= decodeTimeFactor;
 		updatedGenomes.push_back({b->getGenome(), fitness});

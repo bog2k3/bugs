@@ -13,7 +13,6 @@
 #include "../../genetics/constants.h"
 #include "../../genetics/Ribosome.h"
 #include "../../body-parts/ZygoteShell.h"
-#include "../../body-parts/Torso.h"
 #include "../../body-parts/BodyConst.h"
 #include "../../body-parts/EggLayer.h"
 #include "../../body-parts/BodyPart.h"

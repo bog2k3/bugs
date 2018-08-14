@@ -156,7 +156,9 @@ void BodyPart::draw(Viewport* vp) {
 }
 
 void BodyPart::destroyFixtures() {
-	World::getInstance().assertOnMainThread();
+#ifdef DEBUG
+	World::assertOnMainThread();
+#endif
 	if (!physBody_.b2Body_)
 		return;
 	auto f = physBody_.b2Body_->GetFixtureList();
