@@ -69,7 +69,7 @@ void SessionManager::startGenomeTestSession(Genome &g) {
 	prepareDefaultWorld(worldRadius);
 
 	populationMgr.setPopulationTarget(0, 1);
-	std::unique_ptr<Bug> bug(new Bug(g, 2*BodyConst::initialEggMass, glm::vec2(srandf()*(worldRadius-0.5f), srandf()*(worldRadius-0.5f)), {0, 0}, 1));
+	std::unique_ptr<Bug> bug(new Bug(g, 2*BodyConst::initialEggMass, {0, 0}, {0, 0}, 1));
 	World::getInstance().takeOwnershipOf(std::move(bug));
 
 	LOGLN("Finished building genome test session.");
