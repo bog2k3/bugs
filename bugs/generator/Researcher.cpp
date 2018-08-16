@@ -244,7 +244,9 @@ decltype(Researcher::genomes_) Researcher::doRecombination() {
 		Chromosome c2 = GeneticOperations::meyosis(genomes_[i2].first);
 
 		if (c1.isGeneticallyCompatible(c2)) {
-			newGenomes.push_back({Genome{c1, c2}, 0});
+			Genome g{c1, c2};
+			GeneticOperations::fixGenesSynchro(g);
+			newGenomes.push_back({g, 0});
 
 			stats_.back().recombinationPairs.push_back({i1, i2});
 		}

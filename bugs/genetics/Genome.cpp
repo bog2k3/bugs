@@ -101,8 +101,9 @@ void GeneticOperations::trimInsertionList(Chromosome &c) {
 }
 
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
+	TODO: must not assume both chromosome started out as the same length
 	// this shit is more complicated than i thought
-	LOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
+	DEBUGLOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
 	assertDbg((unsigned)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
 
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
