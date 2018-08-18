@@ -59,9 +59,9 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	return c;
 }
 
-void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
-	assertDbg(amount > 0);
-	for (unsigned i=0; i<c.insertions.size(); i++) {
+/*void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
+	assertDbg(amount > 0 && amount <= c.insertions.size());
+	for (int i=0; i<amount; i++) {
 		unsigned from = i + amount;
 		if (from < c.insertions.size())
 			c.insertions[i] = c.insertions[from];
@@ -70,7 +70,7 @@ void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
 			break;
 		}
 	}
-}
+}*/
 
 /*
  * this will insert a new gene and return the index in the insertions vector where this change has been recorded
@@ -89,8 +89,11 @@ int GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, G
 	return ret;
 }
 
-void GeneticOperations::trimInsertionList(Chromosome &c) {
-	while (c.insertions.size() > WorldConst::MaxGenomeLengthDifference) {
+// with extra=0 insertions will be trimmed to constants::MaxGenomeLengthDifference
+// with extra>0 additional oldest insertions will be removed
+void GeneticOperations::trimInsertionList(Chromosome &c, unsigned extra) {
+	assertDbg(extra <= c.insertions.size());
+	while (c.insertions.size()+extra > constants::MaxGenomeLengthDifference) {
 		// search for oldest entry and remove it
 		unsigned ioldest = 0;
 		for (unsigned i=1; i<c.insertions.size(); i++)
@@ -101,36 +104,45 @@ void GeneticOperations::trimInsertionList(Chromosome &c) {
 }
 
 void GeneticOperations::fixGenesSynchro(Genome& gen) {
-	TODO: must not assume both chromosome started out as the same length
 	// this shit is more complicated than i thought
+	// ^^ several years later i had to change it so that it won't assume both chromosomes started out as the same length
+	// so... yeah
 	DEBUGLOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
-	assertDbg((unsigned)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= WorldConst::MaxGenomeLengthDifference);
+	assertDbg((unsigned)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= constants::MaxGenomeLengthDifference);
 
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
 	Chromosome &c1 = gen.first;
 	Chromosome &c2 = gen.second;
 
 	// compute the length difference between chromosomes:
-	int dif = c1.genes.size() - c2.genes.size();
-	// pull back the insertions on the one chromosome that is shorter until the difference in size matches the difference
+	int dif = (int)c1.genes.size() - (int)c2.genes.size();
+	int ins_dif = (int)c1.insertions.size() - (int)c2.insertions.size();
+	Chromosome *cshort = nullptr;
+	// remove oldest insertions on the shorter chromosome until the difference in size matches the difference
 	// in number of insertions:
 	if (dif > 0) {
-		assertDbg(c1.insertions.size() >= c2.insertions.size());
+		//assertDbg(c1.insertions.size() >= c2.insertions.size());	// not necessary because the two chromosomes may have had different lengths from the beginning
 		// C2 is shorter
-		int pullback = dif - (c1.insertions.size() - c2.insertions.size());
-		if (pullback > 0)
-			pullBackInsertions(c2, pullback);
+		int amount = dif - ins_dif;
+		if (amount > 0)
+			trimInsertionList(c2, min(amount, (int)c2.insertions.size()));
+		cshort = &c2;
 	} else if (dif < 0) {
 		// C1 is shorter
-		assertDbg(c1.insertions.size() <= c2.insertions.size());
-		int pullback = dif - (c2.insertions.size() - c1.insertions.size());
-		if (pullback > 0)
-			pullBackInsertions(c1, pullback);
+		//assertDbg(c1.insertions.size() <= c2.insertions.size());
+		int amount = dif + ins_dif;
+		if (amount > 0)
+			trimInsertionList(c1, min(amount, (int)c1.insertions.size()));
+		cshort = &c1;
 	}
+	// recompute insertions difference and add padding to the shorter chromosome until the gene difference is equal to insertions difference
+	ins_dif = (int)c1.insertions.size() - (int)c2.insertions.size();
+	for (; abs(dif) > abs(ins_dif); dif -= sign(dif))
+		cshort->genes.push_back(GeneNoOp{});
 
 	// keep track of which indexes from insertions vector were added at this step so we don't treat them again:
-	bool c1_added[2*WorldConst::MaxGenomeLengthDifference] {false};
-	bool c2_added[2*WorldConst::MaxGenomeLengthDifference] {false};
+	bool c1_added[2*constants::MaxGenomeLengthDifference] {false};
+	bool c2_added[2*constants::MaxGenomeLengthDifference] {false};
 	// now do the insertions:
 	decltype(c1.insertions) &ins1 = c1.insertions;
 	decltype(c2.insertions) &ins2 = c2.insertions;
@@ -258,7 +270,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		if (c.genes[position].type == gene_type::NO_OP)
 			c.genes[position] = newGene;
 		else {
-			// must keep a record of last genes inserted (at most N, and if gametes have a difference of more than N genes, they don't fuse)
+			// we keep a record of last genes inserted (at most N, and if gametes have a difference of more than N genes, they don't fuse)
 			// when combining two gametes we must insert dummy genes at correspondent positions in the other chromosome, in order to realign the alelles.
 			insertNewGene(c, Chromosome::insertion(position, 0), newGene);
 		}

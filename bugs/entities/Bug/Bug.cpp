@@ -20,6 +20,7 @@
 #include "../../body-parts/JointPivot.h"
 #include "../../serialization/GenomeSerialization.h"
 #include "../Gamete.h"
+#include "../WorldConst.h"
 
 #include <boglfw/math/math3D.h>
 #include <boglfw/math/aabb.h>

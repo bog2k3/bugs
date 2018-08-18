@@ -48,7 +48,7 @@ StreamType& operator >> (StreamType&stream, Chromosome &chromosome) {
 	}
 	uint16_t nInsertions;
 	stream >> nInsertions;
-	nInsertions = min(nInsertions, (uint16_t)WorldConst::MaxGenomeLengthDifference);
+	nInsertions = min(nInsertions, (uint16_t)constants::MaxGenomeLengthDifference);
 	chromosome.insertions.reserve(nInsertions);
 	for (unsigned i=0; i<nInsertions; i++) {
 		Chromosome::insertion ins;

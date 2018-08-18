@@ -8,7 +8,7 @@
 #ifndef GENETICS_GENOME_H_
 #define GENETICS_GENOME_H_
 
-#include "../entities/WorldConst.h"
+#include "constants.h"
 #include "Gene.h"
 
 #include <vector>
@@ -32,12 +32,12 @@ struct Chromosome {
 	};
 	std::vector<insertion> insertions;
 
-	Chromosome() : insertions(WorldConst::MaxGenomeLengthDifference, insertion()) {
+	Chromosome() : insertions(constants::MaxGenomeLengthDifference, insertion()) {
 		insertions.clear();
 	}
 
 	bool isGeneticallyCompatible(Chromosome const& c) {
-		return (unsigned)abs((int)c.genes.size() - (int)genes.size()) <= WorldConst::MaxGenomeLengthDifference;
+		return (unsigned)abs((int)c.genes.size() - (int)genes.size()) <= constants::MaxGenomeLengthDifference;
 	}
 
 	bool operator == (Chromosome const&) const;
@@ -73,9 +73,9 @@ public:
 private:
 	static void getAlterationChances(Gene const& g, float& mutationCh, float& swapCh, float& deleteCh);
 	static void alterMetaGene(MetaGene &m);
-	static void pullBackInsertions(Chromosome &c, int amount);
+	//static void pullBackInsertions(Chromosome &c, int amount);
 	static int insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g);
-	static void trimInsertionList(Chromosome &c);
+	static void trimInsertionList(Chromosome &c, unsigned extra=0);
 };
 
 #endif /* GENETICS_GENOME_H_ */
