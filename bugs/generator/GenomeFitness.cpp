@@ -69,9 +69,9 @@ float GenomeFitness::compute(Bug const& b) {
 	if (nBodyParts <= highScoreThreshold)
 		partsScore = highestPartsScore;
 	else if (nBodyParts <= zeroScoreThreshold)
-		partsScore = highestPartsScore * (zeroScoreThreshold - nBodyParts) / (zeroScoreThreshold - highScoreThreshold);
+		partsScore = highestPartsScore * (float)(zeroScoreThreshold - nBodyParts) / (zeroScoreThreshold - highScoreThreshold);
 	else if (nBodyParts <= lowScoreThreshold)
-		partsScore = lowestPartScore * (nBodyParts - zeroScoreThreshold) / (lowScoreThreshold - zeroScoreThreshold);
+		partsScore = lowestPartScore * (float)(nBodyParts - zeroScoreThreshold) / (lowScoreThreshold - zeroScoreThreshold);
 	else
 		partsScore = lowestPartScore;
 
@@ -89,8 +89,8 @@ float GenomeFitness::genomeLengthFactor(Bug const& b) {
 	int nGenes1 = clamp((int)b.getGenome().first.genes.size(), minLengthThresh, maxLengthThresh);
 	int nGenes2 = clamp((int)b.getGenome().second.genes.size(), minLengthThresh, maxLengthThresh);
 
-	float geneCoef1 = lowestGCoef + (1 - nGenes1 / (maxLengthThresh - minLengthThresh)) * (highestGCoef - lowestGCoef);
-	float geneCoef2 = lowestGCoef + (1 - nGenes2 / (maxLengthThresh - minLengthThresh)) * (highestGCoef - lowestGCoef);
+	float geneCoef1 = lowestGCoef + (1 - (float)(nGenes1-minLengthThresh) / (maxLengthThresh - minLengthThresh)) * (highestGCoef - lowestGCoef);
+	float geneCoef2 = lowestGCoef + (1 - (float)(nGenes2-minLengthThresh) / (maxLengthThresh - minLengthThresh)) * (highestGCoef - lowestGCoef);
 	float geneCoef = (geneCoef1 + geneCoef2) / 2;
 	assert(geneCoef >= lowestGCoef*0.95 && geneCoef <= highestGCoef*1.05);
 

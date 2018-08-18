@@ -19,6 +19,7 @@ struct IterationStats {
 	unsigned newRandom = 0;
 	unsigned recombinationTarget = 0;
 	unsigned averageGenomeLength = 0;
+	float averageFitness = 0;
 	std::vector<std::pair<unsigned, unsigned>> recombinationPairs;
 	std::vector<unsigned> selected;
 	float duration_s = 0;

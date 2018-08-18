@@ -326,13 +326,20 @@ void Researcher::printIterationStats() {
 	LOGNP("\n");
 	LOGLN("Fresh new genomes for next generation: " << stats_.back().newRandom);
 
-	float avgFitness = std::accumulate(stats_.back().fitness.begin(), stats_.back().fitness.end(), 0.f);
-	avgFitness /= stats_.back().fitness.size();
-	LOGLN("Average iteration fitness: " << avgFitness);
+	stats_.back().averageFitness = std::accumulate(stats_.back().fitness.begin(), stats_.back().fitness.end(), 0.f);
+	stats_.back().averageFitness /= stats_.back().fitness.size();
+	LOGLN("Average iteration fitness: " << stats_.back().averageFitness);
 	LOGLN("Average iteration genome length: " << stats_.back().averageGenomeLength);
 	LOGLN("Iteration duration: " << stats_.back().duration_s << " [s]");
 }
 
 void Researcher::printStatistics() {
-	// TODO ...
+	std::ofstream f("research-stats.csv");
+	f << "Iteration #,Best Fitness,Avg Fitness,Avg Genome Length,Duration\n";
+	for (unsigned i=0; i<stats_.size(); i++) {
+		f << i << "," << stats_[i].fitness[0]
+			   << "," << stats_[i].averageFitness
+			   << "," << stats_[i].averageGenomeLength
+			   << "," << stats_[i].duration_s << "\n";
+	}
 }
