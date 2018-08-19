@@ -25,4 +25,6 @@ StreamType& operator >> (StreamType &stream, Genome &genome) {
 	return stream;
 }
 
+static size_t dataSize(Genome const& g) { return dataSize(g.first) + dataSize(g.second); }
+
 #endif /* SERIALIZATION_GENOMESERIALIZATION_H_ */

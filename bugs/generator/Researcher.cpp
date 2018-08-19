@@ -40,11 +40,17 @@ void Researcher::saveGenomes() {
 		auto &g = genomes_[i];
 		std::stringstream ss;
 		ss << genomesPath_ + "/genome-" << i << ".dat";
-		BinaryStream str(sizeof(g));
+		size_t data_size = dataSize(g.first) + sizeof(g.second);
+		BinaryStream str(data_size);
 		str << g.second << g.first;
+		assertDbg(str.getSize() == data_size);
 
 		std::ofstream f(ss.str(), std::ios::binary);
 		f.write((char*)str.getBuffer(), str.getSize());
+		f.close();
+#ifdef DEBUG
+		assertDbg(filesystem::getFileSize(ss.str()) == data_size);
+#endif
 	}
 }
 

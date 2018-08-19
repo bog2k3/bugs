@@ -35,7 +35,7 @@ StreamType& operator << (StreamType &stream, Chromosome const& chromosome) {
 }
 
 template<class StreamType>
-StreamType& operator >> (StreamType&stream, Chromosome &chromosome) {
+StreamType& operator >> (StreamType &stream, Chromosome &chromosome) {
 	chromosome.genes.clear();
 	chromosome.insertions.clear();
 	uint32_t nGenes;
@@ -56,6 +56,13 @@ StreamType& operator >> (StreamType&stream, Chromosome &chromosome) {
 		chromosome.insertions.push_back(ins);
 	}
 	return stream;
+}
+
+static size_t dataSize(Chromosome const& c) {
+	size_t sz = sizeof(uint32_t) + sizeof(uint16_t); // length of genes and insertions arrays
+	for (auto &g : c.genes)
+		sz += dataSize(g);
+	return sz + c.insertions.size() * sizeof(c.insertions[0]);
 }
 
 #endif /* SERIALIZATION_CHROMOSOMESERIALIZATION_H_ */

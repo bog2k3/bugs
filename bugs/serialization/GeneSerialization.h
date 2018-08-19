@@ -65,7 +65,7 @@ StreamType& operator >> (StreamType &stream, gene_type &type) {
 template<class StreamType>
 StreamType& operator << (StreamType &stream, BranchRestriction const& br) {
 	stream << br.activeLevels;
-	unsigned totalLevels = sizeof(br.levels) / sizeof(br.levels[0]);
+	uint16_t totalLevels = sizeof(br.levels) / sizeof(br.levels[0]);
 	stream << totalLevels;
 	for (unsigned i=0; i<totalLevels; i++) {
 		stream << br.levels[i].skipLeft;
@@ -76,13 +76,17 @@ StreamType& operator << (StreamType &stream, BranchRestriction const& br) {
 	return stream;
 }
 
+static size_t dataSize(BranchRestriction const& b) {
+	return sizeof(b.activeLevels) + sizeof(uint16_t) + sizeof(b.levels);
+}
+
 template<class StreamType>
 StreamType& operator >> (StreamType &stream, BranchRestriction &br) {
 	stream >> br.activeLevels;
-	unsigned maxLevels = sizeof(br.levels) / sizeof(br.levels[0]);
+	uint16_t maxLevels = sizeof(br.levels) / sizeof(br.levels[0]);
 	if (br.activeLevels > maxLevels)
 		br.activeLevels.set(maxLevels);
-	unsigned totalLevels;
+	uint16_t totalLevels;
 	stream >> totalLevels;
 	totalLevels = min(totalLevels, maxLevels);
 	for (unsigned i=0; i<totalLevels; i++) {
@@ -305,6 +309,94 @@ StreamType& operator >> (StreamType &stream, Gene &gene) {
 		assert(false); // unknown gene type
 	}
 	return stream;
+}
+
+static size_t dataSize(Gene const& g) {
+	size_t sz = sizeof(g.type) + sizeof(g.chance_to_delete) + sizeof(g.chance_to_swap);
+	switch (g.type) {
+	case gene_type::BODY_ATTRIBUTE:
+		sz += sizeof(g.data.gene_body_attribute.attribute);
+		sz += sizeof(g.data.gene_body_attribute.value);
+		break;
+	case gene_type::DIVISION_PARAM:
+		sz += sizeof(g.data.gene_division_param.param);
+		sz += sizeof(g.data.gene_division_param.value);
+		sz += dataSize(g.data.gene_division_param.restriction);
+		break;
+	case gene_type::JOINT_ATTRIBUTE:
+		sz += sizeof(g.data.gene_joint_attrib.attrib);
+		sz += sizeof(g.data.gene_joint_attrib.value);
+		sz += dataSize(g.data.gene_joint_attrib.restriction);
+		break;
+	case gene_type::MUSCLE_ATTRIBUTE:
+		sz += sizeof(g.data.gene_muscle_attrib.attrib);
+		sz += sizeof(g.data.gene_muscle_attrib.side);
+		sz += sizeof(g.data.gene_muscle_attrib.value);
+		sz += dataSize(g.data.gene_muscle_attrib.restriction);
+		break;
+	case gene_type::NEURAL_BIAS:
+		sz += sizeof(g.data.gene_neural_constant.neuronLocation);
+		sz += sizeof(g.data.gene_neural_constant.value);
+		sz += dataSize(g.data.gene_neural_constant.restriction);
+		break;
+	case gene_type::NEURAL_PARAM:
+		sz += sizeof(g.data.gene_neural_param.neuronLocation);
+		sz += sizeof(g.data.gene_neural_param.value);
+		sz += dataSize(g.data.gene_neural_param.restriction);
+		break;
+	case gene_type::NEURON:
+		sz += sizeof(g.data.gene_neuron.neuronLocation);
+		sz += dataSize(g.data.gene_neuron.restriction);
+		break;
+	case gene_type::NO_OP:
+		break;
+	case gene_type::OFFSET:
+		sz += sizeof(g.data.gene_offset.offset);
+		sz += sizeof(g.data.gene_offset.side);
+		sz += dataSize(g.data.gene_offset.restriction);
+		break;
+	case gene_type::PART_ATTRIBUTE:
+		sz += sizeof(g.data.gene_attribute.attribute);
+		sz += sizeof(g.data.gene_attribute.value);
+		sz += dataSize(g.data.gene_attribute.restriction);
+		break;
+	case gene_type::PROTEIN:
+		sz += sizeof(g.data.gene_protein.protein);
+		sz += sizeof(g.data.gene_protein.weight);
+		sz += dataSize(g.data.gene_protein.restriction);
+		break;
+	case gene_type::SKIP:
+		sz += sizeof(g.data.gene_skip.count);
+		sz += dataSize(g.data.gene_skip.restriction);
+		break;
+	case gene_type::STOP:
+		break;
+	case gene_type::SYNAPSE:
+		sz += sizeof(g.data.gene_synapse.srcLocation);
+		sz += sizeof(g.data.gene_synapse.destLocation);
+		sz += sizeof(g.data.gene_synapse.weight);
+		sz += sizeof(g.data.gene_synapse.priority);
+		sz += dataSize(g.data.gene_synapse.restriction);
+		break;
+	case gene_type::TIME_SYNAPSE:
+		sz += sizeof(g.data.gene_time_synapse.targetLocation);
+		sz += sizeof(g.data.gene_time_synapse.weight);
+		sz += dataSize(g.data.gene_time_synapse.restriction);
+		break;
+	case gene_type::TRANSFER_FUNC:
+		sz += sizeof(g.data.gene_transfer_function.functionID);
+		sz += sizeof(g.data.gene_transfer_function.neuronLocation);
+		sz += dataSize(g.data.gene_transfer_function.restriction);
+		break;
+	case gene_type::VMS_OFFSET:
+		sz += sizeof(g.data.gene_vms_offset.value);
+		sz += dataSize(g.data.gene_vms_offset.restriction);
+		break;
+	default:
+		assertDbg(!"unexpected gene type!");
+		break;
+	}
+	return sz;
 }
 
 #endif /* SERIALIZATION_GENESERIALIZATION_H_ */
