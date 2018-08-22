@@ -14,6 +14,9 @@
 #include <boglfw/math/math3D.h>
 
 #include <cmath>
+#include <type_traits>
+
+static size_t dataSize(Gene const& g);
 
 template<class StreamType>
 StreamType& operator << (StreamType &stream, MetaGene const& mg) {
@@ -49,15 +52,15 @@ StreamType& operator >> (StreamType &stream, Atom<T> &atom) {
 
 template<class StreamType>
 StreamType& operator << (StreamType &stream, gene_type type) {
-	stream << static_cast<int>(type);
+	stream << static_cast<std::underlying_type<gene_type>::type>(type);
 	return stream;
 }
 
 template<class StreamType>
 StreamType& operator >> (StreamType &stream, gene_type &type) {
-	int itype;
+	std::underlying_type<gene_type>::type itype;
 	stream >> itype;
-	itype = clamp(itype, (int)gene_type::INVALID + 1, (int)gene_type::END - 1);
+	itype = clamp((int)itype, (int)gene_type::INVALID + 1, (int)gene_type::END - 1);
 	type = static_cast<gene_type>(itype);
 	return stream;
 }

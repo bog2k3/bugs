@@ -472,7 +472,7 @@ void Bug::serialize(BinaryStream &stream) const {
 }
 
 void Bug::deserialize(BinaryStream &stream) {
-	if (stream.getSize() == 0)
+	if (stream.size() == 0)
 		return; // this was a dead bug
 	// TODO
 	NOT_IMPLEMENTED;

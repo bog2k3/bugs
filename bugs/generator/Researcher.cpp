@@ -43,10 +43,10 @@ void Researcher::saveGenomes() {
 		size_t data_size = dataSize(g.first) + sizeof(g.second);
 		BinaryStream str(data_size);
 		str << g.second << g.first;
-		assertDbg(str.getSize() == data_size);
+		assertDbg(str.size() == data_size);
 
 		std::ofstream f(ss.str(), std::ios::binary);
-		f.write((char*)str.getBuffer(), str.getSize());
+		f.write((char*)str.getBuffer(), str.size());
 		f.close();
 #ifdef DEBUG
 		assertDbg(filesystem::getFileSize(ss.str()) == data_size);
