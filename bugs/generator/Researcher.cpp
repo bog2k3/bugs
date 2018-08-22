@@ -77,7 +77,7 @@ void Researcher::initialize(int targetPopulation, float recombinationRatio, floa
 void Researcher::iterate(float timeStep) {
 	static unsigned iterationNumber = 1;
 	LOGNP("\n");
-	LOGLN("RESEARCH ITERATION " << iterationNumber++ << " -----------------------------------------------------------------------------------------------\n");
+	LOGLN("RESEARCH ITERATION " << iterationNumber << " -----------------------------------------------------------------------------------------------\n");
 	std::chrono::time_point<std::chrono::high_resolution_clock> itStartTime(std::chrono::high_resolution_clock::now());
 	stats_.push_back({});
 	MTVector<std::pair<Bug*, float>> bugs(genomes_.size());
@@ -213,6 +213,8 @@ void Researcher::iterate(float timeStep) {
 		printStatistics();
 		statWriteIndex = stats_.size();
 	}
+
+	iterationNumber++;
 }
 
 void Researcher::loadGenomes() {
