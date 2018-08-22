@@ -137,8 +137,10 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	}
 	// recompute insertions difference and add padding to the shorter chromosome until the gene difference is equal to insertions difference
 	ins_dif = (int)c1.insertions.size() - (int)c2.insertions.size();
-	for (; abs(dif) > abs(ins_dif); dif -= sign(dif))
-		cshort->genes.push_back(GeneNoOp{});
+	if (sign(ins_dif) == sign(dif)) {	// only if the shorter chromosome has fewer insertions
+		for (; abs(dif) > abs(ins_dif); dif -= sign(dif))
+			cshort->genes.push_back(GeneNoOp{});
+	}
 
 	// keep track of which indexes from insertions vector were added at this step so we don't treat them again:
 	bool c1_added[2*constants::MaxGenomeLengthDifference] {false};
