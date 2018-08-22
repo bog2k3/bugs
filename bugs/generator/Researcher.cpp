@@ -25,6 +25,8 @@
 #include <fstream>
 #include <sstream>
 
+static const char fullStatsFilename[] = "research-stats.csv";
+
 Researcher::Researcher(std::string genomesPath)
 	: genomesPath_(genomesPath)
 {
@@ -64,6 +66,11 @@ void Researcher::initialize(int targetPopulation, float recombinationRatio, floa
 	randomGenomeLength_ = randomGenomeLength;
 	loadGenomes();
 	fillUpPopulation();
+
+	// initialize stats file:
+	std::ofstream f(fullStatsFilename);
+	f << "Iteration #,Best Fitness,Avg Fitness,Avg Genome Length,Duration\n";
+	f.close();
 }
 
 // perform a research iteration
@@ -199,6 +206,13 @@ void Researcher::iterate(float timeStep) {
 		saveGenomes();
 		LOGLN("Autosave done.");
 	}
+
+	const int statDumpInterval = 100; // iterations
+	if (!(iterationNumber % statDumpInterval)) {
+		LOGLN("Writing stats to file...");
+		printStatistics();
+		statWriteIndex = stats_.size();
+	}
 }
 
 void Researcher::loadGenomes() {
@@ -230,8 +244,10 @@ void Researcher::loadGenomes() {
 
 void Researcher::fillUpPopulation() {
 	// generate random genomes until reaching the target population
-	while (genomes_.size() < targetPopulation_)
-		genomes_.push_back({GenomeGenerator::createRandom(max(randomGenomeLength_, stats_.size() ? stats_.back().averageGenomeLength : 1)), 0.f});
+	while (genomes_.size() < targetPopulation_) {
+		int length = max(randomGenomeLength_, stats_.size() ? stats_.back().averageGenomeLength : 1);
+		genomes_.push_back({GenomeGenerator::createRandom(length), 0.f});
+	}
 }
 
 decltype(Researcher::genomes_) Researcher::doRecombination() {
@@ -340,12 +356,12 @@ void Researcher::printIterationStats() {
 }
 
 void Researcher::printStatistics() {
-	std::ofstream f("research-stats.csv");
-	f << "Iteration #,Best Fitness,Avg Fitness,Avg Genome Length,Duration\n";
-	for (unsigned i=0; i<stats_.size(); i++) {
+	std::ofstream f(fullStatsFilename, std::ios_base::app);
+	for (unsigned i=statWriteIndex; i<stats_.size(); i++) {
 		f << i << "," << stats_[i].fitness[0]
 			   << "," << stats_[i].averageFitness
 			   << "," << stats_[i].averageGenomeLength
 			   << "," << stats_[i].duration_s << "\n";
 	}
+	f.close();
 }

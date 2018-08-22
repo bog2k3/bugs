@@ -163,12 +163,16 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 		}
 		if (fromFirst) {
 			// insert the current insertion from first to second;
-			int c2ListIndex = insertNewGene(c2, ins1[i], GeneNoOp());
-			c2_added[c2ListIndex] = true;
+			if ((unsigned)ins1[i].index <= c2.genes.size()) {
+				int c2ListIndex = insertNewGene(c2, ins1[i], GeneNoOp());
+				c2_added[c2ListIndex] = true;
+			}
 		} else if (j<ins2.size()) {
 			// insert the current insertion from second to first
-			int c1ListIndex = insertNewGene(c1, ins2[j], GeneNoOp());
-			c1_added[c1ListIndex] = true;
+			if ((unsigned)ins2[j].index <= c1.genes.size()) {
+				int c1ListIndex = insertNewGene(c1, ins2[j], GeneNoOp());
+				c1_added[c1ListIndex] = true;
+			}
 		}
 		i++, j++;
 	}
@@ -238,7 +242,8 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 #if(ENABLE_STATS)
 				stat_swaps++;
 #endif
-			}
+			} else // this seems to be the only gene on the chromosome, wtf?!?!
+				swap = false;
 		}
 		if (swapReverse) {
 #if(ENABLE_STATS)

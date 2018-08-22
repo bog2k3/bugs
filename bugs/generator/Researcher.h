@@ -54,6 +54,7 @@ private:
 	unsigned randomGenomeLength_ = 200;
 
 	std::vector<IterationStats> stats_;
+	unsigned statWriteIndex = 0;
 
 	void loadGenomes();
 	void fillUpPopulation();
