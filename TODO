@@ -1,3 +1,4 @@
+* [ ] !!! track gene deletions in the same way we track insertions and re-sync chromosomes
 * [X] next: Metabolism, eating, growing, fat-burning and replenish, egg-laying
 	- [X] eat, grow, fat replenish, egg-growth
 	- [X] consume energy
