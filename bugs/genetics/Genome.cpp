@@ -188,7 +188,7 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
  */
 void GeneticOperations::alterChromosome(Chromosome &c) {
 	LOGPREFIX("GeneticOperations");
-#define ENABLE_STATS 1
+#define ENABLE_STATS 0
 #if(ENABLE_STATS)
 	int stat_mutations = 0;
 	int stat_swaps = 0;
@@ -269,7 +269,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 
 	// now there's a chance to spawn a new gene
 	if (//false && // DEBUG: disable adding new genes
-			randf() < constants::global_chance_to_spawn_gene * c.genes.size()) {
+			randf() < constants::global_chance_to_spawn_gene) {
 		int position = randi(c.genes.size()-1);
 		Gene newGene(Gene::createRandom(c.genes.size()-position));
 		if (c.genes[position].type == gene_type::NO_OP)
@@ -285,7 +285,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 	}
 
 #if(ENABLE_STATS)
-		DEBUGLOGLN("alter chromosome: [mutations: "<<stat_mutations<<"] [swaps: "<<stat_swaps<<"] [new: "<<stat_new<<"] [del: "<<stat_delete<<"]");
+		LOGLN("alter chromosome: [mutations: "<<stat_mutations<<"] [swaps: "<<stat_swaps<<"] [new: "<<stat_new<<"] [del: "<<stat_delete<<"]");
 #endif
 }
 
