@@ -38,14 +38,18 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	unsigned i=0;
 	while (i<gen.first.genes.size() || i<gen.second.genes.size()) {
 		const Gene *g = nullptr;
-		if (i<gen.first.genes.size()) {
+		if (i<gen.first.genes.size()
+				&& gen.first.genes[i].type != gene_type::NO_OP)			// avoid no-op genes
+		{
 			g = &gen.first.genes[i];
-			if (i<gen.second.genes.size() && randf() < 0.5f)
+			if (i<gen.second.genes.size() && randf() < 0.5f
+					&& gen.second.genes[i].type != gene_type::NO_OP)	// avoid no-op genes
 				g = &gen.second.genes[i];
-		} else
+		} else if (i<gen.second.genes.size())
 			g = &gen.second.genes[i];
 
-		c.genes.push_back(*g);
+		if (g)
+			c.genes.push_back(*g);
 		i++;
 	}
 	// copy insertion list:
@@ -180,6 +184,60 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	}
 	trimInsertionList(c1);
 	trimInsertionList(c2);
+
+	// we're done with insertions, now let's remove homologous no-op genes to keep the genome lean and mean
+	// we need to track and update offset genes that may be affected by removing the no-op genes
+	std::vector<int> c1_offset_genes;	// holds the indexes of offset genes
+	std::vector<int> c2_offset_genes;
+	for (unsigned i=0; i<c1.genes.size() && i<c2.genes.size(); i++) {
+		if (c1.genes[i].type == gene_type::OFFSET)
+			c1_offset_genes.push_back(i);
+		if (c2.genes[i].type == gene_type::OFFSET)
+			c2_offset_genes.push_back(i);
+		if (c1.genes[i].type == gene_type::NO_OP && c2.genes[i].type == gene_type::NO_OP) {
+			// we remove this gene from both chromosomes and then fix insertion indexes
+			c1.genes.erase(c1.genes.begin()+i);
+			c2.genes.erase(c2.genes.begin()+i);
+			// update all insertions indexes that follow (if this was an insertion we remove it, otherwise we update the insertion index)
+			for (unsigned j=0; j<c1.insertions.size(); j++)
+				if (c1.insertions[j].index == i) {
+					c1.insertions.erase(c1.insertions.begin()+j);
+					j--;
+				}
+				else if (c1.insertions[j].index > i)
+					c1.insertions[j].index--;
+			for (unsigned j=0; j<c2.insertions.size(); j++)
+				if (c2.insertions[j].index == i) {
+					c2.insertions.erase(c2.insertions.begin()+j);
+					j--;
+				}
+				else if (c2.insertions[j].index > i)
+					c2.insertions[j].index--;
+			// update offset genes that might have been affected:
+			for (unsigned j=0; j<c1_offset_genes.size(); j++) {
+				int offset_value = c1.genes[c1_offset_genes[j]].data.gene_offset.offset;
+				int abs_offset_target = c1_offset_genes[j] + offset_value;
+				if (abs_offset_target > i)
+					c1.genes[c1_offset_genes[j]].data.gene_offset.offset.value--;
+				else {
+					// the offset gene's target was before the current genome position, so we can forget about it:
+					c1_offset_genes.erase(c1_offset_genes.begin() + j);
+					j--;
+				}
+			}
+			for (unsigned j=0; j<c2_offset_genes.size(); j++) {
+				int offset_value = c2.genes[c2_offset_genes[j]].data.gene_offset.offset;
+				int abs_offset_target = c2_offset_genes[j] + offset_value;
+				if (abs_offset_target > i)
+					c2.genes[c2_offset_genes[j]].data.gene_offset.offset.value--;
+				else {
+					// the offset gene's target was before the current genome position, so we can forget about it:
+					c2_offset_genes.erase(c2_offset_genes.begin() + j);
+					j--;
+				}
+			}
+		}
+	}
 }
 
 /*

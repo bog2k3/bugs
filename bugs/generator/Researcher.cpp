@@ -38,6 +38,13 @@ void Researcher::saveGenomes() {
 		return g1.second > g2.second;
 	});
 	// now write them to disk:
+	if (!filesystem::pathExists(genomesPath_)) {
+		if (!filesystem::mkDirRecursive(genomesPath_)) {
+			ERROR("!!! Could not create genomes directory: " << genomesPath_);
+			ERROR("!!! Genomes will not be saved!");
+			return;
+		}
+	}
 	for (unsigned i=0; i<genomes_.size(); i++) {
 		auto &g = genomes_[i];
 		std::stringstream ss;
@@ -51,7 +58,8 @@ void Researcher::saveGenomes() {
 		f.write((char*)str.getBuffer(), str.size());
 		f.close();
 #ifdef DEBUG
-		assertDbg(filesystem::getFileSize(ss.str()) == data_size);
+		auto fileSize = filesystem::getFileSize(ss.str());
+		assertDbg(fileSize == data_size);
 #endif
 	}
 }
