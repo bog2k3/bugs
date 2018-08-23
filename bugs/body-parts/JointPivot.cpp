@@ -32,8 +32,8 @@ JointPivot::JointPivot(BodyPartContext const& context, BodyCell& cell, BodyPart*
 	: Joint(context, cell, leftAnchor, rightAnchor, BodyPartType::JOINT_PIVOT)
 {
 
-	phiMin_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_LOW_LIMIT].clamp(-PI*0.9f, 0);
-	phiMax_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_HIGH_LIMIT].clamp(0, PI*0.9f);
+	phiMin_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_LOW_LIMIT].clamp(-PI*0.9f, -0.1f);
+	phiMax_ = cell.mapJointAttribs_[GENE_JOINT_ATTR_HIGH_LIMIT].clamp(0.1f, PI*0.9f);
 	if (cell.isMirrored()) {
 		xchg(phiMin_, phiMax_);
 		phiMin_ *= -1;
