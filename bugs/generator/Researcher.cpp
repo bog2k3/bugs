@@ -25,7 +25,8 @@
 #include <fstream>
 #include <sstream>
 
-static const char fullStatsFilename[] = "research-stats.csv";
+static const char fullStatsFilename[] = "stats.csv";
+static const char sessionStatsFilename[] = "stats.last-session.csv";
 
 Researcher::Researcher(std::string genomesPath)
 	: genomesPath_(genomesPath)
@@ -38,13 +39,6 @@ void Researcher::saveGenomes() {
 		return g1.second > g2.second;
 	});
 	// now write them to disk:
-	if (!filesystem::pathExists(genomesPath_)) {
-		if (!filesystem::mkDirRecursive(genomesPath_)) {
-			ERROR("!!! Could not create genomes directory: " << genomesPath_);
-			ERROR("!!! Genomes will not be saved!");
-			return;
-		}
-	}
 	for (unsigned i=0; i<genomes_.size(); i++) {
 		auto &g = genomes_[i];
 		std::stringstream ss;
@@ -75,10 +69,35 @@ void Researcher::initialize(int targetPopulation, float recombinationRatio, floa
 	loadGenomes();
 	fillUpPopulation();
 
+	// make sure the working directory exists:
+	if (!filesystem::pathExists(genomesPath_)) {
+		if (!filesystem::mkDirRecursive(genomesPath_)) {
+			ERROR("!!! Could not create genomes directory: " << genomesPath_);
+			ERROR("!!! Genomes and statistics will not be saved!");
+			disableStats_ = true;
+			return;
+		}
+	}
+
 	// initialize stats file:
-	std::ofstream f(fullStatsFilename);
+	std::ofstream f(genomesPath_ + "/" + sessionStatsFilename);
 	f << "Iteration #,Best Fitness,Avg Fitness,Avg Genome Length,Duration\n";
 	f.close();
+
+	bool existingFullStats = false;
+	if (filesystem::pathExists(genomesPath_ + "/" + fullStatsFilename)) {
+		std::ifstream f(genomesPath_ + "/" + fullStatsFilename);
+		std::string junk;
+		while (std::getline(f, junk))
+			fullStatsOffset_++;
+		if (fullStatsOffset_ > 0) {
+			existingFullStats = true;
+			fullStatsOffset_--; // don't count the header line
+		}
+	}
+	if (!existingFullStats) {
+		filesystem::copyFile(genomesPath_ + "/" + sessionStatsFilename, genomesPath_ + "/" + fullStatsFilename);
+	}
 }
 
 // perform a research iteration
@@ -219,7 +238,7 @@ void Researcher::iterate(float timeStep) {
 	if (!(iterationNumber % statDumpInterval)) {
 		LOGLN("Writing stats to file...");
 		printStatistics();
-		statWriteIndex = stats_.size();
+		statWriteIndex_ = stats_.size();
 	}
 
 	iterationNumber++;
@@ -366,12 +385,22 @@ void Researcher::printIterationStats() {
 }
 
 void Researcher::printStatistics() {
-	std::ofstream f(fullStatsFilename, std::ios_base::app);
-	for (unsigned i=statWriteIndex; i<stats_.size(); i++) {
-		f << i << "," << stats_[i].fitness[0]
+	if (disableStats_) {
+		ERROR("Stats cannot be written to file!!!");
+		return;
+	}
+	std::ofstream ff(genomesPath_ + "/" + fullStatsFilename, std::ios_base::app);
+	std::ofstream fs(genomesPath_ + "/" + sessionStatsFilename, std::ios_base::app);
+	for (unsigned i=statWriteIndex_; i<stats_.size(); i++) {
+		fs << i << "," << stats_[i].fitness[0]
+			   << "," << stats_[i].averageFitness
+			   << "," << stats_[i].averageGenomeLength
+			   << "," << stats_[i].duration_s << "\n";
+		ff << i+fullStatsOffset_ << "," << stats_[i].fitness[0]
 			   << "," << stats_[i].averageFitness
 			   << "," << stats_[i].averageGenomeLength
 			   << "," << stats_[i].duration_s << "\n";
 	}
-	f.close();
+	fs.close();
+	ff.close();
 }

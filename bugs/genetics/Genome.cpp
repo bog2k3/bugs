@@ -63,19 +63,6 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 	return c;
 }
 
-/*void GeneticOperations::pullBackInsertions(Chromosome &c, int amount) {
-	assertDbg(amount > 0 && amount <= c.insertions.size());
-	for (int i=0; i<amount; i++) {
-		unsigned from = i + amount;
-		if (from < c.insertions.size())
-			c.insertions[i] = c.insertions[from];
-		else {
-			c.insertions.erase(c.insertions.begin()+i, c.insertions.end());
-			break;
-		}
-	}
-}*/
-
 /*
  * this will insert a new gene and return the index in the insertions vector where this change has been recorded
  */
@@ -122,6 +109,7 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	int dif = (int)c1.genes.size() - (int)c2.genes.size();
 	int ins_dif = (int)c1.insertions.size() - (int)c2.insertions.size();
 	Chromosome *cshort = nullptr;
+	Chromosome *clong = nullptr;
 	// remove oldest insertions on the shorter chromosome until the difference in size matches the difference
 	// in number of insertions:
 	if (dif > 0) {
@@ -131,6 +119,7 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 		if (amount > 0)
 			trimInsertionList(c2, min(amount, (int)c2.insertions.size()));
 		cshort = &c2;
+		clong = &c1;
 	} else if (dif < 0) {
 		// C1 is shorter
 		//assertDbg(c1.insertions.size() <= c2.insertions.size());
@@ -138,12 +127,29 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 		if (amount > 0)
 			trimInsertionList(c1, min(amount, (int)c1.insertions.size()));
 		cshort = &c1;
+		clong = &c2;
+	} else {
+		cshort = ins_dif >= 0 ? &c1 : &c2;
+		clong = ins_dif >= 0 ? &c2 : &c1;
 	}
 	// recompute insertions difference and add padding to the shorter chromosome until the gene difference is equal to insertions difference
 	ins_dif = (int)c1.insertions.size() - (int)c2.insertions.size();
 	if (sign(ins_dif) == sign(dif)) {	// only if the shorter chromosome has fewer insertions
-		for (; abs(dif) > abs(ins_dif); dif -= sign(dif))
-			cshort->genes.push_back(GeneNoOp{});
+		for (; abs(dif) > abs(ins_dif); dif -= sign(dif)) {
+			// 50-50% chance of either padding the shorter chromosome or discarding the latest gene from the longer one
+			if (randf() < 0.5)
+				// do padding
+				cshort->genes.push_back(GeneNoOp{});
+			else {
+				// discard the youngest gene from the long chromosome:
+				int inew = 0;
+				for (unsigned i=1; i<clong->insertions.size(); i++)
+					if (clong->insertions[i].age < clong->insertions[inew].age)
+						inew = i;
+				clong->genes.erase(clong->genes.begin() + clong->insertions[inew].index);
+				clong->insertions.erase(clong->insertions.begin() + inew);
+			}
+		}
 	}
 
 	// keep track of which indexes from insertions vector were added at this step so we don't treat them again:
