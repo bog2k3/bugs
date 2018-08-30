@@ -176,8 +176,9 @@ std::set<Cell*> Cell::fixOverlap(std::set<Cell*> &marked, bool extraPrecision) {
 		// step 2: apply the computed offsets to cells
 		massRatios.clear();
 		for (auto &p : totalCellOffset) {
-			p.first->position_ += p.second;
 			float modulusOfSums = glm::length(p.second);
+			float tameFactor = clamp(modulusOfSums, 0.f, p.first->radius(0)) / modulusOfSums;
+			p.first->position_ += p.second * tameFactor;
 			float sumOfModuli = totalCellOffsetMod[p.first];
 			if (sumOfModuli < EPS)
 				sumOfModuli = EPS;

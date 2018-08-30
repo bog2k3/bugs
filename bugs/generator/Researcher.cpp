@@ -231,14 +231,10 @@ void Researcher::iterate(float timeStep) {
 	if (!(iterationNumber % autosaveInterval)) {
 		LOGLN("Autosaving (interval=" << autosaveInterval << ") ...");
 		saveGenomes();
-		LOGLN("Autosave done.");
-	}
-
-	const int statDumpInterval = 100; // iterations
-	if (!(iterationNumber % statDumpInterval)) {
 		LOGLN("Writing stats to file...");
 		printStatistics();
 		statWriteIndex_ = stats_.size();
+		LOGLN("Autosave done.");
 	}
 
 	iterationNumber++;
@@ -310,7 +306,7 @@ void Researcher::selectBest(decltype(genomes_) &out) {
 	std::set<unsigned> selected;
 	unsigned roomForNew = max(1.f, renewRatio_ * targetPopulation_);
 	while (out.size() < targetPopulation_ - roomForNew) {
-		unsigned index = biasedRandomSelect(1.f, selected);
+		unsigned index = biasedRandomSelect(2.f, selected);
 		selected.insert(index);
 		out.push_back(genomes_[index]);
 		genomes_[index].second = 0; // in order to avoid duplicates

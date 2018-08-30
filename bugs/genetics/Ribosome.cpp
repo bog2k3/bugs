@@ -148,18 +148,21 @@ bool Ribosome::step() {
 					&& cell->branch_.size() < constants::MAX_DIVISION_DEPTH
 					&& cell->size() >= BodyConst::CellDivisionSizeThresh) {
 				// check if division will create pivot joint, and if so, we need to subtract the mass required to make the joint and muscles
-				float cellMass = cell->density() * cell->size();
-				float jointMass = cellMass * cell->mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO].clamp(
-						BodyConst::MinJointMassRatio, BodyConst::MaxJointMassRatio);
-				// make sure joint mass doesn't exceed either child cell mass
+				float cellSize = cell->size();
+				float cellMass = cell->density() * cellSize;
+				float jointSize = cellSize * cell->mapJointAttribs_[GENE_JOINT_ATTR_MASS_RATIO].clamp(
+						BodyConst::MinJointMassRatio, BodyConst::MaxJointMassRatio)
+						* cell->density() / BodyConst::initialJointDensity;
+				// make sure joint size doesn't exceed either child cell's size
 				float divisionRatio = cell->mapDivisionParams_[GENE_DIVISION_RATIO].clamp(
 											BodyConst::minDivisionRatio,
 											1.f / BodyConst::minDivisionRatio);
 				if (divisionRatio > 1.f)
 					divisionRatio = 1.f / divisionRatio;	// use the smaller child cell as comparison
-				float smallCellMass = cellMass * divisionRatio / (divisionRatio + 1);
-				if (jointMass > smallCellMass)
-					jointMass = smallCellMass;
+				float smallCellSize = cellSize * divisionRatio / (divisionRatio + 1);
+				if (jointSize > smallCellSize)
+					jointSize = smallCellSize;
+				float jointMass = jointSize * BodyConst::initialJointDensity;
 
 				float muscleMass = 0;
 				if (cell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f) {

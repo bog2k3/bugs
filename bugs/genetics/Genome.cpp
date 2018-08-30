@@ -142,12 +142,18 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 				cshort->genes.push_back(GeneNoOp{});
 			else {
 				// discard the youngest gene from the long chromosome:
-				int inew = 0;
+				unsigned inew = 0;
 				for (unsigned i=1; i<clong->insertions.size(); i++)
 					if (clong->insertions[i].age < clong->insertions[inew].age)
 						inew = i;
-				clong->genes.erase(clong->genes.begin() + clong->insertions[inew].index);
-				clong->insertions.erase(clong->insertions.begin() + inew);
+				if (inew < clong->insertions.size()) {
+					assertDbg(clong->insertions[inew].index < (int)clong->genes.size());
+					clong->genes.erase(clong->genes.begin() + clong->insertions[inew].index);
+					clong->insertions.erase(clong->insertions.begin() + inew);
+				} else {
+					// no more insertions left, just pop the last gene
+					clong->genes.pop_back();
+				}
 			}
 		}
 	}
