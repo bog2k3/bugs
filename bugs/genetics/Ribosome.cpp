@@ -155,10 +155,11 @@ bool Ribosome::step() {
 				float divisionRatio = cell->mapDivisionParams_[GENE_DIVISION_RATIO].clamp(
 											BodyConst::minDivisionRatio,
 											1.f / BodyConst::minDivisionRatio);
-				if (divisionRatio > 0.5)
-					divisionRatio = 1 - divisionRatio;	// use the smaller child cell as comparison
-				if (jointMass > cellMass * divisionRatio)
-					jointMass = cellMass * divisionRatio;
+				if (divisionRatio > 1.f)
+					divisionRatio = 1.f / divisionRatio;	// use the smaller child cell as comparison
+				float smallCellMass = cellMass * divisionRatio / (divisionRatio + 1);
+				if (jointMass > smallCellMass)
+					jointMass = smallCellMass;
 
 				float muscleMass = 0;
 				if (cell->mapJointAttribs_[GENE_JOINT_ATTR_TYPE] > 0.f) {

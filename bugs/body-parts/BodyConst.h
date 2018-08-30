@@ -17,7 +17,7 @@ public:
 	static constexpr float SizeThresholdToCommit_inv = 1.f / SizeThresholdToCommit;
 
 	// fixed values:
-	static constexpr float minDivisionRatio					= 0.01f;		// [*]
+	static constexpr float minDivisionRatio					= 0.05f;		// [*]
 	static constexpr float NeuronEnergyRate					= 0.03f;		// [J/s] how much energy does a neuron consume when outputting a value of 1.0?
 	static constexpr float MinBodyPartDensity				= 0.5f;			// [kg/m^2]
 	static constexpr float MaxBodyPartDensity				= 100.f;		// [kg/m^2]

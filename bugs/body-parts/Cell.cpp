@@ -206,9 +206,12 @@ std::pair<Cell*, Cell*> Cell::divide(float division_angle, float ratio, float bo
 	division_angle = limitAngle(division_angle, PI);
 	float ls = size_ * ratio / (ratio + 1);	// left size
 	float rs = size_ / (ratio + 1);			// right size
+	assertDbg(eqEps(ls+rs, size_, size_*0.1f));
 	float lr = sqrtf(ls / PI);				// left radius
 	float rr = sqrtf(rs / PI);				// right radius
 	float jr = sqrtf(jointSize_ / PI);		// joint radius
+	assertDbg(rr + jr < 4*Cell::radius(0));	// left and right cell centers should be within 4*R of current cell's center
+	assertDbg(lr + jr < 4*Cell::radius(0));
 	float offset_angle = wangle(division_angle + PI/2);
 	glm::vec2 offsetDir = {cosf(offset_angle), sinf(offset_angle)};
 	glm::vec2 lC = position_ + offsetDir * (rr + jr);
