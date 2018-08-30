@@ -104,7 +104,7 @@ void Researcher::initialize(int targetPopulation, float recombinationRatio, floa
 void Researcher::iterate(float timeStep) {
 	static unsigned iterationNumber = 1;
 	LOGNP("\n");
-	LOGLN("RESEARCH ITERATION " << iterationNumber << " -----------------------------------------------------------------------------------------------\n");
+	LOGLN("RESEARCH ITERATION " << iterationNumber << " / " << iterationNumber+fullStatsOffset_ << " -----------------------------------------------------------------------------------------------\n");
 	std::chrono::time_point<std::chrono::high_resolution_clock> itStartTime(std::chrono::high_resolution_clock::now());
 	stats_.push_back({});
 	MTVector<std::pair<Bug*, float>> bugs(genomes_.size());
@@ -388,11 +388,11 @@ void Researcher::printStatistics() {
 	std::ofstream ff(genomesPath_ + "/" + fullStatsFilename, std::ios_base::app);
 	std::ofstream fs(genomesPath_ + "/" + sessionStatsFilename, std::ios_base::app);
 	for (unsigned i=statWriteIndex_; i<stats_.size(); i++) {
-		fs << i << "," << stats_[i].fitness[0]
+		fs << i+1 << "," << stats_[i].fitness[0]
 			   << "," << stats_[i].averageFitness
 			   << "," << stats_[i].averageGenomeLength
 			   << "," << stats_[i].duration_s << "\n";
-		ff << i+fullStatsOffset_ << "," << stats_[i].fitness[0]
+		ff << i+1+fullStatsOffset_ << "," << stats_[i].fitness[0]
 			   << "," << stats_[i].averageFitness
 			   << "," << stats_[i].averageGenomeLength
 			   << "," << stats_[i].duration_s << "\n";
