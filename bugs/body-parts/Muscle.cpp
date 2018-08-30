@@ -243,6 +243,7 @@ void Muscle::updateFixtures() {
 
 	// now compute the leverage (Hfn) table for nAngleSteps intermediate steps:
 	phiAngleStep_ = (phiMax - phiMin) / nAngleSteps;
+	assertDbg(phiAngleStep_ > 0);
 	for (int i=0; i<nAngleSteps; i++) {
 		float phi = phiMin + phiAngleStep_ * i;
 		H_phi_[i] = Hfn(phi);
