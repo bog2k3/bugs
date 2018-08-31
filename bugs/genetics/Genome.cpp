@@ -101,6 +101,11 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 	DEBUGLOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
 	assertDbg((unsigned)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= constants::MaxGenomeLengthDifference);
 
+#ifdef DEBUG
+	auto s1 = gen.first.genes.size();
+	auto s2 = gen.first.genes.size();
+#endif
+
 	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
 	Chromosome &c1 = gen.first;
 	Chromosome &c2 = gen.second;
@@ -148,11 +153,19 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 						inew = i;
 				if (inew < clong->insertions.size()) {
 					assertDbg(clong->insertions[inew].index < (int)clong->genes.size());
-					clong->genes.erase(clong->genes.begin() + clong->insertions[inew].index);
+					auto index = clong->genes.begin() + clong->insertions[inew].index;
+					clong->genes.erase(index);
 					clong->insertions.erase(clong->insertions.begin() + inew);
+					// update all insertions' indexes after the deleted gene
+					for (; inew < clong->insertions.size(); inew++) {
+						clong->insertions[inew].index--;
+					}
 				} else {
 					// no more insertions left, just pop the last gene
 					clong->genes.pop_back();
+					if (clong->insertions.back().index == clong->genes.size()) {
+						clong->insertions.pop_back();
+					}
 				}
 			}
 		}
@@ -250,6 +263,22 @@ void GeneticOperations::fixGenesSynchro(Genome& gen) {
 			}
 		}
 	}
+#ifdef DEBUG
+	LOGPREFIX("genome-synchro");
+	auto s1f = gen.first.genes.size();
+	auto s2f = gen.first.genes.size();
+	if (s1f > s1 || s2f > s2) {
+		LOG("Added ");
+		if (s1f > s1) {
+			LOGNP("" << s1f - s1 << " genes into first ");
+			if (s2f > s2)
+				LOGNP("and ");
+		}
+		if (s2f > s2)
+			LOGNP("" << s2f - s2 << " genes into second ");
+		LOGNP("chromosome\n");
+	}
+#endif
 }
 
 /*
