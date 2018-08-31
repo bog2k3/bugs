@@ -37,10 +37,12 @@ int main(int argc, char* argv[]) {
 	}
 	childPath = argv[1];
 
+	int nCrashes = 0;
 	int ret = -1;
 	do {
 		if (spawn(ret)) {
 			if (ret != 0) {
+				nCrashes++;
 				LOGLN("bugs crashed with code : " << ret);
 				LOGLN("restarting process after 5 seconds...");
 				sleep(5);
@@ -51,5 +53,6 @@ int main(int argc, char* argv[]) {
 		}
 	} while (ret != 0);
 	LOGLN("bugs exited normally. stopping watchdog.");
+	LOGLN("bugs crashed a total of " << nCrashes << " times.");
 	return 0;
 }
