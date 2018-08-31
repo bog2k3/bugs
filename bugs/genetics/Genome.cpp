@@ -52,233 +52,17 @@ Chromosome GeneticOperations::meyosis(const Genome& gen) {
 			c.genes.push_back(*g);
 		i++;
 	}
-	// copy insertion list:
-	c.insertions = gen.first.insertions;	// both chromosomes should have identical lists
-	// increase all insertions' age:
-	for (unsigned i=0; i<c.insertions.size(); i++)
-		c.insertions[i].age++;
 	// perform some mutations:
 	alterChromosome(c);
-	trimInsertionList(c);
 	return c;
 }
 
 /*
  * this will insert a new gene and return the index in the insertions vector where this change has been recorded
  */
-int GeneticOperations::insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g) {
-	assertDbg(ins.index <= (int)c.genes.size());
-	c.genes.insert(c.genes.begin() + ins.index, g);
-	// determine where in insertions we must add this new index
-	unsigned d=0;
-	while (d<c.insertions.size() && c.insertions[d].index < ins.index) d++;
-	c.insertions.insert(c.insertions.begin()+d, ins);
-	int ret = d;
-	// increment all insertions that are to the right of this one
-	for (++d; d<c.insertions.size(); d++)
-		c.insertions[d].index++;
-	return ret;
-}
-
-// with extra=0 insertions will be trimmed to constants::MaxGenomeLengthDifference
-// with extra>0 additional oldest insertions will be removed
-void GeneticOperations::trimInsertionList(Chromosome &c, unsigned extra) {
-	assertDbg(extra <= c.insertions.size());
-	while (c.insertions.size()+extra > constants::MaxGenomeLengthDifference) {
-		// search for oldest entry and remove it
-		unsigned ioldest = 0;
-		for (unsigned i=1; i<c.insertions.size(); i++)
-			if (c.insertions[i].age > c.insertions[ioldest].age)
-				ioldest = i;
-		c.insertions.erase(c.insertions.begin()+ioldest);
-	}
-}
-
-void GeneticOperations::fixGenesSynchro(Genome& gen) {
-	// this shit is more complicated than i thought
-	// ^^ several years later i had to change it so that it won't assume both chromosomes started out as the same length
-	// so... yeah
-	DEBUGLOGLN("chromosome diff: "<< (int)abs(gen.first.genes.size() - (int)gen.second.genes.size()));
-	assertDbg((unsigned)abs((int)gen.first.genes.size() - (int)gen.second.genes.size()) <= constants::MaxGenomeLengthDifference);
-
-#ifdef DEBUG
-	auto s1 = gen.first.genes.size();
-	auto s2 = gen.first.genes.size();
-#endif
-
-	// assumption: insertions list from each chromosome should be sorted from left to right (smallest index first)
-	Chromosome &c1 = gen.first;
-	Chromosome &c2 = gen.second;
-
-	// compute the length difference between chromosomes:
-	int dif = (int)c1.genes.size() - (int)c2.genes.size();
-	int ins_dif = (int)c1.insertions.size() - (int)c2.insertions.size();
-	Chromosome *cshort = nullptr;
-	Chromosome *clong = nullptr;
-	// remove oldest insertions on the shorter chromosome until the difference in size matches the difference
-	// in number of insertions:
-	if (dif > 0) {
-		//assertDbg(c1.insertions.size() >= c2.insertions.size());	// not necessary because the two chromosomes may have had different lengths from the beginning
-		// C2 is shorter
-		int amount = dif - ins_dif;
-		if (amount > 0)
-			trimInsertionList(c2, min(amount, (int)c2.insertions.size()));
-		cshort = &c2;
-		clong = &c1;
-	} else if (dif < 0) {
-		// C1 is shorter
-		//assertDbg(c1.insertions.size() <= c2.insertions.size());
-		int amount = dif + ins_dif;
-		if (amount > 0)
-			trimInsertionList(c1, min(amount, (int)c1.insertions.size()));
-		cshort = &c1;
-		clong = &c2;
-	} else {
-		cshort = ins_dif >= 0 ? &c1 : &c2;
-		clong = ins_dif >= 0 ? &c2 : &c1;
-	}
-	// recompute insertions difference and add padding to the shorter chromosome until the gene difference is equal to insertions difference
-	ins_dif = (int)c1.insertions.size() - (int)c2.insertions.size();
-	if (sign(ins_dif) == sign(dif)) {	// only if the shorter chromosome has fewer insertions
-		for (; abs(dif) > abs(ins_dif); dif -= sign(dif)) {
-			// 50-50% chance of either padding the shorter chromosome or discarding the latest gene from the longer one
-			if (randf() < 0.5)
-				// do padding
-				cshort->genes.push_back(GeneNoOp{});
-			else {
-				// discard the youngest gene from the long chromosome:
-				unsigned inew = 0;
-				for (unsigned i=1; i<clong->insertions.size(); i++)
-					if (clong->insertions[i].age < clong->insertions[inew].age)
-						inew = i;
-				if (inew < clong->insertions.size()) {
-					assertDbg(clong->insertions[inew].index < (int)clong->genes.size());
-					auto index = clong->genes.begin() + clong->insertions[inew].index;
-					clong->genes.erase(index);
-					clong->insertions.erase(clong->insertions.begin() + inew);
-					// update all insertions' indexes after the deleted gene
-					for (; inew < clong->insertions.size(); inew++) {
-						clong->insertions[inew].index--;
-					}
-				} else {
-					// no more insertions left, just pop the last gene
-					clong->genes.pop_back();
-					if (clong->insertions.back().index == clong->genes.size()) {
-						clong->insertions.pop_back();
-					}
-				}
-			}
-		}
-	}
-
-	// keep track of which indexes from insertions vector were added at this step so we don't treat them again:
-	bool c1_added[2*constants::MaxGenomeLengthDifference] {false};
-	bool c2_added[2*constants::MaxGenomeLengthDifference] {false};
-	// now do the insertions:
-	decltype(c1.insertions) &ins1 = c1.insertions;
-	decltype(c2.insertions) &ins2 = c2.insertions;
-
-	for (unsigned i=0, j=0; i<ins1.size() || j<ins2.size(); ) {
-		while (i<ins1.size() && c1_added[i])
-			i++;
-		while (j<ins2.size() && c2_added[j])
-			j++;
-		bool fromFirst = i<ins1.size();
-		if (fromFirst && j<ins2.size()) {
-			if (ins1[i].index == ins2[j].index) {
-				// same position in both, just skip it
-				i++, j++;
-				continue;
-			}
-			fromFirst = ins1[i].index < ins2[j].index;		// choose the smallest insertion position first
-		}
-		if (fromFirst) {
-			// insert the current insertion from first to second;
-			if ((unsigned)ins1[i].index <= c2.genes.size()) {
-				int c2ListIndex = insertNewGene(c2, ins1[i], GeneNoOp());
-				c2_added[c2ListIndex] = true;
-			}
-		} else if (j<ins2.size()) {
-			// insert the current insertion from second to first
-			if ((unsigned)ins2[j].index <= c1.genes.size()) {
-				int c1ListIndex = insertNewGene(c1, ins2[j], GeneNoOp());
-				c1_added[c1ListIndex] = true;
-			}
-		}
-		i++, j++;
-	}
-	trimInsertionList(c1);
-	trimInsertionList(c2);
-
-	// we're done with insertions, now let's remove homologous no-op genes to keep the genome lean and mean
-	// we need to track and update offset genes that may be affected by removing the no-op genes
-	std::vector<int> c1_offset_genes;	// holds the indexes of offset genes
-	std::vector<int> c2_offset_genes;
-	for (unsigned i=0; i<c1.genes.size() && i<c2.genes.size(); i++) {
-		if (c1.genes[i].type == gene_type::OFFSET)
-			c1_offset_genes.push_back(i);
-		if (c2.genes[i].type == gene_type::OFFSET)
-			c2_offset_genes.push_back(i);
-		if (c1.genes[i].type == gene_type::NO_OP && c2.genes[i].type == gene_type::NO_OP) {
-			// we remove this gene from both chromosomes and then fix insertion indexes
-			c1.genes.erase(c1.genes.begin()+i);
-			c2.genes.erase(c2.genes.begin()+i);
-			// update all insertions indexes that follow (if this was an insertion we remove it, otherwise we update the insertion index)
-			for (unsigned j=0; j<c1.insertions.size(); j++)
-				if (c1.insertions[j].index == i) {
-					c1.insertions.erase(c1.insertions.begin()+j);
-					j--;
-				}
-				else if (c1.insertions[j].index > i)
-					c1.insertions[j].index--;
-			for (unsigned j=0; j<c2.insertions.size(); j++)
-				if (c2.insertions[j].index == i) {
-					c2.insertions.erase(c2.insertions.begin()+j);
-					j--;
-				}
-				else if (c2.insertions[j].index > i)
-					c2.insertions[j].index--;
-			// update offset genes that might have been affected:
-			for (unsigned j=0; j<c1_offset_genes.size(); j++) {
-				int offset_value = c1.genes[c1_offset_genes[j]].data.gene_offset.offset;
-				int abs_offset_target = c1_offset_genes[j] + offset_value;
-				if (abs_offset_target > i)
-					c1.genes[c1_offset_genes[j]].data.gene_offset.offset.value--;
-				else {
-					// the offset gene's target was before the current genome position, so we can forget about it:
-					c1_offset_genes.erase(c1_offset_genes.begin() + j);
-					j--;
-				}
-			}
-			for (unsigned j=0; j<c2_offset_genes.size(); j++) {
-				int offset_value = c2.genes[c2_offset_genes[j]].data.gene_offset.offset;
-				int abs_offset_target = c2_offset_genes[j] + offset_value;
-				if (abs_offset_target > i)
-					c2.genes[c2_offset_genes[j]].data.gene_offset.offset.value--;
-				else {
-					// the offset gene's target was before the current genome position, so we can forget about it:
-					c2_offset_genes.erase(c2_offset_genes.begin() + j);
-					j--;
-				}
-			}
-		}
-	}
-#ifdef DEBUG
-	LOGPREFIX("genome-synchro");
-	auto s1f = gen.first.genes.size();
-	auto s2f = gen.first.genes.size();
-	if (s1f > s1 || s2f > s2) {
-		LOG("Added ");
-		if (s1f > s1) {
-			LOGNP("" << s1f - s1 << " genes into first ");
-			if (s2f > s2)
-				LOGNP("and ");
-		}
-		if (s2f > s2)
-			LOGNP("" << s2f - s2 << " genes into second ");
-		LOGNP("chromosome\n");
-	}
-#endif
+void GeneticOperations::insertNewGene(Chromosome &c, int index, Gene const& g) {
+	assertDbg(index <= (int)c.genes.size());
+	c.genes.insert(c.genes.begin() + index, g);
 }
 
 /*
@@ -378,7 +162,7 @@ void GeneticOperations::alterChromosome(Chromosome &c) {
 		else {
 			// we keep a record of last genes inserted (at most N, and if gametes have a difference of more than N genes, they don't fuse)
 			// when combining two gametes we must insert dummy genes at correspondent positions in the other chromosome, in order to realign the alelles.
-			insertNewGene(c, Chromosome::insertion(position, 0), newGene);
+			insertNewGene(c, position, newGene);
 		}
 #if(ENABLE_STATS)
 		stat_new++;
@@ -608,13 +392,8 @@ void GeneticOperations::alterMetaGene(MetaGene &meta)
 bool Chromosome::operator == (Chromosome const& c) const {
 	if (genes.size() != c.genes.size())
 		return false;
-	if (insertions.size() != c.insertions.size())
-		return false;
 	for (unsigned i=0; i<genes.size(); i++)
 		if (genes[i] != c.genes[i])
-			return false;
-	for (unsigned i=0; i<insertions.size(); i++)
-		if (insertions[i] != c.insertions[i])
 			return false;
 	return true;
 }

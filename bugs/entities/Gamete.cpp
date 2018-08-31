@@ -71,8 +71,6 @@ void Gamete::onCollision(PhysicsBody* pOther, float impulse) {
 	// combine the two chromosomes into a single genome
 	g.first = chromosome_;
 	g.second = other->chromosome_;
-	// fix gene synchronizations between the two chromosomes:
-	GeneticOperations::fixGenesSynchro(g);
 	// compute resultant velocity for new zygote:
 	b2Vec2 velocity = (body_.b2Body_->GetMass() * body_.b2Body_->GetLinearVelocity()
 			+ other->body_.b2Body_->GetMass() * other->body_.b2Body_->GetLinearVelocity());

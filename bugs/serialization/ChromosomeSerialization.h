@@ -12,32 +12,16 @@
 #include "../genetics/Genome.h"
 
 template<class StreamType>
-StreamType& operator << (StreamType &stream, Chromosome::insertion const& ins) {
-	stream << ins.age << ins.index;
-	return stream;
-}
-
-template<class StreamType>
-StreamType& operator >> (StreamType &stream, Chromosome::insertion &ins) {
-	stream >> ins.age >> ins.index;
-	return stream;
-}
-
-template<class StreamType>
 StreamType& operator << (StreamType &stream, Chromosome const& chromosome) {
 	stream << (uint32_t)chromosome.genes.size();
 	for (unsigned i=0; i<chromosome.genes.size(); i++)
 		stream << chromosome.genes[i];
-	stream << (uint16_t)chromosome.insertions.size();
-	for (unsigned i=0; i<chromosome.insertions.size(); i++)
-		stream << chromosome.insertions[i];
 	return stream;
 }
 
 template<class StreamType>
 StreamType& operator >> (StreamType &stream, Chromosome &chromosome) {
 	chromosome.genes.clear();
-	chromosome.insertions.clear();
 	uint32_t nGenes;
 	stream >> nGenes;
 	chromosome.genes.reserve(nGenes);
@@ -46,23 +30,14 @@ StreamType& operator >> (StreamType &stream, Chromosome &chromosome) {
 		stream >> g;
 		chromosome.genes.push_back(g);
 	}
-	uint16_t nInsertions;
-	stream >> nInsertions;
-	nInsertions = min(nInsertions, (uint16_t)constants::MaxGenomeLengthDifference);
-	chromosome.insertions.reserve(nInsertions);
-	for (unsigned i=0; i<nInsertions; i++) {
-		Chromosome::insertion ins;
-		stream >> ins;
-		chromosome.insertions.push_back(ins);
-	}
 	return stream;
 }
 
 static size_t dataSize(Chromosome const& c) {
-	size_t sz = sizeof(uint32_t) + sizeof(uint16_t); // length of genes and insertions arrays
+	size_t sz = sizeof(uint32_t); // length of genes array
 	for (auto &g : c.genes)
 		sz += dataSize(g);
-	return sz + c.insertions.size() * sizeof(c.insertions[0]);
+	return sz;
 }
 
 #endif /* SERIALIZATION_CHROMOSOMESERIALIZATION_H_ */

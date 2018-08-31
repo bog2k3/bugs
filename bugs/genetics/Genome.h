@@ -19,22 +19,6 @@ class MetaGene;
 
 struct Chromosome {
 	std::vector<Gene> genes;
-	struct insertion {
-		int index = -1;
-		int age = 0;	// in number of generations
-
-		insertion() = default;
-		insertion(int index, int age) : index(index), age(age) {}
-
-		bool operator==(insertion const& i) const {
-			return index ==i.index && age == i.age;
-		}
-	};
-	std::vector<insertion> insertions;
-
-	Chromosome() : insertions(constants::MaxGenomeLengthDifference, insertion()) {
-		insertions.clear();
-	}
 
 	bool isGeneticallyCompatible(Chromosome const& c) {
 		return (unsigned)abs((int)c.genes.size() - (int)genes.size()) <= constants::MaxGenomeLengthDifference;
@@ -65,17 +49,10 @@ public:
 	// return number of mutated atoms
 	static int alterGene(Gene &g, float mutationChanceFactor);
 
-	/**
-	 * fixes genes synchronization for a new genome created out of two chromosomes that came from gamettes.
-	 */
-	static void fixGenesSynchro(Genome& gen);
-
 private:
 	static void getAlterationChances(Gene const& g, float& mutationCh, float& swapCh, float& deleteCh);
 	static void alterMetaGene(MetaGene &m);
-	//static void pullBackInsertions(Chromosome &c, int amount);
-	static int insertNewGene(Chromosome &c, Chromosome::insertion ins, Gene const& g);
-	static void trimInsertionList(Chromosome &c, unsigned extra=0);
+	static void insertNewGene(Chromosome &c, int index, Gene const& g);
 };
 
 #endif /* GENETICS_GENOME_H_ */

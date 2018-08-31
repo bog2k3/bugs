@@ -435,7 +435,6 @@ Bug* Bug::newBasicMutantBug(glm::vec2 position) {
 	g.first = g.second = createBasicChromosome();
 	GeneticOperations::alterChromosome(g.first);
 	GeneticOperations::alterChromosome(g.second);
-	GeneticOperations::fixGenesSynchro(g);
 	return new Bug(g, 2*BodyConst::initialEggMass, position, glm::vec2(0), 1);
 }
 

@@ -292,7 +292,6 @@ decltype(Researcher::genomes_) Researcher::doRecombination() {
 
 		if (c1.isGeneticallyCompatible(c2)) {
 			Genome g{c1, c2};
-			GeneticOperations::fixGenesSynchro(g);
 			newGenomes.push_back({g, 0});
 
 			stats_.back().recombinationPairs.push_back({i1, i2});
