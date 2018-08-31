@@ -5,7 +5,7 @@ namespace constants {
 
 	// chance that even a stable gene will be affected by mutation/deletion
 	constexpr float global_alteration_override_chance	=	0.0001f;
-	constexpr float global_chance_to_spawn_gene			=	0.01f;
+	constexpr float global_chance_to_spawn_gene			=	0.005f;
 
 	// initial values for genes' meta-genes:
 	constexpr float initial_gene_mutate					=	0.015f;		// chance to mutate gene
