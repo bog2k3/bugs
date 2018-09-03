@@ -43,9 +43,9 @@ void Researcher::saveGenomes() {
 		auto &g = genomes_[i];
 		std::stringstream ss;
 		ss << genomesPath_ + "/genome-" << i << ".dat";
-		size_t data_size = dataSize(g.first) + sizeof(g.second);
+		size_t data_size = dataSize(g.first) + sizeof(float);
 		BinaryStream str(data_size);
-		str << g.second << g.first;
+		str << g.second.overalFitness(false) << g.first;
 		assertDbg(str.size() == data_size);
 
 		std::ofstream f(ss.str(), std::ios::binary);
@@ -125,11 +125,12 @@ void Researcher::iterate(float timeStep) {
 		Genome& g = gp.first;
 		Bug* b = new Bug(g, BodyConst::initialEggMass*2, {0,0}, {0,0}, 0);
 		b->getRibosome()->setResearchModeOn();
-		std::chrono::time_point<std::chrono::high_resolution_clock> decodeGenomeStart(std::chrono::high_resolution_clock::now());
-		while (b->isInEmbryonicDevelopment() && !b->getRibosome()->isPreFinalStep())
+		unsigned decodeIterations = 0;
+		while (b->isInEmbryonicDevelopment() && !b->getRibosome()->isPreFinalStep()) {
 			b->update(1.f);	// use 1 second step to bypass gene decode frequency delay in ribosome
-		std::chrono::time_point<std::chrono::high_resolution_clock> decodeGenomeEnd(std::chrono::high_resolution_clock::now());
-		float decodeTime = std::chrono::nanoseconds(decodeGenomeEnd - decodeGenomeStart).count();
+			decodeIterations++;
+		}
+		float decodeTime = decodeIterations;
 
 		bugs.push_back({b, decodeTime});
 
@@ -158,6 +159,10 @@ void Researcher::iterate(float timeStep) {
 	assertDbg(minDurationFactor > 0 && minDurationFactor <= 1);
 	float durationFactorSlope = (1.f / minDurationFactor - 1) / log(maxDecodeTime-minDecodeTime + 1);
 
+#ifdef DEBUG_TIME_FACTOR_SCORE
+	MTVector<decltype(IterationStats::decodeTimeFactors)::value_type> decodeTimeFactors(genomes_.size());
+#endif
+
 	// compute fitnesses
 	MTVector<decltype(genomes_)::value_type> updatedGenomes(genomes_.size());
 #ifdef SINGLE_THREAD
@@ -169,17 +174,24 @@ void Researcher::iterate(float timeStep) {
 #ifndef SINGLE_THREAD
 			Infrastructure::getThreadPool(),
 #endif
-			[this, &updatedGenomes, timeStep, minDecodeTime, minDurationFactor, durationFactorSlope] (auto &p)
+			[this, &updatedGenomes, timeStep, minDecodeTime, minDurationFactor, durationFactorSlope
+#ifdef DEBUG_TIME_FACTOR_SCORE
+			 , &decodeTimeFactors
+#endif
+			 ] (auto &p)
 	{
 		auto b = p.first;
-		float fitness = 0;
-		fitness += GenomeFitness::compute(*b);
-		fitness += MotorFitness::compute(*b, motorSampleFrames_, timeStep);
-		fitness *= GenomeFitness::genomeLengthFactor(*b);
+		Fitness fitness;
+		fitness.fenotypeFitness = GenomeFitness::compute(*b);
+		fitness.functionalFitness = MotorFitness::compute(*b, motorSampleFrames_, timeStep);
+		fitness.genomeLengthFitenss = GenomeFitness::genomeLengthFactor(*b);
 		// scale fitness by decode time factor;
 		float decodeTimeFactor = 1.f / (1 + durationFactorSlope * log(p.second - minDecodeTime + 1));
 		assertDbg(decodeTimeFactor >= minDurationFactor * 0.95 && decodeTimeFactor <= 1.05);
-		fitness *= decodeTimeFactor;
+		fitness.decodeTimeFitness = decodeTimeFactor;
+#ifdef DEBUG_TIME_FACTOR_SCORE
+		decodeTimeFactors.push_back({(p.second-minDecodeTime) / minDecodeTime * 100, decodeTimeFactor});	// first: percentage of minDecodeTime spent above minDecodeTime
+#endif
 		updatedGenomes.push_back({b->getGenome(), fitness});
 		// kill bug
 		b->kill();
@@ -202,13 +214,23 @@ void Researcher::iterate(float timeStep) {
 	for (auto &g : updatedGenomes)
 		genomes_.push_back(g);
 
+	// compute relative fitnesses (by comparing all with all)
+	// this is O(N^2), not very nice, but simplifies the randomSelect a lot
+	for (unsigned i=0; i<genomes_.size(); i++)
+		for (unsigned j=i+1; j<genomes_.size(); j++) {
+			if (genomes_[i].second > genomes_[j].second)
+				genomes_[i].second.relativeFitness++;
+			else if (genomes_[j].second > genomes_[i].second)
+				genomes_[j].second.relativeFitness++;
+		}
+
 	// sort by decreasing fitness
 	std::sort(genomes_.begin(), genomes_.end(), [](auto &g1, auto &g2) {
-		return g1.second > g2.second;
+		return g1.second.relativeFitness > g2.second.relativeFitness;
 	});
 
 	for (auto &g : genomes_)
-		stats_.back().fitness.push_back(g.second);
+		stats_.back().fitness.push_back(g.second.overalFitness(false));
 
 	// try to recombine recombinationRatio_ * targetPopulation_ matching genome pairs
 	auto newGenomes = doRecombination();
@@ -224,6 +246,14 @@ void Researcher::iterate(float timeStep) {
 
 	std::chrono::time_point<std::chrono::high_resolution_clock> itEndTime(std::chrono::high_resolution_clock::now());
 	stats_.back().duration_s = std::chrono::nanoseconds(itEndTime - itStartTime).count() * 1.e-9;
+
+#ifdef DEBUG_TIME_FACTOR_SCORE
+	stats_.back().decodeTimeFactors.reserve(decodeTimeFactors.size());
+	std::copy(decodeTimeFactors.begin(), decodeTimeFactors.end(), std::back_inserter(stats_.back().decodeTimeFactors));
+	std::sort(stats_.back().decodeTimeFactors.begin(), stats_.back().decodeTimeFactors.end(), [](auto &x ,auto &y) {
+		return x.second > y.second;
+	});
+#endif
 
 	printIterationStats();
 
@@ -257,7 +287,7 @@ void Researcher::loadGenomes() {
 		Genome g;
 		str >> fitness >> g;
 
-		genomes_.push_back({g, fitness});
+		genomes_.push_back({g, {fitness, 0, 0, 0}});
 
 		nLoaded++;
 
@@ -271,7 +301,7 @@ void Researcher::fillUpPopulation() {
 	// generate random genomes until reaching the target population
 	while (genomes_.size() < targetPopulation_) {
 		int length = max(randomGenomeLength_, stats_.size() ? stats_.back().averageGenomeLength : 1);
-		genomes_.push_back({GenomeGenerator::createRandom(length), 0.f});
+		genomes_.push_back({GenomeGenerator::createRandom(length), {}});
 	}
 }
 
@@ -292,7 +322,7 @@ decltype(Researcher::genomes_) Researcher::doRecombination() {
 
 		if (c1.isGeneticallyCompatible(c2)) {
 			Genome g{c1, c2};
-			newGenomes.push_back({g, 0});
+			newGenomes.push_back({g, {}});
 
 			stats_.back().recombinationPairs.push_back({i1, i2});
 		}
@@ -302,13 +332,12 @@ decltype(Researcher::genomes_) Researcher::doRecombination() {
 }
 
 void Researcher::selectBest(decltype(genomes_) &out) {
-	std::set<unsigned> selected;
+	std::set<unsigned> exclude;
 	unsigned roomForNew = max(1.f, renewRatio_ * targetPopulation_);
 	while (out.size() < targetPopulation_ - roomForNew) {
-		unsigned index = biasedRandomSelect(2.f, selected);
-		selected.insert(index);
+		unsigned index = biasedRandomSelect(2.f, exclude);
+		exclude.insert(index);
 		out.push_back(genomes_[index]);
-		genomes_[index].second = 0; // in order to avoid duplicates
 		// perform mutations on half of the genomes:
 		if (randf() < 0.5) {
 			GeneticOperations::alterChromosome(out.back().first.first);
@@ -327,7 +356,7 @@ unsigned Researcher::biasedRandomSelect(float steepness, std::set<unsigned> excl
 	double total = 0;
 	for (unsigned i=0; i<genomes_.size(); i++) {
 		if (exclude.find(i) == exclude.end())
-			total += pow(genomes_[i].second, steepness);
+			total += pow(genomes_[i].second.relativeFitness, steepness);
 	}
 	double dice = randd() * total;
 	double floor = 0;
@@ -336,11 +365,11 @@ unsigned Researcher::biasedRandomSelect(float steepness, std::set<unsigned> excl
 		if (exclude.find(i) != exclude.end())
 			continue;
 		auto &g = genomes_[i];
-		if (dice - floor <= pow(g.second, steepness)) {
+		if (dice - floor <= pow(g.second.relativeFitness, steepness)) {
 			selected = i;
 			break;
 		}
-		floor += pow(g.second, steepness);
+		floor += pow(g.second.relativeFitness, steepness);
 	}
 	assertDbg(selected < genomes_.size());
 	return selected;
@@ -366,7 +395,7 @@ void Researcher::printIterationStats() {
 				p.second << " (f: " << stats_.back().fitness[p.second] << ");  ");
 	}
 	LOGNP("\n");
-	LOG("Selected genomes for next generation: ");
+	LOG("Selected genomes for next generation (" << stats_.back().selected.size() << "): ");
 	for (auto i : stats_.back().selected)
 		LOGNP(i << " (f: " << stats_.back().fitness[i] << "); ");
 	LOGNP("\n");
@@ -376,6 +405,18 @@ void Researcher::printIterationStats() {
 	stats_.back().averageFitness /= stats_.back().fitness.size();
 	LOGLN("Average iteration fitness: " << stats_.back().averageFitness);
 	LOGLN("Average iteration genome length: " << stats_.back().averageGenomeLength);
+#ifdef DEBUG_TIME_FACTOR_SCORE
+	LOG("DecodeTime scores: ");
+	for (unsigned i=0; i<3 && i<stats_.back().decodeTimeFactors.size(); i++) {
+		LOGNP("" << stats_.back().decodeTimeFactors[i].second << " (+" << stats_.back().decodeTimeFactors[i].first << "%), ");
+	}
+	if (stats_.back().decodeTimeFactors.size() > 6)
+		LOGNP("....., ");
+	for (unsigned i=stats_.back().decodeTimeFactors.size()-3; i<stats_.back().decodeTimeFactors.size(); i++) {
+		LOGNP("" << stats_.back().decodeTimeFactors[i].second << " (+" << stats_.back().decodeTimeFactors[i].first << "%), ");
+	}
+	LOGNP("END\n");
+#endif
 	LOGLN("Iteration duration: " << stats_.back().duration_s << " [s]");
 }
 

@@ -26,6 +26,8 @@ struct signalGenerator {
 	float amp = 0;			// [*]
 	float noiseThresh = 0;	// [fraction] this is scaled by amplitude so 0.1 means 10% noise and 1.0 means 100% noise added to the signal
 
+	signalGenerator() = default;
+
 	signalGenerator(float freq, float amp, float noiseThresh)
 		: freq(freq), amp(amp), noiseThresh(noiseThresh) {
 		phase = randf() * 2*PI;
@@ -138,9 +140,6 @@ int testDFT() {
 int dummy = testDFT();*/
 
 float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
-	std::vector<std::pair<OutputSocket*, signalGenerator>> sensorOutputs;
-	std::vector<std::pair<InputSocket*, std::vector<float>>> motorInputs;
-
 	float maxFreq = 0.5f / timeStep;	// nyquist frequency for sample rate
 	float minFreq = maxFreq / 50;
 	float minAmp = 0.05f;
@@ -152,6 +151,8 @@ float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 //#define USE_EYES
 
 	// populate lists of inputs and outputs
+	std::vector<std::pair<OutputSocket*, signalGenerator>> sensorOutputs;
+	std::vector<std::pair<InputSocket*, std::vector<float>>> motorInputs;
 	b.getBodyParts()[0]->applyPredicateGraph([&](auto p) {
 		switch (p->getType()) {
 		case BodyPartType::GRIPPER:
@@ -162,29 +163,17 @@ float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 			break;
 		case BodyPartType::SENSOR_COMPASS:
 #ifdef USE_COMPASSES
-			sensorOutputs.push_back({static_cast<const Compass*>(p)->getOutputSocket(0),
-				signalGenerator(minFreq + randf() * (maxFreq - minFreq),
-							minAmp + randf() * (maxAmp - minAmp),
-							minNoiseThresh + randf() * (maxNoiseThresh - minNoiseThresh))
-				});
+			sensorOutputs.push_back({static_cast<const Compass*>(p)->getOutputSocket(0), signalGenerator{}});
 #endif
 			break;
 		case BodyPartType::SENSOR_PROXIMITY:
 			for (unsigned i=0; i<static_cast<const Nose*>(p)->getOutputCount(); i++)
-				sensorOutputs.push_back({static_cast<const Nose*>(p)->getOutputSocket(i),
-					signalGenerator(minFreq + randf() * (maxFreq - minFreq),
-							minAmp + randf() * (maxAmp - minAmp),
-							minNoiseThresh + randf() * (maxNoiseThresh - minNoiseThresh))
-				});
+				sensorOutputs.push_back({static_cast<const Nose*>(p)->getOutputSocket(i), signalGenerator{}});
 			break;
 		case BodyPartType::SENSOR_SIGHT:
 #ifdef USE_EYES
 			for (unsigned i=0; i<static_cast<const Eye*>(p)->getOutputCount(); i++)
-				sensorOutputs.push_back({static_cast<const Eye*>(p)->getOutputSocket(i)
-					signalGenerator(minFreq + randf() * (maxFreq - minFreq),
-							minAmp + randf() * (maxAmp - minAmp),
-							minNoiseThresh + randf() * (maxNoiseThresh - minNoiseThresh))
-				});
+				sensorOutputs.push_back({static_cast<const Eye*>(p)->getOutputSocket(i), signalGenerator{}});
 #endif
 			break;
 		default:
@@ -196,30 +185,43 @@ float MotorFitness::compute(Bug const& b, int nIterations, float timeStep) {
 	if (sensorOutputs.size() == 0 || motorInputs.size() == 0)
 		return 0;
 
-	// now run the simulation and collect data
-	for (int i=0; i<nIterations; i++) {
-		for (auto &pair : sensorOutputs)
-			pair.first->push_value(pair.second.next(timeStep));
-		b.neuralNet()->iterate(timeStep);
-		for (auto &pair : motorInputs)
-			pair.second.push_back(pair.first->value);
-	}
+	const int nSimulations = min(5, nIterations);
+	nIterations /= nSimulations;
+	float totalScore = 0;
+	for (int iS = 0; iS<nSimulations; iS++) {
+		// initialize the signal generators every simulation to get different signals
+		for (auto &s : sensorOutputs) {
+			s.second = signalGenerator(minFreq + randf() * (maxFreq - minFreq),
+					minAmp + randf() * (maxAmp - minAmp),
+					minNoiseThresh + randf() * (maxNoiseThresh - minNoiseThresh));
+		}
+		// now run the simulation and collect data
+		for (int i=0; i<nIterations; i++) {
+			for (auto &pair : sensorOutputs)
+				pair.first->push_value(pair.second.next(timeStep));
+			b.neuralNet()->iterate(timeStep);
+			for (auto &pair : motorInputs)
+				pair.second.push_back(pair.first->value);
+		}
 
-	// compute motor signal score
-//	LOGLN("-------------------------- motor fitness analysis START -----------------------");
-	float score = 1;	// we start with something non-zero because at least there are motors and sensors
-	for (auto &pair : motorInputs) {
-		score += computeSignalScore(pair.second);
+		// compute motor signal score
+		//OGLN("-------------------------- motor fitness analysis START -----------------------");
+		float score = 1;	// we start with something non-zero because at least there are motors and sensors
+		for (auto &pair : motorInputs) {
+			score += computeSignalScore(pair.second);
+		}
+		// average score:
+		score /= motorInputs.size();
+		//LOGLN("total motor score: " << score);
+		//LOGLN("-------------------------- motor fitness analysis END -----------------------");
+		totalScore += score;
 	}
-	// average score:
-	score /= motorInputs.size();
-//	LOGLN("total motor score: " << score);
-//	LOGLN("-------------------------- motor fitness analysis END -----------------------");
+	totalScore /= nSimulations;
 
 	// scale factor: more motors (up to a max number) give a higher score
 	size_t maxMotors = 10;
 	float scale = min(maxMotors, motorInputs.size());
 
-	float fitness = score * (log(scale)+1);
+	float fitness = totalScore * (log(scale)+1);
 	return fitness;
 }
