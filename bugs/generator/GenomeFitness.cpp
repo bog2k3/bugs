@@ -11,14 +11,21 @@
 
 float GenomeFitness::compute(Bug const& b) {
 	float fitness = 0;
-	// +3 for egglayer, +3 for mouth, +1 for each nose
+	// +3 for first egglayer,
+	// +3 for first mouth,
+	// +1 for each of first 2 noses,
+	// +1 for each of first 2 bones
+	// +1 for each of first 2 pivot joints
+	// +1 for each of first 2 grippers
 	int noses = 0;
+	int bones = 0;
+	int joints = 0;
+	int grippers = 0;
 	bool hasMouth = false;
 	bool hasEggLayer = false;
 	auto &bparts = b.getBodyParts();
 	if (bparts.size() == 0)
 		return 0;
-	int fatCells = 0;
 	bparts[0]->applyPredicateGraph([&](auto b) {
 		switch (b->getType()) {
 		case BodyPartType::EGGLAYER:
@@ -34,12 +41,20 @@ float GenomeFitness::compute(Bug const& b) {
 			}
 			break;
 		case BodyPartType::SENSOR_PROXIMITY:
-			if (noses++ < 2) {			// +1 for first nose, +1 for second, and none for anything more
+			if (noses++ < 2)			// +1 for first nose, +1 for second, and none for anything more
 				fitness += 1;
-			}
 			break;
-		case BodyPartType::FAT:
-			fatCells++;
+		case BodyPartType::BONE:
+			if (bones++ < 2)
+				fitness += 1;
+			break;
+		case BodyPartType::JOINT_PIVOT:
+			if (joints++ < 2)
+				fitness += 1;
+			break;
+		case BodyPartType::GRIPPER:
+			if (grippers++ < 2)
+				fitness += 1;
 			break;
 		default:
 			break;
