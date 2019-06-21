@@ -140,8 +140,8 @@ bool Ribosome::step() {
 			g2 = &bug_->genome_.second.genes[offset];
 		bool reachedTheEnd = !g1 && !g2;
 		if (reachedTheEnd
-				|| (g1 && g1->type == gene_type::STOP)
-				|| (g2 && g2->type == gene_type::STOP)) {
+				|| (g1 && g1->type == gene_type::STOP && geneQualifies(*g1, *cell))
+				|| (g2 && g2->type == gene_type::STOP && geneQualifies(*g1, *cell))) {
 			// so much for this development path;
 			// decide if cell will divide or specialize
 			if (cell->mapDivisionParams_[GENE_DIVISION_AFFINITY] > 0.f
